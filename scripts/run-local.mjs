@@ -59,6 +59,8 @@ async function run() {
 try {
   await run();
 } catch (error) {
-  console.error(`\nBadge did not start.\n${error instanceof Error ? error.message : String(error)}\n`);
+  console.error(
+    `\nBadge could not complete this local run.\n${error instanceof Error ? error.message : String(error)}\n`,
+  );
   process.exitCode = 1;
 }

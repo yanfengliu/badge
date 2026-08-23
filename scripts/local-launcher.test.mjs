@@ -212,9 +212,9 @@ describe("free local port search", () => {
     expect(result).toBe(4182);
   });
 
-  it("never offers legacy, companion, or fixture ports", async () => {
+  it("never offers companion or fixture ports", async () => {
     const checked = [];
-    const result = await findAvailablePort(4174, {
+    const result = await findAvailablePort(4175, {
       canBindPort: async (candidate) => {
         checked.push(candidate);
         return true;
@@ -223,6 +223,19 @@ describe("free local port search", () => {
 
     expect(checked).toEqual([4177]);
     expect(result).toBe(4177);
+  });
+
+  it("allows ordinary port 4174", async () => {
+    const checked = [];
+    const result = await findAvailablePort(4174, {
+      canBindPort: async (candidate) => {
+        checked.push(candidate);
+        return true;
+      },
+    });
+
+    expect(checked).toEqual([4174]);
+    expect(result).toBe(4174);
   });
 });
 
@@ -244,6 +257,17 @@ describe("local launcher terminal ownership", () => {
 });
 
 describe("remembered local site origin", () => {
+  it("reads the one-site record format already published on main", async () => {
+    const directory = await mkdtemp(path.join(tmpdir(), "badge-launcher-"));
+    temporaryDirectories.push(directory);
+    const configPath = path.join(directory, "site.json");
+    const publishedRecord = '{"version":2,"host":"127.0.0.1","port":4180}\n';
+    await writeFile(configPath, publishedRecord, "utf8");
+
+    expect(await readSitePort(configPath)).toBe(4180);
+    expect(await readFile(configPath, "utf8")).toBe(publishedRecord);
+  });
+
   it("writes and reads one port outside application data", async () => {
     const directory = await mkdtemp(path.join(tmpdir(), "badge-launcher-"));
     temporaryDirectories.push(directory);
@@ -257,22 +281,6 @@ describe("remembered local site origin", () => {
       host: "127.0.0.1",
       port: 4180,
     });
-  });
-
-  it("preserves and refuses a legacy two-origin record", async () => {
-    const directory = await mkdtemp(path.join(tmpdir(), "badge-launcher-"));
-    temporaryDirectories.push(directory);
-    const configPath = path.join(directory, "site.json");
-    const legacy = `${JSON.stringify({
-      version: 1,
-      host: "127.0.0.1",
-      archivePort: 4173,
-      studioPort: 4174,
-    })}\n`;
-    await writeFile(configPath, legacy, "utf8");
-
-    await expect(readSitePort(configPath)).rejects.toThrow("legacy two-origin");
-    expect(await readFile(configPath, "utf8")).toBe(legacy);
   });
 
   it("preserves malformed configuration instead of silently choosing a new origin", async () => {

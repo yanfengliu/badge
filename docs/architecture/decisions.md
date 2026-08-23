@@ -2,6 +2,16 @@
 
 Append decisions newest first. Never rewrite history; add a superseding entry that links to the decision it replaces.
 
+## 2026-08-23 — D-034: Start the one-site launcher without a pre-release migration surface
+
+**Status:** Implemented; supersedes only D-033's recovery path and reservation of port `4174`, while retaining D-033's one-site topology, origin continuity, verification isolation, and application boundaries.
+
+The owner clarified that Badge has just been built and no released two-origin installation exists. No evidence ties user data to the pair record created during development verification; it was task output, not a product format that needs compatibility behavior. Building a recovery command around it invented migration scope and made the current product harder to understand.
+
+The launcher now reads and writes only the existing `.badge-local/site.json` record. Its version remains unchanged so a site origin already selected by the one-site release stays reachable. Neighboring files are not startup inputs, there is no second recovery command or injected cross-origin navigation mode, and port `4174` is an ordinary valid port. Ports `4175` and `4176` remain reserved for optional provider companions, while `5173` and `5174` remain reserved for disposable fixture servers.
+
+Contracts prove that the canonical runtime target exposes exactly one state path, a neighboring `ports.json` file cannot alter startup, the package exposes only unified local-site start, development, and preview commands, same-origin navigation has no companion-origin override, the current one-site record remains readable, and `4174` is eligible when explicitly considered. Historical D-032 and D-033 text remains as development history, but D-034 is the current rule.
+
 ## 2026-08-23 — D-033: Serve Archive and Studio as one remembered local site
 
 **Status:** Implemented for the local launcher and route host; supersedes D-032's adjacent-pair topology and D-014's separate-browser-origin requirement while retaining D-009's data-continuity rule and the Archive–Studio build, persistence, backup, and publication boundaries.

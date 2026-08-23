@@ -22,15 +22,6 @@ describe("Archive and Studio origin navigation", () => {
     expect(companionAppHref("http://localhost:53127/studio/", "archive")).toBe("http://localhost:53127/");
   });
 
-  it("can reopen the exact separate companion origin during legacy recovery", () => {
-    expect(companionAppHref("http://127.0.0.1:4180/", "studio", "http://127.0.0.1:4181/")).toBe(
-      "http://127.0.0.1:4181/",
-    );
-    expect(companionAppHref("http://127.0.0.1:4181/", "archive", "http://127.0.0.1:4180/")).toBe(
-      "http://127.0.0.1:4180/",
-    );
-  });
-
   it("clears source search and hash fragments", () => {
     expect(companionAppHref("https://badge.test/studio/?draft=one#candidate", "studio")).toBe(
       "https://badge.test/studio/",

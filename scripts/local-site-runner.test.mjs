@@ -26,10 +26,16 @@ async function temporaryRepository() {
 
 function fakeViteServer(options = {}) {
   let closeCount = 0;
+  let idleWaitCount = 0;
   return {
     server: {
       async listen() {
         if (options.listenError) throw options.listenError;
+      },
+      async waitForRequestsIdle() {
+        idleWaitCount += 1;
+        if (options.idleWaitError) throw options.idleWaitError;
+        if (options.neverIdle) return new Promise(() => undefined);
       },
       async close() {
         closeCount += 1;
@@ -37,6 +43,7 @@ function fakeViteServer(options = {}) {
       },
     },
     closeCount: () => closeCount,
+    idleWaitCount: () => idleWaitCount,
   };
 }
 
@@ -69,6 +76,7 @@ describe("single-site runner", () => {
     await instance.close();
     await instance.close();
     expect(fake.closeCount()).toBe(1);
+    expect(fake.idleWaitCount()).toBe(1);
   });
 
   it("reuses an identified site without creating another Vite server", async () => {
@@ -86,6 +94,64 @@ describe("single-site runner", () => {
     });
 
     expect(instance).toMatchObject({ action: "reuse", port: 4180, ownsServer: false });
+  });
+
+  it("still closes its owned listener when the request-idle barrier rejects", async () => {
+    const repositoryRoot = await temporaryRepository();
+    const runtimeTarget = createVerificationRuntimeTarget(repositoryRoot, "idle-rejection");
+    const fake = fakeViteServer({ idleWaitError: new Error("injected idle failure") });
+    const instance = await startLocalSite({
+      runtimeTarget,
+      findFreePort: async () => 4180,
+      inspectSite: async () => "free",
+      createViteServer: async () => fake.server,
+    });
+
+    await expect(instance.close()).rejects.toThrow("closed its owned local listener");
+    expect(fake.idleWaitCount()).toBe(1);
+    expect(fake.closeCount()).toBe(1);
+  });
+
+  it("aggregates request-idle and listener-close failures", async () => {
+    const repositoryRoot = await temporaryRepository();
+    const runtimeTarget = createVerificationRuntimeTarget(repositoryRoot, "idle-and-close-rejection");
+    const idleWaitError = new Error("injected idle failure");
+    const closeError = new Error("injected close failure");
+    const fake = fakeViteServer({ idleWaitError, closeError });
+    const instance = await startLocalSite({
+      runtimeTarget,
+      findFreePort: async () => 4180,
+      inspectSite: async () => "free",
+      createViteServer: async () => fake.server,
+    });
+
+    let received;
+    try {
+      await instance.close();
+    } catch (error) {
+      received = error;
+    }
+    expect(received).toBeInstanceOf(AggregateError);
+    expect(received.errors).toEqual([idleWaitError, closeError]);
+    expect(fake.idleWaitCount()).toBe(1);
+    expect(fake.closeCount()).toBe(1);
+  });
+
+  it("bounds the request-idle barrier before closing its owned listener", async () => {
+    const repositoryRoot = await temporaryRepository();
+    const runtimeTarget = createVerificationRuntimeTarget(repositoryRoot, "idle-timeout");
+    const fake = fakeViteServer({ neverIdle: true });
+    const instance = await startLocalSite({
+      runtimeTarget,
+      requestIdleTimeoutMs: 5,
+      findFreePort: async () => 4180,
+      inspectSite: async () => "free",
+      createViteServer: async () => fake.server,
+    });
+
+    await expect(instance.close()).rejects.toThrow("within 5 ms");
+    expect(fake.idleWaitCount()).toBe(1);
+    expect(fake.closeCount()).toBe(1);
   });
 
   it("closes a partially created server when listening fails", async () => {
@@ -123,41 +189,26 @@ describe("single-site runner", () => {
     expect(fake.closeCount()).toBe(1);
   });
 
-  it("preserves and refuses a canonical legacy pair before opening Vite", async () => {
+  it("uses site.json as its only startup record", async () => {
     const repositoryRoot = await temporaryRepository();
     const runtimeTarget = createCanonicalRuntimeTarget(repositoryRoot);
     const paths = runtimeTargetPaths(runtimeTarget);
-    await mkdir(path.dirname(paths.legacyConfigPath), { recursive: true });
-    const legacy = '{"version":1,"host":"127.0.0.1","archivePort":4173,"studioPort":4174}\n';
-    await writeFile(paths.legacyConfigPath, legacy, "utf8");
+    const unrelatedPath = path.join(path.dirname(paths.configPath), "ports.json");
+    const unrelatedContents = '{"version":1,"archivePort":4173,"studioPort":4174}\n';
+    await mkdir(path.dirname(unrelatedPath), { recursive: true });
+    await writeFile(unrelatedPath, unrelatedContents, "utf8");
+    const fake = fakeViteServer();
 
-    await expect(
-      startLocalSite({
-        runtimeTarget,
-        createViteServer: async () => {
-          throw new Error("legacy state must block before Vite");
-        },
-      }),
-    ).rejects.toThrow("npm run recover:legacy");
-    expect(await readFile(paths.legacyConfigPath, "utf8")).toBe(legacy);
-  });
+    const instance = await startLocalSite({
+      runtimeTarget,
+      findFreePort: async () => 4180,
+      inspectSite: async () => "free",
+      createViteServer: async () => fake.server,
+    });
 
-  it("refuses to treat an unreadable canonical legacy record as absent", async () => {
-    const repositoryRoot = await temporaryRepository();
-    const runtimeTarget = createCanonicalRuntimeTarget(repositoryRoot);
-    const unreadable = Object.assign(new Error("access denied"), { code: "EACCES" });
-
-    await expect(
-      startLocalSite({
-        runtimeTarget,
-        accessFile: async () => {
-          throw unreadable;
-        },
-        createViteServer: async () => {
-          throw new Error("legacy inspection failure must block before Vite");
-        },
-      }),
-    ).rejects.toThrow("could not inspect its legacy local-address record");
+    expect(instance).toMatchObject({ action: "launch", port: 4173, ownsServer: true });
+    expect(await readFile(unrelatedPath, "utf8")).toBe(unrelatedContents);
+    await instance.close();
   });
 });
 
@@ -248,8 +299,29 @@ describe("launcher verification state isolation", () => {
 
     expect(interactive).toContain("createCanonicalRuntimeTarget");
     expect(interactive).not.toContain("createVerificationRuntimeTarget");
+    expect(interactive).toContain("Badge could not complete this local run.");
+    expect(interactive).not.toContain("Badge did not start.");
     expect(verification).toContain("createVerificationRuntimeTarget");
     expect(verification).not.toContain("createCanonicalRuntimeTarget");
     expect(verification).not.toContain(".badge-local");
+  });
+
+  it("offers only unified local-site start, dev, and preview commands", async () => {
+    const packageJson = JSON.parse(await readFile(path.resolve("package.json"), "utf8"));
+
+    for (const alias of [
+      "prestart:archive",
+      "start:archive",
+      "prestart:studio",
+      "start:studio",
+      "recover:legacy",
+      "prerecover:legacy",
+      "dev:archive",
+      "dev:studio",
+      "preview:archive",
+      "preview:studio",
+    ]) {
+      expect(packageJson.scripts).not.toHaveProperty(alias);
+    }
   });
 });

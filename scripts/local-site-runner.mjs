@@ -1,5 +1,5 @@
-import { access } from "node:fs/promises";
 import path from "node:path";
+import { clearTimeout, setTimeout } from "node:timers";
 
 import {
   LOOPBACK_HOST,
@@ -11,27 +11,63 @@ import {
 } from "./local-launcher.mjs";
 import { runtimeTargetPaths } from "./local-runtime-target.mjs";
 
-async function exists(filePath, accessFile = access) {
+const DEFAULT_REQUEST_IDLE_TIMEOUT_MS = 5_000;
+
+async function waitForRequestsIdle(server, timeoutMs) {
+  if (typeof server.waitForRequestsIdle !== "function") return;
+  let timeout;
   try {
-    await accessFile(filePath);
-    return true;
+    await Promise.race([
+      server.waitForRequestsIdle(),
+      new Promise((_, reject) => {
+        timeout = setTimeout(
+          () => reject(new Error(`Vite did not report idle within ${timeoutMs} ms`)),
+          timeoutMs,
+        );
+      }),
+    ]);
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function closeOwnedServer(server, url, timeoutMs) {
+  let idleError;
+  try {
+    await waitForRequestsIdle(server, timeoutMs);
   } catch (error) {
-    if (error && typeof error === "object" && error.code === "ENOENT") return false;
+    idleError = error;
+  }
+
+  let closeError;
+  try {
+    await server.close();
+  } catch (error) {
+    closeError = error;
+  }
+
+  if (idleError && closeError) {
+    throw new AggregateError(
+      [idleError, closeError],
+      `Badge could not finish active request work or close its owned local listener at ${url}. Stop only the process still listening there, then start Badge again.`,
+    );
+  }
+  if (closeError) {
     throw new Error(
-      `Badge could not inspect its legacy local-address record at ${filePath}. Make that path readable without deleting or replacing it, then start Badge again.`,
-      { cause: error },
+      `Badge could not close its owned local listener at ${url}. Stop only the process still listening there, then start Badge again. ${closeError instanceof Error ? closeError.message : String(closeError)}`,
+      { cause: closeError },
+    );
+  }
+  if (idleError) {
+    throw new Error(
+      `Badge closed its owned local listener at ${url}, but could not confirm active request work became idle before shutdown: ${idleError instanceof Error ? idleError.message : String(idleError)}. Start Badge again if you still need it.`,
+      { cause: idleError },
     );
   }
 }
 
 export async function startLocalSite(options) {
   const target = runtimeTargetPaths(options.runtimeTarget);
-  if (target.legacyConfigPath && (await exists(target.legacyConfigPath, options.accessFile))) {
-    throw new Error(
-      `Badge found a legacy two-origin record at ${target.legacyConfigPath}. It was preserved. Run npm run recover:legacy to reopen the exact old Archive and Studio origins without changing this record. Archive can then export a backup; Studio backup is not implemented yet, so keep using recovery mode for Studio work you still need. This one-site launcher will not overwrite or guess across browser origins.`,
-    );
-  }
-
   const recordedPort = await readSitePort(target.configPath);
   const findFreePort = options.findFreePort ?? findAvailablePort;
   const configuredPort = recordedPort ?? (target.kind === "verification" ? await findFreePort() : null);
@@ -78,6 +114,10 @@ export async function startLocalSite(options) {
   }
 
   let closed = false;
+  const requestIdleTimeoutMs =
+    Number.isSafeInteger(options.requestIdleTimeoutMs) && options.requestIdleTimeoutMs > 0
+      ? options.requestIdleTimeoutMs
+      : DEFAULT_REQUEST_IDLE_TIMEOUT_MS;
   return {
     action: "launch",
     reason: plan.reason,
@@ -87,7 +127,7 @@ export async function startLocalSite(options) {
     close: async () => {
       if (closed) return;
       closed = true;
-      await server.close();
+      await closeOwnedServer(server, urls.archive, requestIdleTimeoutMs);
     },
   };
 }

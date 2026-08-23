@@ -17,7 +17,6 @@ export function createCanonicalRuntimeTarget(repositoryRoot = process.cwd()) {
     kind: "canonical",
     repositoryRoot: root,
     configPath: path.join(root, ".badge-local", "site.json"),
-    legacyConfigPath: path.join(root, ".badge-local", "ports.json"),
     cleanupDirectory: null,
   });
 }
@@ -38,7 +37,6 @@ export function createVerificationRuntimeTarget(repositoryRoot = process.cwd(), 
     kind: "verification",
     repositoryRoot: root,
     configPath: path.join(directory, "site.json"),
-    legacyConfigPath: null,
     cleanupDirectory: directory,
   });
 }

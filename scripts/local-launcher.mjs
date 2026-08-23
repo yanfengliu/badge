@@ -14,7 +14,7 @@ export const APP_MARKERS = Object.freeze({
 const CONFIG_VERSION = 2;
 const FIRST_FALLBACK_PORT = 4180;
 const LAST_PORT = 65_535;
-const RESERVED_PORTS = new Set([4174, 4175, 4176, 5173, 5174]);
+const RESERVED_PORTS = new Set([4175, 4176, 5173, 5174]);
 
 function origin(port) {
   return `http://${LOOPBACK_HOST}:${port}`;
@@ -26,7 +26,7 @@ export function validateSitePort(port, label = "Site port") {
   }
   if (RESERVED_PORTS.has(port)) {
     throw new Error(
-      `${label} uses reserved local port ${port}; choose a port other than legacy Studio 4174, companion ports 4175 and 4176, or fixture ports 5173 and 5174`,
+      `${label} uses reserved local port ${port}; choose a port other than companion ports 4175 and 4176 or fixture ports 5173 and 5174`,
     );
   }
   return port;
@@ -46,17 +46,6 @@ export async function readSitePort(configPath) {
 
   try {
     const parsed = JSON.parse(source);
-    if (
-      parsed &&
-      typeof parsed === "object" &&
-      parsed.version === 1 &&
-      "archivePort" in parsed &&
-      "studioPort" in parsed
-    ) {
-      throw new Error(
-        "this is a legacy two-origin record; preserve it and export any Archive and Studio data before migrating to the one-site launcher",
-      );
-    }
     if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
       throw new Error("the remembered local site record must be an object");
     }
@@ -66,7 +55,7 @@ export async function readSitePort(configPath) {
     return validateSitePort(parsed.port, "Remembered site port");
   } catch (error) {
     throw new Error(
-      `Badge could not read its remembered local site at ${configPath}: ${error instanceof Error ? error.message : String(error)}. Preserve that file and repair or migrate it; Badge will not silently choose a new origin.`,
+      `Badge could not read its remembered local site at ${configPath}: ${error instanceof Error ? error.message : String(error)}. Preserve that file and repair it; Badge will not silently choose a new origin.`,
       { cause: error },
     );
   }

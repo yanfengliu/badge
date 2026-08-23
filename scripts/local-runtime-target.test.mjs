@@ -16,7 +16,6 @@ describe("local launcher runtime targets", () => {
       kind: "canonical",
       repositoryRoot,
       configPath: path.join(repositoryRoot, ".badge-local", "site.json"),
-      legacyConfigPath: path.join(repositoryRoot, ".badge-local", "ports.json"),
       cleanupDirectory: null,
     });
   });
@@ -28,7 +27,6 @@ describe("local launcher runtime targets", () => {
       kind: "verification",
       repositoryRoot,
       configPath: path.join(repositoryRoot, "tmp", "local-startup", "contract-1234", "site.json"),
-      legacyConfigPath: null,
       cleanupDirectory: path.join(repositoryRoot, "tmp", "local-startup", "contract-1234"),
     });
     expect(paths.configPath).not.toContain(`${path.sep}.badge-local${path.sep}`);
