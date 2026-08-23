@@ -10,19 +10,29 @@ This standing authorization is limited to non-force delivery for this repository
 
 ## Personal data and Git
 
-Git tracks product code, schemas, migrations, achievement and collection catalogues, computed-goal rules, prompt recipes, tests, and deliberately promoted small design inputs.
+Git tracks product code, schemas, migrations, curated catalogue source, computed-goal rules, Studio prompt templates, published renderer manifests, optional small pack registry records, tests, and deliberately promoted small source assets.
 
-Never commit activations, dates, notes, visibility choices, user-created private definitions, uploads, generated candidates, selected personal artwork, backups, provider credentials, account selectors, session details, or logs containing personal prompts or memories.
+Never commit activations, dates, notes, sayings, visibility choices, user-created private definitions, Studio uploads, ordinary generated candidates, selected personal artwork, backups, provider credentials, account selectors, session details, or logs containing personal prompts or memories.
 
-New badges created inside the app remain local unless a separate explicit action promotes a sanitized definition into the Git-tracked catalogue; the UI must not mutate the repository implicitly.
+New definitions created in the archive and their issued authoring requests remain local and outside browse, plan, and activation flows until an explicitly imported Studio pack targets them with a published visual. Reusing another definition's installed presentation is not assumed until the open product decision permits it. Badge Studio may explicitly export only prepared immutable validated pack bytes; neither application mutates Git implicitly.
 
-Generated and uploaded media is heavyweight local user data by default. Git LFS or another asset store is not implied and requires an explicit decision and user approval.
+The sole Archive-to-Studio handoff is an explicitly previewed `.badgebrief` containing a random request ID, local definition ID, semantic revision, title, criterion, optional deliberately included description, schema version, and canonical digest. It contains no visual direction, prompt, owner identity, dates, occurrences, activation, notes, sayings, visibility, collection settings, assets, provider data, credentials, or database references. Editing the definition supersedes any active request and invalidates any current-revision visual binding; planned and earned records retain their pinned historical semantic revision and visual. Local `.badgebrief`, pack, and backup exports are ignored and rejected by the staged-delivery gate.
+
+Generated and uploaded Studio media is heavyweight local data by default. Each published pack embeds its own content-addressed objects and may depend only on exact other self-contained packs; heavy pack files are distributed outside ordinary Git, while Git may track a small registry record. Git LFS or another store is not implied and requires an explicit decision and user approval.
+
+## Archive and Studio boundary
+
+The everyday archive and developer-only Badge Studio are separate application entry points, builds, origins, navigation trees, persistence namespaces, and backup surfaces.
+
+The archive never exposes art generation, upload, reprocessing, prompt, candidate, provider, crop, shape, material, border, or publish controls. Every runtime-visible badge resolves to exactly one validated published source image and 3D presentation recipe before the pack can be installed.
+
+Badge Studio owns visual creation and publishes versioned immutable badge packs through an explicit validated export. Drafts, rejected candidates, provider metadata beyond sanitized provenance, and credentials never cross into the archive pack.
 
 ## Persistence and recovery
 
 Persistence is schema-versioned, exportable, and migration-tested. Corrupt or unsupported data is preserved and reported with a recovery path; never treat an unreadable store as empty and overwrite it.
 
-Backups live outside the repository and include the structured local state, uploaded originals, selected artwork, a versioned manifest, and checksums. Restore validates the complete archive before replacing healthy state.
+Archive and Studio backups live outside the repository as distinct `.badgearchive` and `.badgestudio` formats. An Archive backup includes personal records, issued authoring requests, the seen-pack-release ledger, and every object in every installed pack and dependency; a Studio backup includes its reserved-pack-release ledger, draft database, actual uploaded-original, retained-candidate, selected-art, necessary non-reproducible derivative, and prepared-release bytes. Restore validates the complete target archive and monotonically unions that application's release ledger without merging one application's private store into the other.
 
 Do not delete an original, selected asset, or backup merely because the current screen no longer references it. Candidate and cache cleanup must use explicit lifecycle rules and must never sweep broad shared output paths.
 
@@ -30,17 +40,17 @@ Do not delete an original, selected asset, or backup merely because the current 
 
 The initial product is single-user and local-first. Accounts, cloud sync, public publishing, other-user browsing, proof systems, points, streaks, leaderboards, rarity tiers, and social reactions are out of scope unless the user explicitly promotes them.
 
-Achievement activation rests on personal honesty. A model may suggest goals, sayings, and art, but it never decides that an achievement was earned.
+Achievement activation rests on personal honesty. Archive models may rank installed goals or propose sayings, and Studio models may propose definitions and art, but no model decides that an achievement was earned.
 
 The one-line saying remains directly editable and independent from the art. Regeneration creates a proposal and never overwrites an accepted or user-authored line until the user explicitly chooses the replacement.
 
 Live saying generation discloses the provider and exact outbound fields before private badge text leaves the device. By default it sends only the badge title, criterion, and saying-specific direction; notes, dates, occurrences, accepted sayings, and unrelated draft fields are excluded.
 
-Generated artwork is text-free. Preserve every uploaded source unchanged; crop, restyle, background removal, material treatment, and other processing create derived assets.
+Badge Studio keeps generated artwork text-free. It preserves every uploaded source unchanged; crop, restyle, background removal, material treatment, and other processing create derived assets. Publication decodes and re-encodes selected pixels into a metadata-free approved format, strips filenames, EXIF, GPS, XMP, IPTC, embedded thumbnails, and opaque ancillary chunks, and previews the sanitized derivative and manifest metadata before export.
 
-Shape, material, border color, border width, crop, and positioning remain editable structured properties rather than being baked irreversibly into the only copy of the art.
+Shape, material, border color, border width, crop, and positioning remain editable structured properties in Badge Studio rather than being baked irreversibly into the only copy of the art. Publication freezes them, and the archive renders them read-only.
 
-The badge itself is a real-time 3D artifact in authoring and detail views. Preserve source art separately, derive texture or relief maps non-destructively, and store an engine-neutral versioned render recipe rather than a flattened badge or renderer-specific scene data.
+The badge itself is a real-time 3D artifact in Badge Studio and archive detail views. Preserve source art separately, derive texture or relief maps non-destructively, and store an engine-neutral versioned render recipe rather than a flattened badge or renderer-specific scene data.
 
 Mouse rotation, bounded zoom, responsive lighting, a separate light-adjustment control, keyboard equivalents, reset, reduced-motion behavior, and a clear GPU fallback are product requirements rather than optional polish.
 

@@ -9,10 +9,11 @@ The repository is currently in its documentation-first phase; application code h
 ## Product direction
 
 - One local user in the first version, with no account or server required.
-- Git-tracked application code, achievement catalogues, computed-goal rules, and art recipes.
-- Private local activations, dates, notes, uploads, generated artwork, and backups.
+- Git-tracked application code, curated catalogue source, computed-goal rules, Studio prompt templates, published renderer manifests, and small pack registry records.
+- Private local activations, dates, notes, sayings, visibility choices, installed badge packs, and backups.
 - Planned and earned badges, prebuilt collections, custom achievements, and automatically completed collection-level goals.
-- Multi-candidate art generation, user image uploads, non-destructive reprocessing, and customizable badge shape, material, border color, and border width.
+- An everyday archive that shows only published badge designs whose picture, shape, material, border, and 3D recipe are already decided.
+- A separate developer-only Badge Studio for multi-candidate art generation, uploads, non-destructive reprocessing, 3D construction, selection, validation, and pack publishing.
 - A real-time 3D badge viewer with dynamic material lighting, mouse rotation, bounded zoom, and direct light adjustment so each artifact can be examined like a physical object.
 - Independent one-line saying authoring: generate or regenerate a proposal, accept it explicitly, or write the line directly without changing the badge art.
 - A quiet, elegant gallery with tactile, beautifully made badge art and a sharp, restrained activation ceremony.

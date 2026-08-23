@@ -2,6 +2,40 @@
 
 Append decisions newest first. Never rewrite history; add a superseding entry that links to the decision it replaces.
 
+## 2026-08-22 — D-016: Use revisioned semantic briefs for custom Archive-to-Studio work
+
+**Status:** Provisional repository architecture until the custom-definition handoff slice proves revision, replay, and recovery behavior.
+
+Archive may hand Studio only an explicitly previewed canonical `.badgebrief` for a local semantic definition. The request is minimal and contains a random request ID, local definition ID, immutable semantic revision, title, criterion, optional deliberately included description, schema version, and digest; it excludes personal state, assets, visual direction, prompts, provider data, credentials, and database references. Archive persists the exact issued bytes and lifecycle, and Studio treats the import as untrusted data rather than receiving database access.
+
+A targeted visual binds only the matching request and semantic revision. Semantic edits append a revision, supersede active work, and invalidate the new revision's current visual rather than silently reusing art authored for different meaning. Fulfilled requests remain historical, and existing planned or earned records retain their pinned semantic revision and exact visual. Install, replay, and restore are transactional and digest-aware.
+
+## 2026-08-22 — D-015: Canonicalize pack lineage and prepare exact release bytes before handoff
+
+**Status:** Provisional repository architecture until cross-platform golden compilation and hostile Archive admission pass.
+
+Pack entity identity is qualified by immutable `packId` lineage, while exact installed content is pinned by `PackRef { packId, version, packDigest }`. Unrelated packs may reuse raw entity IDs without collision, same-lineage updates may retain them, exact bytes install idempotently, and reusing a version for different bytes is rejected. Archive and Studio keep small independent append-only release ledgers across uninstall or project deletion and union them during restore so an older backup cannot authorize a known same-version fork. Closed packs embed content-addressed runtime objects and exact self-contained dependencies; no loose sidecar participates in admission.
+
+Studio canonicalizes and independently validates a frozen release, then persists a `PreparedRelease` with the exact bytes and reserves its version before offering any file handoff. File-handle export records success only after close; browser fallback records only that a download was offered. Cancellation and retry re-emit the prepared bytes and cannot create a same-version fork or false disk-success claim.
+
+## 2026-08-22 — D-014: Separate Archive and Studio with immutable published packs
+
+**Status:** Provisional repository architecture until the two-build scaffold and pack admission slice prove the boundary.
+
+Archive and Badge Studio are independently built browser applications with separate strict origins, persistence, service-worker scopes, navigation, security policy, backup formats, and capability-scoped provider companions when needed. Their only Studio-to-Archive visual-content handoff is a closed, data-only, immutable published pack that Studio compiles and Archive independently validates before explicit installation; Archive-to-Studio custom work uses only an explicitly exported minimal semantic authoring request.
+
+Archive records pin exact admitted pack and visual editions; new versions coexist rather than silently restyling personal history. Build and dependency gates reject Studio routes, candidate state, upload processing, appearance editors, art prompts, art-provider code, and visual-generation endpoints from Archive.
+
+This supersedes D-007's single-package topology while retaining its browser-local persistence and disk-export direction. It narrows D-003 so Git owns curated catalogue source and optional release registry records while admitted packs own runtime release definitions and Studio-local projects remain private; scopes the visual state in D-004, D-005, and D-008 to Studio and published packs; and narrows D-006's activation payload from mutable selection data to exact admitted pack, visual-edition, source-hash, and render-recipe references. D-010's independently bounded saying proposals remain an Archive feature.
+
+## 2026-08-22 — D-013: Keep visual creation out of the everyday Archive
+
+**Status:** Owner-confirmed product mandate.
+
+When the user browses, plans, activates, or examines a badge, its theme picture and complete 3D presentation are already decided. The Archive does not generate, upload, reprocess, compare, crop, reshape, rematerial, reborder, or publish visuals, and missing art is an installation error rather than a runtime creation prompt.
+
+The developer-only Badge Studio owns candidate generation and selection, user-supplied image ingestion, non-destructive processing, shape and material construction, 3D validation, and pack publication. The Archive may still edit personal dates, notes, visibility, lifecycle, and sayings and may rotate, zoom, and relight the published object for inspection without changing its appearance recipe.
+
 ## 2026-08-22 — D-012: Keep 3D persistence independent from the renderer
 
 **Status:** Provisional repository architecture until the Phase 0 spike records the renderer decision and budgets.

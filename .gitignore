@@ -141,3 +141,13 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# Task-owned review and browser evidence
+/tmp/
+
+# Local Badge handoffs and backups
+*.badgebrief
+*.badgepack
+*.badgetheme
+*.badgearchive
+*.badgestudio

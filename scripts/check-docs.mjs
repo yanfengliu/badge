@@ -4,7 +4,21 @@ import process from "node:process";
 
 const root = process.cwd();
 const ignoredDirectories = new Set([".git", "coverage", "dist", "node_modules", "tmp"]);
-const binaryExtensions = new Set([".avif", ".gif", ".ico", ".jpeg", ".jpg", ".pdf", ".png", ".webp", ".zip"]);
+const binaryExtensions = new Set([
+  ".avif",
+  ".badgearchive",
+  ".badgepack",
+  ".badgestudio",
+  ".badgetheme",
+  ".gif",
+  ".ico",
+  ".jpeg",
+  ".jpg",
+  ".pdf",
+  ".png",
+  ".webp",
+  ".zip",
+]);
 const failures = [];
 const warnings = [];
 

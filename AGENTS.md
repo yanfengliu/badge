@@ -38,7 +38,7 @@ Read the repo-specific rules in [docs/policies/local-rules.md](docs/policies/loc
 
 ## Gates
 
-Documentation-only phase: `node --check scripts/check-docs.mjs` · `node scripts/check-docs.mjs` · `git diff --check`; before commit, also run `git diff --cached --check` after staging.
+Documentation-only phase: `node --check scripts/check-docs.mjs` · `node --check scripts/check-staged-secrets.mjs` · `node scripts/check-docs.mjs` · `git diff --check`; before commit, stage the exact unit, then run `node scripts/check-staged-secrets.mjs` and `git diff --cached --check`.
 
 Before the first code commit, replace this paragraph with real executable gates from the scaffold; the intended baseline is test, typecheck, lint, build, browser-flow verification, and dependency audit, but nonexistent commands are not gates.
 
@@ -48,13 +48,13 @@ Read `docs/learning/lessons.md`, `docs/design/vision.md`, `docs/design/product-s
 
 ## Invariants & boundaries
 
-- Git owns the application, schemas, migrations, catalogues, computed-goal rules, prompt recipes, tests, and intentionally promoted small assets; it never owns personal achievement state or ordinary generated/uploaded media.
-- Local state owns activations, occurrence dates, notes, profile and collection privacy choices, uploads, generated candidates, selected art, and backups; preserve unreadable or old data rather than silently resetting it.
+- Git owns the application, schemas, migrations, curated catalogue source, computed-goal rules, Studio prompt templates, published renderer manifests, optional small pack registry records, tests, and intentionally promoted small assets; it never owns personal achievement state, heavyweight published pack files, or ordinary Studio drafts and media.
+- Archive-local state owns local definitions, issued authoring requests, activations, occurrence dates, notes, sayings, privacy choices, installed packs, and Archive backups; Studio-local state separately owns uploads, generated candidates, selected source art, processing derivatives, drafts, and Studio backups. Preserve unreadable or old data rather than silently resetting it.
 - Generated art contains no typography; titles, sayings, dates, and metadata are rendered by the UI. Uploaded originals are immutable, and processing is non-destructive.
-- Shape, material, border color, border width, crop, and positioning are structured appearance data, independent of source artwork.
-- A badge is a versioned, engine-neutral 3D render recipe, not a flattened image or CSS tilt; Badge Atelier and badge detail provide live rotation, zoom, and dynamic-light inspection, while gallery thumbnails may be cached renders.
+- Shape, material, border color, border width, crop, and positioning are structured appearance data edited only in Badge Studio, frozen by publication, and rendered read-only in the archive.
+- A badge is a versioned, engine-neutral 3D render recipe, not a flattened image or CSS tilt; Badge Studio and archive detail provide live rotation, zoom, and dynamic-light inspection, while gallery thumbnails may be cached renders.
 - Keep camera orbit, zoom, and light position out of durable badge data unless a later decision adds saved showcase poses. Never persist renderer objects, GPU handles, or engine-specific scene graphs.
-- Model output may propose definitions, sayings, and art candidates; it never activates an achievement or replaces selected art or an accepted or user-authored saying without an explicit user action.
+- Badge art generation, upload processing, candidate selection, and appearance construction exist only in Badge Studio. The archive consumes validated published packs and never calls an art provider or exposes unresolved art; runtime saying proposals remain separate and never overwrite accepted or user-authored text without explicit action.
 - Computed achievements derive deterministically from individual activations. Persistence, migration, and restore work is data-loss-sensitive and receives high-risk review.
 - Product changes start with contract tests. Files should stay under 500 lines and must stay under 1000 lines.
 
@@ -62,5 +62,5 @@ Read `docs/learning/lessons.md`, `docs/design/vision.md`, `docs/design/product-s
 
 - Product direction lives in `docs/design/`; structural changes update `docs/architecture/ARCHITECTURE.md` and append to `docs/architecture/drift-log.md`; non-obvious tradeoffs append to `docs/architecture/decisions.md` and are superseded, never erased.
 - Devlog history lives in `docs/devlog/summary.md` plus dated files under `docs/devlog/detailed/`; lessons and evidence follow the fleet templates in `docs/learning/`.
-- Visual work includes real rendered evidence for the gallery, badge atelier, upload/reprocess flow, candidate selection, 3D front/edge/back views, multiple light positions and zoom levels, activation ceremony, GPU fallback, and reduced-motion behavior at more than one desktop-like viewport.
+- Visual work includes separate evidence for the archive gallery and Badge Studio, Studio upload/reprocess and candidate selection, 3D front/edge/back views, multiple light positions and zoom levels, activation ceremony, GPU fallback, and reduced-motion behavior at more than one desktop-like viewport.
 - Keep application modules aligned with the dependency direction documented in `docs/architecture/ARCHITECTURE.md`; domain and application logic remain independent of React, persistence, file APIs, and model providers.

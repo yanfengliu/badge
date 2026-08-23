@@ -27,13 +27,17 @@ Keep these as early fixtures because together they test the breadth the product 
 
 ## Core loop
 
-Discover or create an achievement → shape its visual identity → keep it as a plan or activate it honestly → enjoy a crisp reveal → revisit the badge and its memory → see meaningful progress toward larger collections.
+Open a collection whose badge designs are already published → keep an achievement as a plan or activate it honestly → enjoy a crisp reveal → inspect the finished 3D artifact → revisit the badge and its memory → see meaningful progress toward larger collections.
+
+Visual creation follows a separate developer loop: open Badge Studio → generate or upload source art → compare and refine candidates → construct and inspect the 3D badge → select one final presentation → validate and publish an immutable badge pack for the archive.
 
 ## Scope stance
 
 Version one is a desktop-first local web application for one person.
 
-It supports prebuilt and custom collections, suggested and handmade badges, planned and earned states, multiple art candidates, uploaded and reprocessed images, appearance customization, mouse-driven 3D examination with dynamic lighting, activation memories, automatic composite achievements, and local backup and restore.
+The everyday archive supports installed and local collections, suggested and handmade achievement definitions, planned and earned states, pre-decided published badge pictures and presentations, mouse-driven 3D examination with dynamic lighting, activation memories, automatic composite achievements, and local backup and restore.
+
+Badge Studio is a separate developer mode for multiple art candidates, uploaded and reprocessed images, appearance construction, selection, and pack publishing; none of those creation controls appear in the archive experience.
 
 The U.S. National Parks collection ships as a versioned catalogue rather than requiring every park to be entered by hand.
 
@@ -47,4 +51,4 @@ The product encourages without judging.
 
 An unearned badge is an invitation, not a failure; an earned badge is a memory, not a claim to status over someone else.
 
-The system may suggest what to try and generate art or a clever saying, but only the user decides what belongs in their life and when it was earned.
+The archive may suggest what to try and generate a clever saying, while Badge Studio prepares art outside that experience; only the user decides what belongs in their life and when it was earned.

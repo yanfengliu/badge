@@ -4,12 +4,12 @@
 
 The owner selected the third explored direction: a warm, modern field archive with substantial engraved artifacts, fine topographic linework, mineral accents, exact typography, and a restrained editorial interface.
 
-The follow-up Badge Atelier mock extends that family into candidate comparison, upload and reprocessing, and appearance customization. It is the current authoring target but can still be refined before implementation.
+The follow-up Badge Atelier mock is retained as the visual seed for the separate developer-only Badge Studio: candidate comparison, upload and reprocessing, 3D construction, and publishing. It is not an archive screen and can still be refined before implementation.
 
 ## Promoted visual inputs
 
 - [Selected collection and activation direction](assets/selected-gallery-direction.webp)
-- [Badge Atelier candidate and construction direction](assets/badge-atelier-direction.webp)
+- [Badge Studio candidate and construction direction](assets/badge-atelier-direction.webp)
 
 These files are intentionally promoted layout, mood, and finish references, not source-art specifications or final renderer output. Their pictured metal rims and lighting must be reconstructed as live geometry and material response rather than copied into generated candidates; the optimized files stay below the fleet's ordinary binary ceiling, and original multi-megabyte generations remain outside Git.
 
@@ -21,7 +21,7 @@ The UI recedes around the collection through generous space, precise alignment, 
 
 Badges feel physically heavy through credible thickness, relief, edge treatment, texture, controlled highlights, and deep but readable shadows.
 
-The product is not beholden to a single circle or metal finish. Art may be diverse, and shape and material are user-configurable, while craftsmanship, lighting discipline, and interface behavior create coherence.
+The product is not beholden to a single circle or metal finish. Art may be diverse, and shape and material are configurable by the Studio developer before publication, while craftsmanship, lighting discipline, and interface behavior create coherence. The archive receives that construction read-only.
 
 ## Reference translation
 
@@ -33,7 +33,7 @@ Do not copy recognizable characters, compositions, logos, product trade dress, i
 
 ## Badge art grammar
 
-Generated artwork is text-free and legible both as a large hero artifact and a collection thumbnail.
+Badge Studio generates text-free artwork that remains legible both as a large hero artifact and a collection thumbnail.
 
 Generated candidates are flat source illustrations without a finished badge silhouette, rim, bevel, thickness, cast shadow, presentation background, or object-level material and studio highlight. Scene lighting inside an illustration is allowed; physical badge lighting belongs exclusively to the construction renderer.
 
@@ -53,7 +53,7 @@ Wool and armband treatments should have believable weave, stitching, compression
 
 Border color and width are deliberate construction controls, not merely decorative CSS outlines; the preview must communicate how they alter the physical artifact.
 
-Uploaded photography should remain recognizable when desired. Processing can translate it into the collection's art language, but the original is preserved and the user chooses every replacement.
+Uploaded photography should remain recognizable when desired. Processing can translate it into the collection's art language, but the original is preserved and the Studio developer chooses every replacement.
 
 ## Three-dimensional physicality and lighting
 
@@ -75,11 +75,13 @@ The gallery favors one strong collection or badge focal point and a quiet suppor
 
 Collection progress is visible but subordinate to the artifact and memory.
 
-### Badge Atelier
+Every picture and presentation is already decided by an installed pack. The gallery never shows prompts, candidates, uploads, processing, appearance construction, provider state, or calls to create missing art.
 
-The authoring surface separates the creative comparison area from a large live construction preview.
+### Badge Studio
 
-Generation, upload, and process actions are clearly related but do not compete with the final `Use selected design` action.
+The dedicated developer surface separates the creative comparison area from a large live construction preview and visually identifies itself as Studio rather than the personal archive.
+
+Generation, upload, and process actions are clearly related but do not compete with the candidate-level `Use selected design` action that advances the chosen source into construction.
 
 Candidate selection uses a precise keyline, check state, and keyboard focus, never color alone.
 
@@ -87,7 +89,13 @@ Shape, material, border color, and border width are grouped compactly beside the
 
 The live preview is the dominant 3D examination surface. It provides direct drag rotation, wheel or trackpad zoom, a clearly selected object-versus-light mode, and quiet reset controls without surrounding the artifact with game-editor chrome.
 
-The one-line saying editor sits with the composed preview rather than inside the image-generation controls. It pairs a direct text field with restrained `Generate saying` or `Try another` and `Use this saying` actions, and a pending proposal never makes the current line disappear.
+The final action is `Validate and publish pack`, not activation. Validation summarizes selected presentations, missing assets, asset sizes, fallback readiness, compatibility, sanitized provenance, and the exact export destination before emitting an immutable bundle.
+
+### Archive badge detail
+
+The archive detail view uses the published 3D presentation without exposing construction controls. It keeps rotation, zoom, lighting, reset, dates, memory, and saying authoring visually calm and personal.
+
+The one-line saying editor sits with the published preview. It pairs a direct text field with restrained `Generate saying` or `Try another` and `Use this saying` actions, and a pending proposal never makes the current line disappear.
 
 The saying is one logical line, but the read-only composed preview may wrap it at narrow desktop widths rather than truncate it or reduce it below the accessible type scale. Editing shows the full text, remaining allowance, and inline validation without shifting the artifact preview.
 
@@ -122,6 +130,6 @@ Sound is not required. If added later, it is restrained, optional, and separatel
 
 ## Visual verification contract
 
-Inspect the collection gallery, planned and earned states, Badge Atelier, uploaded-image processing, every shape and material preset, front, oblique, edge, and back camera angles, near and far zoom bounds, several key-light positions, narrow and wide desktop layouts, activation start and end states, reduced motion, GPU fallback, loading, empty, and actionable error states.
+Inspect the archive gallery, planned and earned states, badge detail, activation start and end states, and pack-installation failures without any Studio controls; separately inspect Badge Studio projects, candidates, upload processing, every shape and material preset, validation, publish success and failure, and clean installation into the archive. Across both builds inspect front, oblique, edge, and back camera angles, near and far zoom bounds, several key-light positions, narrow and wide desktop layouts, reduced motion, GPU fallback, loading, empty, and actionable error states.
 
 Screenshots are evidence inputs, not the conclusion: compare the rendered implementation with the selected mockups at matched viewport and state, capture a short interaction recording for rotation, zoom, and light movement, fix visible differences, and then sweep the full surface for defects outside the changed area.

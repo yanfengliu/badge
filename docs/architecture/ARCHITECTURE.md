@@ -8,79 +8,125 @@ This document describes the target for the first implementation and names provis
 
 ## Architectural shape
 
-Phase 1 is a single-package desktop-first web application using Node 24 tooling, strict TypeScript, React, and Vite.
+The target is a Node 24 npm workspace with strict TypeScript, React, and Vite, containing two independently built desktop-first web applications: the everyday Archive and developer-only Badge Studio.
 
-The browser owns the user experience and local data through versioned IndexedDB repositories and Blob records, with File System Access API export when available and a download fallback.
+Archive and Studio own separate versioned IndexedDB databases, Blob stores, application origins, service-worker scopes, content-security policies, navigation trees, build outputs, and backup formats, with File System Access API export when available and a download fallback.
 
-Live model generation is behind an application port. If a provider requires a privileged long-lived credential, a later local companion service or desktop wrapper may implement that port; the browser must not embed such a credential.
+Archive has no Studio route, lazy chunk, database access, visual-generation port, art prompt recipe, art-provider SDK, or art-provider endpoint. Studio transfers finished work to Archive only through a closed, data-only published pack that Archive independently validates and installs. Archive may explicitly export a minimal data-only authoring request for Studio, but neither application reads the other's database or receives the other's private state. The separately bounded Archive saying-proposal port does not weaken this visual-authoring boundary.
 
-The primary dependency direction is:
+Live visual generation exists behind a Studio application port. If its provider requires a privileged long-lived credential, an optional loopback-only Studio companion or later desktop wrapper may implement that port. Live saying proposals use a different Archive application port and, when browser-safe authorization is unavailable, a separately capability-scoped Archive saying companion. Neither browser build embeds a privileged credential, and neither companion has the other application's authority.
 
-`app → ui → application → domain`
+The primary dependency directions are:
 
-Persistence, file I/O, image processing, 3D rendering, and model generation are adapters that implement ports owned by the application or UI boundary.
+`archive-web → archive-application → archive-domain`
 
-Domain and application code remain independent of React, IndexedDB, browser file APIs, image canvases, WebGL or WebGPU, Three.js, and provider SDKs.
+`archive-application → authoring-request-contract + pack-contract + render-recipe + saying-contract`
+
+`studio-web → studio-application → studio-domain`
+
+`studio-application → authoring-request-contract + pack-compiler + pack-contract + render-recipe + art-generation-contract`
+
+`pack-compiler → pack-contract + render-recipe`
+
+`renderer-web → render-recipe`
+
+`studio-companion → art-generation-contract`
+
+`studio-companion/provider-adapter → art-generation-contract`
+
+`archive-saying-companion → saying-contract`
+
+`archive-saying-companion/provider-adapter → saying-contract`
+
+Persistence, file I/O, image processing, 3D rendering, and model generation are adapters behind their owning application or UI boundary. Domain and contract packages remain independent of React, IndexedDB, browser file APIs, image canvases, WebGL or WebGPU, Three.js, and provider SDKs.
 
 ## Target source layout
 
 ```text
-src/
-  app/                 composition root, providers, routes, and global styles
-  domain/              collections, badges, records, occurrences, rules, and visibility
-  application/         author, select, activate, compute, back up, and restore use cases
-  catalog/             Git-tracked definitions, collections, rule sets, and prompt recipes
-  art/                 validation, crop, texture-map derivation, masks, and thumbnails
-  rendering/           engine-neutral recipes, parametric geometry, materials, lighting, and viewer adapter
-  persistence/         IndexedDB repositories, transactions, migrations, and save queue
-  generation/          provider-neutral ports, deterministic fake, and later live adapters
-  io/                  upload, backup export, restore import, and file-system adapters
-  ui/
-    components/        reusable polished product primitives
-    features/
-      gallery/
-      goals/
-      badge-atelier/
-      candidate-picker/
-      activation/
-      settings/
+apps/
+  archive-web/          gallery, goals, activation, memories, pack admission, and archive backup
+  studio-web/           projects, candidates, upload, processing, construction, validation, and publish
+  studio-companion/     optional loopback art-provider and credential boundary
+  archive-saying-companion/  optional loopback saying-provider and credential boundary
+packages/
+  archive-application/  Archive use cases, repositories, saying port, and pack-install orchestration
+  archive-domain/       records, occurrences, activation, visibility, and composite rules
+  studio-application/   Studio use cases, generation port, processing, validation, and publish orchestration
+  studio-domain/        mutable projects, candidates, derivations, selection, and review state
+  authoring-request-contract/  minimal Archive-to-Studio definition brief and validation
+  pack-contract/        closed schemas, canonicalization, validation, admission, and compatibility
+  pack-compiler/        Studio-only pure compiler from frozen release candidate to immutable pack
+  render-recipe/        engine-neutral geometry, material, fallback, and appearance contracts
+  renderer-web/         shared live WebGL and renderer-independent fallback adapters
+  art-generation-contract/  Studio and art-companion request-response schemas only
+  saying-contract/      Archive and saying-companion request-response schemas only
 tests/
-  browser/             Playwright journeys and visual evidence
+  browser/archive/      Archive Playwright journeys and visual evidence
+  browser/studio/       Studio Playwright journeys and visual evidence
+  boundaries/           dependency graph, bundle graph, origin, pack, and wrong-format gates
 ```
 
-Do not create a layer merely to match the tree; keep the ownership boundary and collapse empty folders until behavior exists.
+Do not create a package merely to match the tree, but do not collapse Archive and Studio into one application package or runtime bundle. Package exports, TypeScript project references, restricted-import lint rules, and bundle-graph gates enforce the boundary. Contract packages never import a companion or provider adapter; implementations depend inward on their contract.
 
 ## Domain model
 
 ### ProfileSettings
 
-One seeded local profile with a stable `ownerId`, default visibility, accessibility preferences, and later appearance defaults.
+One seeded local profile with a stable `ownerId`, default visibility, accessibility preferences, and later Archive interface display defaults. It never stores badge-construction appearance.
 
 The stable owner identifier costs little now and prevents a destructive identity migration if accounts arrive later.
 
+### Entity references and pack lineage
+
+Pack-owned entity IDs are stable only inside their immutable `packId` namespace. Archive represents identity through closed unions: `DefinitionRef = LocalDefinitionRef { namespace: "local", definitionId } | PackDefinitionRef { namespace: "pack", packId, definitionId }` and the analogous `CollectionRef`. A later version with the same `packId` is an explicit update to that lineage and may retain IDs, while an unrelated pack must use a different `packId`. Exact version pinning remains a separate `PackRef`. Phase 1 composite rules reference definitions within their own pack, and any later cross-pack rule must use exact qualified references and declared dependencies.
+
+Archive never resolves a raw definition or collection ID across namespaces. Admission treats an existing `packId` as an update, requires the same pack kind and coherent lineage metadata, shows an entity-level diff, and refuses same-version forks; a new unrelated pack with coincident raw entity IDs coexists under its own namespace without rebinding records or rules.
+
 ### CollectionDefinition
 
-A Git-tracked catalogue collection with stable ID, version, title, description, source metadata, ordered badge references, and optional composite definitions.
+A versioned semantic collection with stable ID, version, title, description, source metadata, ordered badge references, and optional composite definitions. Curated built-ins may originate as Git-tracked catalogue source, but Archive runtime consumes their compiled installed-pack form; Studio may also author a release without making its mutable project a Git authority.
 
 It contains no owner visibility choice.
 
 ### CollectionSettings
 
-A local owner record keyed by owner and collection IDs, containing the collection visibility override and later local presentation preferences.
+A local owner record keyed by owner ID and one qualified `CollectionRef`, containing the collection visibility override and later Archive layout, sorting, or display preferences, never badge-construction properties.
 
 Custom local collections use the same local authority and may reference or overlay catalogue definitions.
 
 ### BadgeDefinition
 
-A catalogue or local definition with stable ID, title, criterion, description, collection relationships, repeatability metadata, prompt recipe, and optional goal rule.
+A published-pack or Archive-local semantic definition with stable ID, title, criterion, description, collection relationships, repeatability metadata, and optional goal rule. Runtime definitions contain no art prompt, candidate, provider, or generate-later field.
 
 Locally created definitions are overlays or forks rather than silent edits to catalogue files.
 
+### ThemePack, BadgePack, and PublishedBadgeVisual
+
+`ThemePack` versions the declarative shapes, geometry, materials, lighting, fallback templates, restrained collection presentation tokens, and renderer compatibility available to related badges.
+
+`BadgePack` is a closed union with exact theme dependencies. A `CatalogueBadgePack` carries versioned collections, composite rules, and one or more `OwnedBadgeEntry` values, each containing a complete packaged `BadgeDefinition` and one `PublishedBadgeVisual`. A `TargetedVisualPack` carries exactly one `TargetedBadgeEntry` containing only `BadgeDefinitionTarget { localDefinitionId, semanticRevision, requestId, requestDigest }` and one published visual; that pack variant is forbidden from carrying definitions, collections, composite rules, title, criterion, description, collection settings, lifecycle, or personal fields.
+
+A published visual has an immutable visual-edition ID and version, exact selected source-art hash, complete render recipe, required map and fallback references, accessible description, minimal sanitized provenance and license metadata, and compatibility bounds. It contains no executable code, remote URL, arbitrary shader, prompt, candidate, provider action, or unresolved selection.
+
+Archive pack admission returns branded installed definitions and `InstalledPublishedVisual` values only after the whole pack and dependency graph validate. Resolution combines a pack definition or an Archive-local semantic definition with one admitted visual into a branded `RenderableBadge`; ordinary Archive gallery, detail, and activation code accept that type rather than raw definitions, unresolved bindings, or untrusted bytes.
+
+### BadgePresentationBinding
+
+An Archive-local binding connects one exact `LocalDefinitionRef` and semantic revision to an installed `PackRef` and visual-edition ID. A missing, incompatible, superseded, or uninstalled target keeps the current definition revision out of the browseable and activatable catalogue. Phase 1 accepts the binding only when a `TargetedVisualPack` explicitly targets that local definition and revision; a reusable visual-template capability requires resolution of the open product decision and a versioned contract rather than silent cross-definition cloning.
+
+### BadgeAuthoringRequest
+
+Archive can explicitly export a versioned `.badgebrief` file for one local semantic definition after previewing its contents. The minimal request payload contains a random request ID, local definition ID, current semantic revision, title, criterion, optional description deliberately included for authoring, and schema version. It contains no visual direction, prompt, owner ID, occurrence, activation, date, note, saying, visibility, collection settings, installed asset, provider data, credential, or direct Archive object reference. `requestDigest` is SHA-256 over the canonical UTF-8 JSON payload with the digest field omitted.
+
+Archive persists the exact canonical issued payload, digest, issue time, and `active`, `superseded`, or `fulfilled` status in an `IssuedAuthoringRequest` repository. Any semantic edit creates a new immutable definition revision and atomically supersedes an active request and invalidates the current presentation binding after warning that existing Studio work and visual fit are stale. A fulfilled request and its exact binding remain historical evidence for the old revision rather than changing status; exporting a replacement request for the new revision requires confirmation. Studio imports a request as untrusted data into a new or existing project and records its immutable request ID, semantic revision, and digest, then authors all visual direction itself.
+
+A returned `TargetedVisualPack` carries the request ID, semantic revision, and digest. Archive compares them with both its durable issued state and the current local definition revision before binding the presentation, without letting the pack overwrite local semantic or personal fields. Installation atomically marks an active request fulfilled with the exact `PackRef`; a replay is idempotent only for that same pack digest, while a stale or superseded request, a different pack for a fulfilled request, or a local-definition target without a matching issued request fails before mutation and must be republished correctly. Editing after fulfillment therefore makes the new revision non-browseable until a new request is fulfilled; it never silently reuses art authored for different semantics.
+
 ### AchievementRecord
 
-Local owner state for a definition: lifecycle state, occurrence references, activation, selected appearance, accepted saying text and source, note, visibility override, and archive metadata.
+Local owner state for one qualified `DefinitionRef`: lifecycle state, pinned semantic revision or immutable semantic snapshot, occurrence references, activation, pinned pack and visual-edition identity, accepted saying text and source, note, visibility override, and archive metadata. Editing a local definition never rewrites the semantics or visual pinned by an existing planned or earned record.
 
-Do not enforce uniqueness on `(ownerId, definitionId)` until repeat-achievement cardinality is decided. The schema must represent either multiple records for a definition or several occurrences under one record without destructive migration.
+Do not enforce uniqueness on `(ownerId, DefinitionRef)` until repeat-achievement cardinality is decided. The schema must represent either multiple records for one qualified definition or several occurrences under one record without destructive migration.
 
 ### Occurrence
 
@@ -90,21 +136,21 @@ Supporting multiple occurrences in storage does not settle how repeated achievem
 
 ### Activation
 
-An immutable first-earned event for one achievement-record instance, with `activatedAt`, triggering occurrence, selected art and appearance snapshot, and source indicating explicit or computed activation.
+An immutable first-earned event for one achievement-record instance, with `activatedAt`, triggering occurrence, pinned pack ID, version and digest, visual-edition ID, source-art hash, render-recipe version, and source indicating explicit or computed activation.
 
 Corrections create audited updates or replacement records rather than silently changing the meaning of the original timestamp.
 
 ### GoalRule
 
-Initially a small versioned `allOf` rule over stable badge-definition IDs.
+Initially a small versioned `allOf` rule. A catalogue manifest uses pack-relative definition IDs that admission resolves only inside the owning pack; the admitted Archive model stores qualified `DefinitionRef` values. Any cross-pack reference requires an exact declared dependency and an explicit `PackDefinitionRef`, while local composite rules always store qualified references.
 
 Do not introduce a general expression language until a real collection needs more than explicit conjunction and a decision records the cost.
 
 ### Appearance
 
-An engine-neutral, serializable render recipe containing crop, position, shape preset, geometry version, thickness, edge profile, relief settings, material preset and parameters, border color, border width, texture-map references, and render version.
+An engine-neutral, serializable render recipe containing crop, position, shape preset, geometry version, thickness, edge profile, relief settings, material preset and parameters, border color, border width, texture-map references, and render version. Studio edits it; a published visual freezes it; Archive renders it read-only.
 
-Appearance is independent of source art so it can be edited without destructive regeneration. Persist no Three.js objects, GPU resources, shaders compiled at runtime, canvas state, or other renderer-specific scene objects.
+Appearance is independent of source art so Studio can edit it without destructive regeneration before publication. Persist no Three.js objects, GPU resources, shaders compiled at runtime, canvas state, or other renderer-specific scene objects.
 
 ### Render recipe semantics
 
@@ -126,17 +172,19 @@ It resets to a versioned studio preset when a viewer opens and is not part of `A
 
 ### ArtAsset
 
-Metadata for a locally stored binary: content hash, MIME type, dimensions, byte size, role, provenance, local Blob reference, created time, and lifecycle state.
+Metadata for a content-addressed binary: content hash, MIME type, dimensions, byte size, role, sanitized provenance, local object reference, created time, and lifecycle state. Studio working assets and Archive installed-pack objects live in separate stores even when hashes match.
 
-### ArtCandidateSet and AssetDerivation
+### StudioProject, ArtCandidateSet, and AssetDerivation
 
-A candidate set records the approved input specification, candidate asset IDs, selection, generation status, and provider metadata without secrets.
+A Studio project is mutable developer state for a theme or badge release: source definitions or references, visual brief, uploaded originals, generation jobs, candidates, derivations, selection, appearance, validation state, and publish history.
 
-A derivation records source asset, operation, parameters, tool or recipe version, and result asset; uploaded originals have no parent and are immutable.
+A candidate set records the approved Studio input specification, candidate asset IDs, selection, generation status, and provider metadata without secrets.
+
+A derivation records source asset, operation, parameters, tool or recipe version, and result asset; uploaded originals have no parent and are immutable. None of these Studio types are exported by `pack-contract` or readable by Archive.
 
 ### SayingDraft
 
-The authoring draft stores the current accepted one-line saying, whether its latest accepted form was generated or directly authored, its update time, and optional generation provenance without secrets.
+The Archive saying draft stores the current accepted one-line saying, whether its latest accepted form was generated or directly authored, its update time, and optional generation provenance without secrets.
 
 A regenerated line is a pending proposal, not an in-place mutation. Accepting a proposal or editing the text is an explicit user action, and neither operation changes the selected art or appearance.
 
@@ -144,60 +192,73 @@ Saving a planned or activated badge copies the accepted text and source into its
 
 ## Authority boundary
 
-| Git-tracked system authority | Local private authority |
-| --- | --- |
-| Application source and tests | Planned and earned state |
-| Schemas and migrations | Occurrence dates and activation timestamps |
-| Catalogue collections and badge definitions | Personal notes, sayings, and visibility choices |
-| Composite goal rules and catalogue versions | Local collection settings, custom definitions, and catalogue overlays |
-| Prompt recipes and versioned geometry, material, lighting, or shape manifests | Uploaded originals and generated candidates |
-| Renderer source and intentionally promoted small visual inputs | Selected art, texture-map derivatives, chosen render recipes, thumbnails, and backups |
+| Git and release authority | Archive-local authority | Studio-local authority |
+| --- | --- | --- |
+| Application, contract, compiler, and renderer source | Planned and earned state | Mutable projects and release candidates |
+| Schemas, migrations, validators, and tests | Occurrences and activation timestamps | Uploads, candidates, and derivation graphs |
+| Catalogue source, composite rules, and pack-index records | Notes, sayings, visibility, collection settings, and issued authoring requests | Prompt and provider provenance without credentials |
+| Prompt recipes and versioned renderer manifests | Local definitions and exact installed pack references | Selected working art and editable appearance recipes |
+| Deliberately promoted small fixtures and source assets | Installed pack objects, Archive caches, and Archive backups | Studio object store, publish history, and Studio backups |
 
 Never serialize personal state into catalogue files as a convenience.
 
 Never store large images as base64 inside JSON, `localStorage`, or Git.
 
+Published `.badgepack` or `.badgetheme` files are immutable distribution artifacts on local disk, release storage, or a future object store, not a bridge between the two private databases. Git may track a small registry entry with version, size, digest, and distribution metadata without tracking a heavy pack binary.
+
 ## Persistence
 
-IndexedDB stores structured records and Blobs through repository interfaces; UI components never open transactions directly.
+Archive IndexedDB stores personal structured records and installed content-addressed objects through Archive repositories. Studio IndexedDB stores projects and its own content-addressed objects through Studio repositories. UI components never open transactions directly, and no package may open the other application's database.
 
 Every persisted shape has an explicit schema version, validated read path, migration path, and corruption error that distinguishes missing, unsupported, and unreadable data.
 
 An unreadable store is not an empty store. Preserve it, stop automatic writes that could destroy recovery evidence, and offer backup or diagnostic guidance.
 
-Writes that affect one user action use a transaction boundary. Activation commits the occurrence, record state, activation timestamp, selected appearance, selected art reference, and derived composite updates before animation begins.
+Writes that affect one user action use a transaction boundary. Archive activation commits the occurrence, record state, activation timestamp, exact pack and visual-edition references, selected saying, and derived composite updates before animation begins.
+
+Archive authoring-request export first persists the exact canonical payload and active lifecycle state, then emits those same bytes; a canceled file save can be retried without minting a different request. A confirmed replacement records the new request and supersedes the prior active request atomically. Targeted-pack installation binds the exact definition revision and marks the matching request fulfilled with its exact `PackRef` in the same transaction. A later semantic edit appends the new revision and removes its current-revision binding atomically while preserving prior fulfilled requests and the semantic and visual pins of existing records.
+
+Studio publish freezes a release candidate, compiles and validates exact bytes without mutating the draft, and first persists a `PreparedRelease` containing its `PackRef`, canonical bytes, source-project revision, and `prepared` status. That transaction also appends `(packId, version) → packDigest` to the Studio `ReservedPackRelease` ledger before any external file handoff, so cancellation, project deletion, or an unobservable browser download cannot permit a same-version fork within that Studio data lineage.
+
+File System Access export advances the history to `file-write-confirmed` only after the writable closes successfully; the browser-download fallback can record only `download-offered`, not disk success. A canceled, failed, or repeated export preserves the prepared release and re-emits the exact same bytes. Studio never claims an atomic destination write it cannot observe and never installs the release into Archive implicitly.
 
 A sequential save queue coalesces safe redundant writes and prevents a slow earlier write from replacing newer state.
 
-Request persistent browser storage where supported, report when the browser refuses it, and keep disk backup visible because browser storage is not the only durable copy.
+Each application uses its own sequential save queue, requests persistent browser storage where supported, reports when the browser refuses it, and keeps its distinct disk backup visible because browser storage is not the only durable copy.
 
 ### Stable origin contract
 
-IndexedDB is scoped to the full browser origin, including port, so the personal archive must run from a canonical stable production-like origin rather than whichever Vite port happens to be free.
+IndexedDB is scoped to the full browser origin, including port, so both durable applications run from canonical strict origins rather than whichever Vite port happens to be free.
 
-The provisional Phase 1 contract is `http://127.0.0.1:4173` on a strict port for the user-owned archive. Development on `http://127.0.0.1:5173` uses disposable fixtures and must not be presented as the durable archive.
+The provisional contract is Archive at `http://127.0.0.1:4173` and Studio at `http://127.0.0.1:4174`. Their disposable development fixtures use `http://127.0.0.1:5173` and `http://127.0.0.1:5174` respectively and must not be presented as durable data.
+
+An optional Studio provider companion binds only to `127.0.0.1:4175`, accepts only the Studio origin, and requires a short-lived unguessable launch capability. A distinct optional Archive saying companion binds only to `127.0.0.1:4176`, accepts only the Archive origin, uses its own launch capability, and exposes only the minimal saying contract. Neither service is a cross-application API or filesystem bridge, and compromise of one capability grants no authority over the other service or database.
 
 If the production origin, protocol, port, installed-PWA scope, local service, or desktop wrapper changes, ship an explicit export, import, or origin-migration path before cutover and test that intact data cannot merely appear lost.
 
-Startup must display an actionable error when the canonical port is unavailable rather than silently selecting another origin.
+Each startup displays an actionable error when its canonical port is unavailable rather than silently selecting another origin. Separate HTML entry points, Vite configs, output directories, CSPs, service-worker scopes, and launch commands prevent one build from masquerading as the other.
 
 ## Media pipeline
 
-Store binaries by content hash to deduplicate identical uploads, generated outputs, and derivatives.
+Studio stores uploads, generated outputs, and derivatives by content hash in its private object store. Archive separately deduplicates admitted published objects by content hash without acquiring access to Studio storage.
 
-Preserve selected art and uploaded originals as authoritative data. Thumbnails, materialized previews, and other caches are disposable only when they can be regenerated from an authoritative asset and versioned parameters.
+Studio preserves uploaded originals and selected working art as authoritative private project data. Publication never copies an uploaded container blindly: Studio applies orientation, decodes the selected pixels, normalizes them to the approved color space and format, strips filenames, EXIF, GPS, XMP, IPTC, embedded thumbnails, opaque text or application chunks, and other ancillary metadata, and creates a content-addressed publish-safe derivative. Explicit license and sanitized provenance live in bounded manifest fields rather than image metadata. The developer previews the outgoing dimensions, format, byte size, and retained manifest metadata before publication.
 
-Validate MIME type, decoded dimensions, byte size, and supported format before admission; do not trust the file extension.
+A published pack preserves only the publish-safe runtime source and required non-reproducible maps. Archive preserves every authoritative object in every installed pack and exact dependency, not only objects currently referenced by planned or earned records; thumbnails and other caches are disposable only when reproducible from those authoritative inputs.
 
-Processing is non-destructive and produces a derivation graph. A failed, canceled, or superseded derivation never changes the selected asset.
+Validate MIME type, decoded dimensions, byte size, supported format, and forbidden ancillary metadata before publication and again during Archive admission; do not trust the file extension or Studio's earlier validation.
 
-Candidate cleanup operates on explicit asset lifecycle state and reference counts, not directory age or broad folder deletion.
+Studio processing is non-destructive and produces a derivation graph. A failed, canceled, or superseded derivation never changes the Studio selection.
+
+Studio candidate cleanup operates on explicit asset lifecycle state and reference counts, not directory age or broad folder deletion. Archive pack uninstall refuses or defers removal while any personal record pins the version or object.
 
 Selected two-dimensional art maps onto the 3D front surface through versioned UV and crop parameters. Normal, height, roughness, mask, and other maps derived for relief or material response reference the immutable source and remain regenerable when their recipe is deterministic.
 
 ## 3D rendering boundary
 
 The renderer consumes a serializable appearance recipe, resolved local asset URLs, a studio-light preset, ephemeral viewer state, and capability information. It returns pixels and interaction events without changing domain records or owning user data.
+
+Archive rendering accepts only a branded resolved `RenderableBadge` and exposes camera, zoom, and inspection-light commands without appearance mutation. Studio rendering accepts a validated Studio preview type and exposes construction controls; both use the same recipe semantics and renderer adapters without sharing persistence.
 
 Use parametric geometry for ordinary circle, square, rectangle, and shield bodies rather than storing a unique heavy mesh per badge.
 
@@ -221,41 +282,63 @@ Recover from WebGL context loss by disposing the failed session and rebuilding r
 
 The CPU fallback is reproducible from the backed-up recipe, source assets, and Git-tracked versioned templates, so its outputs are disposable caches rather than required backup payload. Unsupported old template versions are a migration error, not permission to reinterpret or flatten the badge silently.
 
-Gallery thumbnails and GPU snapshots use a versioned `RenderFingerprint` covering adapter and build, geometry, material, shader, and template manifest hashes, source and derivative hashes, environment or studio asset hash, tone mapping, exposure, output color space, quality tier, actual pixel dimensions, device-pixel-ratio tier, and relevant capabilities. Badge Atelier and detail views remain live 3D surfaces.
+Gallery thumbnails and GPU snapshots use a versioned `RenderFingerprint` covering adapter and build, geometry, material, shader, and template manifest hashes, source and derivative hashes, environment or studio asset hash, tone mapping, exposure, output color space, quality tier, actual pixel dimensions, device-pixel-ratio tier, and relevant capabilities. Badge Studio construction and Archive detail views remain live 3D surfaces.
 
 A matching fingerprint means cached inputs are still valid, not that different GPUs or drivers produce byte-identical pixels. Canonical visual regression uses a pinned capture environment with tolerance-based comparison; cross-device review checks geometry, crop, orientation, material, and interaction invariants rather than exact pixels.
 
 ## Generation boundaries
 
-The art-generation application port accepts a normalized art brief, approved source asset references, candidate count, appearance context when relevant, and cancellation signal.
+The Studio art-generation application port accepts a normalized art brief, approved Studio source-asset references, candidate count, appearance context when relevant, request identity, and cancellation signal.
 
-It returns candidate descriptors and provenance without deciding selection or activation.
+It returns untrusted candidate descriptors and provenance without deciding selection, publication, installation, or activation.
 
-The art brief and candidate role require source artwork rather than a composed badge render: no physical rim, thickness, bevel, reverse face, cast shadow, presentation background, or badge-level material and studio lighting. Candidate comparison applies the current live 3D recipe uniformly, and a composed preview is always a derivative rather than the authoritative source asset.
+The art brief and candidate role require source artwork rather than a composed badge render: no physical rim, thickness, bevel, reverse face, cast shadow, presentation background, or badge-level material and studio lighting. Studio candidate comparison applies the current live 3D recipe uniformly, and a composed preview is always a derivative rather than the authoritative source asset.
 
-A separate saying-generation port accepts only the badge title, criterion, optional saying-specific direction, request ID, and cancellation signal, then returns a proposed line and provenance. Adding description or any other field requires a new explicit outbound-data decision and disclosure surface.
+A separate Archive saying-generation port accepts only the badge title, criterion, optional saying-specific direction, request ID, and cancellation signal, then returns a proposed line and provenance. Adding description or any other field requires a new explicit outbound-data decision and disclosure surface; the port cannot import Studio or art-generation code.
 
-The application keeps the accepted saying and pending proposal separate. Retrying a saying request never invokes art generation, changes the selected asset, or overwrites accepted text; only explicit acceptance or direct editing updates the draft. Art generation, upload, processing, selection, and appearance edits likewise preserve both saying values.
+Archive keeps the accepted saying and pending proposal separate. Retrying a saying request never invokes art generation, changes the published visual binding, or overwrites accepted text; only explicit acceptance or direct editing updates the draft. Studio cannot read either saying value, while installing or updating a pack in Archive preserves both without mutation.
 
 The saying controller assigns a monotonically increasing request ID and applies results only from the latest active request. Starting a retry retains the existing pending proposal; stale, canceled, invalid, and failed results are ignored or reported without replacing it.
 
 Normalize proposals and direct input by trimming outer whitespace and collapsing internal whitespace, including line breaks, to one space. Count Unicode grapheme clusters through one shared domain validator, reject empty values and values over the provisional 120-grapheme limit, and never truncate stored or displayed text silently.
 
-Tests and Phase 1 use deterministic fakes with fixture art candidates and saying proposals so product work does not spend model budget or require network access.
+Tests use separate deterministic Studio art candidates and Archive saying proposals so product work does not spend model budget or require network access.
 
-Live adapters disclose the destination and exact outbound fields before uploaded media or private badge text leaves the device, exclude description, notes, dates, occurrence data, accepted sayings, visibility, art, and unrelated draft fields from saying requests by default, support cancellation, and keep provider credentials in an environment or OS credential boundary rather than application data, backups, prompts, or Git.
+Live Studio adapters disclose the destination and exact outbound visual fields before media leaves the device. Live Archive saying adapters disclose the destination and exact minimal text fields and exclude description, notes, dates, occurrence data, accepted sayings, visibility, art, and unrelated draft fields by default. Both support cancellation. Privileged Studio credentials remain in the Studio companion, OS credential boundary, or later wrapper; privileged saying credentials remain independently in the Archive saying companion, OS credential boundary, or later wrapper. Neither credential enters browser code, application data, backups, packs, prompts, or Git, and the feature remains manual or fixture-backed when no safe authorization path exists.
 
-Pin a product-called model only in the adapter's repo-owned configuration when live integration is implemented; do not scatter model IDs through UI or domain code.
+Pin a product-called model only in its owning adapter's repo-owned configuration when live integration is implemented; do not scatter model IDs through UI or domain code. Archive bundle-graph and blocked-network tests prove no visual provider, prompt recipe, provider SDK, or art endpoint enters the everyday build.
+
+## Pack publication and admission
+
+`pack-contract` defines bounded `.badgetheme` and `.badgepack` containers with `ThemePack`, `CatalogueBadgePack`, and `TargetedVisualPack` kinds. The canonical manifest includes pack ID, semantic version, schema version, minimum Archive version, exact dependency `PackRef` values, ordered object table, compatibility data, licenses, sanitized provenance, and the fields allowed by that closed pack variant. `PackRef` is exactly `{ packId, version, packDigest }`.
+
+Pack objects are embedded binary entries addressed by SHA-256, never base64 or remote URLs. Packs contain no JavaScript, HTML, executable SVG, arbitrary shader, provider instruction, filesystem path, network location, candidate set, pending proposal, or generate-later placeholder.
+
+The canonical container is an uncompressed ZIP with normalized forward-slash NFC entry names ordered by their UTF-8 bytes, fixed `1980-01-01T00:00:00` entry timestamps, fixed attributes, no comments, no extra fields, and no encryption. `manifest.json` is UTF-8 without a byte-order mark and uses the repo-owned canonical JSON serializer covered by golden byte vectors; binary entries appear at `objects/<lowercase-sha256>`. `packDigest` is SHA-256 over the complete container bytes and is deliberately not stored inside the container it identifies. Object hashes remain inside the manifest.
+
+The Studio-only compiler transforms a frozen release candidate into those canonical bytes and must produce byte-identical output across repeated supported-platform runs. Compilation success is not trust: Archive stages the complete file, computes its pack digest, and applies independent container, schema, dependency, object-hash, MIME, forbidden-metadata, decoded-dimension, per-object, entry-count, total-size, archive-expansion, cycle, duplicate, traversal, and compatibility validation. It previews the plan and then installs the pack and any explicitly staged exact dependencies atomically after confirmation.
+
+Every runtime-visible badge must resolve exactly one selected source-art object, complete render recipe, accessible description, fallback-compatible inputs, and exact theme dependency. Missing or corrupt data creates a damaged-pack repair state and never exposes a generate button.
+
+A `TargetedVisualPack` must include the matching authoring-request ID, local definition ID, semantic revision, and digest and may contain no semantic or collection fields. Admission compares those values with durable issued-request state and the current `LocalDefinitionRef`: the pack cannot replace the local title, criterion, description, lifecycle, or any personal field. An ID collision without an active matching request fails before installation and reports whether Studio must republish with the original request or a new definition ID.
+
+Installed versions are immutable by `PackRef`. Installing the same bytes is idempotent, while reusing `(packId, version)` with a different digest is a rejected same-version fork; a changed artifact must increment its version. Archive appends every admitted mapping to an immutable `SeenPackRelease` ledger before installation, and Studio uses its independent `ReservedPackRelease` ledger before export. These small ledgers survive uninstall and project deletion and are unioned, never rolled back, during restore, with any conflicting mapping rejected before mutation. Updates coexist with versions pinned by planned or earned records until an explicit reviewed migration creates a new reference, and uninstall cannot orphan a personal record or delete its required objects.
+
+Each pack is self-contained for the objects in its manifest and may depend only on exact other self-contained packs through `PackRef`; there is no loose asset sidecar. Git contains pack schemas, compiler and admission code, small synthetic source fixtures, source metadata, built-in manifest source, and optional small registry records containing version, byte size, and digest. Heavy curated pack files ship on local disk or release storage outside ordinary Git until an explicitly chosen object store exists.
 
 ## Catalogue behavior
 
-Catalogues are versioned, read-mostly inputs. Personal overlays reference stable IDs and survive catalogue updates.
+Catalogues are versioned, read-mostly inputs admitted from built-in or explicitly imported published packs. Every starter definition, suggested badge, and composite arrives with one complete published visual; there is no generate-on-first-view or generate-on-activation fallback.
 
-Composite activation records the rule version, qualifying badge IDs, and catalogue edition used to reach eligibility.
+Personal overlays reference qualified `DefinitionRef` and `CollectionRef` values and survive catalogue updates without raw-ID lookup. A locally created definition must bind to an already installed published visual edition, or remain outside the browseable and activatable catalogue until an explicit Studio-authored pack is installed.
 
-Renames and retirements preserve stable IDs. Removing a tracked definition never orphans or deletes a personal record silently.
+Composite eligibility resolves a prepublished composite visual from the installed pack. Reaching the rule threshold never invokes Studio, an art provider, or an appearance editor.
 
-The exact historical behavior when a catalogue expands remains a product decision; storage preserves enough provenance to show both historical completion and current-edition progress.
+Composite activation records the rule version, qualifying `DefinitionRef` values, exact qualifying record IDs, and catalogue `PackRef` used to reach eligibility.
+
+Renames and retirements preserve stable qualified identity. Removing a tracked definition never orphans or deletes a personal record silently.
+
+The exact historical behavior when a catalogue expands remains a product decision; storage preserves enough provenance to show both historical completion and current-edition progress. Catalogue and visual updates coexist with immutable versions pinned by planned and earned records until an explicit reviewed migration says otherwise.
 
 ## Visibility
 
@@ -271,36 +354,44 @@ Notes remain separately private by default, and a future presentation adapter mu
 
 ## Backup and restore
 
-Export a versioned portable bundle containing a consistent database snapshot or canonical record export, local definitions, uploaded originals, selected artwork, chosen engine-neutral 3D render recipes, required non-reproducible derivatives, a manifest, schema and catalogue versions, and checksums.
+Archive and Studio have distinct, visibly labeled `.badgearchive` and `.badgestudio` backup formats. Neither application accepts the other's backup as a partial import, and a published pack is a transfer artifact rather than a substitute for either backup.
 
-Use the native file picker when available and a browser download fallback elsewhere.
+An Archive backup is self-contained for the personal archive: it contains a consistent canonical record export, profile and collection settings, local definitions, all issued authoring-request payloads and lifecycle state, the complete `SeenPackRelease` ledger, every installed pack manifest, every authoritative object and exact dependency for every installed pack, accepted sayings, notes, dates, activation data, visibility choices, schema and catalogue versions, a manifest, and checksums. It excludes Studio projects, prompts, uploads, rejected candidates, raw provider responses, and credentials.
 
-Restore first parses into an isolated staging area, validates checksums and references, migrates supported versions, reports the full plan, and then replaces current state atomically after explicit confirmation.
+A Studio backup contains its consistent project database, uploaded-original bytes, every retained candidate object, the derivation graph and every selected or non-reproducible derivative object it references, working selections, editable appearance recipes, the complete `ReservedPackRelease` ledger, publish history and exact prepared-release bytes, sanitized provenance, a manifest, schema versions, and checksums. It contains no Archive profile, occurrence, activation, note, saying, or visibility data.
+
+Each application uses the native file picker when available and a browser download fallback elsewhere. Reproducible thumbnails and renderer caches are omitted from both formats.
+
+Restore first checks the format discriminator, parses into an isolated staging area, validates checksums and references, migrates supported versions, and unions the incoming and current immutable release ledgers. A conflicting digest for an already seen or reserved `(packId, version)` aborts before mutation. The application reports the full plan and, after explicit confirmation, atomically replaces mutable state while retaining that monotonic ledger union.
 
 Never partially merge a corrupt archive into healthy state.
 
 ## Future multi-user migration
 
-Stable owner and entity IDs, catalogue-versus-personal separation, nullable visibility overrides, and provider-independent asset references keep the model migratable.
+Stable owner and entity IDs, catalogue-versus-personal separation, nullable visibility overrides, immutable pack references, and provider-independent asset references keep the model migratable.
 
-A future server can implement the existing repositories and generation ports without moving product rules into React or changing the meaning of activation.
+A future server can implement Archive repositories and the saying-proposal port without moving product rules into React or changing the meaning of activation. Studio authoring, pack publication, pack distribution, and any art-generation service remain separate developer and release concerns rather than user-account features by default.
 
 Accounts, remote object storage, permissions, and sync conflict behavior are new architecture work and are not to be prebuilt into Phase 1 screens.
 
 ## Test and observability contracts
 
-Pure domain tests cover lifecycle transitions, composite eligibility, visibility precedence, stable ID behavior, date-range validation, render-recipe validation, and viewer command clamping without a browser environment.
+Pure Archive domain tests cover lifecycle transitions, composite eligibility, visibility precedence, qualified identity, two unrelated packs with coincident raw definition and collection IDs across settings, records, overlays, and progress, date-range validation, pinned visual editions, saying proposals, and viewer command clamping without a browser environment. Pure Studio domain tests separately cover candidate and derivation state, non-destructive selection, appearance edits, release freezing, and publish-state transitions.
 
 Golden recipe tests load asymmetric front and back fixtures through every adapter and assert handedness, winding, UV orientation, crop, color-space declarations, normal direction, alpha convention, and numeric boundaries before visual comparison.
 
-Persistence tests use an isolated IndexedDB implementation and cover every migration, corrupt-row refusal, transaction atomicity, asset deduplication, and backup and restore round trip.
+Pack contract tests compile the same frozen input repeatedly on every supported platform and compare exact golden container bytes and digests. They round-trip canonical fixtures and attack admission with wrong object or pack digests, noncanonical JSON or ZIP metadata, same-version forks, unknown fields, illegal catalogue-versus-target variant mixtures, missing dependencies, duplicate entries, cycles, traversal paths, decompression bombs, hostile dimensions, mislabeled MIME types, EXIF or GPS payloads, opaque ancillary chunks, executable formats, remote references, arbitrary shaders, and unresolved visuals. Lineage fixtures prove same-pack updates retain qualified definition and collection identity, unrelated packs with coincident raw IDs cannot rebind each other, and composite references cannot escape their allowed namespace or undeclared dependency. A Studio compiler success never substitutes for an independent Archive admission test.
 
-Component tests cover candidate comparison, uploads, non-destructive selection, latest-request saying concurrency, retry failure and cancellation, saying normalization and length validation, proposal acceptance, direct saying edits, reciprocal art and saying isolation, appearance controls, engagement and scroll-release states, pointer cancellation and mode changes, normalized wheel deltas, object-versus-light interaction mode, keyboard increments, reset behavior, activation confirmation, focus order, and reduced motion.
+Persistence tests use isolated IndexedDB implementations and cover every Archive and Studio migration, corrupt-row refusal, transaction atomicity, qualified-reference round trips, two-pack raw-ID collisions, asset deduplication, and the absence of cross-database access. Authoring-request tests cover export, exact re-export after cancellation or reload, semantic edit after export, automatic stale-request supersession, edit after fulfillment, edit after planning or activation, preservation of prior semantic and visual pins, restore, active-request fulfillment in the pack-install transaction, same-pack idempotency, different-pack replay refusal, and ID collision refusal. Studio release tests prove preparation reserves an exact version and bytes before handoff, failed or canceled file saves re-export those bytes, file-handle close and browser download produce distinct truthful statuses, and no path creates a same-version fork. Ledger tests cover uninstall or project deletion followed by conflicting reuse, exact reinstall, older-backup restore merged with newer local history, clean-profile restore, and conflict refusal. Backup tests restore an entirely unplanned installed pack with every dependency and a Studio project with the actual selected, non-reproducible derivative, and prepared-release bytes; cross-format restore is refused.
+
+Archive component tests cover gallery states backed only by admitted visuals, damaged-pack errors without generate controls, latest-request saying concurrency, retry failure and cancellation, saying normalization and length validation, proposal acceptance, direct saying edits, engagement and scroll-release states, pointer cancellation and mode changes, normalized wheel deltas, object-versus-light interaction mode, keyboard increments, reset behavior, activation confirmation, focus order, and reduced motion. Studio component tests separately cover candidate comparison, uploads, non-destructive processing and selection, appearance controls, validation, frozen publication, and preservation of drafts after failed or canceled work.
 
 An instrumented renderer stress test runs at least `50` mount → recipe replacement → context loss → restore and rebuild → render → dispose cycles and proves session, animation-frame, listener, observer, pointer-capture, loader, object-URL, decoded-image, shared-reference, geometry, material, texture, render-target, environment-target, and context counts return to their recorded baseline after every completed cycle. A separate `50`-cycle forced-initialization-failure branch proves fallback creation and disposal without entering restoration.
 
-Playwright covers the Yosemite acceptance journey including real pointer rotation, wheel zoom and page-scroll release, light adjustment, keyboard equivalents, context-loss recovery, a forced WebGL-initialization failure on first run with an empty cache, the same failure after clean restore with front, edge, and back fallback views, saying retry and direct editing, provider disclosure, multiline paste, over-limit validation, narrow-layout wrapping, art and saying isolation, upload and processing failure, activation reload safety, composite completion, and restore into a clean profile.
+Archive Playwright covers installation of a deterministic prepublished pack and the Yosemite acceptance journey with no Studio controls: real pointer rotation, wheel zoom and page-scroll release, light adjustment, keyboard equivalents, context-loss recovery, forced first-run and post-restore WebGL initialization failure, front, edge, and back fallback views, saying retry and direct editing, saying-provider disclosure, multiline paste, over-limit validation, narrow-layout wrapping, activation reload safety, composite completion, and Archive restore into a clean profile. Network interception proves browsing, inspection, and activation never request visual generation.
 
-Visual evidence compares the chosen references with implementation screenshots at matched state and at least two desktop-like viewports, captures front, oblique, edge, and back views across representative materials and light positions, includes a short rotation, zoom, and light-manipulation recording, then sweeps all primary surfaces for unrelated defects.
+Studio Playwright separately covers three genuinely distinct fixtures, explicit import of a minimal `.badgebrief`, upload and processing success or failure, publish-safe metadata stripping and preview, crop and appearance construction, cancellation, validation, immutable publication, Studio restore, and explicit installation of the resulting target pack into a clean or restored Archive. Boundary tests prove request-field minimization, supersession and replay behavior, conflict refusal, provider-contract dependency direction, companion capability and origin isolation, separate origins, service-worker scopes, databases, backups, and build outputs, plus Archive dependency and bundle graphs that reject Studio, pack compiler, art prompt, art provider, candidate, upload-processing, and appearance-editor modules.
 
-Actionable structured debug output should expose current route, selected collection and badge IDs, lifecycle state, asset references, pending write or generation status, and effective visibility without exposing notes, credentials, or raw personal media.
+Visual evidence compares the chosen references with implementation screenshots at matched state and at least two desktop-like viewports. Archive evidence captures the gallery, detail, activation, damaged-pack, and fallback states without authoring controls; Studio evidence captures candidates, upload processing, construction, validation, and publication. Both capture front, oblique, edge, and back views across representative materials and light positions and include a short rotation, zoom, and light-manipulation recording before a sweep for unrelated defects.
+
+Actionable Archive debug output may expose current route, selected collection and badge IDs, lifecycle state, admitted pack references, pending write or saying status, and effective visibility without exposing notes, credentials, raw personal media, Studio project IDs, candidates, prompts, or art-provider state. Studio debug output is separate and may expose project, candidate, derivation, validation, and publish status without credentials or raw media bytes.
