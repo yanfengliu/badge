@@ -1,17 +1,12 @@
+import path from "node:path";
 import process from "node:process";
 
+import { readLegacyOriginPair, startLegacyRecoveryWithLock } from "./local-legacy-recovery.mjs";
 import { listenForTerminalStop } from "./local-launcher.mjs";
-import { createCanonicalRuntimeTarget } from "./local-runtime-target.mjs";
-import { startLocalSite } from "./local-site-runner.mjs";
-
-function printUrls(instance, message) {
-  console.log(`\n${message}`);
-  console.log(`  Archive  ${instance.urls.archive}`);
-  console.log(`  Studio   ${instance.urls.studio}\n`);
-}
 
 async function run() {
-  const runtimeTarget = createCanonicalRuntimeTarget();
+  const configPath = path.resolve(".badge-local/ports.json");
+  const pair = await readLegacyOriginPair(configPath);
   let instance;
   let requestedExitCode = 0;
   let stopping = false;
@@ -34,17 +29,18 @@ async function run() {
   disposeTerminal = listenForTerminalStop(process.stdin, requestStop);
 
   try {
-    instance = await startLocalSite({ runtimeTarget });
-    if (instance.action === "reuse") {
-      printUrls(instance, "Badge is already running. Reusing its stable local site:");
-      return;
-    }
-    if (instance.reason === "fallback") {
-      console.log(
-        `\nPreferred port 4173 is occupied by other software. Badge selected ${instance.port} and will remember it. Existing browser data at an older Badge origin remains there; restore a backup before treating a new origin as authoritative.`,
-      );
-    }
-    printUrls(instance, "Badge is ready on one stable local site:");
+    instance = await startLegacyRecoveryWithLock({
+      repositoryRoot: process.cwd(),
+      pair,
+      startupLockPath: path.resolve(".badge-local/legacy-recovery.lock"),
+    });
+    console.log("\nBadge legacy recovery is serving the exact preserved browser-data origins:");
+    console.log(`  Archive  ${instance.urls.archive}`);
+    console.log(`  Studio   ${instance.urls.studio}`);
+    console.log(
+      "\nThis is recovery mode, not the new one-site address. Archive can export a backup. Studio backup is not implemented yet, so keep .badge-local/ports.json and use this command for Studio work that still matters.\n",
+    );
+    if (instance.ownedApps.length === 0) return;
     if (!stopping) await stopRequested;
   } finally {
     disposeTerminal();
@@ -59,6 +55,8 @@ async function run() {
 try {
   await run();
 } catch (error) {
-  console.error(`\nBadge did not start.\n${error instanceof Error ? error.message : String(error)}\n`);
+  console.error(
+    `\nBadge legacy recovery did not start.\n${error instanceof Error ? error.message : String(error)}\n`,
+  );
   process.exitCode = 1;
 }

@@ -1,5 +1,6 @@
 # Devlog Summary
 
+- 2026-08-23: Unified Archive and Studio under one remembered local site at `/` and `/studio/`, and isolated launcher verification from canonical `.badge-local` state.
 - 2026-08-23: Made local startup idempotent and collision-tolerant with Badge-instance reuse, one remembered free Archive and Studio port pair, dynamic companion links, and origin-continuity refusal after selection.
 - 2026-08-23: Shipped the first runnable local Archive and developer-only Studio slice with four crafted badges, qualified-identity and state-preserving recovery, bounded non-destructive image work, dependency-closed pack-and-theme publication, and live 3D or static fallback inspection.
 - 2026-08-22: Split visual authoring into a developer-only Badge Studio and made the everyday Archive consume only validated, immutable packs whose artwork and 3D presentation are already decided.

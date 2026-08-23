@@ -132,7 +132,9 @@ The archive has no art-generation, upload, reprocessing, candidate, prompt, crop
 
 ## Badge Studio developer mode
 
-Badge Studio is a dedicated developer and curator application, not a route, drawer, advanced panel, or hidden button inside the everyday archive.
+Badge Studio is a dedicated developer and curator application mounted at `/studio/` on the same remembered local site as Archive at `/`; it is not a drawer, advanced panel, or hidden control inside the everyday Archive application.
+
+The two routes retain separately built entry points, navigation, versioned IndexedDB database names, repositories, and backup formats. A link may move between `/` and `/studio/` without changing origin, but Archive does not import Studio code or open the Studio database, and Studio does not open the Archive database.
 
 A Studio project starts from a theme, packaged catalogue definition, explicitly imported minimal Archive authoring request, or blank developer draft. The request is previewed before export and validated as untrusted on import; Studio never opens the Archive database. A project contains visual direction and publishing metadata, never owner identity, personal activation, dates, occurrences, notes, sayings, visibility choices, or collection settings.
 
@@ -280,7 +282,7 @@ Activate the last required park → commit that activation → update the compos
 
 ## Explicit open decisions
 
-Future agents must resolve or deliberately defer these rather than inventing an answer:
+Future agents must resolve or deliberately defer the open items below rather than inventing an answer. Resolved item 17 remains numbered here so references elsewhere do not silently change meaning.
 
 1. Confirm one badge with multiple occurrences versus separate badge copies for revisits and rereads.
 2. Decide whether the Studio browser entry point remains sufficient or needs a local companion service or desktop wrapper for art generation, credentials, disk access, and very large workspaces; this must not pull provider code into the archive build.
@@ -298,6 +300,6 @@ Future agents must resolve or deliberately defer these rather than inventing an 
 14. Select the 3D renderer after the Phase 0 capability and performance spike; keep persisted recipes independent of that choice.
 15. Choose the distribution channel and update policy for published packs whose required assets are too large for ordinary Git.
 16. Decide whether several local definitions may intentionally reuse one published presentation or whether every custom definition must receive a unique Studio-published design.
-17. Confirm how the developer enters Badge Studio: a separate local launcher or URL is the current architecture recommendation, while any Archive link, deep link, or access guard remains an explicit product choice and may not collapse the builds or private stores.
+17. **Resolved by the owner:** Badge is one local website with Archive at `/` and Badge Studio at `/studio/`; navigation may link between them on the same remembered origin, while their builds, private databases, repositories, and backup formats remain separate. A preserved two-origin install remains reachable only through explicit exact-pair recovery until both applications can migrate safely.
 18. Confirm the live saying credential boundary: the current architecture recommends a separately capability-scoped Archive saying companion when browser-safe authorization is unavailable, with manual writing and deterministic fixtures remaining usable without it.
 19. Confirm where a completely custom achievement begins: the current recommendation creates its semantic draft in Archive and exports a privacy-scrubbed `.badgebrief` to Studio, while the alternative begins the entire definition and visual project in Studio before publication.

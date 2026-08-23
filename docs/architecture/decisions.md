@@ -2,6 +2,20 @@
 
 Append decisions newest first. Never rewrite history; add a superseding entry that links to the decision it replaces.
 
+## 2026-08-23 — D-033: Serve Archive and Studio as one remembered local site
+
+**Status:** Implemented for the local launcher and route host; supersedes D-032's adjacent-pair topology and D-014's separate-browser-origin requirement while retaining D-009's data-continuity rule and the Archive–Studio build, persistence, backup, and publication boundaries.
+
+The owner confirmed one local website rather than two port-addressed websites. Archive is mounted at `/`, Badge Studio is mounted at `/studio/`, and both independently built applications are served by one strict loopback listener on one remembered browser origin.
+
+`npm start` probes both route identities before launching. A complete Badge site is reused; a free remembered port starts the whole site; and an unrelated, unidentified, incomplete, or route-swapped listener at the remembered port produces actionable refusal rather than relocation or a second partial process.
+
+When no machine-local record exists, Badge prefers `http://127.0.0.1:4173`; if unrelated software owns it, the launcher selects one free non-reserved port beginning at `4180` and exclusively records that port in ignored `.badge-local/site.json`. The legacy Studio port `4174`, optional companion ports `4175` and `4176`, and disposable fixture ports `5173` and `5174` are excluded from fallback selection. Later starts reuse the recorded origin because IndexedDB includes the port; deliberate relocation still requires explicit backup or migration. The superseded `.badge-local/ports.json` remains preserved legacy evidence, and `npm run recover:legacy` reopens its exact pair without creating or changing the one-site record so old-origin Studio data remains reachable until Studio backup exists.
+
+Sharing an origin does not merge the applications or make origin separation a security claim. Archive and Studio retain distinct entry points, build outputs, dependency graphs, versioned IndexedDB database names, repositories, navigation surfaces, service-worker scopes, content-security policy surfaces, and backup formats; neither build imports or opens the other's private implementation or database, and their only content handoffs remain minimal authoring requests and independently validated immutable packs.
+
+Launcher lifecycle and browser verification use branded task-owned state targets confined to ignored `tmp/` paths rather than the canonical `.badge-local` record. Gates prove verification leaves an absent or legitimate pre-existing canonical record untouched on success and failure; no gate treats the canonical record's presence as task residue. Legacy recovery fails closed when its pair record cannot be inspected, accepts only the adjacent non-reserved loopback origins the prior launcher could have emitted, refuses a one-site host masquerading as a legacy Archive, injects exact cross-origin companion links, and serializes pair startup before it reuses or starts either application. It attempts every owned close and surfaces cleanup failures rather than silently discarding or reinterpreting the pair as permission to expose an empty origin.
+
 ## 2026-08-23 — D-032: Select a free durable origin pair once and make local startup idempotent
 
 **Status:** Implemented for the local launcher; supersedes D-009's fixed canonical-port requirement without weakening its data-continuity rule.

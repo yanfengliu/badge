@@ -3,25 +3,37 @@ import { describe, expect, it } from "vitest";
 import { companionAppHref } from "./local-origins.js";
 
 describe("Archive and Studio origin navigation", () => {
-  it("keeps disposable development links inside the disposable port pair", () => {
-    expect(companionAppHref("http://127.0.0.1:5173/?fallback", "studio")).toBe("http://127.0.0.1:5174/");
-    expect(companionAppHref("http://127.0.0.1:5174/project", "archive")).toBe("http://127.0.0.1:5173/");
+  it("links from Archive to Studio on the same origin", () => {
+    expect(companionAppHref("http://127.0.0.1:4173/?fallback", "studio")).toBe(
+      "http://127.0.0.1:4173/studio/",
+    );
   });
 
-  it("keeps durable links inside the durable port pair", () => {
-    expect(companionAppHref("http://127.0.0.1:4173/", "studio")).toBe("http://127.0.0.1:4174/");
-    expect(companionAppHref("http://127.0.0.1:4174/", "archive")).toBe("http://127.0.0.1:4173/");
+  it("links from a Studio screen back to Archive on the same origin", () => {
+    expect(companionAppHref("http://127.0.0.1:4173/studio/project?draft=1#candidate", "archive")).toBe(
+      "http://127.0.0.1:4173/",
+    );
   });
 
-  it("keeps launcher-selected links inside an arbitrary adjacent port pair", () => {
-    expect(companionAppHref("http://127.0.0.1:4180/?launch=fallback", "studio")).toBe(
+  it("works on any launcher-selected origin without assuming a companion port", () => {
+    expect(companionAppHref("http://localhost:53127/?launch=fallback", "studio")).toBe(
+      "http://localhost:53127/studio/",
+    );
+    expect(companionAppHref("http://localhost:53127/studio/", "archive")).toBe("http://localhost:53127/");
+  });
+
+  it("can reopen the exact separate companion origin during legacy recovery", () => {
+    expect(companionAppHref("http://127.0.0.1:4180/", "studio", "http://127.0.0.1:4181/")).toBe(
       "http://127.0.0.1:4181/",
     );
-    expect(companionAppHref("http://127.0.0.1:4181/project", "archive")).toBe("http://127.0.0.1:4180/");
+    expect(companionAppHref("http://127.0.0.1:4181/", "archive", "http://127.0.0.1:4180/")).toBe(
+      "http://127.0.0.1:4180/",
+    );
   });
 
-  it("supports the highest valid adjacent port pair", () => {
-    expect(companionAppHref("http://127.0.0.1:65534/", "studio")).toBe("http://127.0.0.1:65535/");
-    expect(companionAppHref("http://127.0.0.1:65535/", "archive")).toBe("http://127.0.0.1:65534/");
+  it("clears source search and hash fragments", () => {
+    expect(companionAppHref("https://badge.test/studio/?draft=one#candidate", "studio")).toBe(
+      "https://badge.test/studio/",
+    );
   });
 });

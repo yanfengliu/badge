@@ -1,5 +1,15 @@
 # Defect Register
 
+## 2026-08-23 — Verification left a remembered port that blocked the user's first real start
+
+**Symptom:** Running `npm start` reported, “Badge remembers Archive at `http://127.0.0.1:4173`, but that port is occupied by another process,” instead of selecting an unused port for the user's first real launch.
+
+**Investigation:** `.badge-local/ports.json` recorded Archive at `4173` and Studio at `4174`; port `4173` served an unrelated AoE2 prototype and `4174` was free. The record had been created by the preceding launcher verification and intentionally retained even though it was ignored task output, so the launcher's correct remembered-origin protection treated verification state as the user's durable choice. The incident also clarified the owner's intended topology: one local website with Archive at `/` and Studio at `/studio/`, not separate websites on adjacent ports.
+
+**Root cause:** Lifecycle and browser verification exercised the production launcher against the canonical machine-local state path, then cleanup confused an ignored task-created address record with user-owned runtime state. The launcher API did not make disposable verification state structurally distinct from canonical interactive state, and the two-listener topology multiplied the state that could leak.
+
+**Standing gate:** Launcher lifecycle and browser verification accept only branded state targets confined to ignored `tmp/local-startup/` paths and never use a generic command-line or environment override for the canonical `.badge-local/site.json`. Contract controls cover absent and byte-exact sentinel canonical records on success and injected failure, while a source-boundary check proves executable verification can call only the verification-target factory and never references `.badge-local`. One-site launcher and route tests cover first-use foreign-port fallback, remembered-port reuse and refusal, Archive-only identity at `/`, Studio-only identity and document deep links under `/studio/`, ambiguous-marker refusal, `/studio` canonicalization, same-origin navigation, second-launch reuse, isolated listener cleanup, unreadable-legacy-record refusal, surfaced cleanup failure, and terminal stop-listener disposal. Legacy-recovery contracts preserve the pair record, enforce the prior port validator, refuse a unified host at the old Archive origin, inject exact pair-aware links, serialize competing startup before inspection, remove an owned partial lock after injected publication failure, reuse or start only the exact old origins, close partial starts, surface owned-listener cleanup failure, and keep the recovery command away from the new site record. A headless browser control follows Archive `4180` → Studio `4181` → Archive `4180` with no console errors; no gate requires a legitimate canonical record to be absent.
+
 ## 2026-08-23 — `npm start` failed when Badge was already using ports 4173 and 4174
 
 **Symptom:** Running `npm start` reported that ports `4173` and `4174` were already in use instead of opening or identifying a usable Archive and Studio.

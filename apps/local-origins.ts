@@ -1,20 +1,18 @@
 export type BadgeApp = "archive" | "studio";
 
-export function companionAppHref(currentHref: string, target: BadgeApp): string {
-  const current = new URL(currentHref);
-  const currentPort = Number(current.port);
-  const companionPort = target === "archive" ? currentPort - 1 : currentPort + 1;
-  if (
-    !Number.isSafeInteger(currentPort) ||
-    currentPort < 1024 ||
-    currentPort > 65_535 ||
-    companionPort < 1024 ||
-    companionPort > 65_535
-  ) {
-    throw new Error(`Badge cannot locate its companion from local port ${current.port || "(default)"}.`);
-  }
-  current.port = String(companionPort);
-  current.pathname = "/";
+declare const __BADGE_LEGACY_COMPANION_ORIGIN__: string | undefined;
+
+function compiledLegacyCompanionOrigin(): string | null {
+  return typeof __BADGE_LEGACY_COMPANION_ORIGIN__ === "string" ? __BADGE_LEGACY_COMPANION_ORIGIN__ : null;
+}
+
+export function companionAppHref(
+  currentHref: string,
+  target: BadgeApp,
+  legacyCompanionOrigin = compiledLegacyCompanionOrigin(),
+): string {
+  const current = new URL(legacyCompanionOrigin ?? currentHref);
+  current.pathname = legacyCompanionOrigin ? "/" : target === "archive" ? "/" : "/studio/";
   current.search = "";
   current.hash = "";
   return current.toString();

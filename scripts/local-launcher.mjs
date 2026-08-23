@@ -5,87 +5,80 @@ import path from "node:path";
 import process from "node:process";
 
 export const LOOPBACK_HOST = "127.0.0.1";
-export const DEFAULT_PORT_PAIR = Object.freeze({ archivePort: 4173, studioPort: 4174 });
+export const DEFAULT_SITE_PORT = 4173;
 export const APP_MARKERS = Object.freeze({
   archive: '<meta name="badge-application" content="archive" />',
   studio: '<meta name="badge-application" content="studio" />',
 });
 
-const CONFIG_VERSION = 1;
+const CONFIG_VERSION = 2;
 const FIRST_FALLBACK_PORT = 4180;
 const LAST_PORT = 65_535;
-const RESERVED_PORTS = new Set([4175, 4176, 5173, 5174]);
-
-function appName(app) {
-  return app === "archive" ? "Archive" : "Studio";
-}
-
-function appPort(pair, app) {
-  return app === "archive" ? pair.archivePort : pair.studioPort;
-}
+const RESERVED_PORTS = new Set([4174, 4175, 4176, 5173, 5174]);
 
 function origin(port) {
   return `http://${LOOPBACK_HOST}:${port}`;
 }
 
-function validatePort(port, label) {
+export function validateSitePort(port, label = "Site port") {
   if (!Number.isSafeInteger(port) || port < 1024 || port > LAST_PORT) {
     throw new Error(`${label} must be an integer from 1024 through ${LAST_PORT}; received ${String(port)}.`);
   }
-}
-
-export function validatePortPair(value) {
-  if (!value || typeof value !== "object" || Array.isArray(value)) {
-    throw new Error("the remembered local address record must be an object");
-  }
-  const pair = { archivePort: value.archivePort, studioPort: value.studioPort };
-  validatePort(pair.archivePort, "Archive port");
-  validatePort(pair.studioPort, "Studio port");
-  if (pair.studioPort !== pair.archivePort + 1) {
-    throw new Error("the remembered Studio port must immediately follow the Archive port");
-  }
-  const reservedPort = [pair.archivePort, pair.studioPort].find((port) => RESERVED_PORTS.has(port));
-  if (reservedPort !== undefined) {
+  if (RESERVED_PORTS.has(port)) {
     throw new Error(
-      `the remembered port pair uses reserved local port ${reservedPort}; choose an adjacent pair that excludes 4175, 4176, 5173, and 5174`,
+      `${label} uses reserved local port ${port}; choose a port other than legacy Studio 4174, companion ports 4175 and 4176, or fixture ports 5173 and 5174`,
     );
   }
-  return pair;
+  return port;
 }
 
-export async function readPortPair(configPath) {
+export async function readSitePort(configPath) {
   let source;
   try {
     source = await readFile(configPath, "utf8");
   } catch (error) {
     if (error && typeof error === "object" && error.code === "ENOENT") return null;
     throw new Error(
-      `Badge could not read its remembered local addresses at ${configPath}. Check that the file is readable, then start again.`,
+      `Badge could not read its remembered local site at ${configPath}. Check that the file is readable, then start again.`,
       { cause: error },
     );
   }
 
   try {
     const parsed = JSON.parse(source);
+    if (
+      parsed &&
+      typeof parsed === "object" &&
+      parsed.version === 1 &&
+      "archivePort" in parsed &&
+      "studioPort" in parsed
+    ) {
+      throw new Error(
+        "this is a legacy two-origin record; preserve it and export any Archive and Studio data before migrating to the one-site launcher",
+      );
+    }
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+      throw new Error("the remembered local site record must be an object");
+    }
     if (parsed.version !== CONFIG_VERSION || parsed.host !== LOOPBACK_HOST) {
       throw new Error(`expected version ${CONFIG_VERSION} on host ${LOOPBACK_HOST}`);
     }
-    return validatePortPair(parsed);
+    return validateSitePort(parsed.port, "Remembered site port");
   } catch (error) {
     throw new Error(
-      `Badge could not read its remembered local addresses at ${configPath}: ${error instanceof Error ? error.message : String(error)}. Preserve that file and repair it or restore the recorded ports; Badge will not silently choose a new origin.`,
+      `Badge could not read its remembered local site at ${configPath}: ${error instanceof Error ? error.message : String(error)}. Preserve that file and repair or migrate it; Badge will not silently choose a new origin.`,
       { cause: error },
     );
   }
 }
 
-export async function writePortPair(configPath, value, options = {}) {
-  const pair = validatePortPair(value);
-  const existing = await readPortPair(configPath);
-  if (existing) {
-    if (existing.archivePort === pair.archivePort && existing.studioPort === pair.studioPort) return;
+export async function writeSitePort(configPath, value, options = {}) {
+  const port = validateSitePort(value);
+  const existing = await readSitePort(configPath);
+  if (existing !== null) {
+    if (existing === port) return;
     throw new Error(
-      `Badge already remembers ${origin(existing.archivePort)} and ${origin(existing.studioPort)}. It will not replace those browser-local origins with ${origin(pair.archivePort)} and ${origin(pair.studioPort)}.`,
+      `Badge already remembers ${origin(existing)}. It will not replace that browser-local origin with ${origin(port)}.`,
     );
   }
 
@@ -96,16 +89,7 @@ export async function writePortPair(configPath, value, options = {}) {
     await mkdir(directory, { recursive: true });
     handle = await open(temporaryPath, "wx");
     await handle.writeFile(
-      `${JSON.stringify(
-        {
-          version: CONFIG_VERSION,
-          host: LOOPBACK_HOST,
-          archivePort: pair.archivePort,
-          studioPort: pair.studioPort,
-        },
-        null,
-        2,
-      )}\n`,
+      `${JSON.stringify({ version: CONFIG_VERSION, host: LOOPBACK_HOST, port }, null, 2)}\n`,
       "utf8",
     );
     await handle.sync();
@@ -114,17 +98,15 @@ export async function writePortPair(configPath, value, options = {}) {
     await options.beforePublish?.();
     await link(temporaryPath, configPath);
   } catch (error) {
-    let racedPair = null;
+    let racedPort = null;
     try {
-      racedPair = await readPortPair(configPath);
+      racedPort = await readSitePort(configPath);
     } catch {
       // The contextual write error below remains the useful failure surface.
     }
-    if (racedPair && racedPair.archivePort === pair.archivePort && racedPair.studioPort === pair.studioPort) {
-      return;
-    }
+    if (racedPort === port) return;
     throw new Error(
-      `Badge could not remember Archive at ${origin(pair.archivePort)} and Studio at ${origin(pair.studioPort)} in ${configPath}. Ensure that directory is writable and no other startup is changing the file, then start Badge again.`,
+      `Badge could not remember its local site at ${origin(port)} in ${configPath}. Ensure that directory is writable and no other startup is changing the file, then start Badge again.`,
       { cause: error },
     );
   } finally {
@@ -144,134 +126,88 @@ async function canBindPort(port) {
   });
 }
 
-export async function inspectLocalOrigin(port, expectedApp, options = {}) {
-  validatePort(port, `${appName(expectedApp)} port`);
-  const timeoutMs = options.timeoutMs ?? 2_000;
-  const fetchImpl = options.fetchImpl ?? globalThis.fetch;
+async function readIdentityRoute(port, route, options) {
+  const response = await options.fetchImpl(`${origin(port)}${route}`, {
+    redirect: "manual",
+    signal: globalThis.AbortSignal.timeout(options.timeoutMs),
+  });
+  return { ok: response.ok, body: await response.text() };
+}
+
+export async function inspectLocalSite(port, options = {}) {
+  validateSitePort(port);
+  const requestOptions = {
+    timeoutMs: options.timeoutMs ?? 2_000,
+    fetchImpl: options.fetchImpl ?? globalThis.fetch,
+  };
   try {
-    const response = await fetchImpl(`${origin(port)}/`, {
-      redirect: "manual",
-      signal: globalThis.AbortSignal.timeout(timeoutMs),
-    });
-    const body = await response.text();
-    if (response.ok && body.includes(APP_MARKERS[expectedApp])) return "badge";
-    if (response.ok && Object.values(APP_MARKERS).some((marker) => body.includes(marker))) {
-      return "wrong-badge-app";
+    const [archive, studio] = await Promise.all([
+      readIdentityRoute(port, "/", requestOptions),
+      readIdentityRoute(port, "/studio/", requestOptions),
+    ]);
+    const archiveIsExclusive =
+      archive.ok && archive.body.includes(APP_MARKERS.archive) && !archive.body.includes(APP_MARKERS.studio);
+    const studioIsExclusive =
+      studio.ok && studio.body.includes(APP_MARKERS.studio) && !studio.body.includes(APP_MARKERS.archive);
+    if (archiveIsExclusive && studioIsExclusive) {
+      return "badge";
     }
-    return "occupied";
+    const hasBadgeMarker = [archive, studio].some(
+      (result) => result.ok && Object.values(APP_MARKERS).some((marker) => result.body.includes(marker)),
+    );
+    return hasBadgeMarker ? "incomplete-badge" : "occupied";
   } catch {
     return (await canBindPort(port)) ? "free" : "unidentified";
   }
 }
 
-export async function inspectPortPair(pair) {
-  const validated = validatePortPair(pair);
-  const [archive, studio] = await Promise.all([
-    inspectLocalOrigin(validated.archivePort, "archive"),
-    inspectLocalOrigin(validated.studioPort, "studio"),
-  ]);
-  return { archive, studio };
-}
-
-async function canBindPair(pair) {
-  const servers = [];
-  try {
-    for (const port of [pair.archivePort, pair.studioPort]) {
-      const server = createTcpServer();
-      server.unref();
-      await new Promise((resolve, reject) => {
-        server.once("error", reject);
-        server.listen({ host: LOOPBACK_HOST, port, exclusive: true }, resolve);
-      });
-      servers.push(server);
-    }
-    return true;
-  } catch {
-    return false;
-  } finally {
-    await Promise.all(servers.map((server) => new Promise((resolve) => server.close(() => resolve()))));
+export async function findAvailablePort(startPort = FIRST_FALLBACK_PORT, options = {}) {
+  if (!Number.isSafeInteger(startPort) || startPort < 1024 || startPort > LAST_PORT) {
+    throw new Error(
+      `Fallback site port must be an integer from 1024 through ${LAST_PORT}; received ${String(startPort)}.`,
+    );
   }
-}
-
-export async function findAvailablePortPair(startPort = FIRST_FALLBACK_PORT, options = {}) {
-  validatePort(startPort, "Fallback Archive port");
-  const pairAvailable = options.canBindPair ?? canBindPair;
-  for (let archivePort = startPort; archivePort < LAST_PORT; archivePort += 1) {
-    const pair = { archivePort, studioPort: archivePort + 1 };
-    if (RESERVED_PORTS.has(pair.archivePort) || RESERVED_PORTS.has(pair.studioPort)) continue;
-    if (await pairAvailable(pair)) return pair;
+  const portAvailable = options.canBindPort ?? canBindPort;
+  for (let port = startPort; port <= LAST_PORT; port += 1) {
+    if (RESERVED_PORTS.has(port)) continue;
+    if (await portAvailable(port)) return port;
   }
   throw new Error(
-    `Badge could not find two adjacent free loopback ports from ${startPort} through ${LAST_PORT}. Close unused local servers, then start Badge again.`,
-  );
-}
-
-function occupiedConfiguredOriginError(pair, app) {
-  const port = appPort(pair, app);
-  return new Error(
-    `Badge remembers ${appName(app)} at ${origin(port)}, but that port is occupied by another process. Stop that process or free port ${port}, then start Badge again. Badge will not switch remembered origins because doing so would hide browser-local data.`,
+    `Badge could not find a free loopback port from ${startPort} through ${LAST_PORT}. Close an unused local server, then start Badge again.`,
   );
 }
 
 export async function chooseLaunchPlan(options = {}) {
-  const configuredPair = options.configuredPair ? validatePortPair(options.configuredPair) : null;
-  const pair = configuredPair ?? DEFAULT_PORT_PAIR;
-  const inspectPair = options.inspectPair ?? inspectPortPair;
-  const findFreePair = options.findFreePair ?? findAvailablePortPair;
-  const state = await inspectPair(pair);
+  const configuredPort = options.configuredPort ?? null;
+  if (configuredPort !== null) validateSitePort(configuredPort, "Remembered site port");
+  const port = configuredPort ?? DEFAULT_SITE_PORT;
+  const inspectSite = options.inspectSite ?? inspectLocalSite;
+  const findFreePort = options.findFreePort ?? findAvailablePort;
+  const state = await inspectSite(port);
 
-  for (const app of ["archive", "studio"]) {
-    if (state[app] === "unidentified") {
-      const port = appPort(pair, app);
-      throw new Error(
-        `A process is listening at ${origin(port)}, but it did not identify itself as Badge within 2 seconds. If Badge is still starting, wait and run npm start again; otherwise stop the process using port ${port}. Badge will not switch origins while ownership is uncertain.`,
-      );
-    }
-    if (state[app] === "wrong-badge-app") {
-      const port = appPort(pair, app);
-      throw new Error(
-        `${origin(port)} is serving the wrong Badge application for the remembered ${appName(app)} origin. Stop that server and run npm start again so Archive and Studio keep their assigned data origins.`,
-      );
-    }
+  if (state === "badge") return { action: "reuse", port, reason: "existing" };
+  if (state === "free") {
+    return { action: "launch", port, reason: configuredPort === null ? "preferred" : "configured" };
   }
-
-  if (state.archive === "badge" && state.studio === "badge") {
-    return { action: "reuse", pair, appsToLaunch: [], reason: "existing" };
-  }
-  if (state.archive === "badge" && state.studio === "free") {
-    return { action: "launch", pair, appsToLaunch: ["studio"], reason: "partial" };
-  }
-  if (state.archive === "free" && state.studio === "badge") {
-    return { action: "launch", pair, appsToLaunch: ["archive"], reason: "partial" };
-  }
-  if (state.archive === "free" && state.studio === "free") {
-    return {
-      action: "launch",
-      pair,
-      appsToLaunch: ["archive", "studio"],
-      reason: configuredPair ? "configured" : "preferred",
-    };
-  }
-
-  if (configuredPair) {
-    if (state.archive === "occupied") throw occupiedConfiguredOriginError(pair, "archive");
-    if (state.studio === "occupied") throw occupiedConfiguredOriginError(pair, "studio");
-  }
-
-  if (state.archive === "badge" || state.studio === "badge") {
-    const runningApp = state.archive === "badge" ? "Archive" : "Studio";
-    const blockedApp = state.archive === "occupied" ? "Archive" : "Studio";
+  if (state === "unidentified") {
     throw new Error(
-      `${runningApp} is already running on its expected Badge origin, but ${blockedApp}'s companion port belongs to another process. Stop the unrelated process and start Badge again; the launcher will not split one data pair across unrelated origins.`,
+      `A process is listening at ${origin(port)}, but it did not identify itself as Badge within 2 seconds. If Badge is still starting, wait and run npm start again; otherwise stop that process. Badge will not switch origins while ownership is uncertain.`,
     );
   }
-
-  return {
-    action: "launch",
-    pair: validatePortPair(await findFreePair()),
-    appsToLaunch: ["archive", "studio"],
-    reason: "fallback",
-  };
+  if (state === "incomplete-badge") {
+    throw new Error(
+      `${origin(port)} identifies as Badge but does not serve both Archive at / and Studio at /studio/. Stop that incomplete or older Badge server, then start this version again without changing the remembered browser-data origin.`,
+    );
+  }
+  if (state !== "occupied") {
+    throw new Error(`Badge received an unknown local-site state ${String(state)} for ${origin(port)}.`);
+  }
+  if (configuredPort !== null) {
+    throw new Error(
+      `Badge remembers its local site at ${origin(port)}, but that port is occupied by another process. Stop that process or free port ${port}, then start Badge again. Badge will not switch remembered origins because doing so would hide browser-local data.`,
+    );
+  }
+  return { action: "launch", port: validateSitePort(await findFreePort()), reason: "fallback" };
 }
 
 export function listenForTerminalStop(input, onStop) {
@@ -308,10 +244,10 @@ export function listenForTerminalStop(input, onStop) {
   };
 }
 
-export function localAppUrls(pair) {
-  const validated = validatePortPair(pair);
+export function localAppUrls(port) {
+  const sitePort = validateSitePort(port);
   return {
-    archive: `${origin(validated.archivePort)}/`,
-    studio: `${origin(validated.studioPort)}/`,
+    archive: `${origin(sitePort)}/`,
+    studio: `${origin(sitePort)}/studio/`,
   };
 }
