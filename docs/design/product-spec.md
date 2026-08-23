@@ -112,7 +112,17 @@ An uploaded original is preserved unchanged. Optional processing creates new can
 
 The user can apply shape, material, border color, border width, crop, and position to the selected or uploaded art without regenerating the art.
 
-The final review shows the composed badge, UI-rendered title, generated or edited saying, and relevant metadata before saving it as planned or continuing to activation.
+The final review shows the composed badge, UI-rendered title, generated or user-authored saying, and relevant metadata before saving it as planned or continuing to activation.
+
+The one-line saying has its own authoring control, independent from art generation and appearance. The user can request an initial proposal, ask for another proposal, or type the line directly without using a model.
+
+Regeneration is non-destructive: a new saying remains a proposal while the current accepted or handwritten line stays intact, and only an explicit `Use this saying` action replaces it. Regenerating or changing art, uploading or processing an image, and changing shape or material never alter the saying.
+
+Before the first live saying request, and again whenever provider or outbound scope changes, the UI identifies the destination and previews the fields that will leave the device. The default payload is limited to title, criterion, and optional saying-specific direction; it excludes description, notes, dates, occurrence data, accepted sayings, visibility, art, and unrelated draft state.
+
+`Try another` preserves the accepted line and the current pending proposal while the new request runs. Only the newest active request may offer a replacement; late, canceled, and failed responses cannot displace either value, and failures leave a clear retry path.
+
+One-line means one logical line with no stored newline characters. Input trims outer whitespace and collapses internal whitespace, including pasted or generated line breaks, to single spaces. The provisional Phase 1 limit is 120 Unicode grapheme clusters: an over-limit direct draft remains editable with an accessible validation message but cannot be accepted or saved, while an invalid generated response is rejected without truncation or changing current text.
 
 ## Art generation behavior
 
@@ -126,7 +136,7 @@ Rejected candidates are local temporary data until a retention rule is chosen. S
 
 ## Activation flow
 
-Before activation, the app collects or confirms the real-life occurrence range, selected artwork and appearance, a generated or user-edited funny or clever saying, an optional personal note, and a visibility override when that surface exists.
+Before activation, the app collects or confirms the real-life occurrence range, selected artwork and appearance, an explicitly accepted generated saying or directly authored one-line saying, an optional personal note, and a visibility override when that surface exists.
 
 The app records at least `occurredStart`, `occurredEnd`, `recordedAt`, and immutable `activatedAt` values, with enough date precision metadata to represent an exact date, a range, a year, or an approximate memory.
 
@@ -186,11 +196,11 @@ Restore validates the whole archive, reports actionable errors, migrates support
 
 ### Yosemite vertical slice
 
-Open the prebuilt parks collection → find or accept the Yosemite goal → generate three candidates or upload a photo → select and customize the artifact → enter the trip range and optional note → activate → see the restrained ceremony → reload → find the same earned badge and updated collection progress → export and restore it with its art intact.
+Open the prebuilt parks collection → find or accept the Yosemite goal → generate three candidates or upload a photo → select and customize the artifact → generate and retry a saying or write one directly → accept the final line → enter the trip range and optional note → activate → see the restrained ceremony → reload → find the same earned badge and updated collection progress → export and restore it with its art and saying intact.
 
 ### Sapiens vertical slice
 
-Create or accept the book badge → choose art and a saying → record a reading range → activate → add a later reread if repeat occurrences are approved.
+Create or accept the book badge → choose art → generate and retry a one-line saying or write one directly → accept the final line → record a reading range → activate → add a later reread if repeat occurrences are approved.
 
 ### Bachelor's degree vertical slice
 
@@ -207,6 +217,8 @@ Activate the last required park → commit that activation → update the compos
 - Badge art has a text equivalent derived from the title and description rather than attempting to interpret generated typography.
 - User-selected borders and materials cannot reduce surrounding control contrast below the product's accessibility target.
 - Generation, upload, processing, backup, and restore status is announced to assistive technology.
+- Saying generation identifies a pending proposal, keeps the editable accepted line reachable, and announces success or failure without moving focus unexpectedly.
+- Saying length and empty-value errors identify the field, explain the 120-grapheme limit, and never discard the user's editable draft.
 - `prefers-reduced-motion` produces a crisp success state without disorienting travel, flashing, or parallax.
 
 ## Explicit open decisions

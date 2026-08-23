@@ -26,6 +26,10 @@ The initial product is single-user and local-first. Accounts, cloud sync, public
 
 Achievement activation rests on personal honesty. A model may suggest goals, sayings, and art, but it never decides that an achievement was earned.
 
+The one-line saying remains directly editable and independent from the art. Regeneration creates a proposal and never overwrites an accepted or user-authored line until the user explicitly chooses the replacement.
+
+Live saying generation discloses the provider and exact outbound fields before private badge text leaves the device. By default it sends only the badge title, criterion, and saying-specific direction; notes, dates, occurrences, accepted sayings, and unrelated draft fields are excluded.
+
 Generated artwork is text-free. Preserve every uploaded source unchanged; crop, restyle, background removal, material treatment, and other processing create derived assets.
 
 Shape, material, border color, border width, crop, and positioning remain editable structured properties rather than being baked irreversibly into the only copy of the art.

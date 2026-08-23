@@ -2,6 +2,16 @@
 
 Append decisions newest first. Never rewrite history; add a superseding entry that links to the decision it replaces.
 
+## 2026-08-22 — D-010: Keep the saying independently user-controlled
+
+**Status:** Accepted owner decision.
+
+The badge's one-line saying can be generated, regenerated, accepted, or written directly through a boundary independent from art generation.
+
+A regeneration result is a proposal and cannot replace accepted or handwritten text until the user explicitly accepts it; saying actions never mutate selected art or appearance, and reciprocal art actions never mutate saying state.
+
+Live generation uses a disclosed minimal payload and latest-request-wins concurrency. A shared validator stores one logical line, preserves invalid direct drafts for correction, and rejects invalid provider output without truncation or state replacement.
+
 ## 2026-08-22 — D-009: Give the durable browser archive one stable origin
 
 **Status:** Provisional until the scaffold verifies launch behavior.

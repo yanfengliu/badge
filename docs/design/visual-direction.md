@@ -71,6 +71,10 @@ Candidate selection uses a precise keyline, check state, and keyboard focus, nev
 
 Shape, material, border color, and border width are grouped compactly beside the live preview; advanced controls stay progressive rather than crowding the first view.
 
+The one-line saying editor sits with the composed preview rather than inside the image-generation controls. It pairs a direct text field with restrained `Generate saying` or `Try another` and `Use this saying` actions, and a pending proposal never makes the current line disappear.
+
+The saying is one logical line, but the read-only composed preview may wrap it at narrow desktop widths rather than truncate it or reduce it below the accessible type scale. Editing shows the full text, remaining allowance, and inline validation without shifting the artifact preview.
+
 ### Activation
 
 The activation moment should feel like a crafted object seating into place.

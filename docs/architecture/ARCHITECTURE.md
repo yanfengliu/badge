@@ -77,7 +77,7 @@ Locally created definitions are overlays or forks rather than silent edits to ca
 
 ### AchievementRecord
 
-Local owner state for a definition: lifecycle state, occurrence references, activation, selected appearance, saying, note, visibility override, and archive metadata.
+Local owner state for a definition: lifecycle state, occurrence references, activation, selected appearance, accepted saying text and source, note, visibility override, and archive metadata.
 
 Do not enforce uniqueness on `(ownerId, definitionId)` until repeat-achievement cardinality is decided. The schema must represent either multiple records for a definition or several occurrences under one record without destructive migration.
 
@@ -114,6 +114,14 @@ Metadata for a locally stored binary: content hash, MIME type, dimensions, byte 
 A candidate set records the approved input specification, candidate asset IDs, selection, generation status, and provider metadata without secrets.
 
 A derivation records source asset, operation, parameters, tool or recipe version, and result asset; uploaded originals have no parent and are immutable.
+
+### SayingDraft
+
+The authoring draft stores the current accepted one-line saying, whether its latest accepted form was generated or directly authored, its update time, and optional generation provenance without secrets.
+
+A regenerated line is a pending proposal, not an in-place mutation. Accepting a proposal or editing the text is an explicit user action, and neither operation changes the selected art or appearance.
+
+Saving a planned or activated badge copies the accepted text and source into its `AchievementRecord`; an unaccepted proposal remains draft-only and never becomes the displayed saying by accident.
 
 ## Authority boundary
 
@@ -166,15 +174,23 @@ Processing is non-destructive and produces a derivation graph. A failed, cancele
 
 Candidate cleanup operates on explicit asset lifecycle state and reference counts, not directory age or broad folder deletion.
 
-## Generation boundary
+## Generation boundaries
 
-The application port accepts a normalized art brief, approved source asset references, candidate count, appearance context when relevant, and cancellation signal.
+The art-generation application port accepts a normalized art brief, approved source asset references, candidate count, appearance context when relevant, and cancellation signal.
 
 It returns candidate descriptors and provenance without deciding selection or activation.
 
-Tests and Phase 1 use a deterministic fake with fixture candidates so product work does not spend model budget or require network access.
+A separate saying-generation port accepts only the badge title, criterion, optional saying-specific direction, request ID, and cancellation signal, then returns a proposed line and provenance. Adding description or any other field requires a new explicit outbound-data decision and disclosure surface.
 
-Live adapters disclose when uploaded media leaves the device, exclude private notes by default, support cancellation, and keep provider credentials in an environment or OS credential boundary rather than application data, backups, prompts, or Git.
+The application keeps the accepted saying and pending proposal separate. Retrying a saying request never invokes art generation, changes the selected asset, or overwrites accepted text; only explicit acceptance or direct editing updates the draft. Art generation, upload, processing, selection, and appearance edits likewise preserve both saying values.
+
+The saying controller assigns a monotonically increasing request ID and applies results only from the latest active request. Starting a retry retains the existing pending proposal; stale, canceled, invalid, and failed results are ignored or reported without replacing it.
+
+Normalize proposals and direct input by trimming outer whitespace and collapsing internal whitespace, including line breaks, to one space. Count Unicode grapheme clusters through one shared domain validator, reject empty values and values over the provisional 120-grapheme limit, and never truncate stored or displayed text silently.
+
+Tests and Phase 1 use deterministic fakes with fixture art candidates and saying proposals so product work does not spend model budget or require network access.
+
+Live adapters disclose the destination and exact outbound fields before uploaded media or private badge text leaves the device, exclude description, notes, dates, occurrence data, accepted sayings, visibility, art, and unrelated draft fields from saying requests by default, support cancellation, and keep provider credentials in an environment or OS credential boundary rather than application data, backups, prompts, or Git.
 
 Pin a product-called model only in the adapter's repo-owned configuration when live integration is implemented; do not scatter model IDs through UI or domain code.
 
@@ -224,9 +240,9 @@ Pure domain tests cover lifecycle transitions, composite eligibility, visibility
 
 Persistence tests use an isolated IndexedDB implementation and cover every migration, corrupt-row refusal, transaction atomicity, asset deduplication, and backup and restore round trip.
 
-Component tests cover candidate comparison, uploads, non-destructive selection, appearance controls, activation confirmation, focus order, and reduced motion.
+Component tests cover candidate comparison, uploads, non-destructive selection, latest-request saying concurrency, retry failure and cancellation, saying normalization and length validation, proposal acceptance, direct saying edits, reciprocal art and saying isolation, appearance controls, activation confirmation, focus order, and reduced motion.
 
-Playwright covers the Yosemite acceptance journey, upload and processing failure, activation reload safety, composite completion, and restore into a clean profile.
+Playwright covers the Yosemite acceptance journey including saying retry and direct editing, provider disclosure, multiline paste, over-limit validation, narrow-layout wrapping, art and saying isolation, upload and processing failure, activation reload safety, composite completion, and restore into a clean profile.
 
 Visual evidence compares the chosen references with implementation screenshots at matched state and at least two desktop-like viewports, then sweeps all primary surfaces for unrelated defects.
 

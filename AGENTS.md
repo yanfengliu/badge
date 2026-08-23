@@ -52,7 +52,7 @@ Read `docs/learning/lessons.md`, `docs/design/vision.md`, `docs/design/product-s
 - Local state owns activations, occurrence dates, notes, profile and collection privacy choices, uploads, generated candidates, selected art, and backups; preserve unreadable or old data rather than silently resetting it.
 - Generated art contains no typography; titles, sayings, dates, and metadata are rendered by the UI. Uploaded originals are immutable, and processing is non-destructive.
 - Shape, material, border color, border width, crop, and positioning are structured appearance data, independent of source artwork.
-- Model output may propose definitions, sayings, and art candidates; it never activates an achievement or replaces selected art without an explicit user action.
+- Model output may propose definitions, sayings, and art candidates; it never activates an achievement or replaces selected art or an accepted or user-authored saying without an explicit user action.
 - Computed achievements derive deterministically from individual activations. Persistence, migration, and restore work is data-loss-sensitive and receives high-risk review.
 - Product changes start with contract tests. Files should stay under 500 lines and must stay under 1000 lines.
 

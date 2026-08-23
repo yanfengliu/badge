@@ -21,6 +21,7 @@ The app boots locally at its strict durable origin, fixtures remain isolated on 
 - Browse collections and distinguish suggested, planned, earned, and archived states.
 - Create and edit local badges and collections.
 - Compare three deterministic art candidates, select one, and preserve an unfinished draft.
+- Generate deterministic one-line saying proposals, try another without losing the accepted line, explicitly accept a proposal, and author or replace the line directly.
 - Upload an image, preserve the original, crop and position it, and create non-destructive derivatives.
 - Customize circle, square, rectangle, and shield shapes; metal, wool, and enamel materials; border color; and border width.
 - Activate a badge with occurrence range, immutable activation timestamp, clever or edited saying, optional note, and local visibility override.
@@ -29,20 +30,22 @@ The app boots locally at its strict durable origin, fixtures remain isolated on 
 
 ### Exit criteria
 
-The Yosemite acceptance journey in `product-spec.md` works entirely offline with deterministic fixtures, survives reload, restores into a clean browser profile, and passes visual comparison and keyboard testing.
+The Yosemite acceptance journey in `product-spec.md` works entirely offline with deterministic fixtures, saying regeneration never changes art or overwrites accepted text, every art and appearance action preserves accepted and pending saying text, direct saying edits survive reload and restore, and the complete journey passes visual comparison and keyboard testing.
 
 ## Phase 2 — Generated and processed art
 
 - Define and implement a provider adapter without coupling domain records to one API.
+- Implement live saying generation behind its separate provider-neutral port so retrying copy cannot invoke or mutate art generation.
 - Keep provider credentials outside Git and outside backup archives.
 - Generate genuinely distinct candidates, refine one candidate, and cancel or retry safely.
 - Process uploaded images only after disclosing when data will leave the device.
+- Disclose the live saying provider and exact minimal outbound fields, and exclude personal notes, dates, occurrences, accepted sayings, and unrelated draft state by default.
 - Track provenance, provider, model, prompt-recipe version, source asset, settings, and output hash without storing secrets.
 - Add actionable generation errors, offline fallback to upload or fixture candidates, size limits, thumbnail generation, deduplication, and candidate cleanup policy.
 
 ### Exit criteria
 
-Live generation can be replaced by a deterministic fake in tests, cancellation never changes the selected art, failed processing preserves the upload, and no secret or personal media appears in Git.
+Live generation can be replaced by deterministic fakes in tests; multiline saying output normalizes to one logical line; stale, canceled, failed, empty, and over-limit saying responses preserve accepted and pending copy; cancellation never changes selected art; failed processing preserves the upload; and no secret or personal media appears in Git.
 
 ## Phase 3 — Catalogue and computed achievements
 
