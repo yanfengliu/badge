@@ -50,6 +50,8 @@ The one-line saying remains directly editable and independent from the art. Rege
 
 Live saying generation discloses the provider and exact outbound fields before private badge text leaves the device. By default it sends only the badge title, criterion, and saying-specific direction; notes, dates, occurrences, accepted sayings, and unrelated draft fields are excluded.
 
+A live saying request occurs only after the final `Generate saying` action or `Try another`, and each action starts at most one provider attempt without automatic retries or fan-out; page load, selection, activation, ceremony, reload, restore, and background work never call a saying provider. First use and provider or field-scope changes require a no-call disclosure review before the final generate action is enabled. Theme cues, voice, and variation are curated non-personal direction; deliberately entered user direction may contain personal text, must be previewed verbatim, and is never inferred from personal Archive state or image pixels.
+
 Badge Studio keeps generated artwork text-free. It preserves every uploaded source unchanged; crop, restyle, background removal, material treatment, and other processing create derived assets. Publication decodes and re-encodes selected pixels into a metadata-free approved format, strips filenames, EXIF, GPS, XMP, IPTC, embedded thumbnails, and opaque ancillary chunks, and previews the sanitized derivative and manifest metadata before export.
 
 Shape, material, border color, border width, crop, and positioning remain editable structured properties in Badge Studio rather than being baked irreversibly into the only copy of the art. Publication freezes them, and the archive renders them read-only.

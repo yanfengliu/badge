@@ -69,6 +69,19 @@
   line-height: 1.25;
 }
 
+.saying-empty {
+  min-height: 34px;
+  margin: 0;
+  color: var(--ink-faint);
+  font-family: var(--display);
+  font-size: 20px;
+  font-style: italic;
+}
+
+.saying-editor {
+  margin-top: 16px;
+}
+
 .saying-actions {
   display: flex;
   flex-wrap: wrap;
@@ -88,6 +101,11 @@
   font-size: 12px;
 }
 
+.text-button:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
 .proposal {
   margin-top: 16px;
   padding: 15px 16px;
@@ -102,9 +120,27 @@
   font-style: italic;
 }
 
+.proposal-label {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--mineral);
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
 .proposal-actions {
   display: flex;
   gap: 9px;
+}
+
+.saying-provider-note {
+  max-width: 430px;
+  margin: 10px 0 0;
+  color: var(--ink-faint);
+  font-size: 11px;
+  line-height: 1.45;
 }
 
 .memory-form {
@@ -189,6 +225,11 @@
   cursor: not-allowed;
   opacity: 0.55;
   transform: none;
+}
+
+.activation-saying-hint {
+  margin-top: -10px;
+  text-align: center;
 }
 
 .earned-memory {

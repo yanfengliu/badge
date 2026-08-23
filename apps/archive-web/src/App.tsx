@@ -14,7 +14,6 @@ import {
   activationInputFor,
   defaultActivationDraft,
   selectedArchiveVisual,
-  selectedSayingProposal,
   type ActivationDraft,
 } from "./app-types";
 import { ArchiveHeader } from "./ArchiveHeader";
@@ -26,9 +25,10 @@ import {
 import { ArchiveClosedScreen } from "./ArchiveClosedScreen";
 import { BadgeRail } from "./BadgeRail";
 import { RestoreDialog } from "./RestoreDialog";
+import { SayingActivationControl, SayingComposer } from "./SayingComposer";
 import { createStarterArchiveState, STARTER_OWNER_ID, STARTER_RECORD_IDS } from "./archive-state";
 import { downloadBytes, formatDate } from "./browser-utilities";
-import { ArrowIcon, CheckIcon, SparkIcon } from "./icons";
+import { CheckIcon } from "./icons";
 import { requiresArchiveRecovery } from "./restore-compatibility";
 import {
   archiveRecoveryNotice,
@@ -43,6 +43,7 @@ import {
   type PendingArchiveRestore,
 } from "./restore-flow";
 import { useResolvedVisuals } from "./use-resolved-visuals";
+import { useSayingWorkflow } from "./use-saying-workflow";
 const repository = new IndexedDbArchiveRepository();
 const archive = new ArchiveApplication(repository);
 const forceFallback = new URLSearchParams(window.location.search).has("fallback");
@@ -52,8 +53,6 @@ export function App() {
   const [state, setState] = useState<ArchiveState | null>(null);
   const [selectedRecordId, setSelectedRecordId] = useState(STARTER_RECORD_IDS[0]);
   const [drafts, setDrafts] = useState<Record<string, ActivationDraft>>({});
-  const [proposalIndex, setProposalIndex] = useState<Record<string, number>>({});
-  const [editingSaying, setEditingSaying] = useState(false);
   const [activating, setActivating] = useState(false);
   const [ceremonyId, setCeremonyId] = useState<string | null>(null);
   const [notice, setNotice] = useState<{ kind: "info" | "error"; text: string } | null>(null);
@@ -96,11 +95,14 @@ export function App() {
   const selectedFixture =
     starterBadges.find((badge) => `starter:${badge.definitionId}` === selectedRecordId) ?? starterBadges[0];
   const selectedRecord = state?.records.find((record) => record.recordId === selectedRecordId);
-  const suggestion = selectedSayingProposal(
-    selectedFixture.sayingSuggestions,
-    proposalIndex[selectedRecordId] ?? 0,
-  );
-  const draft = drafts[selectedRecordId] ?? defaultActivationDraft(suggestion);
+  const draft = drafts[selectedRecordId] ?? defaultActivationDraft();
+  const saying = useSayingWorkflow({
+    archive,
+    selectedRecordId,
+    selectedRecord,
+    onArchiveState: setState,
+    onError: (text) => setNotice({ kind: "error", text }),
+  });
   const earnedCount = state?.records.filter((record) => record.lifecycle === "earned").length ?? 0;
   const selectedVisual = selectedArchiveVisual(selectedRecord, selectedFixture.sourceUrl, resolvedVisuals);
   const closeCeremony = useCallback(() => setCeremonyId(null), []);
@@ -111,22 +113,20 @@ export function App() {
   }
 
   function selectBadge(recordId: string) {
+    void saying.observe({ type: "badge-selected", recordId });
     setSelectedRecordId(recordId);
-    setEditingSaying(false);
     setNotice(null);
   }
 
-  function proposeAnother() {
-    const next = (proposalIndex[selectedRecordId] ?? 0) + 1;
-    setProposalIndex((current) => ({ ...current, [selectedRecordId]: next }));
-    updateDraft({
-      saying: selectedFixture.sayingSuggestions[next % selectedFixture.sayingSuggestions.length],
-    });
+  function replayCeremony(recordId: string) {
+    void saying.observe({ type: "ceremony-replayed", recordId });
+    setCeremonyId(recordId);
   }
 
   async function activate(event: FormEvent) {
     event.preventDefault();
     if (!selectedRecord) return;
+    await saying.observe({ type: "badge-activated", recordId: selectedRecord.recordId });
     setActivating(true);
     setNotice(null);
     try {
@@ -217,6 +217,7 @@ export function App() {
           text: `Restored ${restored.records.length} records from ${pendingRestore.fileName} after you confirmed the safety backup was saved.`,
         });
       }
+      await saying.observe({ type: "archive-restored" });
       setPendingRestore(null);
     } catch (error) {
       if (error instanceof ArchiveSafetyReclassificationError) {
@@ -331,36 +332,22 @@ export function App() {
               <strong>{selectedRecord.criterion}.</strong> {selectedRecord.description}
             </p>
 
-            <div className="saying-block">
-              <span className="saying-label">One-line saying</span>
-              {editingSaying && selectedRecord.lifecycle !== "earned" ? (
-                <label className="field">
-                  <span className="visually-hidden">Write your saying</span>
-                  <input
-                    value={draft.saying}
-                    maxLength={120}
-                    onChange={(event) => updateDraft({ saying: event.target.value })}
-                    autoFocus
-                  />
-                </label>
-              ) : (
-                <p className="saying-display">“{selectedRecord.acceptedSaying ?? draft.saying}”</p>
-              )}
-              {selectedRecord.lifecycle !== "earned" ? (
-                <div className="saying-actions">
-                  <button className="text-button" type="button" onClick={proposeAnother}>
-                    <SparkIcon /> Propose another
-                  </button>
-                  <button
-                    className="text-button"
-                    type="button"
-                    onClick={() => setEditingSaying((value) => !value)}
-                  >
-                    {editingSaying ? "Use this line" : "Write my own"}
-                  </button>
-                </div>
-              ) : null}
-            </div>
+            <SayingComposer
+              title={selectedRecord.title}
+              lifecycle={selectedRecord.lifecycle}
+              acceptedSaying={selectedRecord.acceptedSaying}
+              proposal={saying.proposal}
+              editing={saying.editing}
+              manualValue={saying.manualValue}
+              manualError={saying.manualError}
+              saving={saying.saving}
+              onGenerate={saying.request}
+              onUseProposal={saying.useProposal}
+              onStartWriting={saying.startWriting}
+              onCancelWriting={saying.cancelWriting}
+              onManualChange={saying.changeManual}
+              onSaveManual={saying.saveManual}
+            />
 
             {selectedRecord.lifecycle === "earned" && selectedRecord.activation ? (
               <div className="earned-memory">
@@ -389,7 +376,7 @@ export function App() {
                   ref={ceremonyReturnFocus}
                   className="secondary-button"
                   type="button"
-                  onClick={() => setCeremonyId(selectedRecord.recordId)}
+                  onClick={() => replayCeremony(selectedRecord.recordId)}
                 >
                   Replay activation
                 </button>
@@ -438,15 +425,14 @@ export function App() {
                     This app stays local. The choice is remembered for future sharing.
                   </p>
                 </label>
-                <button
-                  ref={ceremonyReturnFocus}
-                  className="primary-button"
-                  type="submit"
-                  disabled={activating}
-                >
-                  {activating ? "Sealing memory…" : "Activate this badge"}
-                  <ArrowIcon />
-                </button>
+                <SayingActivationControl
+                  buttonRef={ceremonyReturnFocus}
+                  acceptedSaying={selectedRecord.acceptedSaying}
+                  activating={activating}
+                  editing={saying.editing}
+                  saving={saying.saving}
+                  hasUnsavedDraft={saying.hasUnsavedDraft}
+                />
               </form>
             )}
           </div>

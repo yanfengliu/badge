@@ -97,6 +97,8 @@ The archive detail view uses the published 3D presentation without exposing cons
 
 The one-line saying editor sits with the published preview. It pairs a direct text field with restrained `Generate saying` or `Try another` and `Use this saying` actions, and a pending proposal never makes the current line disappear.
 
+On first live use, `Generate saying` opens a calm review sheet without sending anything. The sheet names the provider, displays every outbound field and value, and ends with the final generate action; it is a privacy checkpoint, not a technical console or recurring modal after unchanged scope has been acknowledged.
+
 The saying is one logical line, but the read-only composed preview may wrap it at narrow desktop widths rather than truncate it or reduce it below the accessible type scale. Editing shows the full text, remaining allowance, and inline validation without shifting the artifact preview.
 
 ### Activation

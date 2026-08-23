@@ -9,6 +9,7 @@
   "dependencies": {
     "@badge/archive-domain": "*",
     "@badge/pack-contract": "*",
+    "@badge/saying-contract": "*",
     "idb": "8.0.3",
     "zod": "4.4.3"
   }

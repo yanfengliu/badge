@@ -2,6 +2,16 @@
 
 Append decisions newest first. Never rewrite history; add a superseding entry that links to the decision it replaces.
 
+## 2026-08-23 — D-035: Generate sayings only after an explicit runtime request
+
+**Status:** Implemented in the provider-neutral contract, Archive controller, and explicit fixture-backed UI; the live provider, first-use disclosure sheet, and credential mechanism remain open decision 18.
+
+The owner chose explicit serving-time generation. Only the final `Generate saying` action or `Try another` may call the Archive saying provider, and one action starts at most one attempt without automatic retries or fan-out; app load, badge selection, detail or activation-form opening, activation, ceremony or replay, reload, restore, and background work must make zero calls. On first use or after provider or field-scope change, the initial generate action opens the exact provider-and-payload review without calling, and only the review sheet's final generate action may send.
+
+The model prompt contains only title, criterion, and optional saying-specific direction; internal request identity and cancellation state remain outside it. That closed direction may contain bounded curated non-personal theme cues, voice, variation, and deliberately supplied user direction so copy can be unmistakably related to the badge. User direction may contain personal text and must be previewed verbatim, while no direction is inferred from notes, dates, occurrence history, accepted sayings, visibility, artwork, or other private state. The exact prompt v1, strict size ceilings, closed JSON request shape, and closed JSON response validation live in `docs/design/product-spec.md`.
+
+Generation remains a non-destructive proposal. The accepted or handwritten line survives requests, retries, malformed output, cancellation, failure, and stale completion until the user explicitly chooses `Use this saying`; manual writing remains available without any provider.
+
 ## 2026-08-23 — D-034: Start the one-site launcher without a pre-release migration surface
 
 **Status:** Implemented; supersedes only D-033's recovery path and reservation of port `4174`, while retaining D-033's one-site topology, origin continuity, verification isolation, and application boundaries.

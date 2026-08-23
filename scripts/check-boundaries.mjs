@@ -166,6 +166,7 @@ function assertNoExternal(scope, forbiddenRoots) {
 
 assertNoReachable("apps/archive-web/src", [
   "apps/studio-web/src",
+  "packages/art-generation-contract/src",
   "packages/authoring-request-contract/src",
   "packages/pack-compiler/src",
 ]);
@@ -173,6 +174,7 @@ assertNoReachable("apps/studio-web/src", [
   "apps/archive-web/src",
   "packages/archive-application/src",
   "packages/archive-domain/src",
+  "packages/saying-contract/src",
 ]);
 assertNoReachable("packages/archive-domain/src", [
   "apps",
@@ -182,11 +184,19 @@ assertNoReachable("packages/archive-domain/src", [
 assertNoReachable("packages/archive-application/src", ["apps", "packages/renderer-web/src"]);
 assertNoReachable("packages/pack-contract/src", ["apps", "packages/renderer-web/src"]);
 assertNoReachable("packages/pack-compiler/src", ["apps", "packages/renderer-web/src"]);
+assertNoReachable("packages/saying-contract/src", [
+  "apps",
+  "packages/archive-application/src",
+  "packages/archive-domain/src",
+  "packages/art-generation-contract/src",
+  "packages/renderer-web/src",
+]);
 
 assertNoExternal("packages/archive-domain/src", ["react", "idb", "three", "@react-three"]);
 assertNoExternal("packages/archive-application/src", ["react", "three", "@react-three"]);
 assertNoExternal("packages/pack-contract/src", ["react", "idb", "three", "@react-three"]);
 assertNoExternal("packages/pack-compiler/src", ["react", "idb", "three", "@react-three"]);
+assertNoExternal("packages/saying-contract/src", ["react", "idb", "three", "@react-three"]);
 
 for (const scope of ["apps", "packages", "scripts"]) {
   for (const file of filesUnder(scope)) {

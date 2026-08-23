@@ -1,4 +1,10 @@
-import type { ActivationInput, ArchiveRecord, ExactVisualPin, Visibility } from "@badge/archive-domain";
+import {
+  validateSaying,
+  type ActivationInput,
+  type ArchiveRecord,
+  type ExactVisualPin,
+  type Visibility,
+} from "@badge/archive-domain";
 
 interface ArchiveVisualDisplay {
   readonly sourceUrl: string;
@@ -10,23 +16,33 @@ export interface ActivationDraft {
   readonly occurredEnd: string;
   readonly note: string;
   readonly visibility: Visibility;
-  readonly saying: string;
 }
 
-export function defaultActivationDraft(saying: string): ActivationDraft {
+export interface SayingActivationState {
+  readonly editing: boolean;
+  readonly saving: boolean;
+  readonly hasUnsavedDraft: boolean;
+}
+
+export function defaultActivationDraft(): ActivationDraft {
   return {
     occurredStart: "",
     occurredEnd: "",
     note: "",
     visibility: "inherit",
-    saying,
   };
 }
 
-export function selectedSayingProposal(suggestions: readonly string[], index: number): string {
-  const selected = suggestions[index % suggestions.length];
-  if (selected === undefined) throw new Error("Badge saying proposals are empty; publish at least one line.");
-  return selected;
+export function sayingValidationMessage(title: string, value: string): string | null {
+  const validation = validateSaying(value);
+  if (validation.ok) return null;
+  return validation.code === "EMPTY"
+    ? `Saying for ${title} is empty; write or accept a one-line saying.`
+    : `Saying for ${title} has ${validation.graphemeCount} graphemes; use at most ${validation.limit}.`;
+}
+
+export function canActivateWithSaying(acceptedSaying: string | null, saying: SayingActivationState): boolean {
+  return Boolean(acceptedSaying) && !saying.editing && !saying.saving && !saying.hasUnsavedDraft;
 }
 
 export function selectedArchiveVisual(
@@ -51,7 +67,7 @@ export function activationInputFor(
     occurredEnd: draft.occurredEnd || draft.occurredStart,
     note: draft.note.trim() || null,
     visibility: draft.visibility,
-    saying: draft.saying,
+    saying: record.acceptedSaying ?? "",
     visualPin,
   };
 }
