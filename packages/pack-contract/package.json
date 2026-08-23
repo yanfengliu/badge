@@ -1,0 +1,14 @@
+{
+  "name": "@badge/pack-contract",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@badge/render-recipe": "0.0.0",
+    "fflate": "0.8.3",
+    "zod": "4.4.3"
+  }
+}

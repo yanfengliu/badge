@@ -1,5 +1,6 @@
 # Devlog Summary
 
+- 2026-08-23: Shipped the first runnable local Archive and developer-only Studio slice with four crafted badges, qualified-identity and state-preserving recovery, bounded non-destructive image work, dependency-closed pack-and-theme publication, and live 3D or static fallback inspection.
 - 2026-08-22: Split visual authoring into a developer-only Badge Studio and made the everyday Archive consume only validated, immutable packs whose artwork and 3D presentation are already decided.
 - 2026-08-22: Recorded the owner's standing authorization for ordinary verified pushes to `github.com/yanfengliu/badge`, excluding force-pushes, history rewrites, other remotes, and gate bypasses.
 - 2026-08-22: Promoted badges to real-time 3D artifacts with dynamic lighting, mouse examination, engine-neutral saved recipes, accessible controls, and GPU recovery or fallback requirements.

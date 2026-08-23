@@ -1,0 +1,13 @@
+{
+  "name": "@badge/pack-compiler",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@badge/pack-contract": "0.0.0",
+    "fflate": "0.8.3"
+  }
+}

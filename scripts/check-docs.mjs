@@ -3,10 +3,19 @@ import path from "node:path";
 import process from "node:process";
 
 const root = process.cwd();
-const ignoredDirectories = new Set([".git", "coverage", "dist", "node_modules", "tmp"]);
+const ignoredDirectories = new Set([
+  ".git",
+  ".playwright-cli",
+  "coverage",
+  "dist",
+  "node_modules",
+  "output",
+  "tmp",
+]);
 const binaryExtensions = new Set([
   ".avif",
   ".badgearchive",
+  ".badgeevidence.json",
   ".badgepack",
   ".badgestudio",
   ".badgetheme",
@@ -109,11 +118,15 @@ for (const filePath of markdownFiles) {
 for (const filePath of files) {
   const fileStat = await stat(filePath);
   const extension = path.extname(filePath).toLowerCase();
+  const binaryLike =
+    binaryExtensions.has(extension) || relative(filePath).toLowerCase().endsWith(".badgeevidence.json");
 
-  if (binaryExtensions.has(extension) && fileStat.size > 512 * 1024) {
+  if (binaryLike && fileStat.size > 512 * 1024) {
     failures.push(`${relative(filePath)}: binary is ${fileStat.size} bytes, above the 512 KiB fleet ceiling`);
-  } else if (binaryExtensions.has(extension) && fileStat.size > 256 * 1024) {
-    warnings.push(`${relative(filePath)}: binary is ${fileStat.size} bytes and needs a stated repository-input reason`);
+  } else if (binaryLike && fileStat.size > 256 * 1024) {
+    warnings.push(
+      `${relative(filePath)}: binary is ${fileStat.size} bytes and needs a stated repository-input reason`,
+    );
   } else if (fileStat.size > 1024 * 1024) {
     failures.push(`${relative(filePath)}: file is ${fileStat.size} bytes, above the 1 MiB fleet ceiling`);
   }
@@ -137,7 +150,9 @@ const fleetPath = path.resolve(root, "../fleet/FLEET.md");
 if (await pathExists(fleetPath)) {
   const fleetText = normalizeNewlines(await readFile(fleetPath, "utf8"));
   const fleetMatch = fleetText.match(/^## Fleet constitution\n[\s\S]*?(?=\n## Repo file shape)/m);
-  const agentsMatch = agentsText.match(/<!-- FLEET-CANON:BEGIN[^\n]*-->\n([\s\S]*?)\n<!-- FLEET-CANON:END -->/);
+  const agentsMatch = agentsText.match(
+    /<!-- FLEET-CANON:BEGIN[^\n]*-->\n([\s\S]*?)\n<!-- FLEET-CANON:END -->/,
+  );
 
   if (!fleetMatch || !agentsMatch) {
     failures.push("AGENTS.md: could not locate comparable fleet constitution blocks");
@@ -159,5 +174,7 @@ if (failures.length > 0) {
 
   process.exitCode = 1;
 } else {
-  console.log(`Documentation checks passed: ${markdownFiles.length} Markdown files, ${checkedLinks} local links, AGENTS.md ${agentsLines} lines.`);
+  console.log(
+    `Documentation checks passed: ${markdownFiles.length} Markdown files, ${checkedLinks} local links, AGENTS.md ${agentsLines} lines.`,
+  );
 }

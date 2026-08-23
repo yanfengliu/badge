@@ -1,0 +1,10 @@
+{
+  "name": "@badge/catalogue-fixtures",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./archive": "./src/archive.ts",
+    "./studio": "./src/studio.ts"
+  }
+}

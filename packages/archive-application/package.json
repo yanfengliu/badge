@@ -1,0 +1,15 @@
+{
+  "name": "@badge/archive-application",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@badge/archive-domain": "*",
+    "@badge/pack-contract": "*",
+    "idb": "8.0.3",
+    "zod": "4.4.3"
+  }
+}

@@ -143,7 +143,9 @@ vite.config.ts.timestamp-*
 .vite/
 
 # Task-owned review and browser evidence
+/.playwright-cli/
 /tmp/
+/output/
 
 # Local Badge handoffs and backups
 *.badgebrief
@@ -151,3 +153,4 @@ vite.config.ts.timestamp-*
 *.badgetheme
 *.badgearchive
 *.badgestudio
+*.badgeevidence.json

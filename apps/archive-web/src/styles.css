@@ -1,0 +1,222 @@
+:root {
+  color: #292720;
+  background: #f1ece2;
+  font-family: Aptos, "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --paper: #f3eee4;
+  --paper-bright: #faf7f0;
+  --paper-deep: #e7dfd2;
+  --ink: #28261f;
+  --ink-soft: #5f5a50;
+  --ink-faint: #6f685e;
+  --rule: #d3cabd;
+  --rust: #ae4d2d;
+  --rust-dark: #913c22;
+  --mineral: #2f716d;
+  --focus: #17656b;
+  --success: #536b58;
+  --danger: #963c32;
+  --display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+  --ease: cubic-bezier(0.2, 0.72, 0.2, 1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  background: var(--paper);
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background: var(--paper);
+}
+
+.loading-screen {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  color: var(--ink-soft);
+  font-family: var(--display);
+  font-size: 22px;
+}
+
+.loading-screen div {
+  display: grid;
+  max-width: 620px;
+  gap: 12px;
+  padding: 28px;
+  border: 1px solid var(--rule);
+  background: var(--paper-bright);
+}
+
+.loading-screen span {
+  color: var(--danger);
+  font-family: Aptos, "Segoe UI", sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button,
+label,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+button {
+  color: inherit;
+}
+
+.archive-shell {
+  min-height: 100vh;
+  background: var(--paper);
+}
+
+.archive-header {
+  position: relative;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) auto minmax(220px, 1fr);
+  align-items: center;
+  min-height: 74px;
+  padding: 0 clamp(24px, 3.5vw, 58px);
+  border-bottom: 1px solid var(--rule);
+  background: color-mix(in srgb, var(--paper-bright) 88%, transparent);
+  backdrop-filter: blur(14px);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  width: max-content;
+  font-family: var(--display);
+  font-size: 20px;
+  letter-spacing: -0.015em;
+}
+
+.brand svg {
+  width: 25px;
+  height: 25px;
+  color: var(--rust);
+}
+
+.archive-nav {
+  display: flex;
+  align-self: stretch;
+  gap: 36px;
+}
+
+.nav-link {
+  position: relative;
+  border: 0;
+  background: transparent;
+  color: var(--ink-soft);
+  cursor: pointer;
+  font-size: 14px;
+  letter-spacing: 0.015em;
+}
+
+.nav-link[aria-current="page"] {
+  color: var(--ink);
+}
+
+.nav-link:disabled {
+  color: var(--ink-faint);
+  cursor: default;
+}
+
+.nav-link[aria-current="page"]::after {
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  background: var(--rust);
+  content: "";
+}
+
+.header-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.quiet-button,
+.icon-button,
+.primary-button,
+.secondary-button,
+.text-button {
+  min-height: 44px;
+  border: 1px solid var(--rule);
+  border-radius: 7px;
+  cursor: pointer;
+  transition:
+    background 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease,
+    transform 140ms var(--ease);
+}
+
+.studio-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.quiet-button,
+.secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 15px;
+  background: transparent;
+  font-size: 13px;
+}
+
+.quiet-button:hover,
+.secondary-button:hover {
+  border-color: #a99f91;
+  background: rgba(255, 255, 255, 0.38);
+}
+
+.avatar {
+  display: grid;
+  width: 42px;
+  min-height: 42px;
+  padding: 0;
+  place-items: center;
+  border-color: #34312a;
+  border-radius: 50%;
+  background: #302e27;
+  color: #f5efe4;
+  font-family: var(--display);
+  font-size: 15px;
+}
+
+.archive-main {
+  display: grid;
+  grid-template-columns: minmax(570px, 7fr) minmax(410px, 5fr);
+  min-height: calc(100vh - 74px);
+}

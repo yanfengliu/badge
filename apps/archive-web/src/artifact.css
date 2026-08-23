@@ -1,0 +1,198 @@
+.artifact-pane,
+.story-pane {
+  position: relative;
+  min-width: 0;
+}
+
+.artifact-pane {
+  display: grid;
+  grid-template-rows: auto minmax(430px, 1fr) auto;
+  gap: 20px;
+  overflow: hidden;
+  padding: clamp(34px, 4vw, 58px) clamp(32px, 4vw, 62px) 34px;
+  border-right: 1px solid var(--rule);
+  background: #eee8dc;
+}
+
+.artifact-pane::before {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='520' height='360' viewBox='0 0 520 360'%3E%3Cg fill='none' stroke='%23877d6d' stroke-opacity='.13' stroke-width='1'%3E%3Cpath d='M-40 92C46 4 134 11 178 73s115 73 176 8 134-40 205 25'/%3E%3Cpath d='M-43 113c90-82 174-74 217-17s117 67 178 8 137-34 209 30'/%3E%3Cpath d='M-48 137c97-75 179-64 220-13s118 60 180 7 141-28 211 35'/%3E%3Cpath d='M-52 165c104-66 184-54 223-10s120 51 183 5 145-20 212 42'/%3E%3C/g%3E%3C/svg%3E");
+  background-position: center 40%;
+  background-size: 760px auto;
+  content: "";
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.collection-heading,
+.artifact-stage,
+.badge-rail {
+  position: relative;
+  z-index: 1;
+}
+
+.collection-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--rust);
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.collection-heading h1 {
+  max-width: 640px;
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(28px, 3vw, 43px);
+  font-weight: 400;
+  letter-spacing: -0.025em;
+}
+
+.progress-copy {
+  flex: 0 0 auto;
+  min-width: 116px;
+  padding-bottom: 5px;
+  text-align: right;
+}
+
+.progress-copy strong,
+.progress-copy span {
+  display: block;
+}
+
+.progress-copy strong {
+  font-family: var(--display);
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.progress-copy span {
+  margin-top: 4px;
+  color: var(--ink-faint);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.artifact-stage {
+  min-height: 430px;
+}
+
+.visual-loading {
+  display: grid;
+  min-height: 320px;
+  margin: 0;
+  place-items: center;
+  color: var(--ink-soft);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+
+.artifact-status {
+  position: absolute;
+  top: 14px;
+  left: 0;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid rgba(85, 80, 70, 0.22);
+  border-radius: 999px;
+  background: rgba(248, 244, 235, 0.76);
+  color: var(--ink-soft);
+  backdrop-filter: blur(8px);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.artifact-status.earned {
+  color: var(--success);
+}
+
+.fallback-stage .badge-fallback__notice {
+  padding-left: 116px;
+}
+
+.badge-rail {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 9px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule);
+}
+
+.badge-thumb {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  min-height: 74px;
+  padding: 7px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.badge-thumb:hover {
+  background: rgba(255, 255, 255, 0.34);
+}
+
+.badge-thumb[aria-current="true"] {
+  border-color: var(--rust);
+  background: rgba(255, 250, 241, 0.62);
+}
+
+.thumb-art {
+  width: 58px;
+  height: 58px;
+  border: 3px solid #70685c;
+  border-radius: 50%;
+  background-position: center;
+  background-size: cover;
+  box-shadow: inset 0 0 0 1px rgba(250, 245, 236, 0.5);
+}
+
+.badge-thumb:nth-child(2) .thumb-art {
+  border-radius: 12px;
+}
+
+.badge-thumb:nth-child(3) .thumb-art {
+  clip-path: polygon(50% 0, 94% 15%, 84% 76%, 50% 100%, 16% 76%, 6% 15%);
+  border-radius: 0;
+}
+
+.thumb-copy strong,
+.thumb-copy span {
+  display: block;
+}
+
+.thumb-copy strong {
+  overflow: hidden;
+  font-family: var(--display);
+  font-size: 13px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.thumb-copy span {
+  margin-top: 4px;
+  color: var(--ink-faint);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}

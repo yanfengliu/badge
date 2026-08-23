@@ -11,6 +11,7 @@ const forbiddenExportExtensions = new Set([
   ".badgestudio",
   ".badgetheme",
 ]);
+const forbiddenExportSuffixes = [".badgeevidence.json"];
 const credentialPatterns = [
   ["private key", /-----BEGIN (?:DSA |EC |OPENSSH |RSA )?PRIVATE KEY-----/],
   ["OpenAI-style key", /\bsk-(?:proj-)?[A-Za-z0-9_-]{20,}\b/],
@@ -41,7 +42,10 @@ for (const file of stagedFiles) {
   const extension = path.posix.extname(normalized).toLowerCase();
   let forbiddenByName = false;
 
-  if (forbiddenExportExtensions.has(extension)) {
+  if (
+    forbiddenExportExtensions.has(extension) ||
+    forbiddenExportSuffixes.some((suffix) => normalized.toLowerCase().endsWith(suffix))
+  ) {
     failures.push(`${normalized}: local Badge handoff or backup files must not be committed`);
     forbiddenByName = true;
   }

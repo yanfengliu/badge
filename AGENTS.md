@@ -6,7 +6,7 @@ Badge is a desktop-first, local-first web app for one person to plan, create, ac
 
 The first version has no accounts, server, social graph, external verification, or public publishing; those are later possibilities, not implicit scope.
 
-The repository is documentation-only today. The provisional implementation direction is Node 24 + TypeScript + React + Vite with browser-local persistence; do not claim a stack component exists until it is scaffolded.
+The repository contains a first runnable Node 24 + TypeScript + React + Vite vertical slice with separate Archive and Studio applications, strict shared contracts, browser-local persistence, pack compilation and admission, deterministic fixture art, and a React Three Fiber renderer; distinguish this implemented foundation from later roadmap scope.
 
 Read the repo-specific rules in [docs/policies/local-rules.md](docs/policies/local-rules.md). They bind alongside the fleet constitution and win where they are stricter.
 
@@ -38,9 +38,9 @@ Read the repo-specific rules in [docs/policies/local-rules.md](docs/policies/loc
 
 ## Gates
 
-Documentation-only phase: `node --check scripts/check-docs.mjs` · `node --check scripts/check-staged-secrets.mjs` · `node scripts/check-docs.mjs` · `git diff --check`; before commit, stage the exact unit, then run `node scripts/check-staged-secrets.mjs` and `git diff --cached --check`.
+Use Node 24 (`.nvmrc`). Run `npm run typecheck` · `npm run lint` · `npm test` · `npm run build` · `npm run check:boundaries` · `npm run check:docs` · `npm run format:check` · `npm run audit`; visual changes also require the headless browser-flow and multi-angle screenshot sweep described below.
 
-Before the first code commit, replace this paragraph with real executable gates from the scaffold; the intended baseline is test, typecheck, lint, build, browser-flow verification, and dependency audit, but nonexistent commands are not gates.
+Before commit, stage the exact unit, then run `node scripts/check-staged-secrets.mjs` and `git diff --cached --check`.
 
 ## Session start
 

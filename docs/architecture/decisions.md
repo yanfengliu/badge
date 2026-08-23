@@ -2,6 +2,128 @@
 
 Append decisions newest first. Never rewrite history; add a superseding entry that links to the decision it replaces.
 
+## 2026-08-23 — D-031: Separate candidate identity from content identity
+
+**Status:** Implemented for the foundation Studio store and restore path; this strengthens D-022's non-destructive asset model and D-027's reviewed-source snapshot.
+
+Content hashes identify immutable bytes, but they do not identify why those bytes are a candidate. One source may legitimately be both an admitted generated fixture and a user upload, and a deterministic treatment may produce the same output bytes from both. Version-2 original rows therefore keep a bounded set of exact admitted candidate identities, while version-2 derivative rows keep a bounded set of exact `(parentHash, operation, parentCandidateIdentity, candidateIdentity)` lineages. Candidate identities use a bounded transform digest rather than recursively embedding their ancestors, and generated-original identities are accepted only when they match known fixture contracts.
+
+Every derivative identity is recomputed from its exact parent identity and operation during write and read validation. A transaction validates the complete asset-store snapshot plus the proposed add or lineage merge before mutation, so missing parents, substitutions, and cycles—including output bytes equal to an ancestor—fail without changing the graph. Content deduplication may merge exact lineages into one binary row, but candidate restore emits each identity separately and React keys use candidate identity rather than content hash.
+
+Version-1 rows remain readable and preserved. A legacy fixture original is promoted with both plausible generated and uploaded identities instead of silently choosing one; an ambiguous legacy draft restores with no selection and suppresses autosave, processing, and publication until an explicit choice. Version-1 derivatives do not bind parent candidate provenance strongly enough to publish, so they remain stored but are not relabeled or selectable; applying the treatment again creates a version-2 lineage.
+
+## 2026-08-23 — D-030: Couple every destructive restore confirmation to its exact safety snapshot
+
+**Status:** Implemented for normal foundation restore and readable-state replacement; this strengthens D-026's safety handoff and D-025's recovery ordering.
+
+The safety export operation returns the exact structured-clone-normalized Archive state from the same repository snapshot used to create the downloaded bytes. Final normal restore compares the current state with that checkpoint inside its write transaction before monotonic validation or any write. Readable incompatible-state replacement requires the checkpoint, compares it before recovery inspection, and retains the separate inspection-to-commit compare-and-swap. A second tab or intervening local action therefore produces an actionable `RESTORE_CONFLICT` that requires a new safety export and confirmation instead of silently overwriting even an unearned saying or lifecycle change.
+
+Startup audits every earned visual source before classifying readable state compatibility. When state is both incompatible and source-damaged, the first explicit recovery repairs and quarantines source evidence without replacing readable state; the clean post-repair audit can then promote a new, separately confirmed readable-state replacement. This ordering keeps a damaged earned source from making the required safety export impossible while preserving both recovery stages and their evidence.
+
+If an earned historical source is unavailable even to trusted repair inputs, a complete current backup is impossible. For readable but incompatible state, Archive then offers a separate `.badgeevidence.json` state rescue containing the exact readable state and digest, the omitted earned-source hashes, and a fixed declaration that it is non-restorable and excludes source art. The final replacement remains bound to that exact state checkpoint and a second saved-copy confirmation. This privacy-sensitive evidence file is ignored and explicitly rejected by the staged-delivery gate just like a backup.
+
+Replacement eligibility is rederived from the exact state exported at the safety handoff rather than trusted from the tab that opened the dialog. If another tab has made that snapshot compatible and its earned sources are complete, Archive cancels replacement, offers the full backup, and continues only through normal monotonic restore. If the snapshot is compatible but its sealed art is incomplete, Archive cancels replacement and returns to explicit repair. Only an exact incompatible snapshot whose source failure prevents a complete backup can produce state-only rescue evidence; the later compare-and-swap covers changes after that classification.
+
+## 2026-08-23 — D-029: Preserve one inspection session across appearance comparison
+
+**Status:** Implemented for the shared Archive and Studio renderer foundation; this strengthens D-017's renderer-candidate lifecycle and fallback claims.
+
+Live 3D and static fallback derive one normalized source rectangle from the decoded source aspect, the exact circle, square, rectangle, or shield framing aspect, and the recipe crop focus and scale. The live texture transform and fallback image placement consume that same rectangle, so a wide or tall source cannot stretch or reframe when capability changes. Front, edge, and back fallback views occupy one responsive shape-aware object frame, including border-box edge sizing, so they represent one physical height.
+
+Ordinary recipe edits preserve the mounted Canvas and WebGL context plus ephemeral yaw, pitch, zoom, light position, interaction mode, engagement, capability, and fallback view while Studio compares appearance. Source replacement starts a new viewer session, while within a continuously live surface an explicit recovery generation rather than recipe content changes the renderer remount key. Source-texture clones invalidate only for a new decoded source, graphics context, shape, or crop; border, color, thickness, relief, and material edits reuse the existing texture framing. Wheel input belongs to one exact native `{ passive: false }` listener that prevents page scrolling only while the viewer is engaged and removes that same listener during cleanup.
+
+Forced fallback is a genuine no-GPU control: first render skips the WebGL2 capability probe and never mounts a live Canvas. Disabling that control schedules one cancellable probe before live construction. Renderer contracts cover non-square source framing equivalence, every shape's fallback geometry, non-passive engaged-only wheel ownership, a twenty-step recipe edit without Canvas or texture-framing churn, viewer-session preservation, explicit recovery remount identity, source-change reset, and zero probe invocation in forced mode.
+
+## 2026-08-23 — D-028: Close Archive backup references before one aggregate image budget
+
+**Status:** Implemented for `.badgearchive` v2 creation and parsing; this extends D-024's decoded-memory rule to the personal backup boundary.
+
+Archive backup parsing compares the canonical state references with the manifest source table before hashing, PNG structure validation, or inflation, so missing and unreferenced payloads fail before hostile image work. Every required PNG is then charged against one conservative `64 MiB` aggregate decoded-image budget, and the source that would cross the remaining budget is refused before inflation. Backup creation applies the same closure and aggregate invariant so Archive cannot emit a file its own parser must reject.
+
+## 2026-08-23 — D-027: Bind each Studio publication to its reviewed source snapshot and exact theme capabilities
+
+**Status:** Implemented for foundation fixture and uploaded candidates; this strengthens D-022 and D-024.
+
+The exact admitted theme must declare every published recipe's shape and material as well as the visual's front, edge, and back fallback template IDs. Studio attaches each integrity-checked built-in candidate Blob to the candidate state at startup, and processing and publication fail closed when that verified snapshot is unavailable; a display URL is never re-fetched as authoritative release input. Uploaded and derived candidates already carry their immutable Blob snapshots, so the bytes reviewed, normalized, hashed, and compiled share one content lineage.
+
+## 2026-08-23 — D-026: Replace readable but incompatible Archive state only after a safety handoff
+
+**Status:** Implemented for the four-record foundation UI; this narrows D-025's statement that only unreadable state is replaced.
+
+Source-repair recovery still preserves every readable compatible personal value. When schema-valid local state fails the current Archive's starter compatibility contract, the UI may instead enter an explicit readable-state replacement mode: it first validates a compatible incoming backup, offers a self-contained backup of the current readable Archive without mutation, and only a second confirmation that the file was saved may quarantine the exact prior row with an incompatible-readable-state reason and atomically install the selected state. The recovered state then passes the starter-identity assertion and earned-visual audit again before the Archive opens; a failed safety export or post-recovery check never authorizes the UI to continue.
+
+## 2026-08-23 — D-025: Repair damaged Archive data without rewriting readable personal state
+
+**Status:** Implemented for the foundation Archive restore and recovery boundary; this supersedes D-021 where it permitted an earned starter record to carry an unrelated qualified identity.
+
+An earned backup may preserve its historical title, criterion, description, source hash, visual edition, version, and digest only while its complete qualified `DefinitionRef` and the `packId` lineage of both its published visual and activation pin remain the expected starter identity. Archive renders the self-contained earned record's historical semantics instead of silently substituting current fixture copy. A same-record rebind to another definition or pack fails before startup or restore mutation.
+
+Explicit recovery is a repair operation, not an alternate unchecked restore. When current state is readable, recovery preserves its validated personal values without applying incoming state and only quarantines and repairs damaged referenced source rows; only unreadable state is quarantined and replaced from the backup. Startup audits earned visual sources so this path is reachable, file size is refused before browser allocation, structured-clone compare-and-swap distinguishes binary and built-in container values, and a normal restore separates offering a safety backup from the user's later explicit confirmation that it was saved.
+
+## 2026-08-23 — D-024: Admit only dependency-closed runtime bytes within one decoded-memory budget
+
+**Status:** Implemented for canonical foundation packs; this strengthens D-020's executable closure claim without implementing Archive installation or durable release ledgers.
+
+Every object named in a pack manifest must be reachable from a runtime manifest field, so rejected candidates, private originals, and arbitrary side media cannot hitchhike in an otherwise valid pack. Independently admitted root and dependency bytes are then checked as one exact graph: every declared `PackRef` must be supplied, extras, cycles, duplicates, and same-version forks fail, and every visual's front, edge, and back fallback template IDs must exist in its exact admitted theme.
+
+PNG admission charges the larger of its exact scanline decode size and conservative browser RGBA footprint against both the per-image and aggregate `64 MiB` decoded-image budget before inflation. Badge Studio takes a synchronous operation lock before upload, processing, or publication crosses its first asynchronous boundary, preventing pending work or edits from changing the displayed selection while different release bytes are frozen. Both fixture generation and Studio publication run the dependency-closure validator before offering files.
+
+## 2026-08-23 — D-023: Run the same admission source in plain Node and application builds
+
+**Status:** Implemented for the pack-contract boundary.
+
+The fixture generator imports the real `@badge/pack-contract` TypeScript source and runs `admitPack` under the repository's pinned Node 24 runtime before writing either artifact. Production-relative imports inside that package use explicit `.ts` specifiers, the no-emit root TypeScript config permits them, and the transitive Node-loaded path uses erasable TypeScript syntax so Node's built-in type stripping needs no loader or transform flag. The direct `node scripts/generate-pack-fixtures.mjs` build step is the regression gate because Vitest and Vite otherwise mask plain-Node resolution differences.
+
+This was selected after plain Node failed first on extensionless imports and then on `.js` specifiers that had no emitted sibling. The deliberately different alternatives were a pinned but experimental Vite runner and a task-local TypeScript compilation; both worked, but each added a runtime tool boundary or temporary build lifecycle. Executing one validator source directly avoids validator drift, extra processes, shared generated code, and experimental runtime hooks.
+
+## 2026-08-23 — D-022: Refuse unsafe image geometry before browser decode and freeze publication inputs
+
+**Status:** Implemented for the foundation Studio boundary.
+
+Studio accepts declared PNG, JPEG, or WebP uploads no larger than `16 MiB` and parses their bounded container headers before invoking `createImageBitmap`. It rejects either axis above `8192` pixels or more than `16,777,216` pixels, then verifies that decoded geometry matches the header directly or by an exact width-and-height swap to accommodate browser-applied orientation. Every created bitmap is closed, and a stored asset that fails the same checks is refused rather than trusted because it previously passed a write path.
+
+Publication copies the selected bytes and schema-parses a detached render recipe before its first asynchronous step, then uses only those snapshots for validation, hashing, versioning, and compilation. These constraints prevent a compact decompression bomb from reaching native decode before a geometry decision and prevent mutable `Uint8Array` or recipe aliases from changing the release after validation but before canonical bytes are frozen.
+
+## 2026-08-23 — D-021: Preserve frozen earned lineage while refusing unearned starter substitution
+
+**Status:** Implemented for the four-record foundation Archive; the general installed-pack restore contract remains D-015 and the backup target.
+
+Foundation restore accepts exactly the four starter record IDs. An incoming record that remains unearned must match the current complete immutable starter definition and published-visual lineage, while an earned record under one of those IDs may preserve divergent historical lineage because its exact source bytes and frozen recipe travel in the self-contained backup. Existing earned records can never be omitted or changed by normal restore; an unearned current record may become an earned self-contained replacement but may not be replaced by different unearned catalogue content.
+
+Normal restore validates every source byte carried for incoming earned records; corrupt-store recovery inspects every reference recoverable from valid current state plus every incoming reference. Corrupt bytes are quarantined; only an exact hash-checked built-in source may repair a trusted starter reference, and an unavailable or unknown required source fails before state mutation. This deliberately favors preservation of an honestly earned historical edition without letting an old or crafted backup silently rewrite the current unearned catalogue.
+
+## 2026-08-23 — D-020: Make fixture pack identity executable and closed
+
+**Status:** Implemented for the foundation fixture path; D-015's durable reservation and install ledgers remain required.
+
+The built-in fixture generator compiles and independently admits actual canonical `badge.theme.heirloom@1.0.0` bytes with digest `92ec4fd60efdabbc925e3e1077c4a1f1f05ccfad79466d9f386e027e815ca910` and actual canonical `badge.catalogue.starter@1.0.0-alpha.3` bytes with digest `5b7135a70477130907050a9921da342e927980838ee9b1ae03a4d41809c6ffe3`. The catalogue manifest depends on that exact theme `PackRef`; any mutable fixture input that changes either digest fails generation and requires a reviewed version bump rather than creating a same-version fork.
+
+Studio fixture publication now offers the independently admitted targeted `.badgepack` and its exact independently admitted `.badgetheme` dependency together. Generated binaries remain ignored build artifacts reproducible from tracked small source inputs and compiler code. From a clean clone, `npm run generate:fixtures` first derives Archive PNG inputs and then writes `tmp/generated/pack-fixtures/heirloom-<digest>.badgetheme` and `tmp/generated/pack-fixtures/starter-<digest>.badgepack` after compilation, pin checks, and independent admission. This proves real bytes, canonical identity, and dependency closure without claiming the still-unimplemented Archive pack installer, seen-release ledger, Studio prepared-release persistence, cross-platform golden result, or confirmed disk write.
+
+## 2026-08-23 — D-019: Admit durable source formats only after bounded full decoding
+
+**Status:** Implemented for the foundation Archive boundary.
+
+Archive accepts durable source art only as strict PNG validated independently and locally before every write and during visual reads, backup creation, restore, and corrupt-data recovery. The validator performs bounded inflate, exact DEFLATE framing, chunk CRC, Adler-32, dimension, scanline-length, filter, and canonical-chunk checks. Studio may ingest WebP or JPEG before PNG publication. The four tracked Archive artwork inputs remain compact WebP developer sources, but a pinned offline build tool verifies their exact hashes, decodes them sequentially, and writes deterministic filter-0 RGBA PNG derivatives into an ignored directory; fixed output hashes and strict PNG validation prevent generated bytes from changing a published pin silently.
+
+This decision followed a fixed adversarial benchmark: a corrupt PNG whose IDAT CRC and whole-file hash were recomputed passed header-only validation, Chromium's image APIs also accepted it, and a local WebP decoder returned pixels while ignoring malformed trailing bitstream bytes. Tracking 896-pixel strict PNGs exceeded the Git blob ceiling, while smaller conversions visibly lost engraving detail. Build-derived PNGs preserve the decoded 896-pixel artwork exactly without entering Git, and the everyday Archive contains no WebP decoder, WASM, or relaxed script policy. This is a pre-release contract correction in the repository's first code commit; no supported user WebP state or backup format was released.
+
+## 2026-08-23 — D-018: Use content-addressed prerelease versions and canonical PNG objects in the foundation
+
+**Status:** Implemented interim release rule; D-015's durable prepared-release and reservation ledgers remain required before general pack installation.
+
+The first Studio slice normalizes selected pixels to a metadata-free PNG, validates the PNG structure from bytes in both compiler and admission, and derives the prerelease version from the complete unversioned canonical manifest. Repeating identical input produces identical bytes and a changed manifest produces a different version, so this single-project browser handoff cannot create a same-version fork merely by changing art, recipe, provenance, or accessibility copy.
+
+The downloaded pack is frozen and its exact bytes can be offered again during the current publish state while the working draft remains separate. A reload reopens the editable local draft; the foundation does not claim a durable `PreparedRelease`, `ReservedPackRelease` ledger, publish history, or file-write confirmation until the later D-015 slice implements and backs them up.
+
+## 2026-08-23 — D-017: Implement React Three Fiber as the measured renderer candidate
+
+**Status:** Experimental implementation; D-012 remains provisional until the complete Phase 0 renderer gate passes.
+
+The first runnable slice uses Three.js with React Three Fiber for demand-rendered live geometry, immutable source textures, physical material response, shadows, pointer and keyboard rotation, bounded zoom, independent light movement, reset controls, context-loss fallback, and deterministic CSS front, edge, and back fallback views. Only the engine-neutral `RenderRecipe` persists; camera, light, loader, texture, geometry, material, canvas, and GPU state remain renderer-owned and ephemeral.
+
+Headless Chromium proved live front, oblique, edge, back, zoom, light-mode, recipe replacement, forced fallback, and reduced-origin reload flows across two desktop-like viewports, and unit tests prove renderer-neutral state bounds and geometry construction. This evidence is enough to keep the candidate in the scaffold but not enough to accept the engine: the instrumented performance budget, 50-cycle lifecycle and forced-failure stress gates, true context rebuild, resource counters, and reference-hardware report remain mandatory.
+
 ## 2026-08-22 — D-016: Use revisioned semantic briefs for custom Archive-to-Studio work
 
 **Status:** Provisional repository architecture until the custom-definition handoff slice proves revision, replay, and recovery behavior.

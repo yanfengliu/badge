@@ -1,0 +1,69 @@
+{
+  "name": "badge",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "generate:archive-fixtures": "node scripts/generate-archive-fixtures.mjs",
+    "generate:pack-fixtures": "node scripts/generate-pack-fixtures.mjs",
+    "generate:fixtures": "npm run generate:archive-fixtures && npm run generate:pack-fixtures",
+    "prestart": "npm run generate:fixtures",
+    "start": "node scripts/run-local.mjs",
+    "prestart:archive": "npm run generate:fixtures",
+    "start:archive": "vite --config apps/archive-web/vite.config.ts --host 127.0.0.1 --port 4173 --strictPort",
+    "start:studio": "vite --config apps/studio-web/vite.config.ts --host 127.0.0.1 --port 4174 --strictPort",
+    "predev:archive": "npm run generate:fixtures",
+    "dev:archive": "vite --config apps/archive-web/vite.config.ts --host 127.0.0.1 --port 5173 --strictPort --mode fixture",
+    "dev:studio": "vite --config apps/studio-web/vite.config.ts --host 127.0.0.1 --port 5174 --strictPort --mode fixture",
+    "build": "npm run build:archive && npm run build:studio",
+    "prebuild:archive": "npm run generate:fixtures",
+    "build:archive": "vite build --config apps/archive-web/vite.config.ts",
+    "postbuild:archive": "node scripts/check-archive-bundle.mjs",
+    "build:studio": "vite build --config apps/studio-web/vite.config.ts",
+    "preview:archive": "vite preview --config apps/archive-web/vite.config.ts --host 127.0.0.1 --port 4173 --strictPort",
+    "preview:studio": "vite preview --config apps/studio-web/vite.config.ts --host 127.0.0.1 --port 4174 --strictPort",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --max-warnings=0",
+    "format:check": "prettier . --check",
+    "test": "vitest run",
+    "check:boundaries": "node scripts/check-boundaries.mjs",
+    "check:docs": "node scripts/check-docs.mjs",
+    "audit": "npm audit --audit-level=high",
+    "verify": "npm run typecheck && npm run lint && npm run test && npm run build && npm run check:boundaries && npm run check:docs && npm run format:check && npm run audit"
+  },
+  "dependencies": {
+    "@react-three/drei": "10.7.8",
+    "@react-three/fiber": "9.7.0",
+    "fflate": "0.8.3",
+    "idb": "8.0.3",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "three": "0.185.1",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@jsquash/webp": "1.5.0",
+    "@types/node": "26.2.0",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
+    "@types/three": "0.185.4",
+    "@vitejs/plugin-react": "6.1.0",
+    "eslint": "10.9.0",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "eslint-plugin-react-refresh": "0.5.4",
+    "fake-indexeddb": "6.2.5",
+    "prettier": "3.9.6",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.67.0",
+    "vite": "8.2.2",
+    "vitest": "4.1.11"
+  }
+}
