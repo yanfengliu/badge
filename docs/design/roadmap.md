@@ -7,7 +7,7 @@ The phases establish the Archive–Studio release boundary before either applica
 ## Phase 0 — Boundary and rendering foundation
 
 - Scaffold a Node 24 npm workspace with strict TypeScript, React, Vite, Vitest, Playwright, ESLint, and Prettier, containing independently built Archive and Badge Studio applications.
-- Give Archive and Studio separate strict origins, development fixtures, build outputs, CSPs, service-worker scopes, navigation trees, IndexedDB databases, Blob stores, and visibly distinct backup formats.
+- Give Archive and Studio separate remembered strict origins selected as one adjacent pair, isolated development fixtures, build outputs, CSPs, service-worker scopes, navigation trees, IndexedDB databases, Blob stores, and visibly distinct backup formats.
 - Establish the package and dependency boundaries in `docs/architecture/ARCHITECTURE.md`, restricted imports, bundle-graph checks, and real commands in `AGENTS.md` before feature implementation.
 - Implement the minimal authoring-request contract and issued-request repository plus the canonical closed pack contract, Studio-only deterministic compiler, hostile Archive admission fixtures, exact `PackRef`, same-version-fork rejection, immutable installed versions, and pinning rules before using either handoff as application data.
 - Fail closed on unreadable stores, corrupt packs, wrong backup formats, or unresolved visuals and preserve useful recovery evidence.
@@ -20,7 +20,7 @@ The phases establish the Archive–Studio release boundary before either applica
 
 ### Exit criteria
 
-- Archive and Studio boot only at their own strict durable origins, disposable fixtures remain isolated on their development origins, schema upgrades and corrupt-store handling are tested, an origin change cannot make data silently disappear, and no personal data enters Git.
+- Archive and Studio boot only at their remembered durable origin pair, repeated startup reuses the exact applications already there, first selection can avoid unrelated listeners, disposable fixtures remain isolated on their development origins, schema upgrades and corrupt-store handling are tested, a later origin change cannot make data silently disappear, and no personal data enters Git.
 - Studio compiles the same frozen fixture into byte-identical packs across repeated supported-platform runs and a clean Archive independently validates and installs it. Wrong, corrupt, hostile, incomplete, same-version-different-digest, and cross-format inputs fail atomically with actionable errors.
 - Dependency and bundle inspection proves Archive contains no Studio route, compiler, candidate, upload processor, appearance editor, art prompt, art provider, or visual-generation endpoint.
 - Separate Archive and Studio fixture backups restore into clean instances with every referenced authoritative object; the Archive fixture includes an entirely unplanned installed pack. Attempting to restore either format into the other application is refused before mutation.

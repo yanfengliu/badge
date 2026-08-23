@@ -148,6 +148,7 @@ vite.config.ts.timestamp-*
 /output/
 
 # Local Badge handoffs and backups
+/.badge-local/
 *.badgebrief
 *.badgepack
 *.badgetheme

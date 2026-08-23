@@ -15,9 +15,11 @@ npm install
 npm start
 ```
 
-Open the everyday [Badge Archive](http://127.0.0.1:4173) and the developer-only [Badge Studio](http://127.0.0.1:4174).
+Open the exact Archive and Studio addresses printed by the launcher. Badge prefers `http://127.0.0.1:4173` and `http://127.0.0.1:4174`; if other software already owns either address on the first recorded launch, it selects an adjacent free pair and remembers it in the ignored `.badge-local/ports.json` machine-local file.
 
-`npm start` owns both local servers in one terminal; press `Ctrl+C` once to stop them.
+`npm start` probes both addresses every time. If the same Badge applications are already running, it prints their URLs and exits successfully instead of starting duplicates. Otherwise it owns the servers in one terminal; press `Ctrl+C` once to stop them.
+
+Do not delete or hand-edit `.badge-local/ports.json` after using the app. IndexedDB belongs to the full browser origin, including the port, so Badge reuses the remembered pair and refuses to jump away if another process later takes one of those ports. Stop that process and run `npm start` again. Archive can relocate through its explicit backup and restore flow; Studio project backup is not implemented yet, so do not move a Studio origin that contains work you need.
 
 Archive and Studio use different IndexedDB databases on different strict localhost origins. Archive backups download as `.badgearchive` and include the exact fully decoded and validated source bytes for every earned visual in this slice; restore preserves historical semantics and visuals only within the same qualified definition and pack lineage. Source-only repair never replaces readable compatible personal state; a separate recovery mode may quarantine and replace readable state this version cannot present, but only after offering a self-contained safety backup and receiving a second explicit saved-copy confirmation. If damaged historical art prevents that backup, Archive instead offers a clearly non-restorable `.badgeevidence.json` state rescue before the same explicit confirmation. Both formats contain personal data and stay outside Git. Studio uploads, candidates, derivatives, and drafts remain browser-local and outside Git.
 

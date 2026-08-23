@@ -1,5 +1,15 @@
 # Defect Register
 
+## 2026-08-23 — `npm start` failed when Badge was already using ports 4173 and 4174
+
+**Symptom:** Running `npm start` reported that ports `4173` and `4174` were already in use instead of opening or identifying a usable Archive and Studio.
+
+**Investigation:** `netstat` showed separate Node listeners on both ports, and direct HTTP reads identified their page titles as Badge Archive and Badge Studio. The launcher nevertheless always spawned two new Vite children with hardcoded ports and `--strictPort`; either `EADDRINUSE` failure then stopped the sibling. Cross-application links also hardcoded the same pair, so changing only Vite's fallback behavior would have produced broken navigation and, on every new port, apparently empty origin-scoped IndexedDB stores.
+
+**Root cause:** Startup treated fixed ports as process ownership rather than durable application identity. It had no Badge-specific origin marker, no preflight classification, no remembered pair, no safe first-selection fallback, and no idempotent reuse path.
+
+**Standing gate:** `local-launcher.test.mjs` covers complete and partial Badge reuse, first-selection fallback, unresolved-listener refusal, slow and wrong-role Badge identity, the exact markers shipped by both entry points, every adjacent-start parity, reserved-port skipping and record refusal, refusal to abandon a remembered origin, Badge-versus-foreign-versus-free inspection, same-pair and different-pair concurrent publication, read-during-publication invisibility, interrupted-publication cleanup, malformed-record preservation, and terminal stop-listener cleanup; `local-origins.test.ts` covers preferred, fixture, arbitrary, and maximum adjacent pairs. The browser control forced unrelated listeners onto `4173` and `4174`, launched Archive and Studio at `4180` and `4181`, loaded both applications, followed both companion links, and observed zero console errors. Separate Windows controls launched the exact `npm start` command, reused it from a second launcher, sent one `Ctrl+C`, observed the launcher process exit, and found no listeners left on either remembered port.
+
 ## 2026-08-23 — Archive stayed on “Opening your private archive…” for about 24.5 seconds
 
 **Symptom:** A fresh or reloaded Archive showed only “Opening your private archive…” for about 24.5 seconds before the four-badge collection appeared, despite all unit, build, and integrity gates passing.

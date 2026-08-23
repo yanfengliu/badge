@@ -2,6 +2,16 @@
 
 Append decisions newest first. Never rewrite history; add a superseding entry that links to the decision it replaces.
 
+## 2026-08-23 — D-032: Select a free durable origin pair once and make local startup idempotent
+
+**Status:** Implemented for the local launcher; supersedes D-009's fixed canonical-port requirement without weakening its data-continuity rule.
+
+`npm start` probes both applications before launching. If the exact Badge Archive and Studio are already present, it reuses them; if only one is present and its adjacent companion port is free, it starts only the missing application. This makes repeated startup successful without killing or duplicating an existing Badge process.
+
+When no machine-local origin record exists, Archive and Studio prefer `4173` and `4174`; if unrelated software owns either port, the launcher reserves an adjacent free pair, starts both strict servers there, and exclusively records that pair in ignored `.badge-local/ports.json`. Cross-application links derive the selected adjacent companion instead of hardcoding the preferred pair.
+
+The selection is dynamic only before a pair is remembered. Because IndexedDB includes the port in its origin, later occupation by unrelated software is an actionable startup error rather than permission to rotate to an apparently empty profile. A listener that fails or times out before returning the exact expected application marker is not guessed to be unrelated and blocks fallback with retry-or-stop guidance. Pair search checks every adjacent start rather than imposing undocumented parity. A malformed record is preserved, concurrent first writers publish a fully fsynced candidate through an atomic no-replace link, an older-origin warning accompanies first selection away from the preferred pair, and deliberate relocation still requires explicit backup or migration. The record stores addresses only and never personal or Studio state.
+
 ## 2026-08-23 — D-031: Separate candidate identity from content identity
 
 **Status:** Implemented for the foundation Studio store and restore path; this strengthens D-022's non-destructive asset model and D-027's reviewed-source snapshot.
