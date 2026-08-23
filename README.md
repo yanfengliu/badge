@@ -13,6 +13,7 @@ The repository is currently in its documentation-first phase; application code h
 - Private local activations, dates, notes, uploads, generated artwork, and backups.
 - Planned and earned badges, prebuilt collections, custom achievements, and automatically completed collection-level goals.
 - Multi-candidate art generation, user image uploads, non-destructive reprocessing, and customizable badge shape, material, border color, and border width.
+- A real-time 3D badge viewer with dynamic material lighting, mouse rotation, bounded zoom, and direct light adjustment so each artifact can be examined like a physical object.
 - Independent one-line saying authoring: generate or regenerate a proposal, accept it explicitly, or write the line directly without changing the badge art.
 - A quiet, elegant gallery with tactile, beautifully made badge art and a sharp, restrained activation ceremony.
 

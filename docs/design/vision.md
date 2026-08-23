@@ -11,7 +11,7 @@ There is no prize, authority, or external proof. Earning rests on personal hones
 ## Product pillars
 
 1. **Pride and memory come first.** Opening the app should bring back the feeling of visiting a place, finishing a book, earning a degree, or completing another meaningful chapter.
-2. **Achievements feel made, not counted.** Each badge is a substantial crafted object with beautiful art, a concise saying, and enough context to preserve the memory.
+2. **Achievements feel made, not counted.** Each badge is a substantial interactive 3D object with beautiful art, credible material and lighting, a concise saying, and enough context to preserve the memory.
 3. **Goals invite exploration.** Suggested and planned badges show what could come next without streak pressure, points, punishment, or competitive ranking.
 4. **The collection can grow broadly.** Travel, reading, education, craft, health, relationships, and personal milestones use the same small set of primitives instead of unrelated feature systems.
 5. **The owner keeps the archive.** The first version is private and local-first, with durable disk backup and a strict separation between Git-tracked system definitions and local personal state.
@@ -33,7 +33,7 @@ Discover or create an achievement → shape its visual identity → keep it as a
 
 Version one is a desktop-first local web application for one person.
 
-It supports prebuilt and custom collections, suggested and handmade badges, planned and earned states, multiple art candidates, uploaded and reprocessed images, appearance customization, activation memories, automatic composite achievements, and local backup and restore.
+It supports prebuilt and custom collections, suggested and handmade badges, planned and earned states, multiple art candidates, uploaded and reprocessed images, appearance customization, mouse-driven 3D examination with dynamic lighting, activation memories, automatic composite achievements, and local backup and restore.
 
 The U.S. National Parks collection ships as a versioned catalogue rather than requiring every park to be entered by hand.
 

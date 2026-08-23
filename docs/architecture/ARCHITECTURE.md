@@ -18,9 +18,9 @@ The primary dependency direction is:
 
 `app → ui → application → domain`
 
-Persistence, file I/O, image processing, and model generation are adapters that implement ports owned by the application layer.
+Persistence, file I/O, image processing, 3D rendering, and model generation are adapters that implement ports owned by the application or UI boundary.
 
-Domain and application code remain independent of React, IndexedDB, browser file APIs, image canvases, and provider SDKs.
+Domain and application code remain independent of React, IndexedDB, browser file APIs, image canvases, WebGL or WebGPU, Three.js, and provider SDKs.
 
 ## Target source layout
 
@@ -30,7 +30,8 @@ src/
   domain/              collections, badges, records, occurrences, rules, and visibility
   application/         author, select, activate, compute, back up, and restore use cases
   catalog/             Git-tracked definitions, collections, rule sets, and prompt recipes
-  art/                 validation, crop, masks, materials, borders, previews, and thumbnails
+  art/                 validation, crop, texture-map derivation, masks, and thumbnails
+  rendering/           engine-neutral recipes, parametric geometry, materials, lighting, and viewer adapter
   persistence/         IndexedDB repositories, transactions, migrations, and save queue
   generation/          provider-neutral ports, deterministic fake, and later live adapters
   io/                  upload, backup export, restore import, and file-system adapters
@@ -101,9 +102,27 @@ Do not introduce a general expression language until a real collection needs mor
 
 ### Appearance
 
-Structured crop, position, shape preset, material preset, border color, border width, and render-version data.
+An engine-neutral, serializable render recipe containing crop, position, shape preset, geometry version, thickness, edge profile, relief settings, material preset and parameters, border color, border width, texture-map references, and render version.
 
-Appearance is independent of source art so it can be edited without destructive regeneration.
+Appearance is independent of source art so it can be edited without destructive regeneration. Persist no Three.js objects, GPU resources, shaders compiled at runtime, canvas state, or other renderer-specific scene objects.
+
+### Render recipe semantics
+
+Recipe coordinates are right-handed with `+X` right, `+Y` up, and the front face normal along `+Z`; the normalized badge width or diameter is `1.0`, and thickness, bevel, border, and relief values are fractions of that size.
+
+Persisted crop and UV coordinates use a top-left origin with `u` increasing right and `v` increasing down; a renderer adapter performs any engine-specific vertical flip exactly once. The front and back winding, tangent basis, and OpenGL-style normal maps with positive green `Y` are fixed by golden geometry and UV fixtures.
+
+Albedo assets normalize to sRGB, lighting calculations occur in linear space, output is sRGB, and normal, height, roughness, metalness, and masks remain non-color data. Persisted alpha is straight rather than premultiplied; adapters may premultiply only at their runtime boundary.
+
+Every versioned material or geometry manifest defines defaults and valid numeric ranges, and schema validation rejects values outside them. The provisional base ranges are thickness `0.02–0.18`, bevel `0–min(0.04, thickness / 2)`, relief `0–0.05`, border width `0–0.20`, and normalized material channels `0–1`; changing meaning or ranges requires a render-recipe version and migration.
+
+Small engine-neutral golden fixtures cover every shape with asymmetric source art, labeled front and back, UV corners, known crop, normal direction, and boundary values so a new adapter cannot mirror, invert, or materially reinterpret an old badge while accepting its recipe.
+
+### ViewerState
+
+Ephemeral UI state for camera orbit, zoom, key-light orbit, active interaction mode, and pointer or keyboard gesture state.
+
+It resets to a versioned studio preset when a viewer opens and is not part of `AchievementRecord`, backup, or catalogue state. A future explicitly saved showcase pose requires a new persisted type and migration rather than quietly promoting incidental viewer state.
 
 ### ArtAsset
 
@@ -131,8 +150,8 @@ Saving a planned or activated badge copies the accepted text and source into its
 | Schemas and migrations | Occurrence dates and activation timestamps |
 | Catalogue collections and badge definitions | Personal notes, sayings, and visibility choices |
 | Composite goal rules and catalogue versions | Local collection settings, custom definitions, and catalogue overlays |
-| Prompt recipes and material or shape manifests | Uploaded originals and generated candidates |
-| Intentionally promoted small visual inputs | Selected art, derivatives, thumbnails, and backups |
+| Prompt recipes and versioned geometry, material, lighting, or shape manifests | Uploaded originals and generated candidates |
+| Renderer source and intentionally promoted small visual inputs | Selected art, texture-map derivatives, chosen render recipes, thumbnails, and backups |
 
 Never serialize personal state into catalogue files as a convenience.
 
@@ -174,11 +193,45 @@ Processing is non-destructive and produces a derivation graph. A failed, cancele
 
 Candidate cleanup operates on explicit asset lifecycle state and reference counts, not directory age or broad folder deletion.
 
+Selected two-dimensional art maps onto the 3D front surface through versioned UV and crop parameters. Normal, height, roughness, mask, and other maps derived for relief or material response reference the immutable source and remain regenerable when their recipe is deterministic.
+
+## 3D rendering boundary
+
+The renderer consumes a serializable appearance recipe, resolved local asset URLs, a studio-light preset, ephemeral viewer state, and capability information. It returns pixels and interaction events without changing domain records or owning user data.
+
+Use parametric geometry for ordinary circle, square, rectangle, and shield bodies rather than storing a unique heavy mesh per badge.
+
+Each mounted live viewer owns a `RendererSession` that registers every animation frame, event listener, observer, pointer capture, asynchronous loader and abort controller, object URL, decoded `ImageBitmap`, geometry, material, texture, render target, environment or PMREM target, and rendering context it creates. Shared resources belong to an explicit reference-counted cache owner rather than an arbitrary viewer.
+
+`RendererSession.dispose()` is idempotent: it stops future frames, aborts loaders, releases pointer capture, removes listeners and observers, revokes object URLs, closes decoded images, decrements shared references, and disposes session-owned CPU and GPU resources. Recipe replacement uses the same cleanup for superseded resources, and a dedicated context may be deliberately lost only when its ownership is exclusive.
+
+WebGL2 is the provisional supported baseline; WebGPU may be an optimization later but cannot be the only path. Three.js with React Three Fiber is the leading Phase 0 candidate, not yet an accepted dependency, and the persisted recipe must survive replacing it.
+
+Render on demand while idle and continuously only during direct manipulation, material transition, or activation motion. Clamp device pixel ratio, texture resolution, camera distance, and light range to preserve clarity without exhausting memory or allowing the object to clip, disappear, black out, or blow out.
+
+Viewer input has explicit `unengaged`, `focused`, `engaged`, `object-drag`, and `light-drag` states. `Tab` focus enters `focused` and announces instructions without intercepting page navigation; handled `Enter` or `Space` prevents its default and enters `engaged`; `Escape` cancels a drag and returns to `focused`; blur or outside focus returns to `unengaged`.
+
+Pointer-down focuses and engages the viewer, captures that pointer, and begins the drag selected by the visible mode. Every transition out of `object-drag` or `light-drag`—including pointer-up, pointer-cancel, lost capture, mode change, `Escape`, blur, and outside focus—releases capture when held and clears queued pointer and wheel deltas before entering the destination state; a mode change completes that cleanup before activating the new mode.
+
+Wheel or trackpad input prevents page scrolling only while the engaged viewer is under the pointer; otherwise it remains ordinary page scroll. Orbit, zoom, light, and reset keys prevent their browser defaults only in `engaged` or drag states. Convert `deltaMode` to CSS pixels, aggregate once per animation frame, cap each frame to `100` pixels, and map that cap to a `10%` multiplicative zoom step within `0.65–2.5` times the fitted-object scale.
+
+Arrow keys orbit the active object or key light by `5°`, and `Shift` reduces the step to `1°`. Physical `Equal` and `Minus` codes, displayed as `=` and `-`, plus `NumpadAdd` and `NumpadSubtract`, zoom by `10%`; `Shift` reduces those commands to `2%`. Visible reset buttons remain the discoverable keyboard path and list the active bindings. Object yaw is continuous with pitch clamped to `±85°`, and key-light elevation stays within `5–85°`. Pointer, keyboard, and touch adapters emit the same renderer-neutral orbit, zoom, light, engage, disengage, and reset commands.
+
+Recover from WebGL context loss by disposing the failed session and rebuilding resources from the recipe and authoritative assets. If capability initialization still fails, a renderer-independent SVG or Canvas 2D adapter composes source art with versioned front, edge, and back templates from the recipe; it works with an empty cache on first run and after clean restore, labels the degraded result, and never shows an empty canvas as success.
+
+The CPU fallback is reproducible from the backed-up recipe, source assets, and Git-tracked versioned templates, so its outputs are disposable caches rather than required backup payload. Unsupported old template versions are a migration error, not permission to reinterpret or flatten the badge silently.
+
+Gallery thumbnails and GPU snapshots use a versioned `RenderFingerprint` covering adapter and build, geometry, material, shader, and template manifest hashes, source and derivative hashes, environment or studio asset hash, tone mapping, exposure, output color space, quality tier, actual pixel dimensions, device-pixel-ratio tier, and relevant capabilities. Badge Atelier and detail views remain live 3D surfaces.
+
+A matching fingerprint means cached inputs are still valid, not that different GPUs or drivers produce byte-identical pixels. Canonical visual regression uses a pinned capture environment with tolerance-based comparison; cross-device review checks geometry, crop, orientation, material, and interaction invariants rather than exact pixels.
+
 ## Generation boundaries
 
 The art-generation application port accepts a normalized art brief, approved source asset references, candidate count, appearance context when relevant, and cancellation signal.
 
 It returns candidate descriptors and provenance without deciding selection or activation.
+
+The art brief and candidate role require source artwork rather than a composed badge render: no physical rim, thickness, bevel, reverse face, cast shadow, presentation background, or badge-level material and studio lighting. Candidate comparison applies the current live 3D recipe uniformly, and a composed preview is always a derivative rather than the authoritative source asset.
 
 A separate saying-generation port accepts only the badge title, criterion, optional saying-specific direction, request ID, and cancellation signal, then returns a proposed line and provenance. Adding description or any other field requires a new explicit outbound-data decision and disclosure surface.
 
@@ -218,7 +271,7 @@ Notes remain separately private by default, and a future presentation adapter mu
 
 ## Backup and restore
 
-Export a versioned portable bundle containing a consistent database snapshot or canonical record export, local definitions, uploaded originals, selected artwork, required non-reproducible derivatives, a manifest, schema and catalogue versions, and checksums.
+Export a versioned portable bundle containing a consistent database snapshot or canonical record export, local definitions, uploaded originals, selected artwork, chosen engine-neutral 3D render recipes, required non-reproducible derivatives, a manifest, schema and catalogue versions, and checksums.
 
 Use the native file picker when available and a browser download fallback elsewhere.
 
@@ -236,14 +289,18 @@ Accounts, remote object storage, permissions, and sync conflict behavior are new
 
 ## Test and observability contracts
 
-Pure domain tests cover lifecycle transitions, composite eligibility, visibility precedence, stable ID behavior, and date-range validation without a browser environment.
+Pure domain tests cover lifecycle transitions, composite eligibility, visibility precedence, stable ID behavior, date-range validation, render-recipe validation, and viewer command clamping without a browser environment.
+
+Golden recipe tests load asymmetric front and back fixtures through every adapter and assert handedness, winding, UV orientation, crop, color-space declarations, normal direction, alpha convention, and numeric boundaries before visual comparison.
 
 Persistence tests use an isolated IndexedDB implementation and cover every migration, corrupt-row refusal, transaction atomicity, asset deduplication, and backup and restore round trip.
 
-Component tests cover candidate comparison, uploads, non-destructive selection, latest-request saying concurrency, retry failure and cancellation, saying normalization and length validation, proposal acceptance, direct saying edits, reciprocal art and saying isolation, appearance controls, activation confirmation, focus order, and reduced motion.
+Component tests cover candidate comparison, uploads, non-destructive selection, latest-request saying concurrency, retry failure and cancellation, saying normalization and length validation, proposal acceptance, direct saying edits, reciprocal art and saying isolation, appearance controls, engagement and scroll-release states, pointer cancellation and mode changes, normalized wheel deltas, object-versus-light interaction mode, keyboard increments, reset behavior, activation confirmation, focus order, and reduced motion.
 
-Playwright covers the Yosemite acceptance journey including saying retry and direct editing, provider disclosure, multiline paste, over-limit validation, narrow-layout wrapping, art and saying isolation, upload and processing failure, activation reload safety, composite completion, and restore into a clean profile.
+An instrumented renderer stress test runs at least `50` mount → recipe replacement → context loss → restore and rebuild → render → dispose cycles and proves session, animation-frame, listener, observer, pointer-capture, loader, object-URL, decoded-image, shared-reference, geometry, material, texture, render-target, environment-target, and context counts return to their recorded baseline after every completed cycle. A separate `50`-cycle forced-initialization-failure branch proves fallback creation and disposal without entering restoration.
 
-Visual evidence compares the chosen references with implementation screenshots at matched state and at least two desktop-like viewports, then sweeps all primary surfaces for unrelated defects.
+Playwright covers the Yosemite acceptance journey including real pointer rotation, wheel zoom and page-scroll release, light adjustment, keyboard equivalents, context-loss recovery, a forced WebGL-initialization failure on first run with an empty cache, the same failure after clean restore with front, edge, and back fallback views, saying retry and direct editing, provider disclosure, multiline paste, over-limit validation, narrow-layout wrapping, art and saying isolation, upload and processing failure, activation reload safety, composite completion, and restore into a clean profile.
+
+Visual evidence compares the chosen references with implementation screenshots at matched state and at least two desktop-like viewports, captures front, oblique, edge, and back views across representative materials and light positions, includes a short rotation, zoom, and light-manipulation recording, then sweeps all primary surfaces for unrelated defects.
 
 Actionable structured debug output should expose current route, selected collection and badge IDs, lifecycle state, asset references, pending write or generation status, and effective visibility without exposing notes, credentials, or raw personal media.

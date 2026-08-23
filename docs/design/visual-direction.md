@@ -11,7 +11,7 @@ The follow-up Badge Atelier mock extends that family into candidate comparison, 
 - [Selected collection and activation direction](assets/selected-gallery-direction.webp)
 - [Badge Atelier candidate and construction direction](assets/badge-atelier-direction.webp)
 
-These files are intentionally promoted design inputs, not raw task evidence. The optimized versions stay below the fleet's ordinary binary ceiling; original multi-megabyte generations remain outside Git.
+These files are intentionally promoted layout, mood, and finish references, not source-art specifications or final renderer output. Their pictured metal rims and lighting must be reconstructed as live geometry and material response rather than copied into generated candidates; the optimized files stay below the fleet's ordinary binary ceiling, and original multi-megabyte generations remain outside Git.
 
 ## Experience character
 
@@ -35,9 +35,11 @@ Do not copy recognizable characters, compositions, logos, product trade dress, i
 
 Generated artwork is text-free and legible both as a large hero artifact and a collection thumbnail.
 
+Generated candidates are flat source illustrations without a finished badge silhouette, rim, bevel, thickness, cast shadow, presentation background, or object-level material and studio highlight. Scene lighting inside an illustration is allowed; physical badge lighting belongs exclusively to the construction renderer.
+
 Candidate concepts are meaningfully different rather than three random seeds of the same composition.
 
-For a typical request, propose a literal or subject-led composition, a symbolic or emotional metaphor, and a map, pattern, or narrative composition.
+For a typical request, propose a literal or subject-led composition, a symbolic or emotional metaphor, and a map, pattern, or narrative composition, then compare all three through the same live 3D construction recipe.
 
 The chosen source image remains separate from the artifact construction layer so the same art can be cropped into a circle, square, rectangle, shield, or later preset and rendered as metal, wool, enamel, or another material.
 
@@ -52,6 +54,18 @@ Wool and armband treatments should have believable weave, stitching, compression
 Border color and width are deliberate construction controls, not merely decorative CSS outlines; the preview must communicate how they alter the physical artifact.
 
 Uploaded photography should remain recognizable when desired. Processing can translate it into the collection's art language, but the original is preserved and the user chooses every replacement.
+
+## Three-dimensional physicality and lighting
+
+The badge is built as real geometry with credible thickness, bevels, seams, relief, recesses, and a considered reverse face. A flat plane with a perspective transform does not satisfy the direction.
+
+Materials use physically based response: metals carry disciplined roughness and reflections, enamel has controlled depth and edge transitions, and wool communicates fiber, compression, stitching, and softer shadow response.
+
+The default studio rig uses restrained environment light plus key, fill, and rim separation so the silhouette reads without theatrical glow. Rotating the object changes specular highlights and shadows continuously, revealing construction rather than merely moving a baked image.
+
+`Adjust light` is a separate explicit interaction mode that orbits the key light. It should feel like moving a photographer's lamp around a small artifact, with enough range to inspect relief but sensible bounds that avoid a fully black or blown-out object.
+
+The initial pose is a calm, slightly oblique presentation that makes thickness legible. There is no perpetual showroom spin; motion begins from direct manipulation or a brief activation transition and settles immediately.
 
 ## Interface surfaces
 
@@ -71,6 +85,8 @@ Candidate selection uses a precise keyline, check state, and keyboard focus, nev
 
 Shape, material, border color, and border width are grouped compactly beside the live preview; advanced controls stay progressive rather than crowding the first view.
 
+The live preview is the dominant 3D examination surface. It provides direct drag rotation, wheel or trackpad zoom, a clearly selected object-versus-light mode, and quiet reset controls without surrounding the artifact with game-editor chrome.
+
 The one-line saying editor sits with the composed preview rather than inside the image-generation controls. It pairs a direct text field with restrained `Generate saying` or `Try another` and `Use this saying` actions, and a pending proposal never makes the current line disappear.
 
 The saying is one logical line, but the read-only composed preview may wrap it at narrow desktop widths rather than truncate it or reduce it below the accessible type scale. Editing shows the full text, remaining allowance, and inline validation without shifting the artifact preview.
@@ -79,7 +95,7 @@ The saying is one logical line, but the read-only composed preview may wrap it a
 
 The activation moment should feel like a crafted object seating into place.
 
-A recommended sequence is: commit state → brief alignment or pressure beat → crisp material impact or traveling highlight → relief resolves → saying appears → calm final hold.
+A recommended sequence is: commit state → brief alignment or pressure beat → crisp material impact or traveling highlight → relief resolves → saying appears → calm final hold that hands control to the same live 3D viewer.
 
 If one action also completes a composite badge, reveal the individual badge first, close the collection progress state, then present the composite artifact.
 
@@ -89,6 +105,8 @@ Motion is sharp, controlled, and short. It avoids bouncy easing, confetti, parti
 
 Reduced motion replaces spatial travel with an immediate material and typography state change while preserving the emotional beat.
 
+Reduced motion also removes camera inertia, autoplay orbit, and delayed light sweeps; direct object and light manipulation remains responsive and one-to-one.
+
 Sound is not required. If added later, it is restrained, optional, and separately disabled; no activation depends on it.
 
 ## Anti-patterns
@@ -97,12 +115,13 @@ Sound is not required. If added later, it is restrained, optional, and separatel
 - Souvenir-shop coin kitsch, excessive gold, fake heraldry, generic trophy or graduation-cap imagery, and faux prestige.
 - Careless or visibly low-detail generated art.
 - Text embedded inside generated imagery.
+- Flat CSS tilt presented as 3D, baked highlights that do not move with the object, weightless paper-thin edges, uncontrolled bloom, or plastic-looking metal.
 - Glassmorphism, cheap gradients, glow-heavy cyberpunk, crowded dashboards, cards inside cards, or decorative panels without hierarchy value.
 - Confetti, streak pressure, points, leaderboards, loot-box language, rarity colors, and slot-machine spectacle.
 - Literal imitation of the named reference products, games, or artists.
 
 ## Visual verification contract
 
-Inspect the collection gallery, planned and earned states, Badge Atelier, uploaded-image processing, every shape and material preset, narrow and wide desktop layouts, activation start and end states, reduced motion, loading, empty, and actionable error states.
+Inspect the collection gallery, planned and earned states, Badge Atelier, uploaded-image processing, every shape and material preset, front, oblique, edge, and back camera angles, near and far zoom bounds, several key-light positions, narrow and wide desktop layouts, activation start and end states, reduced motion, GPU fallback, loading, empty, and actionable error states.
 
-Screenshots are evidence inputs, not the conclusion: compare the rendered implementation with the selected mockups at matched viewport and state, fix visible differences, and then sweep the full surface for defects outside the changed area.
+Screenshots are evidence inputs, not the conclusion: compare the rendered implementation with the selected mockups at matched viewport and state, capture a short interaction recording for rotation, zoom, and light movement, fix visible differences, and then sweep the full surface for defects outside the changed area.

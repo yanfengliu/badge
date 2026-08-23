@@ -52,6 +52,8 @@ Read `docs/learning/lessons.md`, `docs/design/vision.md`, `docs/design/product-s
 - Local state owns activations, occurrence dates, notes, profile and collection privacy choices, uploads, generated candidates, selected art, and backups; preserve unreadable or old data rather than silently resetting it.
 - Generated art contains no typography; titles, sayings, dates, and metadata are rendered by the UI. Uploaded originals are immutable, and processing is non-destructive.
 - Shape, material, border color, border width, crop, and positioning are structured appearance data, independent of source artwork.
+- A badge is a versioned, engine-neutral 3D render recipe, not a flattened image or CSS tilt; Badge Atelier and badge detail provide live rotation, zoom, and dynamic-light inspection, while gallery thumbnails may be cached renders.
+- Keep camera orbit, zoom, and light position out of durable badge data unless a later decision adds saved showcase poses. Never persist renderer objects, GPU handles, or engine-specific scene graphs.
 - Model output may propose definitions, sayings, and art candidates; it never activates an achievement or replaces selected art or an accepted or user-authored saying without an explicit user action.
 - Computed achievements derive deterministically from individual activations. Persistence, migration, and restore work is data-loss-sensitive and receives high-risk review.
 - Product changes start with contract tests. Files should stay under 500 lines and must stay under 1000 lines.
@@ -60,5 +62,5 @@ Read `docs/learning/lessons.md`, `docs/design/vision.md`, `docs/design/product-s
 
 - Product direction lives in `docs/design/`; structural changes update `docs/architecture/ARCHITECTURE.md` and append to `docs/architecture/drift-log.md`; non-obvious tradeoffs append to `docs/architecture/decisions.md` and are superseded, never erased.
 - Devlog history lives in `docs/devlog/summary.md` plus dated files under `docs/devlog/detailed/`; lessons and evidence follow the fleet templates in `docs/learning/`.
-- Visual work includes real rendered evidence for the gallery, badge atelier, upload/reprocess flow, candidate selection, activation ceremony, and reduced-motion behavior at more than one desktop-like viewport.
+- Visual work includes real rendered evidence for the gallery, badge atelier, upload/reprocess flow, candidate selection, 3D front/edge/back views, multiple light positions and zoom levels, activation ceremony, GPU fallback, and reduced-motion behavior at more than one desktop-like viewport.
 - Keep application modules aligned with the dependency direction documented in `docs/architecture/ARCHITECTURE.md`; domain and application logic remain independent of React, persistence, file APIs, and model providers.

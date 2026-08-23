@@ -64,11 +64,31 @@ A candidate set records one generation or processing request, its distinct propo
 
 ### Appearance
 
-Structured presentation applied non-destructively to source art: crop, position, shape, material, border color, and border width.
+An engine-neutral versioned 3D render recipe applied non-destructively to source art: crop, position, shape, thickness, bevel or edge profile, relief, material parameters, border color, border width, and texture mapping.
 
 At minimum, shapes include circle, square, and rectangle; the selected mock also includes a shield preset.
 
 At minimum, materials include substantial metal and wool or armband fabric; additional finishes such as enamel may be added through the same system.
+
+Source art remains an immutable input. Generated albedo, normal, roughness, height, mask, or other render maps are replaceable derivatives with recorded provenance.
+
+## Interactive 3D artifact
+
+Badge Atelier and the badge detail view render the badge as a real-time 3D object, not a flat image with simulated tilt. It has visible silhouette, thickness, edge construction, front relief, a coherent back, and material response that holds up from front, oblique, edge, and back views.
+
+Primary mouse drag rotates the badge around its center, and the wheel or trackpad gesture zooms within limits that prevent clipping or losing the object. Rotation permits genuine edge and back inspection rather than a shallow two-dimensional wobble.
+
+A separate visible `Adjust light` mode lets pointer drag orbit the key light while leaving ordinary drag dedicated to the object. Rotation and lighting update highlights, reflections, self-shadow, and relief in real time; the effect is not baked into the source image.
+
+The viewer provides visible `Reset view` and `Reset light` actions, concise interaction instructions, pointer capture during drag, and an obvious way to release focus so wheel zoom does not trap page scrolling.
+
+Pointer-down focuses and engages the viewer, then begins object or light drag according to the visible mode. Keyboard focus alone shows instructions without intercepting navigation; `Enter` or `Space` engages keyboard control, `Escape` disengages it while retaining focus, and focus moving outside returns the viewer to rest. Pointer-up, pointer-cancel, lost capture, or a mode change ends any active drag.
+
+Camera orbit, zoom, and light position are session viewer state and reset to a deliberate studio default when reopened. Saving a personal showcase pose is deferred and must not be inferred from ordinary examination.
+
+Gallery grids may use version-addressed cached renders for performance, but selecting or opening a badge reveals the live 3D artifact. When GPU initialization fails, a renderer-independent SVG or Canvas 2D fallback composes the immutable source art with versioned front, edge, and back templates from the same recipe; it labels the degraded view and works on first run, after clean restore, and without any prior GPU cache.
+
+Direct manipulation never auto-saves a changed badge appearance, never modifies source art, and never affects activation, notes, sayings, or visibility.
 
 ## Recommended lifecycle
 
@@ -110,7 +130,7 @@ The user can upload an image instead of generating one.
 
 An uploaded original is preserved unchanged. Optional processing creates new candidates or derivatives and must disclose before an image leaves the device for model processing.
 
-The user can apply shape, material, border color, border width, crop, and position to the selected or uploaded art without regenerating the art.
+The user can apply shape, material, border color, border width, crop, position, and supported depth or edge settings to the selected or uploaded art without regenerating the art, while the live 3D preview updates immediately.
 
 The final review shows the composed badge, UI-rendered title, generated or user-authored saying, and relevant metadata before saving it as planned or continuing to activation.
 
@@ -129,6 +149,10 @@ One-line means one logical line with no stored newline characters. Input trims o
 Generation is an explicit user action and returns candidate proposals rather than silently replacing a current selection.
 
 Generated art contains no title, date, saying, logo, seal text, or other typography; the interface renders all language cleanly.
+
+Generated and reprocessed candidates are source artwork for the 3D construction layer, not pictures of finished badges. They contain no badge rim, border, thickness, bevel, reverse face, cast shadow, presentation background, or object-level metal, wool, enamel, highlight, reflection, and patina treatment baked around the composition.
+
+Artwork may contain lighting that belongs inside the depicted scene, such as sunlight over Yosemite, but not global lighting that pretends to illuminate the physical badge. Candidate comparison composes every source through the same live geometry, material, border, and studio-light recipe before selection.
 
 Candidate generation and upload processing share a provider-independent application boundary so deterministic fixtures can exercise the entire UI without paid calls.
 
@@ -196,7 +220,7 @@ Restore validates the whole archive, reports actionable errors, migrates support
 
 ### Yosemite vertical slice
 
-Open the prebuilt parks collection → find or accept the Yosemite goal → generate three candidates or upload a photo → select and customize the artifact → generate and retry a saying or write one directly → accept the final line → enter the trip range and optional note → activate → see the restrained ceremony → reload → find the same earned badge and updated collection progress → export and restore it with its art and saying intact.
+Open the prebuilt parks collection → find or accept the Yosemite goal → generate three candidates or upload a photo → select and customize the artifact → rotate through front, edge, and back views → zoom into relief and move the key light across the material → reset the studio view → generate and retry a saying or write one directly → accept the final line → enter the trip range and optional note → activate → see the restrained ceremony → reload → find the same earned badge and updated collection progress → export and restore it with its art, saying, and 3D render recipe intact.
 
 ### Sapiens vertical slice
 
@@ -212,7 +236,7 @@ Activate the last required park → commit that activation → update the compos
 
 ## Accessibility requirements
 
-- Full keyboard access covers gallery navigation, candidate comparison, uploads, crop and position, every appearance control, activation, and backup or restore.
+- Full keyboard access covers gallery navigation, candidate comparison, uploads, crop and position, every appearance control, 3D rotation, zoom, light adjustment, reset, activation, and backup or restore.
 - Visible focus and selected states do not rely on color alone.
 - Badge art has a text equivalent derived from the title and description rather than attempting to interpret generated typography.
 - User-selected borders and materials cannot reduce surrounding control contrast below the product's accessibility target.
@@ -220,6 +244,8 @@ Activate the last required park → commit that activation → update the compos
 - Saying generation identifies a pending proposal, keeps the editable accepted line reachable, and announces success or failure without moving focus unexpectedly.
 - Saying length and empty-value errors identify the field, explain the 120-grapheme limit, and never discard the user's editable draft.
 - `prefers-reduced-motion` produces a crisp success state without disorienting travel, flashing, or parallax.
+- Reduced motion disables inertia, automatic orbit, and decorative camera travel but preserves immediate user-controlled 3D rotation, zoom, and light adjustment.
+- The viewer exposes concise instructions and current interaction mode to assistive technology, and a textual badge description remains available when the canvas is unavailable or not useful.
 
 ## Explicit open decisions
 
@@ -237,3 +263,5 @@ Future agents must resolve or deliberately defer these rather than inventing an 
 10. Decide how long rejected candidates live and whether backups may include them.
 11. Define deletion, undo, archive, and recovery semantics.
 12. Define what `public` means before any sharing or account work begins.
+13. Decide whether a camera and light pose can be deliberately saved for a future showcase; ordinary viewer state is ephemeral until then.
+14. Select the 3D renderer after the Phase 0 capability and performance spike; keep persisted recipes independent of that choice.

@@ -34,6 +34,10 @@ Generated artwork is text-free. Preserve every uploaded source unchanged; crop, 
 
 Shape, material, border color, border width, crop, and positioning remain editable structured properties rather than being baked irreversibly into the only copy of the art.
 
+The badge itself is a real-time 3D artifact in authoring and detail views. Preserve source art separately, derive texture or relief maps non-destructively, and store an engine-neutral versioned render recipe rather than a flattened badge or renderer-specific scene data.
+
+Mouse rotation, bounded zoom, responsive lighting, a separate light-adjustment control, keyboard equivalents, reset, reduced-motion behavior, and a clear GPU fallback are product requirements rather than optional polish.
+
 Activation data commits before its ceremony begins. The ceremony is replayable or skippable, respects reduced motion, and never substitutes spectacle for persistence correctness.
 
 ## Visual quality
@@ -41,5 +45,7 @@ Activation data commits before its ceremony begins. The ceremony is replayable o
 The selected product language is a quiet premium field archive with substantial crafted objects, exact typography, generous space, restrained color, and clean motion.
 
 Avoid cartoon rendering, careless generated art, souvenir-shop kitsch, cheap gradients, glassmorphism, confetti, loot effects, excessive glow, fake rarity, cluttered dashboards, and typography embedded in generated images.
+
+Do not fake the required object with CSS perspective on a flat image or bake highlights and shadows into the only authoritative preview. Material response must change as the object or key light moves.
 
 Visual changes are not complete until the relevant full flow is exercised in a real browser and inspected at more than one desktop-like viewport, including loading, empty, error, keyboard, and reduced-motion states when applicable.

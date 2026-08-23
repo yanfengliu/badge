@@ -2,6 +2,22 @@
 
 Append decisions newest first. Never rewrite history; add a superseding entry that links to the decision it replaces.
 
+## 2026-08-22 — D-012: Keep 3D persistence independent from the renderer
+
+**Status:** Provisional repository architecture until the Phase 0 spike records the renderer decision and budgets.
+
+Persist a versioned engine-neutral render recipe over immutable source art and derived maps. Camera, zoom, key-light, scene graph, and GPU state stay ephemeral; gallery snapshots are version-addressed caches, and a renderer-independent template adapter supplies the first-run fallback.
+
+The current interaction design adds a separate key-light mode, keyboard equivalents, bounded controls, and explicit engagement on top of the owner-confirmed product mandate. The Phase 0 gate may refine those implementation details with evidence but cannot weaken real 3D, mouse rotation, zoom, or physically responsive lighting.
+
+## 2026-08-22 — D-011: Treat every badge as an interactive 3D artifact
+
+**Status:** Owner-confirmed product mandate.
+
+Each badge is a three-dimensional object that feels real under lighting and can be examined by rotating it, zooming in or out with the mouse, and manipulating the light used to inspect it.
+
+This mandate does not choose the renderer, persistence shape, fallback, gallery optimization, saved camera behavior, or exact lighting gesture; those are repository decisions and remain separately reviewable.
+
 ## 2026-08-22 — D-010: Keep the saying independently user-controlled
 
 **Status:** Accepted owner decision.
