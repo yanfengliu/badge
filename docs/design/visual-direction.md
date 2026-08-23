@@ -1,0 +1,104 @@
+# Visual Direction
+
+## Selected family
+
+The owner selected the third explored direction: a warm, modern field archive with substantial engraved artifacts, fine topographic linework, mineral accents, exact typography, and a restrained editorial interface.
+
+The follow-up Badge Atelier mock extends that family into candidate comparison, upload and reprocessing, and appearance customization. It is the current authoring target but can still be refined before implementation.
+
+## Promoted visual inputs
+
+- [Selected collection and activation direction](assets/selected-gallery-direction.webp)
+- [Badge Atelier candidate and construction direction](assets/badge-atelier-direction.webp)
+
+These files are intentionally promoted design inputs, not raw task evidence. The optimized versions stay below the fleet's ordinary binary ceiling; original multi-megabyte generations remain outside Git.
+
+## Experience character
+
+The interface should feel like opening a private cabinet of meaningful artifacts: quiet, premium, warm, and emotionally substantial.
+
+The UI recedes around the collection through generous space, precise alignment, strong typography, subtle dividers, and restrained color.
+
+Badges feel physically heavy through credible thickness, relief, edge treatment, texture, controlled highlights, and deep but readable shadows.
+
+The product is not beholden to a single circle or metal finish. Art may be diverse, and shape and material are user-configurable, while craftsmanship, lighting discipline, and interface behavior create coherence.
+
+## Reference translation
+
+The owner's mood references include carefully finished consumer hardware, expansive European science-fiction linework, the contemplative scale and warm solitude of _Journey_, and the readable crafted world of _Outlanders_ 1 and 2.
+
+Translate those references into original qualities: precision, restraint, meticulous finishing, contemplative scale, elegant silhouettes, fine editorial linework, luminous but controlled color, and a sense of discovery.
+
+Do not copy recognizable characters, compositions, logos, product trade dress, interface layouts, or source artwork, and do not ask a generator to reproduce a living or named creator's exact style.
+
+## Badge art grammar
+
+Generated artwork is text-free and legible both as a large hero artifact and a collection thumbnail.
+
+Candidate concepts are meaningfully different rather than three random seeds of the same composition.
+
+For a typical request, propose a literal or subject-led composition, a symbolic or emotional metaphor, and a map, pattern, or narrative composition.
+
+The chosen source image remains separate from the artifact construction layer so the same art can be cropped into a circle, square, rectangle, shield, or later preset and rendered as metal, wool, enamel, or another material.
+
+Titles, clever sayings, dates, notes, progress, and collection names are rendered by the UI with crisp typography.
+
+## Material vocabulary
+
+Metal should feel noble and durable: blackened steel, nickel, bronze, titanium, enamel inset, or restrained patina rather than glossy plastic or toy gold.
+
+Wool and armband treatments should have believable weave, stitching, compression, and edge construction without turning into cartoon patches or novelty merch.
+
+Border color and width are deliberate construction controls, not merely decorative CSS outlines; the preview must communicate how they alter the physical artifact.
+
+Uploaded photography should remain recognizable when desired. Processing can translate it into the collection's art language, but the original is preserved and the user chooses every replacement.
+
+## Interface surfaces
+
+### Collection gallery
+
+The gallery favors one strong collection or badge focal point and a quiet supporting strip rather than grids of equal-weight cards and metrics.
+
+Collection progress is visible but subordinate to the artifact and memory.
+
+### Badge Atelier
+
+The authoring surface separates the creative comparison area from a large live construction preview.
+
+Generation, upload, and process actions are clearly related but do not compete with the final `Use selected design` action.
+
+Candidate selection uses a precise keyline, check state, and keyboard focus, never color alone.
+
+Shape, material, border color, and border width are grouped compactly beside the live preview; advanced controls stay progressive rather than crowding the first view.
+
+### Activation
+
+The activation moment should feel like a crafted object seating into place.
+
+A recommended sequence is: commit state → brief alignment or pressure beat → crisp material impact or traveling highlight → relief resolves → saying appears → calm final hold.
+
+If one action also completes a composite badge, reveal the individual badge first, close the collection progress state, then present the composite artifact.
+
+## Motion and sound
+
+Motion is sharp, controlled, and short. It avoids bouncy easing, confetti, particle explosions, spinning loot, excessive zoom, and fake rarity rays.
+
+Reduced motion replaces spatial travel with an immediate material and typography state change while preserving the emotional beat.
+
+Sound is not required. If added later, it is restrained, optional, and separately disabled; no activation depends on it.
+
+## Anti-patterns
+
+- Cartoon rendering, mascot language, bubbly forms, stickers, or cheap mobile-game ornament.
+- Souvenir-shop coin kitsch, excessive gold, fake heraldry, generic trophy or graduation-cap imagery, and faux prestige.
+- Careless or visibly low-detail generated art.
+- Text embedded inside generated imagery.
+- Glassmorphism, cheap gradients, glow-heavy cyberpunk, crowded dashboards, cards inside cards, or decorative panels without hierarchy value.
+- Confetti, streak pressure, points, leaderboards, loot-box language, rarity colors, and slot-machine spectacle.
+- Literal imitation of the named reference products, games, or artists.
+
+## Visual verification contract
+
+Inspect the collection gallery, planned and earned states, Badge Atelier, uploaded-image processing, every shape and material preset, narrow and wide desktop layouts, activation start and end states, reduced motion, loading, empty, and actionable error states.
+
+Screenshots are evidence inputs, not the conclusion: compare the rendered implementation with the selected mockups at matched viewport and state, fix visible differences, and then sweep the full surface for defects outside the changed area.
