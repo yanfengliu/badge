@@ -1,5 +1,7 @@
 export { BadgeViewer } from "./badge-viewer";
 export type { BadgeViewerProps, RendererCapability } from "./badge-viewer";
+export { BadgePreview } from "./badge-preview";
+export type { BadgePreviewProps } from "./badge-preview";
 export { BadgeFallback } from "./badge-fallback";
 export { supportsWebGL2 } from "./capabilities";
 export {

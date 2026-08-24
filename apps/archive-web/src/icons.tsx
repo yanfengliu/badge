@@ -65,6 +65,24 @@ export function ArrowIcon(props: IconProps) {
   );
 }
 
+export function ReplayIcon(props: IconProps) {
+  return (
+    <svg {...shared} {...props}>
+      <path d="M20 11a8 8 0 1 0-2.35 5.65" />
+      <path d="M20 4v7h-7" />
+    </svg>
+  );
+}
+
+export function InspectIcon(props: IconProps) {
+  return (
+    <svg {...shared} {...props}>
+      <path d="m12 3 8 4.5v9L12 21l-8-4.5v-9Z" />
+      <path d="m4 7.5 8 4.5 8-4.5M12 12v9" />
+    </svg>
+  );
+}
+
 export function CloseIcon(props: IconProps) {
   return (
     <svg {...shared} {...props}>

@@ -6,6 +6,7 @@ import "./artifact.css";
 import "./detail.css";
 import "./ceremony.css";
 import "./timeline.css";
+import "./replay-activation.css";
 import "./saying-disclosure.css";
 
 const root = document.getElementById("root");

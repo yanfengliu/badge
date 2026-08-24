@@ -2,6 +2,16 @@
 
 Append decisions newest first. Never rewrite history; add a superseding entry that links to the decision it replaces.
 
+## 2026-08-23 — D-039: Render Timeline badges from frozen recipes with one live inspector
+
+**Status:** Implemented for the current Archive Timeline; refines D-038's pinned-visual presentation without changing its earned-record projection or the unresolved repeat-occurrence boundary.
+
+An earned memory owns an exact activation-pinned source and render recipe, not merely a rectangular source picture. Timeline therefore composes every card's default artifact preview from that frozen recipe, including shape, material, border, crop, and framing, and does not substitute the definition's current published appearance if it later differs.
+
+Timeline may expose full rotation, zoom, and dynamic-light examination, but eagerly mounting one complete viewer per memory would make Canvas, WebGL-context, animation, and keyboard-control counts grow with personal history. Each card instead keeps one persistent inspection toggle, one ephemeral selected-record ID permits at most one live viewer in the whole Timeline, selecting another record transfers that inspector, and closing it restores the recipe preview without moving focus. The toggle precedes its controlled artifact slot in DOM order so opening with `Enter` makes forward `Tab` enter the 3D viewport, while CSS keeps the artifact visually above the toggle; preview images use browser-native lazy loading and asynchronous decoding so full authoritative art is not eagerly decoded for every offscreen memory. The same slot uses the renderer-independent front, edge, and back inspector when GPU rendering is unavailable or deliberately forced off.
+
+The static preview is a renderer-owned recipe projection rather than cached user data, a new persistence format, or simulated interactive 3D. Timeline navigation, preview rendering, inspection, and replay remain provider-free and cannot change the frozen recipe, camera pose, light pose, activation, or accepted saying.
+
 ## 2026-08-23 — D-038: Make Timeline an earned-record projection before deciding repeat occurrences
 
 **Status:** Implemented for the current Archive slice; it does not resolve open decision 1 about repeat occurrences.

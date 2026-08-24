@@ -13,6 +13,43 @@
   font-family: Aptos, "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
 }
 
+.badge-preview {
+  --viewer-paper: #eee8dc;
+  --viewer-paper-raised: #f8f4eb;
+  --viewer-ink: #292620;
+  --viewer-muted: #70695f;
+  --viewer-rule: #d3cabc;
+  --viewer-accent: #a84728;
+  display: grid;
+  width: 100%;
+  min-inline-size: 0;
+  color: var(--viewer-ink);
+  font-family: Aptos, "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+}
+
+.badge-preview__stage {
+  display: grid;
+  width: 100%;
+  min-block-size: 300px;
+  place-items: center;
+  padding: 24px;
+}
+
+.badge-preview__stage .badge-fallback__object-frame {
+  inline-size: min(74%, 310px);
+}
+
+.badge-preview__status {
+  margin: 0;
+  padding: 10px 14px;
+  border: 1px solid var(--viewer-rule);
+  border-radius: 8px;
+  color: var(--viewer-muted);
+  background: var(--viewer-paper-raised);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
 .badge-viewer button {
   min-block-size: 44px;
   color: inherit;

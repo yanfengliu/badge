@@ -20,3 +20,10 @@ export function orderedTimelineRecords(state: ArchiveState): EarnedTimelineRecor
         left.recordId.localeCompare(right.recordId),
     );
 }
+
+export function toggledTimelineInspection(
+  currentRecordId: string | null,
+  requestedRecordId: string,
+): string | null {
+  return currentRecordId === requestedRecordId ? null : requestedRecordId;
+}

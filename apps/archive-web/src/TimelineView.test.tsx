@@ -1,10 +1,10 @@
-import { Children, isValidElement, type ReactElement, type ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { ArchiveRecord, ArchiveState } from "@badge/archive-domain";
 
+import { focusCollectionThen } from "./archive-section-focus.js";
 import { createStarterArchiveState } from "./archive-state.js";
-import { orderedTimelineRecords } from "./timeline-records.js";
+import { orderedTimelineRecords, toggledTimelineInspection } from "./timeline-records.js";
 import { TimelineView } from "./TimelineView.js";
 
 function earnedRecord(
@@ -28,39 +28,33 @@ function earnedRecord(
   };
 }
 
-interface ButtonProps {
-  readonly children?: ReactNode;
-  readonly onClick?: () => void;
-}
-
-function nodeText(node: ReactNode): string {
-  if (typeof node === "string" || typeof node === "number") return String(node);
-  if (!isValidElement<ButtonProps>(node)) return "";
-  return Children.toArray(node.props.children).map(nodeText).join("");
-}
-
-function findButton(node: ReactNode, label: string): ReactElement<ButtonProps> {
-  if (isValidElement<ButtonProps>(node)) {
-    if (node.type === "button" && nodeText(node).includes(label)) return node;
-    for (const child of Children.toArray(node.props.children)) {
-      try {
-        return findButton(child, label);
-      } catch {
-        // Continue through this small, hook-free component tree.
-      }
-    }
-  }
-  throw new Error(`Button containing ${label} was not found.`);
+function occurrenceCount(value: string, fragment: string): number {
+  return value.split(fragment).length - 1;
 }
 
 describe("TimelineView", () => {
   afterEach(() => vi.unstubAllGlobals());
 
-  it("orders earned memories by when they happened, newest first", () => {
+  it("orders earned memories and renders their frozen badge artifacts without eager live viewers", () => {
     const seeded = createStarterArchiveState();
     const older = earnedRecord(seeded.records[0], "2022-05-01", "2022-05-03", "2026-08-20T18:00:00.000Z");
     const newer = earnedRecord(seeded.records[1], "2025-01-10", "2025-01-10", "2026-08-19T18:00:00.000Z");
-    const state: ArchiveState = { ...seeded, records: [older, newer, ...seeded.records.slice(2)] };
+    const newerWithChangedPublishedVisual: ArchiveRecord = {
+      ...newer,
+      publishedVisual: {
+        ...newer.publishedVisual,
+        accessibleDescription: "A later catalogue visual that was not activated.",
+        renderRecipe: {
+          ...newer.publishedVisual.renderRecipe,
+          shape: "shield",
+          material: "enamel",
+        },
+      },
+    };
+    const state: ArchiveState = {
+      ...seeded,
+      records: [older, newerWithChangedPublishedVisual, ...seeded.records.slice(2)],
+    };
 
     expect(orderedTimelineRecords(state).map((record) => record.recordId)).toEqual([
       newer.recordId,
@@ -71,6 +65,7 @@ describe("TimelineView", () => {
       <TimelineView
         state={state}
         sourceUrls={{ [older.recordId]: "blob:older", [newer.recordId]: "blob:newer" }}
+        forceFallback={false}
         onOpenMemory={() => undefined}
         onShowCollection={() => undefined}
       />,
@@ -81,23 +76,69 @@ describe("TimelineView", () => {
     expect(html).toContain(`Remember ${newer.title}.`);
     expect(html).toContain(`A note for ${older.title}.`);
     expect(html).toContain(`Open ${newer.title} memory`);
-    expect(html).toContain(newer.publishedVisual.accessibleDescription);
+    expect(html).toContain(`Badge artifact: ${newer.activation?.visualPin.accessibleDescription}`);
+    expect(html).not.toContain("A later catalogue visual that was not activated.");
+    expect(html).toContain("badge-preview timeline-badge-preview");
+    expect(html).toContain("badge-material--metal");
+    expect(html).toContain("badge-shape--circle");
+    expect(html).toContain("badge-material--wool");
+    expect(html).toContain("badge-shape--rectangle");
+    expect(html).toContain('src="blob:newer"');
+    expect(html).not.toMatch(/class="timeline-art">\s*<img/u);
+    expect(html).not.toContain("badge-viewer timeline-badge-viewer");
+    expect(html).not.toContain("<canvas");
+    expect(html).toContain("Inspect badge in 3D");
+    expect(html).toContain('aria-pressed="false"');
+    expect(html).toContain(`aria-controls="timeline-artifact-${newer.recordId}"`);
+    expect(html.indexOf('class="timeline-inspect"')).toBeLessThan(
+      html.indexOf('class="timeline-artifact-slot"'),
+    );
     expect(html).toContain('dateTime="2025-01-10"');
     expect(html).toContain(`dateTime="${newer.activation?.activatedAt}"`);
     expect(html).toContain('aria-label="2 earned memories"');
+  });
 
-    const events: string[] = [];
-    vi.stubGlobal("document", {
-      getElementById: () => ({ focus: () => events.push("focus") }),
+  it("bounds a large Timeline to previews and one persistent inspector trigger per card", () => {
+    const seeded = createStarterArchiveState();
+    const records = Array.from({ length: 24 }, (_, index) => {
+      const day = String((index % 28) + 1).padStart(2, "0");
+      return {
+        ...earnedRecord(
+          seeded.records[index % seeded.records.length],
+          `2025-01-${day}`,
+          `2025-01-${day}`,
+          `2026-08-20T18:${String(index).padStart(2, "0")}:00.000Z`,
+        ),
+        recordId: `timeline-scale-${index}`,
+      };
     });
-    const view = TimelineView({
-      state,
-      sourceUrls: {},
-      onOpenMemory: (recordId) => events.push(`open:${recordId}`),
-      onShowCollection: () => events.push("collection"),
-    });
-    findButton(view, `Open ${newer.title} memory`).props.onClick?.();
-    expect(events).toEqual(["focus", `open:${newer.recordId}`]);
+    const state: ArchiveState = { ...seeded, records };
+    const sourceUrls = Object.fromEntries(
+      records.map((record) => [record.recordId, `blob:${record.recordId}`]),
+    );
+
+    const html = renderToStaticMarkup(
+      <TimelineView
+        state={state}
+        sourceUrls={sourceUrls}
+        forceFallback={false}
+        onOpenMemory={() => undefined}
+        onShowCollection={() => undefined}
+      />,
+    );
+
+    expect(occurrenceCount(html, "badge-preview timeline-badge-preview")).toBe(24);
+    expect(occurrenceCount(html, 'class="timeline-inspect"')).toBe(24);
+    expect(occurrenceCount(html, 'class="timeline-artifact-slot"')).toBe(24);
+    expect(occurrenceCount(html, 'aria-pressed="false"')).toBe(24);
+    expect(html).not.toContain("timeline-badge-viewer");
+    expect(html).not.toContain("<canvas");
+  });
+
+  it("moves or closes the single active inspector deterministically", () => {
+    expect(toggledTimelineInspection(null, "first")).toBe("first");
+    expect(toggledTimelineInspection("first", "second")).toBe("second");
+    expect(toggledTimelineInspection("second", "second")).toBeNull();
   });
 
   it("uses the real activation instant as a deterministic tie-break across offsets", () => {
@@ -130,6 +171,7 @@ describe("TimelineView", () => {
       <TimelineView
         state={createStarterArchiveState()}
         sourceUrls={{}}
+        forceFallback
         onOpenMemory={() => undefined}
         onShowCollection={() => undefined}
       />,
@@ -138,22 +180,20 @@ describe("TimelineView", () => {
     expect(html).toContain("No memories sealed yet");
     expect(html).toContain("Return to collection");
     expect(html).not.toContain("timeline-entry");
+  });
 
+  it("focuses the collection navigation before leaving Timeline", () => {
     const events: string[] = [];
     vi.stubGlobal("document", {
       getElementById: () => ({ focus: () => events.push("focus") }),
     });
-    const view = TimelineView({
-      state: createStarterArchiveState(),
-      sourceUrls: {},
-      onOpenMemory: () => undefined,
-      onShowCollection: () => events.push("collection"),
-    });
-    findButton(view, "Return to collection").props.onClick?.();
-    expect(events).toEqual(["focus", "collection"]);
+
+    focusCollectionThen(() => events.push("action"));
+
+    expect(events).toEqual(["focus", "action"]);
   });
 
-  it("announces a single earned memory with singular grammar", () => {
+  it("announces a single unresolved earned memory with singular grammar", () => {
     const seeded = createStarterArchiveState();
     const state: ArchiveState = {
       ...seeded,
@@ -167,10 +207,13 @@ describe("TimelineView", () => {
       <TimelineView
         state={state}
         sourceUrls={{}}
+        forceFallback
         onOpenMemory={() => undefined}
         onShowCollection={() => undefined}
       />,
     );
     expect(html).toContain('aria-label="1 earned memory"');
+    expect(html).toContain("Artifact is still resolving.");
+    expect(html).not.toContain("timeline-badge-viewer");
   });
 });

@@ -7,6 +7,14 @@ export interface ResolvedVisualDisplay {
   pin: ExactVisualPin;
 }
 
+export function sourceUrlsForResolvedVisuals(
+  visuals: Readonly<Record<string, ResolvedVisualDisplay>>,
+): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(visuals).map(([recordId, visual]) => [recordId, visual.sourceUrl]),
+  );
+}
+
 export function useResolvedVisuals(archive: ArchiveApplication, state: ArchiveState | null) {
   const [visuals, setVisuals] = useState<Record<string, ResolvedVisualDisplay>>({});
   const [error, setError] = useState<string | null>(null);

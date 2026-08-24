@@ -1,13 +1,16 @@
+import { useState } from "react";
 import type { ActivationRecord, ArchiveRecord, ArchiveState } from "@badge/archive-domain";
+import { BadgePreview, BadgeViewer } from "@badge/renderer-web";
 
-import { focusArchiveSection } from "./archive-section-focus";
+import { focusCollectionThen } from "./archive-section-focus";
 import { formatDate } from "./browser-utilities";
-import { ArrowIcon } from "./icons";
-import { orderedTimelineRecords } from "./timeline-records";
+import { ArrowIcon, InspectIcon } from "./icons";
+import { orderedTimelineRecords, toggledTimelineInspection } from "./timeline-records";
 
 interface TimelineViewProps {
   readonly state: ArchiveState;
   readonly sourceUrls: Readonly<Record<string, string>>;
+  readonly forceFallback: boolean;
   readonly onOpenMemory: (recordId: string) => void;
   readonly onShowCollection: () => void;
 }
@@ -36,13 +39,15 @@ function collectionLabel(record: ArchiveRecord): string {
   return (record.collectionRefs[0]?.collectionId ?? "personal archive").replaceAll("-", " ");
 }
 
-function leaveTimeline(action: () => void): void {
-  focusArchiveSection("collection");
-  action();
-}
-
-export function TimelineView({ state, sourceUrls, onOpenMemory, onShowCollection }: TimelineViewProps) {
+export function TimelineView({
+  state,
+  sourceUrls,
+  forceFallback,
+  onOpenMemory,
+  onShowCollection,
+}: TimelineViewProps) {
   const records = orderedTimelineRecords(state);
+  const [inspectedRecordId, setInspectedRecordId] = useState<string | null>(null);
 
   return (
     <main className="timeline-main">
@@ -70,7 +75,7 @@ export function TimelineView({ state, sourceUrls, onOpenMemory, onShowCollection
             <button
               className="secondary-button"
               type="button"
-              onClick={() => leaveTimeline(onShowCollection)}
+              onClick={() => focusCollectionThen(onShowCollection)}
             >
               Return to collection <ArrowIcon />
             </button>
@@ -79,6 +84,9 @@ export function TimelineView({ state, sourceUrls, onOpenMemory, onShowCollection
           <ol className="timeline-list">
             {records.map((record) => {
               const sourceUrl = sourceUrls[record.recordId];
+              const inspecting = inspectedRecordId === record.recordId;
+              const visualPin = record.activation.visualPin;
+              const artifactId = `timeline-artifact-${record.recordId}`;
               return (
                 <li className="timeline-entry" key={record.recordId}>
                   <div className="timeline-marker" aria-hidden="true" />
@@ -86,7 +94,52 @@ export function TimelineView({ state, sourceUrls, onOpenMemory, onShowCollection
                   <article className="timeline-card">
                     <div className="timeline-art">
                       {sourceUrl ? (
-                        <img src={sourceUrl} alt={record.publishedVisual.accessibleDescription} />
+                        <>
+                          <button
+                            className="timeline-inspect"
+                            type="button"
+                            aria-controls={artifactId}
+                            aria-label={
+                              inspecting
+                                ? `Close ${record.title} badge inspector`
+                                : `Inspect ${record.title} badge ${forceFallback ? "views" : "in 3D"}`
+                            }
+                            aria-pressed={inspecting}
+                            onClick={() =>
+                              setInspectedRecordId((current) =>
+                                toggledTimelineInspection(current, record.recordId),
+                              )
+                            }
+                          >
+                            <InspectIcon />
+                            <span>
+                              {inspecting
+                                ? "Close badge inspector"
+                                : forceFallback
+                                  ? "Inspect badge views"
+                                  : "Inspect badge in 3D"}
+                            </span>
+                          </button>
+                          <div id={artifactId} className="timeline-artifact-slot">
+                            {inspecting ? (
+                              <BadgeViewer
+                                className="timeline-badge-viewer"
+                                sourceUrl={sourceUrl}
+                                recipe={visualPin.renderRecipe}
+                                accessibleDescription={visualPin.accessibleDescription}
+                                readOnly
+                                forceFallback={forceFallback}
+                              />
+                            ) : (
+                              <BadgePreview
+                                className="timeline-badge-preview"
+                                sourceUrl={sourceUrl}
+                                recipe={visualPin.renderRecipe}
+                                accessibleDescription={visualPin.accessibleDescription}
+                              />
+                            )}
+                          </div>
+                        </>
                       ) : (
                         <span role="status">Artifact is still resolving.</span>
                       )}
@@ -106,7 +159,7 @@ export function TimelineView({ state, sourceUrls, onOpenMemory, onShowCollection
                       <button
                         className="text-button timeline-open"
                         type="button"
-                        onClick={() => leaveTimeline(() => onOpenMemory(record.recordId))}
+                        onClick={() => focusCollectionThen(() => onOpenMemory(record.recordId))}
                       >
                         Open {record.title} memory <ArrowIcon />
                       </button>

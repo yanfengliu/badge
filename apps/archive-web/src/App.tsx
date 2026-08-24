@@ -25,6 +25,7 @@ import {
 } from "./archive-startup";
 import { ArchiveClosedScreen } from "./ArchiveClosedScreen";
 import { BadgeRail } from "./BadgeRail";
+import { ReplayActivationButton } from "./ReplayActivationButton";
 import { RestoreDialog } from "./RestoreDialog";
 import { SayingActivationControl, SayingComposer } from "./SayingComposer";
 import { SayingDisclosureBoundary } from "./SayingDisclosureBoundary";
@@ -45,7 +46,7 @@ import {
   type ArchiveSafetyHandoff,
   type PendingArchiveRestore,
 } from "./restore-flow";
-import { useResolvedVisuals } from "./use-resolved-visuals";
+import { sourceUrlsForResolvedVisuals, useResolvedVisuals } from "./use-resolved-visuals";
 import { useSayingWorkflow } from "./use-saying-workflow";
 const repository = new IndexedDbArchiveRepository();
 const archive = new ArchiveApplication(repository);
@@ -272,9 +273,7 @@ export function App() {
     ? state.records.find((record) => record.recordId === ceremonyId)
     : undefined;
   const ceremonyVisual = ceremonyRecord ? resolvedVisuals[ceremonyRecord.recordId] : undefined;
-  const resolvedSourceUrls = Object.fromEntries(
-    Object.entries(resolvedVisuals).map(([recordId, visual]) => [recordId, visual.sourceUrl]),
-  );
+  const resolvedSourceUrls = sourceUrlsForResolvedVisuals(resolvedVisuals);
 
   return (
     <SayingDisclosureBoundary
@@ -295,6 +294,7 @@ export function App() {
         <TimelineView
           state={state}
           sourceUrls={resolvedSourceUrls}
+          forceFallback={forceFallback}
           onOpenMemory={selectBadge}
           onShowCollection={() => setActiveSection("collection")}
         />
@@ -402,14 +402,10 @@ export function App() {
                     </div>
                   </div>
                   {selectedRecord.note ? <p className="memory-note">{selectedRecord.note}</p> : null}
-                  <button
-                    ref={ceremonyReturnFocus}
-                    className="secondary-button"
-                    type="button"
-                    onClick={() => replayCeremony(selectedRecord.recordId)}
-                  >
-                    Replay activation
-                  </button>
+                  <ReplayActivationButton
+                    buttonRef={ceremonyReturnFocus}
+                    onReplay={() => replayCeremony(selectedRecord.recordId)}
+                  />
                 </div>
               ) : (
                 <form className="memory-form" onSubmit={activate}>

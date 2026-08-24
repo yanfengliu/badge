@@ -7,3 +7,8 @@ export function archiveSectionButtonId(section: ArchiveSection): string {
 export function focusArchiveSection(section: ArchiveSection): void {
   document.getElementById(archiveSectionButtonId(section))?.focus();
 }
+
+export function focusCollectionThen(action: () => void): void {
+  focusArchiveSection("collection");
+  action();
+}

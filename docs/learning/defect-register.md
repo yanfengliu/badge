@@ -1,5 +1,25 @@
 # Defect Register
 
+## 2026-08-23 — Timeline showed source pictures instead of badge artifacts
+
+**Symptom:** Earned Timeline cards showed the selected source artwork as an ordinary rectangular picture instead of showing the shaped, bordered, material badge the memory actually earned.
+
+**Investigation:** The initial Timeline projection resolved the correct frozen visual identity but rendered only its source URL, dropping the activation pin's render recipe at the final presentation boundary. A first repair mounted a complete live `BadgeViewer` in every earned card and looked correct with one memory, but independent hostile review caught that Canvas, WebGL-context, animation, and seven-control tab-stop counts would then grow without bound toward the all-national-parks collection. The bounded repair still placed the focused trigger after its newly inserted viewer in DOM order, so forward `Tab` skipped the viewport, and its preview images still decoded eagerly. The final design renders every recipe as a lazy, asynchronously decoded, context-free badge preview, keeps the trigger before its controlled artifact slot in DOM order while styling it visually below, and swaps at most one chosen card into the full inspector. A 24-record server-rendered control produced 24 previews, 24 persistent inspection triggers, zero eager viewers, and zero canvases. Headless Chromium measured zero canvases initially, one after inspection, and zero after closing with focus preserved; `Enter` followed by forward `Tab` reached the 3D viewport, where keyboard arrows rotated the badge and `Equal` reached `110%` zoom. Live inspection at `1440×1000` also covered genuine oblique thickness, `121%` zoom, shifted light, and `data-reduced-motion="true"`, while `900×900` static and forced-fallback checks covered front, edge, and back with zero canvases and zero browser console errors.
+
+**Root cause:** The Timeline view treated an exact visual pin as a picture URL instead of an inseparable source-plus-recipe artifact, and the first visual correction optimized the one-card screenshot without first bounding renderer and interaction resources across realistic collection size.
+
+**Standing gate:** `TimelineView.test.tsx` distinguishes the activation pin from the definition's current published visual, requires recipe-rendered previews and persistent inspection triggers for every record, proves 24 records mount no eager live viewers or canvases, keeps inspection selection to one deterministic record ID, and requires each trigger to precede its controlled artifact slot in DOM order; `badge-preview.test.tsx` requires the pinned source, shape, material, border, accessible name, lazy loading, asynchronous decoding, and absence of Canvas and viewer controls. Archive browser verification measures the global Canvas count through open and focus-preserving close, asserts `Enter` then forward `Tab` reaches the 3D viewport and keyboard rotation and zoom work there, exercises one live inspector at wide and narrow desktop sizes with oblique, zoom, shifted-light, and reduced-motion states, and repeats front, edge, and back under forced fallback with zero Canvas allocation.
+
+## 2026-08-23 — Replay activation looked like a generic secondary action
+
+**Symptom:** The earned badge's `Replay activation` action used the same small generic secondary-button treatment as ordinary utilities, so replaying the ceremony felt visually incidental and unfinished.
+
+**Investigation:** The action correctly reopened the existing activation ceremony and already supplied the focus-return reference, but its entire product expression was one unadorned label inside shared button styling. The replacement remains one semantic button while adding a replay emblem, clear label, quiet explanatory line, directional affordance, dedicated hover and focus states, and a larger coherent target. Headless Chromium at desktop widths showed the polished control in its earned-memory context; keyboard `Enter` opened the ceremony, `Escape` closed it, and focus returned to `.replay-activation`, with zero browser console errors.
+
+**Root cause:** Functional replay was implemented by reusing the generic action primitive without a dedicated earned-state component or a visual contract for this emotional coda.
+
+**Standing gate:** `ReplayActivationButton.test.tsx` requires the replay emblem, primary label, explanatory copy, one semantic button, callback, and caller-owned focus reference. Archive browser verification activates replay by keyboard, dismisses the ceremony with `Escape`, asserts focus returns to `.replay-activation`, and visually checks the control in the complete earned-memory surface at more than one desktop-like viewport.
+
 ## 2026-08-23 — Timeline was visible primary navigation but could not be opened
 
 **Symptom:** Clicking the Archive's `Timeline` tab did nothing because the control was disabled, so a primary section looked broken.
