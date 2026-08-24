@@ -4,8 +4,14 @@ import type {
   ArchiveLifecycle,
   ArchiveState,
 } from "@badge/archive-domain";
+import type { SayingResponse } from "@badge/saying-contract";
 
-import { createArchiveBackup, createArchiveRecoveryEvidence, parseArchiveBackup } from "./backup.js";
+import { createArchiveBackup, parseArchiveBackup } from "./backup.js";
+import {
+  createArchiveRecoveryEvidence,
+  type ArchiveRecoveryReason,
+  type ArchiveRecoveryReasonCode,
+} from "./recovery-evidence.js";
 import type { IndexedDbArchiveRepository } from "./repository.js";
 import type { ArchiveSourceAssetInput } from "./source-assets.js";
 import type {
@@ -21,6 +27,7 @@ export interface ArchiveApplicationOptions {
 export interface ArchiveBackupCheckpoint {
   readonly bytes: Uint8Array;
   readonly state: ArchiveState;
+  readonly recoveryReason?: ArchiveRecoveryReason;
 }
 
 export class ArchiveApplication {
@@ -40,20 +47,42 @@ export class ArchiveApplication {
     return this.repository.load(seed, sourceAssets);
   }
 
+  initializeSayingDefaults(
+    defaultState: ArchiveState,
+    expectedCurrentState: ArchiveState,
+  ): Promise<ArchiveState> {
+    return this.repository.initializeSayingDefaults(defaultState, expectedCurrentState);
+  }
+
   state(): Promise<ArchiveState> {
     return this.repository.read();
   }
 
-  activate(input: ActivationInput, sourceAsset: ArchiveSourceAssetInput): Promise<ActivationResult> {
-    return this.repository.activate(input, this.now(), sourceAsset);
+  async activate(
+    input: ActivationInput,
+    sourceAsset: ArchiveSourceAssetInput,
+    acceptedQuotation: SayingResponse,
+    expectedQuotationRevision: string,
+  ): Promise<ActivationResult> {
+    return this.repository.activate(
+      input,
+      this.now(),
+      sourceAsset,
+      acceptedQuotation,
+      expectedQuotationRevision,
+    );
   }
 
   visual(recordId: string): Promise<ResolvedArchiveVisual> {
     return this.repository.resolveVisual(recordId);
   }
 
-  updateSaying(recordId: string, saying: string): Promise<ArchiveState> {
-    return this.repository.updateSaying(recordId, saying);
+  async updateQuotation(
+    recordId: string,
+    quotation: SayingResponse,
+    expectedQuotationRevision: string,
+  ): Promise<ArchiveState> {
+    return this.repository.updateQuotation(recordId, quotation, expectedQuotationRevision);
   }
 
   updateLifecycle(recordId: string, lifecycle: ArchiveLifecycle): Promise<ArchiveState> {
@@ -72,17 +101,27 @@ export class ArchiveApplication {
     };
   }
 
-  async exportRecoveryEvidenceCheckpoint(): Promise<ArchiveBackupCheckpoint> {
-    const state = await this.repository.read();
-    return { bytes: await createArchiveRecoveryEvidence(state, this.now()), state };
+  async exportRecoveryEvidenceCheckpoint(
+    reason: ArchiveRecoveryReasonCode,
+  ): Promise<ArchiveBackupCheckpoint> {
+    const snapshot = await this.repository.recoveryEvidenceSnapshot(reason);
+    return {
+      bytes: await createArchiveRecoveryEvidence(snapshot.state, this.now(), {
+        code: reason,
+        affectedRecordIds: [...snapshot.affectedRecordIds],
+      }),
+      state: snapshot.state,
+      recoveryReason: { code: reason, affectedRecordIds: [...snapshot.affectedRecordIds] },
+    };
   }
 
   async restoreBackup(
     bytes: Uint8Array | string,
-    expectedCurrentState?: ArchiveState,
+    expectedCurrentState: ArchiveState,
+    sayingDefaults?: ArchiveState,
   ): Promise<ArchiveState> {
     const backup = await parseArchiveBackup(bytes);
-    return this.repository.restore(backup.state, backup.sourceAssets, expectedCurrentState);
+    return this.repository.restore(backup.state, backup.sourceAssets, expectedCurrentState, sayingDefaults);
   }
 
   async recoverBackup(

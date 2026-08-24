@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import * as quotationGuards from "./quotation-comparison.ts";
+import { quotationRecordsMatch } from "./quotation-comparison.ts";
 import {
   countGraphemes,
   hasBidiControl,
@@ -11,9 +11,9 @@ import {
   utf8ByteLength,
 } from "./text-safety.ts";
 
-export { SAYING_SYSTEM_PROMPT_V2 } from "./prompt.ts";
+export { SAYING_SYSTEM_PROMPT_V3 } from "./prompt.ts";
 
-export const SAYING_PROMPT_VERSION = "v2" as const;
+export const SAYING_PROMPT_VERSION = "v3" as const;
 export const SAYING_TITLE_GRAPHEME_LIMIT = 200;
 export const SAYING_CRITERION_GRAPHEME_LIMIT = 1_000;
 export const SAYING_THEME_CUE_COUNT_LIMIT = 6;
@@ -22,7 +22,7 @@ export const SAYING_VOICE_GRAPHEME_LIMIT = 120;
 export const SAYING_VARIATION_GRAPHEME_LIMIT = 120;
 export const SAYING_USER_DIRECTION_GRAPHEME_LIMIT = 240;
 export const SAYING_ALLOWED_QUOTATION_COUNT_LIMIT = 6;
-export const SAYING_QUOTATION_CONTRACT_VERSION = "v1" as const;
+export const SAYING_QUOTATION_CONTRACT_VERSION = "v2" as const;
 export const SAYING_QUOTATION_ID_LENGTH_LIMIT = 128;
 export const SAYING_QUOTATION_PERSON_GRAPHEME_LIMIT = 64;
 export const SAYING_QUOTATION_PERSON_CODE_POINT_LIMIT = 128;
@@ -56,7 +56,7 @@ function boundedPromptText(
       if (value.length > promptFieldRawCodeUnitLimit) {
         context.addIssue({
           code: "custom",
-          message: `${label} is too large to inspect safely; shorten it before generating a saying.`,
+          message: `${label} is too large to inspect safely; shorten it before selecting a quotation.`,
         });
         return;
       }
@@ -70,7 +70,7 @@ function boundedPromptText(
       if (hasBidiControl(value)) {
         context.addIssue({
           code: "custom",
-          message: `${label} contains a bidirectional text control; remove it before generating a saying.`,
+          message: `${label} contains a bidirectional text control; remove it before selecting a quotation.`,
         });
         return;
       }
@@ -181,7 +181,7 @@ export const sayingDirectionSchema = z
     ) {
       context.addIssue({
         code: "custom",
-        message: "Saying direction is empty; omit it or provide at least one direction field.",
+        message: "Quotation direction is empty; omit it or provide at least one direction field.",
       });
     }
   });
@@ -241,20 +241,17 @@ export const sayingRequestSchema = z
     title: boundedPromptText("Badge title", SAYING_TITLE_GRAPHEME_LIMIT),
     criterion: boundedPromptText("Badge criterion", SAYING_CRITERION_GRAPHEME_LIMIT),
     direction: sayingDirectionSchema.optional(),
-    allowedQuotations: allowedQuotationsSchema.optional(),
+    allowedQuotations: allowedQuotationsSchema,
   })
   .strict();
 export type SayingRequest = z.infer<typeof sayingRequestSchema>;
 
-const generatedSayingSchema = boundedOutputText("Generated saying");
+const historicalQuotationTextSchema = boundedOutputText("Historical quotation text");
 
-const originalSayingResponseSchema = z
-  .object({ kind: z.literal("original"), saying: generatedSayingSchema })
-  .strict();
-const quotationSayingResponseSchema = z
+export const sayingResponseSchema = z
   .object({
     kind: z.literal("quotation"),
-    saying: generatedSayingSchema,
+    saying: historicalQuotationTextSchema,
     quotation: historicalQuotationSchema,
   })
   .strict()
@@ -266,29 +263,9 @@ const quotationSayingResponseSchema = z
       });
     }
   });
-
-export const sayingResponseSchema = z.discriminatedUnion("kind", [
-  originalSayingResponseSchema,
-  quotationSayingResponseSchema,
-]);
 export type SayingResponse = z.infer<typeof sayingResponseSchema>;
 
-export const sayingModelResponseSchema = z.discriminatedUnion("kind", [
-  z
-    .object({
-      kind: z.literal("original"),
-      saying: generatedSayingSchema,
-      quotationId: z.null(),
-    })
-    .strict(),
-  z
-    .object({
-      kind: z.literal("quotation"),
-      saying: z.null(),
-      quotationId: quotationIdentifierSchema,
-    })
-    .strict(),
-]);
+export const sayingModelResponseSchema = z.object({ quotationId: quotationIdentifierSchema }).strict();
 export type SayingModelResponse = z.infer<typeof sayingModelResponseSchema>;
 
 const providerIdentifierSchema = z
@@ -347,12 +324,12 @@ export function buildCanonicalSayingUserMessage(input: unknown): string {
     title: request.title,
     criterion: request.criterion,
     ...(request.direction === undefined ? {} : { direction: canonicalDirection(request.direction) }),
-    ...(request.allowedQuotations === undefined ? {} : { allowedQuotations: request.allowedQuotations }),
+    allowedQuotations: request.allowedQuotations,
   });
   const byteLength = utf8ByteLength(message);
   if (byteLength > SAYING_USER_MESSAGE_UTF8_LIMIT) {
     throw new RangeError(
-      `Canonical saying user message is ${byteLength} UTF-8 bytes; shorten its achievement text or direction to use at most ${SAYING_USER_MESSAGE_UTF8_LIMIT} bytes.`,
+      `Canonical quotation-selection message is ${byteLength} UTF-8 bytes; shorten its achievement text or direction to use at most ${SAYING_USER_MESSAGE_UTF8_LIMIT} bytes.`,
     );
   }
   return message;
@@ -361,13 +338,13 @@ export function buildCanonicalSayingUserMessage(input: unknown): string {
 export function parseSayingModelResponseMessage(message: string): SayingModelResponse {
   if (message.length > SAYING_RESPONSE_UTF8_LIMIT) {
     throw new RangeError(
-      `Saying provider response is too large to inspect safely; return one JSON object of at most ${SAYING_RESPONSE_UTF8_LIMIT} UTF-8 bytes.`,
+      `Quotation provider response is too large to inspect safely; return one JSON object of at most ${SAYING_RESPONSE_UTF8_LIMIT} UTF-8 bytes.`,
     );
   }
   const byteLength = utf8ByteLength(message);
   if (byteLength > SAYING_RESPONSE_UTF8_LIMIT) {
     throw new RangeError(
-      `Saying provider response is ${byteLength} UTF-8 bytes; return one JSON object of at most ${SAYING_RESPONSE_UTF8_LIMIT} bytes.`,
+      `Quotation provider response is ${byteLength} UTF-8 bytes; return one JSON object of at most ${SAYING_RESPONSE_UTF8_LIMIT} bytes.`,
     );
   }
 
@@ -376,7 +353,7 @@ export function parseSayingModelResponseMessage(message: string): SayingModelRes
     decoded = JSON.parse(message);
   } catch {
     throw new SyntaxError(
-      "Saying provider response is not valid JSON; return exactly one permitted closed saying object.",
+      "Quotation provider response is not valid JSON; return exactly one permitted quotation-selection object.",
     );
   }
   return sayingModelResponseSchema.parse(decoded);
@@ -388,39 +365,7 @@ export function resolveSayingModelResponse(
 ): SayingResponse {
   const response = sayingModelResponseSchema.parse(untrustedResponse);
   const request = sayingRequestSchema.parse(untrustedRequest);
-  if (response.kind === "original") {
-    if (quotationGuards.isQuotationStyled(response.saying)) {
-      throw new RangeError(
-        "Source-unverified suggestion contains quotation-style text or attribution; select a supplied historical quotation ID instead.",
-      );
-    }
-    if (
-      request.allowedQuotations?.some((quotation) =>
-        quotationGuards.hasSuppliedPersonAttribution(response.saying, quotation.person),
-      )
-    ) {
-      throw new RangeError(
-        "Source-unverified suggestion attributes text to a supplied historical person; select a supplied quotation ID instead.",
-      );
-    }
-    if (request.allowedQuotations?.some((quotation) => quotation.text === response.saying)) {
-      throw new RangeError(
-        "Source-unverified suggestion matches a supplied historical quotation; return that quotation's exact ID instead.",
-      );
-    }
-    if (
-      request.allowedQuotations?.some((quotation) =>
-        quotationGuards.tooCloselyMatchesQuotation(response.saying, quotation.text),
-      )
-    ) {
-      throw new RangeError(
-        "Source-unverified suggestion too closely matches a supplied historical quotation; return that quotation's exact ID instead.",
-      );
-    }
-    return sayingResponseSchema.parse({ kind: "original", saying: response.saying });
-  }
-
-  const quotation = request.allowedQuotations?.find((candidate) => candidate.id === response.quotationId);
+  const quotation = request.allowedQuotations.find((candidate) => candidate.id === response.quotationId);
   if (!quotation) {
     throw new RangeError(
       `Quotation ID ${response.quotationId} is not one of the supplied quotations for this achievement.`,
@@ -438,36 +383,28 @@ export function validateSayingProviderResultForRequest(
   untrustedRequest: unknown,
 ): SayingProviderResult {
   const result = sayingProviderResultSchema.parse(untrustedResult);
+  const resolved = validateSayingResponseForRequest(result.response, untrustedRequest);
+
+  return sayingProviderResultSchema.parse({ ...result, response: resolved });
+}
+
+export function validateSayingResponseForRequest(
+  untrustedResponse: unknown,
+  untrustedRequest: unknown,
+): SayingResponse {
+  const response = sayingResponseSchema.parse(untrustedResponse);
   const request = sayingRequestSchema.parse(untrustedRequest);
-
-  if (result.response.kind === "original") {
-    resolveSayingModelResponse(
-      { kind: "original", saying: result.response.saying, quotationId: null },
-      request,
-    );
-    return result;
-  }
-
-  const resolved = resolveSayingModelResponse(
-    { kind: "quotation", saying: null, quotationId: result.response.quotation.id },
-    request,
-  );
-  if (
-    resolved.kind !== "quotation" ||
-    result.response.saying !== resolved.saying ||
-    !quotationGuards.quotationRecordsMatch(result.response.quotation, resolved.quotation)
-  ) {
+  const resolved = resolveSayingModelResponse({ quotationId: response.quotation.id }, request);
+  if (response.saying !== resolved.saying || !quotationRecordsMatch(response.quotation, resolved.quotation)) {
     throw new RangeError(
       "Historical quotation response does not exactly match the supplied quotation for this achievement.",
     );
   }
 
-  return sayingProviderResultSchema.parse({ ...result, response: resolved });
+  return resolved;
 }
 
 export function formatSayingForArchive(untrustedResponse: unknown): string {
   const response = sayingResponseSchema.parse(untrustedResponse);
-  return response.kind === "original"
-    ? response.saying
-    : `“${response.saying}” — ${response.quotation.person}, ${response.quotation.sourceTitle}`;
+  return `“${response.saying}” — ${response.quotation.person}, ${response.quotation.sourceTitle}`;
 }

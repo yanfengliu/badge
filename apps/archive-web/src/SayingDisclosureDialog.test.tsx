@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { SAYING_SYSTEM_PROMPT_V2 } from "@badge/saying-contract";
+import { SAYING_SYSTEM_PROMPT_V3 } from "@badge/saying-contract";
 import { SAYING_DISCLOSURE, buildSayingDisclosureReview } from "@badge/saying-live-contract";
 
 import { SayingDisclosureDialog } from "./SayingDisclosureDialog";
@@ -43,17 +43,17 @@ describe("SayingDisclosureDialog", () => {
     expect(html).toContain("Visit Yosemite National Park");
     expect(html).toContain("Dry wit, please");
     expect(html).toContain("john-muir-every-walk-nature");
-    expect(html).toContain(SAYING_SYSTEM_PROMPT_V2.split("\n")[0]!);
+    expect(html).toContain(SAYING_SYSTEM_PROMPT_V3.split("\n")[0]!);
     expect(html).toContain("Exact outbound values for this request");
-    expect(html).toContain("These are the exact values for this first request");
-    expect(html).toContain("later explicit requests may use a different badge title");
+    expect(html).toContain("select one source-checked historical quotation ID");
+    expect(html).toContain("later explicit regeneration requests may use a different badge title");
     expect(html).toContain("criterion, direction, or quotation shortlist without reopening this sheet");
     expect(html).toContain(
       "Reloading or a provider, destination, model, prompt, field, quotation contract, normalization, or limit change asks again",
     );
     expect(html).toContain("Quotation contract");
-    expect(html).toContain("Close without generating");
-    expect(html).toContain("Generate with Claude");
+    expect(html).toContain("Close without regenerating");
+    expect(html).toContain("Regenerate with Claude");
     for (const excludedField of SAYING_DISCLOSURE.scope.excludedFields) {
       expect(html).toContain(`>${excludedField}</li>`);
     }
@@ -74,10 +74,10 @@ describe("SayingDisclosureDialog", () => {
 
     expect(html).toContain('role="status"');
     expect(html).toContain("No achievement text has been sent to Claude");
-    expect(html).toContain("Close saying provider review without generating");
+    expect(html).toContain("Close quote provider review without regenerating");
   });
 
-  it("renders disclosure failures as alerts with retry and no generation action", () => {
+  it("renders disclosure failures as alerts with retry and no regeneration action", () => {
     const html = renderToStaticMarkup(
       <SayingDisclosureDialog
         state={{ phase: "error", review: null, error: "Disclosure response was invalid." }}
@@ -91,6 +91,6 @@ describe("SayingDisclosureDialog", () => {
     expect(html).toContain('role="alert"');
     expect(html).toContain("Disclosure response was invalid.");
     expect(html).toContain("Retry disclosure");
-    expect(html).not.toContain("Generate with Claude");
+    expect(html).not.toContain("Regenerate with Claude");
   });
 });

@@ -135,7 +135,7 @@ async function waitForUnixProcessGroupExit(
       if (code !== "EPERM") {
         throw new BoundedChildFailure(
           "containment",
-          "Badge could not verify that the saying process group stopped.",
+          "Badge could not verify that the quote-selection process group stopped.",
           { cause: error },
         );
       }
@@ -147,7 +147,7 @@ async function waitForUnixProcessGroupExit(
   }
   throw new BoundedChildFailure(
     "containment",
-    "Badge could not verify that the saying process group stopped.",
+    "Badge could not verify that the quote-selection process group stopped.",
   );
 }
 
@@ -162,9 +162,13 @@ async function forceKillOwnedProcessTree(
       killProcess(-processGroupId, "SIGKILL");
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === "ESRCH") return;
-      throw new BoundedChildFailure("containment", "Badge could not terminate the saying process group.", {
-        cause: error,
-      });
+      throw new BoundedChildFailure(
+        "containment",
+        "Badge could not terminate the quote-selection process group.",
+        {
+          cause: error,
+        },
+      );
     }
     await waitForUnixProcessGroupExit(processGroupId, killProcess);
     return;
@@ -189,7 +193,7 @@ export function runBoundedChild(
   validatePositiveBound(request.maxStdoutBytes, "Child stdout limit");
   validatePositiveBound(request.maxStderrBytes, "Child stderr limit");
   if (request.signal.aborted) {
-    return Promise.reject(new BoundedChildFailure("aborted", "The saying request was cancelled."));
+    return Promise.reject(new BoundedChildFailure("aborted", "The quote-selection request was cancelled."));
   }
 
   return new Promise((resolve, reject) => {
@@ -248,13 +252,13 @@ export function runBoundedChild(
       forceTimer.unref?.();
     };
     const onAbort = () =>
-      finishFailure(new BoundedChildFailure("aborted", "The saying request was cancelled."));
+      finishFailure(new BoundedChildFailure("aborted", "The quote-selection request was cancelled."));
     const timeoutTimer = setTimeout(
       () =>
         finishFailure(
           new BoundedChildFailure(
             "timeout",
-            `Claude Code exceeded the ${request.timeoutMs} ms saying-generation limit.`,
+            `Claude Code exceeded the ${request.timeoutMs} ms quotation-selection limit.`,
           ),
         ),
       request.timeoutMs,
@@ -294,7 +298,7 @@ export function runBoundedChild(
     });
     child.stdin.on("error", (cause) => {
       finishFailure(
-        new BoundedChildFailure("failed", "Claude Code could not receive the saying prompt.", {
+        new BoundedChildFailure("failed", "Claude Code could not receive the quotation-selection request.", {
           cause,
         }),
       );
@@ -324,7 +328,7 @@ export function runBoundedChild(
                 ? cause
                 : new BoundedChildFailure(
                     "containment",
-                    "Badge could not verify that the saying process tree stopped.",
+                    "Badge could not verify that the quote-selection process tree stopped.",
                     { cause },
                   ),
             );
@@ -352,7 +356,7 @@ export function runBoundedChild(
               ? cause
               : new BoundedChildFailure(
                   "containment",
-                  "Badge could not verify that the saying process tree stopped.",
+                  "Badge could not verify that the quote-selection process tree stopped.",
                   { cause },
                 ),
           );

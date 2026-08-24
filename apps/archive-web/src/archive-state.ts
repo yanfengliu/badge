@@ -1,8 +1,24 @@
 import { createSeededArchiveState, type ArchiveState } from "@badge/archive-domain";
 import { starterBadges } from "@badge/catalogue-fixtures/archive";
+import type { SayingRequest } from "@badge/saying-contract";
+
+import { defaultFixtureQuotation, formatFixtureQuotation } from "./fixture-quotations";
 
 export const STARTER_OWNER_ID = "local-owner";
 export const STARTER_RECORD_IDS = starterBadges.map((badge) => `starter:${badge.definitionId}`);
+
+export function createStarterQuotationRequests(): Readonly<Record<string, SayingRequest>> {
+  return Object.fromEntries(
+    starterBadges.map((badge, index) => [
+      STARTER_RECORD_IDS[index]!,
+      {
+        title: badge.title,
+        criterion: badge.criterion,
+        allowedQuotations: badge.historicalQuotations.map((quotation) => ({ ...quotation })),
+      },
+    ]),
+  );
+}
 
 export function createStarterArchiveState(): ArchiveState {
   return createSeededArchiveState({
@@ -33,7 +49,7 @@ export function createStarterArchiveState(): ArchiveState {
         renderRecipeVersion: badge.renderRecipe.version,
         renderRecipe: badge.renderRecipe,
       },
-      acceptedSaying: null,
+      acceptedSaying: formatFixtureQuotation(defaultFixtureQuotation(badge)),
       note: null,
       visibility: "inherit" as const,
       activation: null,

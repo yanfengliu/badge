@@ -24,6 +24,7 @@ import {
   parseArchiveBackup,
   type ArchiveSourceAssetInput,
 } from "../src/index.js";
+import { historicalQuotationRequest, withAcceptedQuotation } from "./historical-quotation-fixtures.js";
 import { validPngBytes, validPngHash } from "./image-fixtures.js";
 
 const exportedAt = "2026-08-23T17:00:00.000Z";
@@ -55,9 +56,18 @@ const activationInput: ActivationInput = {
   occurredEnd: "2026-06-14",
   note: "Granite after rain.",
   visibility: "private",
-  saying: "Wonder leaves a mark.",
   visualPin: originalVisual,
 };
+
+function expectStateExceptQuotationRevisions(actual: ArchiveState, expected: ArchiveState): void {
+  expect(actual).toEqual({
+    ...expected,
+    records: expected.records.map((record, index) => ({
+      ...record,
+      quotationRevision: actual.records[index]!.quotationRevision,
+    })),
+  });
+}
 
 function state(publishedVisual: PublishedVisual = originalVisual): ArchiveState {
   return createSeededArchiveState({
@@ -84,7 +94,9 @@ function state(publishedVisual: PublishedVisual = originalVisual): ArchiveState 
 let repositories: IndexedDbArchiveRepository[] = [];
 
 function createApplication(): { application: ArchiveApplication; repository: IndexedDbArchiveRepository } {
-  const repository = new IndexedDbArchiveRepository();
+  const repository = new IndexedDbArchiveRepository({
+    trustedQuotationRequests: { "record-yosemite": historicalQuotationRequest },
+  });
   repositories.push(repository);
   return {
     repository,
@@ -99,6 +111,40 @@ afterEach(async () => {
 });
 
 describe("Archive recovery edge conditions", () => {
+  it("does not backfill a readable incompatible same-ID record during repair-only recovery", async () => {
+    const incompatibleVisual: PublishedVisual = {
+      ...originalVisual,
+      packRef: { ...originalVisual.packRef, packDigest: "c".repeat(64) },
+    };
+    const incompatibleState = state(incompatibleVisual);
+    const target = createApplication();
+    await target.application.initialize(incompatibleState, [sourceAsset]);
+    const incoming = state();
+    const backup = await createArchiveBackup(incoming, [], exportedAt);
+    target.repository.close();
+
+    const corruptBytes = sourceAsset.bytes.slice();
+    corruptBytes[25] ^= 0xff;
+    const corruptSource = { ...sourceAsset, bytes: corruptBytes };
+    const raw = await openDB(ARCHIVE_DATABASE_NAME, ARCHIVE_DATABASE_VERSION);
+    await raw.put(ARCHIVE_OBJECT_STORE, corruptSource, sourceAsset.hash);
+    raw.close();
+
+    const reopened = createApplication();
+    await expect(reopened.application.visual("record-yosemite")).rejects.toMatchObject({
+      code: "VISUAL_SOURCE_UNREADABLE",
+    });
+
+    const recovery = await reopened.application.recoverBackup(backup, "local-owner", [sourceAsset], {
+      mode: "repair-corruption",
+      sayingDefaults: withAcceptedQuotation(incoming),
+    });
+    expect(recovery.stateReplaced).toBe(false);
+    expect(recovery.state).toEqual(incompatibleState);
+    expect((await reopened.application.state()).records[0]?.acceptedSaying).toBeNull();
+    expect(await reopened.application.visual("record-yosemite")).toMatchObject({ sourceAsset });
+  });
+
   it("explicitly quarantines and replaces readable state the current Archive cannot present", async () => {
     const incompatibleVisual: PublishedVisual = {
       ...originalVisual,
@@ -119,8 +165,10 @@ describe("Archive recovery edge conditions", () => {
       mode: "replace-incompatible-readable-state",
       expectedCurrentState: checkpoint.state,
     });
-    expect(recovery).toMatchObject({ state: state(), stateReplaced: true });
-    expect(await target.application.state()).toEqual(state());
+    expect(recovery.stateReplaced).toBe(true);
+    expectStateExceptQuotationRevisions(recovery.state, state());
+    expect(recovery.state.records[0]!.quotationRevision).not.toBe(state().records[0]!.quotationRevision);
+    expect(await target.application.state()).toEqual(recovery.state);
     expect(await target.application.visual("record-yosemite")).toMatchObject({ sourceAsset });
 
     target.repository.close();
@@ -130,6 +178,39 @@ describe("Archive recovery edge conditions", () => {
       reason: "incompatible-readable-state",
       raw: incompatibleState,
     });
+    evidence.close();
+  });
+
+  it("rejects an earned-null replacement before creating quarantine evidence or changing state", async () => {
+    const current = state({
+      ...originalVisual,
+      packRef: { ...originalVisual.packRef, packDigest: "c".repeat(64) },
+    });
+    const earned = activateAchievement(withAcceptedQuotation(state()), activationInput, exportedAt).state;
+    const earnedNull = {
+      ...earned,
+      records: earned.records.map((record) => ({ ...record, acceptedSaying: null })),
+    };
+    const backup = await createArchiveBackup(earnedNull, [sourceAsset], exportedAt);
+    const target = createApplication();
+    await target.application.initialize(current);
+    const checkpoint = await target.application.exportBackupCheckpoint();
+
+    await expect(
+      target.application.recoverBackup(backup, "local-owner", [sourceAsset], {
+        mode: "replace-incompatible-readable-state",
+        expectedCurrentState: checkpoint.state,
+      }),
+    ).rejects.toMatchObject({ code: "BACKUP_INVALID" });
+    expect(await target.application.state()).toEqual(current);
+
+    target.repository.close();
+    const evidence = await openDB(ARCHIVE_DATABASE_NAME, ARCHIVE_DATABASE_VERSION);
+    expect(
+      (await evidence.getAllKeys(ARCHIVE_STATE_STORE)).filter(
+        (key) => typeof key === "string" && key.startsWith("archive-state-quarantine:"),
+      ),
+    ).toEqual([]);
     evidence.close();
   });
 
@@ -178,7 +259,7 @@ describe("Archive recovery edge conditions", () => {
       ],
     });
     const current = activateAchievement(
-      historicalSeed,
+      withAcceptedQuotation(historicalSeed),
       { ...activationInput, visualPin: missingVisual },
       exportedAt,
     ).state;
@@ -188,10 +269,14 @@ describe("Archive recovery edge conditions", () => {
       code: "VISUAL_SOURCE_MISSING",
     });
 
-    const rescue = await target.application.exportRecoveryEvidenceCheckpoint();
+    const rescue = await target.application.exportRecoveryEvidenceCheckpoint("source-art-unavailable");
     const evidence = archiveRecoveryEvidenceSchema.parse(JSON.parse(new TextDecoder().decode(rescue.bytes)));
     expect(evidence).toMatchObject({
       limitations: { restorable: false, sourceAssetsIncluded: false },
+      rescueReason: {
+        code: "source-art-unavailable",
+        affectedRecordIds: ["record-yosemite"],
+      },
       omittedEarnedSourceHashes: [missingVisual.sourceAssetHash],
       state: current,
     });
@@ -203,7 +288,72 @@ describe("Archive recovery edge conditions", () => {
       mode: "replace-incompatible-readable-state",
       expectedCurrentState: rescue.state,
     });
-    expect(recovery).toMatchObject({ state: state(), stateReplaced: true });
+    expect(recovery.stateReplaced).toBe(true);
+    expectStateExceptQuotationRevisions(recovery.state, state());
+    expect(recovery.state.records[0]!.quotationRevision).not.toBe(state().records[0]!.quotationRevision);
+  });
+
+  it("quarantines and replaces a tokenless row already stored at database version 3", async () => {
+    const target = createApplication();
+    const original = await target.application.initialize(state(), [sourceAsset]);
+    target.repository.close();
+    const tokenless = {
+      ...original,
+      records: original.records.map((record) =>
+        Object.fromEntries(Object.entries(record).filter(([key]) => key !== "quotationRevision")),
+      ),
+    };
+    const raw = await openDB(ARCHIVE_DATABASE_NAME, ARCHIVE_DATABASE_VERSION);
+    await raw.put(ARCHIVE_STATE_STORE, tokenless, ARCHIVE_STATE_KEY);
+    raw.close();
+
+    const backup = await createArchiveBackup(state(), [], exportedAt);
+    const reopened = createApplication();
+    await expect(reopened.application.initialize(state(), [sourceAsset])).rejects.toMatchObject({
+      code: "STATE_UNREADABLE",
+    });
+    const recovery = await reopened.application.recoverBackup(backup, "local-owner", [sourceAsset]);
+
+    expect(recovery.stateReplaced).toBe(true);
+    expectStateExceptQuotationRevisions(recovery.state, state());
+    expect(recovery.state.records[0]!.quotationRevision).not.toBe(state().records[0]!.quotationRevision);
+    expect(await reopened.application.state()).toEqual(recovery.state);
+    reopened.repository.close();
+    const evidence = await openDB(ARCHIVE_DATABASE_NAME, ARCHIVE_DATABASE_VERSION);
+    expect(await evidence.get(ARCHIVE_STATE_STORE, recovery.quarantineKey)).toMatchObject({
+      kind: "quarantined-archive-state",
+      reason: "unreadable",
+      raw: tokenless,
+    });
+    evidence.close();
+  });
+
+  it("quarantines a v3 row whose quotation token is explicitly undefined", async () => {
+    const target = createApplication();
+    const original = await target.application.initialize(state(), [sourceAsset]);
+    target.repository.close();
+    const undefinedToken = {
+      ...original,
+      records: original.records.map((record) => ({ ...record, quotationRevision: undefined })),
+    };
+    const raw = await openDB(ARCHIVE_DATABASE_NAME, ARCHIVE_DATABASE_VERSION);
+    await raw.put(ARCHIVE_STATE_STORE, undefinedToken, ARCHIVE_STATE_KEY);
+    raw.close();
+
+    const backup = await createArchiveBackup(state(), [], exportedAt);
+    const reopened = createApplication();
+    await expect(reopened.application.initialize(state(), [sourceAsset])).rejects.toMatchObject({
+      code: "STATE_UNREADABLE",
+    });
+    const recovery = await reopened.application.recoverBackup(backup, "local-owner", [sourceAsset]);
+
+    expect(recovery.stateReplaced).toBe(true);
+    reopened.repository.close();
+    const evidence = await openDB(ARCHIVE_DATABASE_NAME, ARCHIVE_DATABASE_VERSION);
+    const quarantined = await evidence.get(ARCHIVE_STATE_STORE, recovery.quarantineKey);
+    expect(Object.prototype.hasOwnProperty.call(quarantined.raw.records[0], "quotationRevision")).toBe(true);
+    expect(quarantined.raw.records[0].quotationRevision).toBeUndefined();
+    evidence.close();
   });
 
   it("requires an explicit matching owner when corrupt state evidence has no readable owner", async () => {
@@ -225,14 +375,14 @@ describe("Archive recovery edge conditions", () => {
     expect(await evidence.get(ARCHIVE_STATE_STORE, ARCHIVE_STATE_KEY)).toEqual(corrupt);
     evidence.close();
 
-    await expect(reopened.application.recoverBackup(backup, "local-owner")).resolves.toMatchObject({
-      state: state(),
-    });
+    const recovery = await reopened.application.recoverBackup(backup, "local-owner");
+    expectStateExceptQuotationRevisions(recovery.state, state());
+    expect(recovery.state.records[0]!.quotationRevision).not.toBe(state().records[0]!.quotationRevision);
   });
 
   it("aborts recovery if another connection changes an inspected source before the write", async () => {
     const corruptState = { schemaVersion: 1, ownerId: "local-owner", records: [{ broken: true }] };
-    const earned = activateAchievement(state(), activationInput, exportedAt).state;
+    const earned = activateAchievement(withAcceptedQuotation(state()), activationInput, exportedAt).state;
     const backup = await createArchiveBackup(earned, [sourceAsset], exportedAt);
     const initial = createApplication();
     await initial.application.initialize(state());
@@ -247,6 +397,7 @@ describe("Archive recovery edge conditions", () => {
       bytes: new TextEncoder().encode("inserted-after-recovery-inspection"),
     };
     const racingRepository = new IndexedDbArchiveRepository({
+      trustedQuotationRequests: { "record-yosemite": historicalQuotationRequest },
       async onRecoveryStage() {
         const otherConnection = await openDB(ARCHIVE_DATABASE_NAME, ARCHIVE_DATABASE_VERSION);
         await otherConnection.put(ARCHIVE_OBJECT_STORE, concurrentSource, sourceAsset.hash);
@@ -281,7 +432,7 @@ describe("Archive recovery edge conditions", () => {
     await target.application.initialize(state());
     target.repository.close();
 
-    const earned = activateAchievement(state(), activationInput, exportedAt).state;
+    const earned = activateAchievement(withAcceptedQuotation(state()), activationInput, exportedAt).state;
     const raw = await openDB(ARCHIVE_DATABASE_NAME, ARCHIVE_DATABASE_VERSION);
     await raw.put(ARCHIVE_STATE_STORE, earned, ARCHIVE_STATE_KEY);
     raw.close();

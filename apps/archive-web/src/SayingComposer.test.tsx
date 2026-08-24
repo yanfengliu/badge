@@ -1,260 +1,178 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import type { SayingProposalSnapshot } from "@badge/archive-application";
+import type { ArchiveLifecycle } from "@badge/archive-domain";
+import { starterBadges } from "@badge/catalogue-fixtures/archive";
+import type { HistoricalQuotation } from "@badge/saying-contract";
 
-import { canActivateWithSaying } from "./app-types";
-import { manualSayingEditorStartValue, type AcceptedSayingProtection } from "./accepted-saying-attribution";
+import { formatFixtureQuotation } from "./fixture-quotations";
 import { SayingActivationControl, SayingComposer } from "./SayingComposer";
-import { initialSayingEditorState, reduceSayingEditorState } from "./saying-editor-state";
+
+const yosemite = starterBadges[0]!;
+const defaultQuotation = yosemite.historicalQuotations.find(
+  (quotation) => quotation.id === yosemite.defaultQuotationId,
+)!;
 
 interface RenderOverrides {
   readonly acceptedSaying?: string | null;
-  readonly editing?: boolean;
+  readonly acceptedQuotation?: HistoricalQuotation | null;
   readonly generationBlocked?: boolean;
-  readonly manualValue?: string;
-  readonly acceptedSayingProtection?: AcceptedSayingProtection;
+  readonly lifecycle?: ArchiveLifecycle;
+  readonly saving?: boolean;
+  readonly successAnnouncement?: string | null;
 }
 
-function renderComposer(
-  proposal: SayingProposalSnapshot,
-  manualError: string | null = null,
-  overrides: RenderOverrides = {},
-): string {
+function renderComposer(proposal: SayingProposalSnapshot, overrides: RenderOverrides = {}): string {
   return renderToStaticMarkup(
     <SayingComposer
-      title="Yosemite"
-      lifecycle="planned"
-      acceptedSaying={overrides.acceptedSaying ?? null}
+      lifecycle={overrides.lifecycle ?? "planned"}
+      acceptedSaying={
+        overrides.acceptedSaying === undefined
+          ? formatFixtureQuotation(defaultQuotation)
+          : overrides.acceptedSaying
+      }
+      acceptedQuotation={
+        overrides.acceptedQuotation === undefined ? defaultQuotation : overrides.acceptedQuotation
+      }
       proposal={proposal}
-      editing={overrides.editing ?? true}
-      manualValue={overrides.manualValue ?? "🏕️"}
-      manualError={manualError}
-      acceptedSayingProtection={overrides.acceptedSayingProtection ?? null}
-      saving={false}
+      saving={overrides.saving ?? false}
       generationBlocked={overrides.generationBlocked ?? false}
-      proposalSourceLabel="local preview"
-      providerNote="Fixture mode uses curated local lines."
+      providerNote="Fixture mode rotates only source-checked historical quotations."
+      successAnnouncement={overrides.successAnnouncement ?? null}
       focusTargetRef={{ current: null }}
       onGenerate={() => undefined}
-      onUseProposal={() => undefined}
-      onStartWriting={() => undefined}
-      onCancelWriting={() => undefined}
-      onManualChange={() => undefined}
-      onSaveManual={() => undefined}
     />,
   );
 }
 
+const idleProposal: SayingProposalSnapshot = {
+  recordId: "starter:visited-yosemite",
+  expectedQuotationRevision: "00000000-0000-4000-8000-000000000000",
+  status: "idle",
+  request: null,
+  proposal: null,
+  provenance: null,
+  error: null,
+};
+
 describe("SayingComposer", () => {
-  it("keeps a persistent live status region before any proposal exists", () => {
-    const html = renderComposer({
-      recordId: "record-yosemite",
-      status: "idle",
-      proposal: null,
-      provenance: null,
-      error: null,
-    });
+  it("shows a preselected sourced quotation with one regeneration action and no authoring UI", () => {
+    const html = renderComposer(idleProposal);
 
-    expect(html).toContain('role="status"');
-    expect(html).toContain('aria-live="polite"');
-    expect(html).toContain('class="saying-block" tabindex="-1"');
-    expect(html).not.toContain("maxlength");
+    expect(html).toContain("Historical quote");
+    expect(html).toContain(defaultQuotation.text);
+    expect(html).toContain(`— ${defaultQuotation.person}, ${defaultQuotation.sourceTitle}`);
+    expect(html).toContain(`href="${defaultQuotation.sourceUrl}"`);
+    expect(html).toContain("View source");
+    expect(html).toContain("Regenerate quote");
+    expect(html.match(/<button/gu)).toHaveLength(1);
+    expect(html).not.toContain("Generate saying");
+    expect(html).not.toContain("Use this saying");
+    expect(html).not.toContain("Write my own");
+    expect(html).not.toContain("Replace with my own");
+    expect(html).not.toContain("<textarea");
   });
 
-  it("announces request state through the already-mounted status region", () => {
-    const html = renderComposer({
-      recordId: "record-yosemite",
-      status: "requesting",
-      proposal: { kind: "original", saying: "Worth every switchback." },
-      provenance: null,
-      error: null,
-    });
+  it("keeps the accepted quote visible and announces regeneration while a request is pending", () => {
+    const html = renderComposer({ ...idleProposal, status: "requesting" });
 
+    expect(html).toContain(defaultQuotation.text);
     expect(html).toContain('aria-busy="true"');
-    expect(html).toContain("Preparing a saying proposal.");
-    expect(html).toContain("Worth every switchback.");
-    expect(html).toMatch(
-      /role="status"[^>]*>.*Preparing a saying proposal\.<\/div><div class="saying-interactions" aria-busy="true">/u,
-    );
+    expect(html).toContain("Finding another source-checked quotation.");
+    expect(html).toContain("Regenerating…");
   });
 
-  it("announces a failed retry without calling the retained proposal newly ready", () => {
+  it("keeps the accepted quote visible and exposes a retry after failure", () => {
     const html = renderComposer({
-      recordId: "record-yosemite",
+      ...idleProposal,
       status: "error",
-      proposal: { kind: "original", saying: "Worth every switchback." },
-      provenance: null,
       error: "Preview source unavailable.",
     });
 
-    expect(html).toContain("Could not prepare another saying.");
-    expect(html).toContain("The previous proposal remains available.");
-    expect(html).not.toContain("Saying proposal ready:");
+    expect(html).toContain(defaultQuotation.text);
+    expect(html).toContain("Could not regenerate the quote.");
+    expect(html).toContain("The current quote remains selected.");
+    expect(html).toContain("Preview source unavailable.");
+    expect(html).toContain("Regenerate quote");
   });
 
-  it("prevents submitting a manual line that already has an inline error", () => {
-    const html = renderComposer(
-      {
-        recordId: "record-yosemite",
-        status: "idle",
-        proposal: null,
-        provenance: null,
-        error: null,
-      },
-      "Saying for Yosemite has 801 graphemes; use at most 800.",
-    );
+  it("announces a persisted replacement to assistive technology", () => {
+    const html = renderComposer(idleProposal, {
+      successAnnouncement: "Quote regenerated. The mountains are calling — John Muir.",
+    });
 
-    expect(html).toMatch(/<button[^>]*disabled=""[^>]*>Save my saying<\/button>/u);
+    expect(html).toContain("Quote regenerated. The mountains are calling — John Muir.");
+    expect(html).toContain('aria-live="polite"');
   });
 
-  it("keeps generation disabled while provider disclosure is open", () => {
-    const html = renderComposer(
-      {
-        recordId: "record-yosemite",
-        status: "idle",
-        proposal: null,
-        provenance: null,
-        error: null,
-      },
-      null,
-      { editing: false, generationBlocked: true },
-    );
+  it("keeps the sole regeneration action disabled while provider disclosure is open", () => {
+    const html = renderComposer(idleProposal, { generationBlocked: true });
 
     expect(html).toMatch(/<button[^>]*disabled=""[^>]*>.*Review Claude access…<\/button>/u);
+    expect(html.match(/<button/gu)).toHaveLength(1);
   });
 
-  it("reopens a retained draft visibly and keeps activation blocked until it is resolved", () => {
-    let editor = reduceSayingEditorState(initialSayingEditorState, {
-      type: "begin",
-      recordId: "record-yosemite",
-      fallbackValue: "Accepted A",
+  it("does not offer regeneration after the memory is sealed", () => {
+    const html = renderComposer(idleProposal, { lifecycle: "earned" });
+
+    expect(html).toContain(defaultQuotation.text);
+    expect(html).not.toContain("Regenerate quote");
+    expect(html).not.toContain("<button");
+  });
+
+  it("labels preserved prose as source-unverified instead of a historical quote", () => {
+    const html = renderComposer(idleProposal, {
+      acceptedSaying: "A preserved legacy saying.",
+      acceptedQuotation: null,
     });
-    editor = reduceSayingEditorState(editor, {
-      type: "change",
-      recordId: "record-yosemite",
-      value: "Unsaved B",
-      error: null,
-      dirty: true,
-    });
-    editor = reduceSayingEditorState(editor, { type: "hide", recordId: "record-yosemite" });
-    editor = reduceSayingEditorState(editor, { type: "resume-dirty", recordId: "record-yosemite" });
-    const editing = editor.editingRecords["record-yosemite"] ?? false;
-    const hasUnsavedDraft = editor.dirtyRecords["record-yosemite"] ?? false;
-    const html = renderComposer(
-      {
-        recordId: "record-yosemite",
-        status: "idle",
-        proposal: null,
-        provenance: null,
-        error: null,
-      },
-      null,
-      {
-        acceptedSaying: "Accepted A",
-        editing,
-        manualValue: editor.manualSayings["record-yosemite"],
-      },
-    );
 
-    expect(html).toContain("<textarea");
-    expect(html).toContain(">Unsaved B</textarea>");
-    expect(html).toContain("Save my saying");
-    expect(html).toContain("Cancel");
-    expect(
-      canActivateWithSaying("Accepted A", {
-        editing,
-        saving: false,
-        hasUnsavedDraft,
-      }),
-    ).toBe(false);
-  });
-
-  it("renders originals plainly and historical sources as one semantic quotation", () => {
-    const original = renderComposer(
-      {
-        recordId: "record-yosemite",
-        status: "ready",
-        proposal: { kind: "original", saying: "The valley kept a little time for me." },
-        provenance: null,
-        error: null,
-      },
-      null,
-      { editing: false },
-    );
-    expect(original).toContain("The valley kept a little time for me.");
-    expect(original).toContain("Suggestion · source not verified");
-    expect(original).not.toContain("New saying");
-    expect(original).not.toContain("Original saying");
-    expect(original).not.toContain("“The valley kept");
-
-    const quotation = renderComposer(
-      {
-        recordId: "record-yosemite",
-        status: "ready",
-        proposal: {
-          kind: "quotation",
-          saying: "But in every walk with Nature one receives far more than he seeks.",
-          quotation: {
-            id: "john-muir-every-walk-nature",
-            text: "But in every walk with Nature one receives far more than he seeks.",
-            person: "John Muir",
-            sourceTitle: "Steep Trails",
-            sourceUrl: "https://www.nps.gov/jomu/learn/historyculture/john-muir-quotes.htm",
-          },
-        },
-        provenance: null,
-        error: null,
-      },
-      null,
-      { editing: false },
-    );
-    expect(quotation.match(/“/gu)).toHaveLength(2);
-    expect(quotation).toContain("— John Muir, Steep Trails");
-    expect(quotation).toContain("View source");
-  });
-
-  it("never preloads an attributed accepted quotation into the personal-text editor", () => {
-    const acceptedQuotation =
-      "“It is by far the grandest of all the special temples of Nature I was ever permitted to enter.” — John Muir, Letters to a Friend, July 26, 1868";
-    const html = renderComposer(
-      {
-        recordId: "record-yosemite",
-        status: "idle",
-        proposal: null,
-        provenance: null,
-        error: null,
-      },
-      null,
-      {
-        acceptedSaying: acceptedQuotation,
-        editing: false,
-        acceptedSayingProtection: { kind: "attributed" },
-      },
-    );
-
-    expect(html).toContain("Replace with my own");
-    expect(html).toContain("The attributed quotation stays exact");
-    expect(manualSayingEditorStartValue(acceptedQuotation)).toBe("");
-    expect(manualSayingEditorStartValue('"Read not to contradict." — Francis Bacon, Of Studies')).toBe("");
-    expect(manualSayingEditorStartValue("A personal line.")).toBe("A personal line.");
-    expect(manualSayingEditorStartValue("A thought — held, gently.")).toBe("A thought — held, gently.");
+    expect(html).toContain("Legacy saying · source unverified");
+    expect(html).toContain("A preserved legacy saying.");
+    expect(html).toContain("Regenerate quote");
   });
 });
 
 describe("SayingActivationControl", () => {
-  it("renders the dirty-draft activation gate after extraction from App", () => {
+  it("blocks activation while an automatically selected quote is saving", () => {
     const html = renderToStaticMarkup(
       <SayingActivationControl
         buttonRef={{ current: null }}
-        acceptedSaying="Accepted A"
+        acceptedSaying={formatFixtureQuotation(defaultQuotation)}
+        sourceChecked
         activating={false}
-        editing
-        saving={false}
-        hasUnsavedDraft
+        saving
       />,
     );
 
-    expect(html).toMatch(/<button[^>]*disabled=""[^>]*>.*Resolve saying draft.*<\/button>/u);
-    expect(html).toContain("Save or cancel your unsaved saying draft before activation.");
+    expect(html).toMatch(/<button[^>]*disabled=""[^>]*>.*Saving quote….*<\/button>/u);
+  });
+
+  it("explains the missing-quote activation gate", () => {
+    const html = renderToStaticMarkup(
+      <SayingActivationControl
+        buttonRef={{ current: null }}
+        acceptedSaying={null}
+        sourceChecked={false}
+        activating={false}
+        saving={false}
+      />,
+    );
+
+    expect(html).toContain("A source-checked historical quotation is required before activation.");
+  });
+
+  it("blocks a preserved legacy saying until it is regenerated from a verified source", () => {
+    const html = renderToStaticMarkup(
+      <SayingActivationControl
+        buttonRef={{ current: null }}
+        acceptedSaying="A preserved legacy saying."
+        sourceChecked={false}
+        activating={false}
+        saving={false}
+      />,
+    );
+
+    expect(html).toMatch(/<button[^>]*disabled=""/u);
+    expect(html).toContain("This preserved legacy saying has no verified source.");
   });
 });

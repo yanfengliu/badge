@@ -38,7 +38,6 @@ export const activationInputSchema = z
     occurredEnd: calendarDateSchema,
     note: z.string().max(10_000).nullable(),
     visibility: visibilitySchema,
-    saying: z.string(),
     visualPin: exactVisualPinSchema,
   })
   .strict()
@@ -79,12 +78,12 @@ function replaceRecord(state: ArchiveState, replacement: ArchiveRecord): Archive
 
 function invalidSayingMessage(title: string, saying: Exclude<SayingValidationResult, { ok: true }>): string {
   if (saying.code === "EMPTY") {
-    return `Saying for ${title} is empty; write or accept a badge saying.`;
+    return `Quote for ${title} is empty; regenerate it or reload the badge to restore its source-checked default.`;
   }
   if (saying.code === "TOO_LARGE_TO_INSPECT") {
-    return `Saying for ${title} is ${saying.count} ${sayingSizeMetricLabel(saying.metric)}; use at most ${saying.limit} so it can be inspected safely.`;
+    return `Quote for ${title} is ${saying.count} ${sayingSizeMetricLabel(saying.metric)}; use at most ${saying.limit} so it can be inspected safely.`;
   }
-  return `Saying for ${title} has ${saying.graphemeCount} graphemes; use at most ${saying.limit}.`;
+  return `Quote for ${title} has ${saying.graphemeCount} graphemes; use at most ${saying.limit}.`;
 }
 
 export function activateAchievement(
@@ -124,7 +123,7 @@ export function activateAchievement(
     );
   }
 
-  const saying = validateSaying(input.saying);
+  const saying = validateSaying(record.acceptedSaying ?? "");
   if (!saying.ok) {
     throw new ArchiveDomainError("INVALID_SAYING", invalidSayingMessage(record.title, saying));
   }
@@ -157,14 +156,25 @@ export function updateAcceptedSaying(
   untrustedState: ArchiveState,
   recordId: string,
   input: string,
+  quotationRevision: string,
 ): ArchiveState {
   const state = archiveStateSchema.parse(untrustedState);
   const record = requireRecord(state, recordId);
+  if (record.lifecycle === "earned" || record.activation) {
+    throw new ArchiveDomainError(
+      "INVALID_LIFECYCLE",
+      `${record.title} is already activated; its historical quotation is sealed with the memory.`,
+    );
+  }
   const saying = validateSaying(input);
   if (!saying.ok) {
     throw new ArchiveDomainError("INVALID_SAYING", invalidSayingMessage(record.title, saying));
   }
-  return replaceRecord(state, { ...record, acceptedSaying: saying.value });
+  return replaceRecord(state, {
+    ...record,
+    acceptedSaying: saying.value,
+    quotationRevision,
+  });
 }
 
 export function setRecordLifecycle(

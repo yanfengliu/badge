@@ -26,6 +26,7 @@ export function RestoreDialog({
   const replacingReadableState = restore.recoveryMode === "replace-incompatible-readable-state";
   const repairingCorruption = restore.recoveryMode === "repair-corruption";
   const rescueOnly = restore.safetyHandoff === "state-rescue";
+  const missingSealedQuotation = restore.stateRescueReason === "earned-quotation-missing";
 
   return (
     <div
@@ -65,10 +66,14 @@ export function RestoreDialog({
           {replacingReadableState
             ? action === "offer-safety-backup"
               ? rescueOnly
-                ? "The current records are readable, but damaged historical art makes a self-contained backup impossible. First, download state-only rescue evidence; it cannot restore the missing art and no Archive data changes in this step."
+                ? missingSealedQuotation
+                  ? "The current records include an earned memory that has no sealed quotation. Later words cannot truthfully be assigned to that memory. First, download state-only rescue evidence that names the affected record IDs; it cannot restore the memory and no Archive data changes in this step."
+                  : "The current records are readable, but unavailable historical art makes a self-contained backup impossible. First, download state-only rescue evidence that names the affected record IDs; it cannot restore the missing art and no Archive data changes in this step."
                 : "The current state is readable but this Archive cannot present it safely. First, download a self-contained safety backup; no Archive data changes in this step."
               : rescueOnly
-                ? "State-only rescue evidence was offered. Confirm it is saved before the current state is quarantined and replaced with this compatible backup."
+                ? missingSealedQuotation
+                  ? "State-only rescue evidence naming the earned memory with no sealed quotation was offered. Confirm it is saved before the current state is quarantined and replaced with this compatible backup."
+                  : "State-only rescue evidence naming the unavailable source-art scope was offered. Confirm it is saved before the current state is quarantined and replaced with this compatible backup."
                 : "A safety backup was offered for download. Confirm it is saved before the current state is quarantined and replaced with this compatible backup."
             : repairingCorruption
               ? "Damaged local state or sealed source art will be quarantined. Readable current state is preserved; only unreadable state is replaced from this backup."

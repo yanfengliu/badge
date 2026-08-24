@@ -16,7 +16,7 @@ import {
 } from "@badge/saying-live-contract";
 
 export const DISCLOSURE_REQUIRED_CLIENT_MESSAGE =
-  "Saying provider disclosure changed; review it before generating another saying.";
+  "Quote provider disclosure changed; review it before regenerating another quote.";
 
 export type SayingFetch = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
 
@@ -48,7 +48,7 @@ async function fetchSameOrigin(
     if (isAbortError(error)) throw error;
     throw new SayingLiveClientError(
       "INVALID_RESPONSE",
-      `${surface} could not reach the same-origin Badge saying service; restart the local Badge site and retry.`,
+      `${surface} could not reach the same-origin Badge quote service; restart the local Badge site and retry.`,
     );
   }
 }
@@ -166,7 +166,7 @@ async function requireExactSuccessStatus(response: Response, surface: string): P
   await cancelBodyBestEffort(response.body);
   throw new SayingLiveClientError(
     "INVALID_RESPONSE",
-    `${surface} returned HTTP ${response.status}; expected HTTP ${SAYING_HTTP_SUCCESS_STATUS} from the same-origin Badge saying service.`,
+    `${surface} returned HTTP ${response.status}; expected HTTP ${SAYING_HTTP_SUCCESS_STATUS} from the same-origin Badge quote service.`,
     response.status,
   );
 }
@@ -187,16 +187,16 @@ export async function fetchSayingDisclosure(
       headers: { Accept: "application/json" },
       signal,
     },
-    "Saying disclosure",
+    "Quote provider disclosure",
   );
-  if (!response.ok) await throwResponseError(response, "Saying disclosure");
-  await requireExactSuccessStatus(response, "Saying disclosure");
-  const decoded = await responseJson(response, "Saying disclosure");
+  if (!response.ok) await throwResponseError(response, "Quote provider disclosure");
+  await requireExactSuccessStatus(response, "Quote provider disclosure");
+  const decoded = await responseJson(response, "Quote provider disclosure");
   const parsed = sayingDisclosureSchema.safeParse(decoded);
   if (!parsed.success) {
     throw new SayingLiveClientError(
       "INVALID_RESPONSE",
-      "Saying disclosure did not match this Badge build; restart Badge before reviewing provider access.",
+      "Quote provider disclosure did not match this Badge build; restart Badge before reviewing provider access.",
       response.status,
     );
   }
@@ -220,20 +220,20 @@ export function createLiveSayingProvider({
       if (!fingerprint) {
         throw new SayingLiveClientError(
           "DISCLOSURE_NOT_ACKNOWLEDGED",
-          "Review and approve the saying provider disclosure before generating.",
+          "Review and approve the quote provider disclosure before regenerating.",
         );
       }
       const body = canonicalUserMessage(request.promptInput);
       if (!body) {
         throw new SayingLiveClientError(
           "DISCLOSURE_NOT_ACKNOWLEDGED",
-          "The reviewed saying request is no longer available; review it again before generating.",
+          "The reviewed quote request is no longer available; review it again before regenerating.",
         );
       }
       if (body !== buildSayingDisclosureReview(request.promptInput).canonicalUserMessage) {
         throw new SayingLiveClientError(
           "DISCLOSURE_NOT_ACKNOWLEDGED",
-          "The reviewed saying values changed; review them again before generating.",
+          "The reviewed quote values changed; review them again before regenerating.",
         );
       }
       const response = await fetchSameOrigin(
@@ -253,16 +253,16 @@ export function createLiveSayingProvider({
           body,
           signal: request.signal,
         },
-        "Saying generation",
+        "Quote regeneration",
       );
-      if (!response.ok) await throwResponseError(response, "Saying generation");
-      await requireExactSuccessStatus(response, "Saying generation");
-      const decoded = await responseJson(response, "Saying generation");
+      if (!response.ok) await throwResponseError(response, "Quote regeneration");
+      await requireExactSuccessStatus(response, "Quote regeneration");
+      const decoded = await responseJson(response, "Quote regeneration");
       const parsed = sayingLiveSuccessSchema.safeParse(decoded);
       if (!parsed.success) {
         throw new SayingLiveClientError(
           "INVALID_RESPONSE",
-          "Saying generation returned an invalid bounded response; try another request after checking Claude Code.",
+          "Quote regeneration returned an invalid bounded response; retry after checking Claude Code.",
           response.status,
         );
       }

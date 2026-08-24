@@ -7,7 +7,7 @@ import {
   SAYING_PROVIDER_STDOUT_LIMIT_BYTES,
   SAYING_PROVIDER_TIMEOUT_MS,
 } from "@badge/saying-live-contract";
-import { SAYING_SYSTEM_PROMPT_V2, buildCanonicalSayingUserMessage } from "@badge/saying-contract";
+import { SAYING_SYSTEM_PROMPT_V3, buildCanonicalSayingUserMessage } from "@badge/saying-contract";
 
 import {
   ClaudeSayingGenerator,
@@ -19,14 +19,23 @@ import {
 } from "./generator.js";
 import { BoundedChildFailure } from "./bounded-child.js";
 
+const historicalQuotation = {
+  id: "john-muir-every-walk-nature",
+  text: "But in every walk with Nature one receives far more than he seeks.",
+  person: "John Muir",
+  sourceTitle: "Steep Trails",
+  sourceUrl: "https://www.nps.gov/jomu/learn/historyculture/john-muir-quotes.htm",
+};
+
 const input = {
   title: "Yosemite private title",
   criterion: "Visit the granite valley.",
   direction: { themeCues: ["granite"], userDirection: "Keep this private phrase clever." },
+  allowedQuotations: [historicalQuotation],
 };
 const taskRoot = { path: "C:\\safe-task", device: 1n, inode: 2n };
 
-function envelope(saying = "Granite keeps the long view."): Buffer {
+function envelope(quotationId = historicalQuotation.id): Buffer {
   return Buffer.from(
     JSON.stringify({
       type: "result",
@@ -36,7 +45,7 @@ function envelope(saying = "Granite keeps the long view."): Buffer {
       modelUsage: {
         [SAYING_MODEL_ID]: { canonicalModel: SAYING_MODEL_ID, provider: "firstParty" },
       },
-      structured_output: { kind: "original", saying, quotationId: null },
+      structured_output: { quotationId },
     }),
   );
 }
@@ -72,11 +81,15 @@ describe("Claude saying generator", () => {
     const result = await generator.generate(input, new AbortController().signal);
 
     expect(result).toEqual({
-      response: { kind: "original", saying: "Granite keeps the long view." },
+      response: {
+        kind: "quotation",
+        saying: historicalQuotation.text,
+        quotation: historicalQuotation,
+      },
       provenance: {
         provider: "claude-code",
         model: SAYING_MODEL_ID,
-        promptVersion: "v2",
+        promptVersion: "v3",
         generatedAt: "2026-08-23T12:00:00.000Z",
       },
     });
@@ -95,9 +108,9 @@ describe("Claude saying generator", () => {
         "--model",
         SAYING_MODEL_ID,
         "--system-prompt",
-        SAYING_SYSTEM_PROMPT_V2,
+        SAYING_SYSTEM_PROMPT_V3,
         "--json-schema",
-        '{"type":"object","additionalProperties":false,"properties":{"kind":{"type":"string","enum":["original","quotation"]},"saying":{"type":["string","null"]},"quotationId":{"type":["string","null"]}},"required":["kind","saying","quotationId"]}',
+        '{"type":"object","additionalProperties":false,"properties":{"quotationId":{"type":"string"}},"required":["quotationId"]}',
         "--tools=",
         "--permission-mode",
         "plan",
@@ -124,17 +137,17 @@ describe("Claude saying generator", () => {
       {
         is_error: false,
         modelUsage: { [SAYING_MODEL_ID]: { canonicalModel: SAYING_MODEL_ID, provider: "firstParty" } },
-        result: '{"kind":"original","saying":"leak","quotationId":null}',
+        result: `{"quotationId":"${historicalQuotation.id}"}`,
       },
       {
         is_error: false,
         modelUsage: { [SAYING_MODEL_ID]: { canonicalModel: SAYING_MODEL_ID, provider: "firstParty" } },
-        structured_output: { kind: "original", saying: "Fine", quotationId: null, extra: "no" },
+        structured_output: { quotationId: historicalQuotation.id, extra: "no" },
       },
       {
         is_error: false,
         modelUsage: { other: { canonicalModel: "other", provider: "firstParty" } },
-        structured_output: { kind: "original", saying: "Fine", quotationId: null },
+        structured_output: { quotationId: historicalQuotation.id },
       },
     ];
     for (const value of cases) {
@@ -222,8 +235,8 @@ describe("Claude saying generator", () => {
   });
 
   it("rejects structured output whose canonical JSON exceeds the bounded response boundary", async () => {
-    const saying = `A${"\t".repeat(8_190)}B`;
-    const { generator } = harness(envelope(saying));
+    const quotationId = `a${"x".repeat(8_190)}`;
+    const { generator } = harness(envelope(quotationId));
     await expect(generator.generate(input, new AbortController().signal)).rejects.toMatchObject({
       kind: "failed",
     });
@@ -231,10 +244,10 @@ describe("Claude saying generator", () => {
 
   it("hydrates an exact supplied historical quotation without trusting Claude for its words", async () => {
     const quotation = {
-      id: "john-muir-every-walk-nature",
-      text: "But in every walk with Nature one receives far more than he seeks.",
+      id: "john-muir-clearest-way",
+      text: "The clearest way into the Universe is through a forest wilderness.",
       person: "John Muir",
-      sourceTitle: "Steep Trails",
+      sourceTitle: "John of the Mountains",
       sourceUrl: "https://www.nps.gov/jomu/learn/historyculture/john-muir-quotes.htm",
     };
     const quotedEnvelope = Buffer.from(
@@ -243,11 +256,7 @@ describe("Claude saying generator", () => {
         modelUsage: {
           [SAYING_MODEL_ID]: { canonicalModel: SAYING_MODEL_ID, provider: "firstParty" },
         },
-        structured_output: {
-          kind: "quotation",
-          saying: null,
-          quotationId: quotation.id,
-        },
+        structured_output: { quotationId: quotation.id },
       }),
     );
     const { generator } = harness(quotedEnvelope);
@@ -277,7 +286,8 @@ describe("Claude saying generator", () => {
     expect(generator).toBeDefined();
     await expect(failing.generate(input, new AbortController().signal)).rejects.toMatchObject({
       kind: "cleanup-failed",
-      message: "The saying was withheld because its private temporary workspace could not be cleaned.",
+      message:
+        "The selected quotation was withheld because its private temporary workspace could not be cleaned.",
     });
   });
 
@@ -295,7 +305,7 @@ describe("Claude saying generator", () => {
     });
     await expect(failing.generate(input, new AbortController().signal)).rejects.toMatchObject({
       kind: "cleanup-failed",
-      message: "The saying request failed and its private temporary workspace could not be cleaned.",
+      message: "The quote-selection request failed and its private temporary workspace could not be cleaned.",
     });
   });
 
@@ -344,16 +354,18 @@ describe("provider boundary helpers", () => {
 
   it("fixture mode is deterministic and needs no executable", async () => {
     const fixture = new FixtureSayingGenerator(() => "2026-08-23T12:00:00.000Z");
-    const first = await fixture.generate(
-      { title: "Yosemite", criterion: "Visit it." },
-      new AbortController().signal,
-    );
-    const second = await fixture.generate(
-      { title: "Yosemite", criterion: "Visit it." },
-      new AbortController().signal,
-    );
+    const fixtureInput = {
+      title: "Yosemite",
+      criterion: "Visit it.",
+      allowedQuotations: [historicalQuotation],
+    };
+    const first = await fixture.generate(fixtureInput, new AbortController().signal);
+    const second = await fixture.generate(fixtureInput, new AbortController().signal);
     expect(first).toEqual(second);
-    expect(first.response.kind).toBe("original");
-    expect(first.response.saying).toBe("Granite keeps the long view.");
+    expect(first.response).toEqual({
+      kind: "quotation",
+      saying: historicalQuotation.text,
+      quotation: historicalQuotation,
+    });
   });
 });

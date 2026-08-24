@@ -30,17 +30,27 @@ export const starterBadges: readonly PublishedBadgeFixture[] = [
     },
     packRef: starterPackRef,
     initialLifecycle: "planned",
-    sayingSuggestions: [
-      "Worth every switchback.",
-      "Granite keeps the long view.",
-      "The valley made time feel wide.",
-    ],
+    defaultQuotationId: "john-muir-yosemite-temple-1868",
     historicalQuotations: [
       {
         id: "john-muir-yosemite-temple-1868",
         text: "It is by far the grandest of all the special temples of Nature I was ever permitted to enter.",
         person: "John Muir",
         sourceTitle: "Letters to a Friend, July 26, 1868",
+        sourceUrl: "https://www.nps.gov/jomu/learn/historyculture/john-muir-quotes.htm",
+      },
+      {
+        id: "john-muir-mountaineers-steep-trails",
+        text: "Therefore we are all, in some sense, mountaineers, and going to the mountains is going home.",
+        person: "John Muir",
+        sourceTitle: "Steep Trails",
+        sourceUrl: "https://www.nps.gov/jomu/learn/historyculture/john-muir-quotes.htm",
+      },
+      {
+        id: "john-muir-mountains-calling-1873",
+        text: "The mountains are calling and I must go.",
+        person: "John Muir",
+        sourceTitle: "Letter to Sarah Muir Galloway, September 3, 1873",
         sourceUrl: "https://www.nps.gov/jomu/learn/historyculture/john-muir-quotes.htm",
       },
     ],
@@ -68,7 +78,7 @@ export const starterBadges: readonly PublishedBadgeFixture[] = [
     },
     packRef: starterPackRef,
     initialLifecycle: "suggested",
-    sayingSuggestions: ["One species, countless stories.", "A longer view of us.", "History got personal."],
+    defaultQuotationId: "francis-bacon-reading-full-man",
     historicalQuotations: [
       {
         id: "francis-bacon-reading-full-man",
@@ -76,6 +86,20 @@ export const starterBadges: readonly PublishedBadgeFixture[] = [
         person: "Francis Bacon",
         sourceTitle: "Of Studies",
         sourceUrl: "https://en.wikisource.org/wiki/The_Essays_of_Francis_Bacon/L_Of_Studies",
+      },
+      {
+        id: "francis-bacon-histories-wise",
+        text: "Histories make men wise; poets witty; the mathematics subtile; natural philosophy deep; moral grave; logic and rhetoric able to contend.",
+        person: "Francis Bacon",
+        sourceTitle: "Of Studies",
+        sourceUrl: "https://en.wikisource.org/wiki/The_Essays_of_Francis_Bacon/L_Of_Studies",
+      },
+      {
+        id: "thomas-jefferson-cannot-live-books-1815",
+        text: "I cannot live without books; but fewer will suffice where amusement, and not use, is the only future object.",
+        person: "Thomas Jefferson",
+        sourceTitle: "Thomas Jefferson to John Adams, 10 June 1815",
+        sourceUrl: "https://founders.archives.gov/documents/Jefferson/03-08-02-0425",
       },
     ],
   },
@@ -102,7 +126,7 @@ export const starterBadges: readonly PublishedBadgeFixture[] = [
     },
     packRef: starterPackRef,
     initialLifecycle: "suggested",
-    sayingSuggestions: ["The door was built one day at a time.", "Long work, open horizon."],
+    defaultQuotationId: "frederick-douglass-no-struggle-1857",
     historicalQuotations: [
       {
         id: "frederick-douglass-no-struggle-1857",
@@ -110,6 +134,20 @@ export const starterBadges: readonly PublishedBadgeFixture[] = [
         person: "Frederick Douglass",
         sourceTitle: "West India Emancipation address, August 3, 1857",
         sourceUrl: "https://www.archives.gov/exhibits/documented-rights/exhibit/section2/index.html",
+      },
+      {
+        id: "booker-t-washington-success-obstacles-1901",
+        text: "I have learned that success is to be measured not so much by the position that one has reached in life as by the obstacles which he has overcome while trying to succeed.",
+        person: "Booker T. Washington",
+        sourceTitle: "Up From Slavery, Chapter II: Boyhood Days",
+        sourceUrl: "https://en.wikisource.org/wiki/Up_From_Slavery/Chapter_2",
+      },
+      {
+        id: "theodore-roosevelt-hard-to-fail-1899",
+        text: "It is hard to fail, but it is worse never to have tried to succeed.",
+        person: "Theodore Roosevelt",
+        sourceTitle: "The Strenuous Life, Hamilton Club speech, April 10, 1899",
+        sourceUrl: "https://www.gutenberg.org/files/58821/58821-h/58821-h.htm",
       },
     ],
   },
@@ -136,7 +174,7 @@ export const starterBadges: readonly PublishedBadgeFixture[] = [
     },
     packRef: starterPackRef,
     initialLifecycle: "suggested",
-    sayingSuggestions: ["One country, a lifetime of wild places.", "The long way was the point."],
+    defaultQuotationId: "john-muir-every-walk-nature",
     historicalQuotations: [
       {
         id: "john-muir-every-walk-nature",
@@ -144,6 +182,20 @@ export const starterBadges: readonly PublishedBadgeFixture[] = [
         person: "John Muir",
         sourceTitle: "Steep Trails",
         sourceUrl: "https://www.nps.gov/jomu/learn/historyculture/john-muir-quotes.htm",
+      },
+      {
+        id: "fdr-american-national-parks-1934",
+        text: "There is nothing so American as our national parks.",
+        person: "Franklin D. Roosevelt",
+        sourceTitle: "Radio Address from Two Medicine Chalet, August 5, 1934",
+        sourceUrl: "https://www.nps.gov/glac/learn/historyculture/fdr-radio-address.htm",
+      },
+      {
+        id: "john-wesley-powell-naked-rock-1869",
+        text: "The whole country is a region of naked rock of many colors, with cliffs and buttes about us and towering mountains in the distance.",
+        person: "John Wesley Powell",
+        sourceTitle: "Journal entry, July 28, 1869",
+        sourceUrl: "https://www.nps.gov/care/learn/historyculture/explorers-and-surveyors.htm",
       },
     ],
   },
@@ -157,4 +209,4 @@ export const starterCollection: FixtureCollection = {
   badges: starterBadges,
 };
 
-export type { FixtureCollection, PublishedBadgeFixture } from "./types";
+export type { FixtureCollection, FixtureHistoricalQuotation, PublishedBadgeFixture } from "./types";

@@ -10,26 +10,36 @@ import {
   type ArchiveLifecycle,
   type ArchiveState,
 } from "@badge/archive-domain";
-import { openDB, type IDBPDatabase } from "idb";
+import type { IDBPDatabase } from "idb";
 import { canonicalJson } from "@badge/pack-contract";
+import { formatSayingForArchive, type SayingResponse } from "@badge/saying-contract";
 
+import { abortQuietly, openArchiveDatabase, parseStoredState } from "./archive-database.js";
 import { ArchivePersistenceError } from "./errors.js";
+import { TrustedQuotationAdmission, type TrustedQuotationRequests } from "./quotation-admission.js";
 import { recoverArchive } from "./recovery.js";
+import { inspectRecoveryEvidenceSnapshot } from "./recovery-evidence-snapshot.js";
+import type { ArchiveRecoveryReasonCode } from "./recovery-evidence.js";
+import {
+  assertCompatibleRepositorySource,
+  mergeRepositorySourceAssets,
+  validateRepositorySourceAssets,
+} from "./repository-source-assets.js";
+import {
+  applyMissingSayingDefaults,
+  assertRestorableEarnedSayings,
+  prepareQuotationRevisionsForRestore,
+} from "./saying-defaults.js";
 import { assertMonotonicArchiveRestore } from "./restore-policy.js";
 import { earnedSourceHashes, referencedSourceHashes } from "./source-references.js";
 import {
   copySourceAsset,
-  parseSourceAssetShape,
-  preflightSourceAssetInputs,
-  sourceAssetsEqual,
   validateSourceAsset,
   validateStoredSourceAsset,
   type ArchiveSourceAsset,
   type ArchiveSourceAssetInput,
 } from "./source-assets.js";
 import {
-  ARCHIVE_DATABASE_NAME,
-  ARCHIVE_DATABASE_VERSION,
   ARCHIVE_OBJECT_STORE,
   ARCHIVE_STATE_KEY,
   ARCHIVE_STATE_STORE,
@@ -47,6 +57,7 @@ export interface IndexedDbArchiveRepositoryOptions {
   onTransactionStage?: (stage: ArchiveRepositoryTransactionStage) => void;
   onObserverError?: (error: unknown, stage: ArchiveRepositoryTransactionStage) => void;
   onRecoveryStage?: (stage: ArchiveRepositoryRecoveryStage) => void | Promise<void>;
+  trustedQuotationRequests?: TrustedQuotationRequests;
 }
 
 interface Mutation<T> {
@@ -54,170 +65,49 @@ interface Mutation<T> {
   result: T;
 }
 
-function parseStoredState(untrusted: unknown): ArchiveState {
-  if (untrusted === undefined) {
-    throw new ArchivePersistenceError(
-      "STATE_MISSING",
-      "Archive state is missing; initialize the archive with a validated seed before continuing.",
-    );
-  }
-  const parsed = archiveStateSchema.safeParse(untrusted);
-  if (!parsed.success) {
-    const issue = parsed.error.issues[0];
-    throw new ArchivePersistenceError(
-      "STATE_UNREADABLE",
-      `Archive state is unreadable at ${issue?.path.join(".") || "root"}: ${issue?.message ?? "validation failed"}. The stored row was preserved and automatic writes were stopped; use explicit backup recovery to quarantine and replace it.`,
-      { cause: parsed.error },
-    );
-  }
-  return parsed.data;
-}
-
-async function abortQuietly(transaction: { abort(): void; readonly done: Promise<unknown> }): Promise<void> {
-  try {
-    transaction.abort();
-  } catch {
-    // The browser may already have completed or aborted the transaction.
-  }
-  try {
-    await transaction.done;
-  } catch {
-    // Preserve the original operation error.
-  }
-}
-
-async function validateSourceAssets(
-  inputs: readonly ArchiveSourceAssetInput[],
-  state?: ArchiveState,
-): Promise<ArchiveSourceAsset[]> {
-  const preflightedInputs = preflightSourceAssetInputs(inputs, {
-    code: "VISUAL_SOURCE_INVALID",
-    subject: "Archive input",
-    guidance: "No image was decoded or hashed and no Archive data was changed.",
-  });
-  const assets: ArchiveSourceAsset[] = [];
-  for (const input of preflightedInputs) {
-    const asset = await validateSourceAsset(input);
-    if (assets.some((candidate) => candidate.hash === asset.hash)) {
-      throw new ArchivePersistenceError(
-        "VISUAL_SOURCE_CONFLICT",
-        `Archive source ${asset.hash} appears more than once; provide one immutable object per hash.`,
-      );
-    }
-    assets.push(asset);
-  }
-  if (state) {
-    const supplied = new Set(assets.map((asset) => asset.hash));
-    const missing = earnedSourceHashes(state).find((hash) => !supplied.has(hash));
-    if (missing) {
-      throw new ArchivePersistenceError(
-        "BACKUP_INCOMPLETE",
-        `Restore data is missing source ${missing} required by an earned record; choose an intact self-contained .badgearchive file. No Archive data was changed.`,
-      );
-    }
-  }
-  return assets;
-}
-
-function mergeSourceAssets(
-  backupAssets: readonly ArchiveSourceAsset[],
-  trustedRepairAssets: readonly ArchiveSourceAsset[],
-): ArchiveSourceAsset[] {
-  const merged = new Map<string, ArchiveSourceAsset>();
-  for (const asset of [...backupAssets, ...trustedRepairAssets]) {
-    const existing = merged.get(asset.hash);
-    if (existing && !sourceAssetsEqual(existing, asset)) {
-      throw new ArchivePersistenceError(
-        "VISUAL_SOURCE_CONFLICT",
-        `Recovery inputs disagree about immutable source ${asset.hash}; choose one intact backup and retry after the current trusted sources finish loading. No Archive data was changed.`,
-      );
-    }
-    merged.set(asset.hash, asset);
-  }
-  return [...merged.values()].sort((left, right) => left.hash.localeCompare(right.hash));
-}
-
-function assertCompatibleStoredSource(untrusted: unknown, asset: ArchiveSourceAsset): void {
-  const existing = parseSourceAssetShape(untrusted, asset.hash);
-  if (!sourceAssetsEqual(existing, asset)) {
-    throw new ArchivePersistenceError(
-      "VISUAL_SOURCE_CONFLICT",
-      `Archive source ${asset.hash} already exists with different MIME metadata or bytes; the existing row was preserved. Restore from a backup that matches this Archive.`,
-    );
-  }
-}
-
 export class IndexedDbArchiveRepository {
   private connection: IDBPDatabase<ArchiveDatabase> | undefined;
   private opening: Promise<IDBPDatabase<ArchiveDatabase>> | undefined;
+  private lifecycleRevision = 0;
   private writeQueue: Promise<void> = Promise.resolve();
+  private readonly quotationAdmission: TrustedQuotationAdmission;
 
-  constructor(private readonly options: IndexedDbArchiveRepositoryOptions = {}) {}
+  constructor(private readonly options: IndexedDbArchiveRepositoryOptions = {}) {
+    this.quotationAdmission = new TrustedQuotationAdmission(options.trustedQuotationRequests);
+  }
 
   private createOpeningAttempt(): Promise<IDBPDatabase<ArchiveDatabase>> {
-    let abandonedBecauseBlocked = false;
-    let openedConnection: IDBPDatabase<ArchiveDatabase> | undefined;
-    let rejectBlocked!: (error: ArchivePersistenceError) => void;
-    const blocked = new Promise<never>((_resolve, reject) => {
-      rejectBlocked = reject;
+    return openArchiveDatabase((database) => {
+      if (this.connection === database) this.connection = undefined;
     });
-    const request = openDB<ArchiveDatabase>(ARCHIVE_DATABASE_NAME, ARCHIVE_DATABASE_VERSION, {
-      upgrade(database, oldVersion) {
-        if (oldVersion < 1 && !database.objectStoreNames.contains(ARCHIVE_STATE_STORE)) {
-          database.createObjectStore(ARCHIVE_STATE_STORE);
-        }
-        if (oldVersion < 2 && !database.objectStoreNames.contains(ARCHIVE_OBJECT_STORE)) {
-          database.createObjectStore(ARCHIVE_OBJECT_STORE);
-        }
-      },
-      blocked(currentVersion, requestedVersion) {
-        abandonedBecauseBlocked = true;
-        rejectBlocked(
-          new ArchivePersistenceError(
-            "DATABASE_BLOCKED",
-            `Archive storage version ${requestedVersion ?? ARCHIVE_DATABASE_VERSION} cannot open because another Badge Archive tab or older connection is holding version ${currentVersion}. Close the other Archive tab or window, then retry. No Archive data was changed.`,
-          ),
-        );
-      },
-      blocking: () => {
-        openedConnection?.close();
-        if (this.connection === openedConnection) this.connection = undefined;
-      },
-      terminated: () => {
-        if (this.connection === openedConnection) this.connection = undefined;
-      },
-    });
-    void request.then(
-      (database) => {
-        openedConnection = database;
-        if (abandonedBecauseBlocked) database.close();
-      },
-      () => undefined,
-    );
-    return Promise.race([request, blocked]);
   }
 
   private async database(): Promise<IDBPDatabase<ArchiveDatabase>> {
     if (this.connection) return this.connection;
     if (this.opening) return this.opening;
-    const attempt = this.createOpeningAttempt();
-    this.opening = attempt;
-    try {
-      const database = await attempt;
-      if (this.opening !== attempt) {
+    const openingRevision = this.lifecycleRevision;
+    const request = this.createOpeningAttempt();
+    const attempt = request.then((database) => {
+      if (this.lifecycleRevision !== openingRevision) {
         database.close();
         throw new ArchivePersistenceError(
           "TRANSACTION_FAILED",
-          "Archive storage finished opening after this repository was closed; retry the action with the active Archive window. No Archive data was changed.",
+          "Archive storage finished opening after this repository was closed. The pending version upgrade may have completed, but the requested Archive record action did not run; retry with the active Archive window.",
         );
       }
       this.connection = database;
-      this.opening = undefined;
       return database;
-    } catch (error) {
-      if (this.opening === attempt) this.opening = undefined;
-      throw error;
-    }
+    });
+    this.opening = attempt;
+    void attempt.then(
+      () => {
+        if (this.opening === attempt) this.opening = undefined;
+      },
+      () => {
+        if (this.opening === attempt) this.opening = undefined;
+      },
+    );
+    return attempt;
   }
 
   private enqueueWrite<T>(operation: () => Promise<T>): Promise<T> {
@@ -234,7 +124,7 @@ export class IndexedDbArchiveRepository {
     sourceAssets: readonly ArchiveSourceAssetInput[] = [],
   ): Promise<ArchiveState> {
     const validatedSeed = archiveStateSchema.parse(seed);
-    const validatedAssets = await validateSourceAssets(sourceAssets);
+    const validatedAssets = await validateRepositorySourceAssets(sourceAssets);
     return this.enqueueWrite(async () => {
       const database = await this.database();
       const transaction = database.transaction([ARCHIVE_STATE_STORE, ARCHIVE_OBJECT_STORE], "readwrite");
@@ -243,12 +133,14 @@ export class IndexedDbArchiveRepository {
         const objectStore = transaction.objectStore(ARCHIVE_OBJECT_STORE);
         const existing = await stateStore.get(ARCHIVE_STATE_KEY);
         const state = existing === undefined ? validatedSeed : parseStoredState(existing);
-        if (existing === undefined) await stateStore.put(state, ARCHIVE_STATE_KEY);
+        if (existing === undefined) {
+          await stateStore.put(state, ARCHIVE_STATE_KEY);
+        }
         const referenced = new Set(referencedSourceHashes(state));
         for (const asset of validatedAssets.filter((candidate) => referenced.has(candidate.hash))) {
           const stored = await objectStore.get(asset.hash);
           if (stored === undefined) await objectStore.put(copySourceAsset(asset), asset.hash);
-          else assertCompatibleStoredSource(stored, asset);
+          else assertCompatibleRepositorySource(stored, asset);
         }
         await transaction.done;
         return state;
@@ -258,6 +150,48 @@ export class IndexedDbArchiveRepository {
         throw new ArchivePersistenceError(
           "TRANSACTION_FAILED",
           "Archive initialization failed; existing state and source rows were preserved. Retry or export diagnostics.",
+          { cause: error },
+        );
+      }
+    });
+  }
+
+  async initializeSayingDefaults(
+    defaultState: ArchiveState,
+    expectedCurrentState: ArchiveState,
+  ): Promise<ArchiveState> {
+    const defaults = archiveStateSchema.parse(defaultState);
+    const expected = archiveStateSchema.parse(expectedCurrentState);
+    this.quotationAdmission.assertDefaults(defaults);
+    return this.enqueueWrite(async () => {
+      const database = await this.database();
+      const transaction = database.transaction(ARCHIVE_STATE_STORE, "readwrite");
+      try {
+        const current = parseStoredState(await transaction.store.get(ARCHIVE_STATE_KEY));
+        if (canonicalJson(current) !== canonicalJson(expected)) {
+          throw new ArchivePersistenceError(
+            "INITIALIZATION_CONFLICT",
+            "Archive state changed after its quotation defaults were reviewed; reload Badge before trying again. No Archive data was changed.",
+          );
+        }
+
+        const initialized = applyMissingSayingDefaults(
+          current,
+          defaults,
+          () => crypto.randomUUID(),
+          (record) => this.quotationAdmission.assertRecordBound(record),
+        );
+        if (canonicalJson(initialized) !== canonicalJson(current)) {
+          await transaction.store.put(initialized, ARCHIVE_STATE_KEY);
+        }
+        await transaction.done;
+        return initialized;
+      } catch (error) {
+        await abortQuietly(transaction);
+        if (error instanceof ArchivePersistenceError) throw error;
+        throw new ArchivePersistenceError(
+          "TRANSACTION_FAILED",
+          "Archive quotation-default initialization failed; existing quotations and records were preserved. Reload Badge and try again.",
           { cause: error },
         );
       }
@@ -324,6 +258,11 @@ export class IndexedDbArchiveRepository {
     return { state, sourceAssets };
   }
 
+  async recoveryEvidenceSnapshot(reason: ArchiveRecoveryReasonCode) {
+    await this.writeQueue;
+    return inspectRecoveryEvidenceSnapshot(await this.database(), reason);
+  }
+
   private enqueueMutation<T>(
     operationName: "lifecycle" | "saying",
     transition: (state: ArchiveState) => Mutation<T>,
@@ -353,6 +292,8 @@ export class IndexedDbArchiveRepository {
     input: ActivationInput,
     activatedAt: string,
     sourceAssetInput: ArchiveSourceAssetInput,
+    acceptedQuotation: SayingResponse,
+    expectedQuotationRevision: string,
   ): Promise<ActivationResult> {
     const sourceAsset = await validateSourceAsset(sourceAssetInput, input.visualPin.sourceAssetHash);
     return this.enqueueWrite(async () => {
@@ -363,12 +304,25 @@ export class IndexedDbArchiveRepository {
         const stateStore = transaction.objectStore(ARCHIVE_STATE_STORE);
         const objectStore = transaction.objectStore(ARCHIVE_OBJECT_STORE);
         const state = parseStoredState(await stateStore.get(ARCHIVE_STATE_KEY));
+        const record = state.records.find((candidate) => candidate.recordId === input.recordId);
+        const acceptedSaying = record
+          ? formatSayingForArchive(this.quotationAdmission.validate(record, acceptedQuotation))
+          : null;
+        if (
+          record &&
+          (record.acceptedSaying !== acceptedSaying || record.quotationRevision !== expectedQuotationRevision)
+        ) {
+          throw new ArchivePersistenceError(
+            "SAYING_CONFLICT",
+            `The source-checked quotation for ${record.title} changed after activation opened; reopen the badge and review the current quote. No Archive data was changed.`,
+          );
+        }
         result = activateAchievement(state, input, activatedAt);
         const existingSource = await objectStore.get(sourceAsset.hash);
         if (existingSource === undefined) {
           await objectStore.put(copySourceAsset(sourceAsset), sourceAsset.hash);
         } else {
-          assertCompatibleStoredSource(existingSource, sourceAsset);
+          assertCompatibleRepositorySource(existingSource, sourceAsset);
         }
         await stateStore.put(archiveStateSchema.parse(result.state), ARCHIVE_STATE_KEY);
         this.options.onTransactionStage?.("activation:written");
@@ -395,9 +349,23 @@ export class IndexedDbArchiveRepository {
     });
   }
 
-  updateSaying(recordId: string, saying: string): Promise<ArchiveState> {
+  updateQuotation(
+    recordId: string,
+    quotation: SayingResponse,
+    expectedQuotationRevision: string,
+  ): Promise<ArchiveState> {
     return this.enqueueMutation("saying", (state) => {
-      const result = updateAcceptedSaying(state, recordId, saying);
+      const record = state.records.find((candidate) => candidate.recordId === recordId);
+      const saying = record
+        ? formatSayingForArchive(this.quotationAdmission.validate(record, quotation))
+        : null;
+      if (record && record.quotationRevision !== expectedQuotationRevision) {
+        throw new ArchivePersistenceError(
+          "SAYING_CONFLICT",
+          `The accepted quotation for ${record.title} changed while another selection was pending; review the current quote before regenerating again. No Archive data was changed.`,
+        );
+      }
+      const result = updateAcceptedSaying(state, recordId, saying ?? "", crypto.randomUUID());
       return { state: result, result };
     });
   }
@@ -412,11 +380,22 @@ export class IndexedDbArchiveRepository {
   async restore(
     incomingState: ArchiveState,
     incomingSourceAssets: readonly ArchiveSourceAssetInput[],
-    expectedCurrentState?: ArchiveState,
+    expectedCurrentState: ArchiveState,
+    sayingDefaults?: ArchiveState,
   ): Promise<ArchiveState> {
-    const state = archiveStateSchema.parse(incomingState);
-    const expected = expectedCurrentState ? archiveStateSchema.parse(expectedCurrentState) : undefined;
-    const sourceAssets = await validateSourceAssets(incomingSourceAssets, state);
+    const parsedIncoming = archiveStateSchema.parse(incomingState);
+    if (sayingDefaults) this.quotationAdmission.assertDefaults(sayingDefaults);
+    const state = sayingDefaults
+      ? applyMissingSayingDefaults(
+          parsedIncoming,
+          archiveStateSchema.parse(sayingDefaults),
+          () => crypto.randomUUID(),
+          (record) => this.quotationAdmission.assertRecordBound(record),
+        )
+      : parsedIncoming;
+    assertRestorableEarnedSayings(state);
+    const expected = archiveStateSchema.parse(expectedCurrentState);
+    const sourceAssets = await validateRepositorySourceAssets(incomingSourceAssets, state);
     return this.enqueueWrite(async () => {
       const database = await this.database();
       const transaction = database.transaction([ARCHIVE_STATE_STORE, ARCHIVE_OBJECT_STORE], "readwrite");
@@ -424,21 +403,22 @@ export class IndexedDbArchiveRepository {
         const stateStore = transaction.objectStore(ARCHIVE_STATE_STORE);
         const objectStore = transaction.objectStore(ARCHIVE_OBJECT_STORE);
         const current = parseStoredState(await stateStore.get(ARCHIVE_STATE_KEY));
-        if (expected && canonicalJson(current) !== canonicalJson(expected)) {
+        if (canonicalJson(current) !== canonicalJson(expected)) {
           throw new ArchivePersistenceError(
             "RESTORE_CONFLICT",
             "Archive state changed after its safety backup was exported; export a new safety backup and confirm the restore again. No Archive data was changed.",
           );
         }
-        assertMonotonicArchiveRestore(current, state);
+        const restoredState = prepareQuotationRevisionsForRestore(current, state, () => crypto.randomUUID());
+        assertMonotonicArchiveRestore(current, restoredState);
         for (const asset of sourceAssets) {
           const existing = await objectStore.get(asset.hash);
           if (existing === undefined) await objectStore.put(copySourceAsset(asset), asset.hash);
-          else assertCompatibleStoredSource(existing, asset);
+          else assertCompatibleRepositorySource(existing, asset);
         }
-        await stateStore.put(state, ARCHIVE_STATE_KEY);
+        await stateStore.put(restoredState, ARCHIVE_STATE_KEY);
         await transaction.done;
-        return state;
+        return restoredState;
       } catch (error) {
         await abortQuietly(transaction);
         if (error instanceof ArchivePersistenceError) throw error;
@@ -459,10 +439,20 @@ export class IndexedDbArchiveRepository {
     expectedOwnerId: string,
     options: ArchiveRecoveryOptions = {},
   ): Promise<ArchiveRecoveryResult> {
-    const state = archiveStateSchema.parse(incomingState);
-    const backupAssets = await validateSourceAssets(incomingSourceAssets, state);
-    const trustedRepairAssets = await validateSourceAssets(trustedRepairSourceAssets);
-    const sourceAssets = mergeSourceAssets(backupAssets, trustedRepairAssets);
+    const parsedIncoming = archiveStateSchema.parse(incomingState);
+    if (options.sayingDefaults) this.quotationAdmission.assertDefaults(options.sayingDefaults);
+    const defaults = options.sayingDefaults ? archiveStateSchema.parse(options.sayingDefaults) : undefined;
+    const state = defaults
+      ? applyMissingSayingDefaults(
+          parsedIncoming,
+          defaults,
+          () => crypto.randomUUID(),
+          (record) => this.quotationAdmission.assertRecordBound(record),
+        )
+      : parsedIncoming;
+    const backupAssets = await validateRepositorySourceAssets(incomingSourceAssets, state);
+    const trustedRepairAssets = await validateRepositorySourceAssets(trustedRepairSourceAssets);
+    const sourceAssets = mergeRepositorySourceAssets(backupAssets, trustedRepairAssets);
     const recoveryOptions = {
       ...options,
       expectedCurrentState: options.expectedCurrentState
@@ -474,6 +464,7 @@ export class IndexedDbArchiveRepository {
       try {
         return await recoverArchive(database, state, sourceAssets, quarantinedAt, expectedOwnerId, {
           ...recoveryOptions,
+          sayingDefaults: undefined,
           afterInspection: () => this.options.onRecoveryStage?.("recovery:inspected"),
         });
       } catch (error) {
@@ -488,8 +479,8 @@ export class IndexedDbArchiveRepository {
   }
 
   close(): void {
+    this.lifecycleRevision += 1;
     this.connection?.close();
     this.connection = undefined;
-    this.opening = undefined;
   }
 }

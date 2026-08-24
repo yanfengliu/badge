@@ -2,6 +2,12 @@ import { archiveStateSchema, type ArchiveState } from "@badge/archive-domain";
 import type { IDBPDatabase } from "idb";
 
 import { ArchivePersistenceError } from "./errors.js";
+import { rawValuesEqual } from "./raw-values-equal.js";
+import {
+  assertRestorableEarnedSayings,
+  hasDurableQuotationRevisions,
+  refreshUnearnedQuotationRevisions,
+} from "./saying-defaults.js";
 import { referencedSourceHashes } from "./source-references.js";
 import {
   copySourceAsset,
@@ -31,184 +37,12 @@ function rawOwnerId(raw: unknown): string | undefined {
   return typeof raw.ownerId === "string" ? raw.ownerId : undefined;
 }
 
-interface EqualityState {
-  readonly leftToRight: WeakMap<object, object>;
-  readonly rightToLeft: WeakMap<object, object>;
+function sortedUnique(values: readonly string[]): string[] {
+  return [...new Set(values)].sort();
 }
 
-function bytesEqual(left: ArrayBufferLike, right: ArrayBufferLike): boolean {
-  if (left.byteLength !== right.byteLength) return false;
-  const leftBytes = new Uint8Array(left);
-  const rightBytes = new Uint8Array(right);
-  return leftBytes.every((value, index) => value === rightBytes[index]);
-}
-
-function isSharedArrayBuffer(value: unknown): value is SharedArrayBuffer {
-  return typeof SharedArrayBuffer !== "undefined" && value instanceof SharedArrayBuffer;
-}
-
-function isFile(value: unknown): value is File {
-  return typeof File !== "undefined" && value instanceof File;
-}
-
-async function rawValuesEqual(
-  left: unknown,
-  right: unknown,
-  state: EqualityState = {
-    leftToRight: new WeakMap(),
-    rightToLeft: new WeakMap(),
-  },
-): Promise<boolean> {
-  if (Object.is(left, right)) return true;
-  if (typeof left !== "object" || left === null || typeof right !== "object" || right === null) {
-    return false;
-  }
-  if (Object.getPrototypeOf(left) !== Object.getPrototypeOf(right)) return false;
-
-  const priorRight = state.leftToRight.get(left);
-  const priorLeft = state.rightToLeft.get(right);
-  if (priorRight || priorLeft) return priorRight === right && priorLeft === left;
-  state.leftToRight.set(left, right);
-  state.rightToLeft.set(right, left);
-
-  if (Array.isArray(left) || Array.isArray(right)) {
-    if (!Array.isArray(left) || !Array.isArray(right) || left.length !== right.length) return false;
-    const leftKeys = Object.keys(left);
-    const rightKeys = Object.keys(right);
-    if (leftKeys.length !== rightKeys.length) return false;
-    for (let index = 0; index < leftKeys.length; index += 1) {
-      const key = leftKeys[index];
-      if (key === undefined || key !== rightKeys[index]) return false;
-      if (!(await rawValuesEqual(left[key as unknown as number], right[key as unknown as number], state))) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  if (left instanceof Date || right instanceof Date) {
-    return left instanceof Date && right instanceof Date && Object.is(left.getTime(), right.getTime());
-  }
-
-  if (left instanceof RegExp || right instanceof RegExp) {
-    return (
-      left instanceof RegExp &&
-      right instanceof RegExp &&
-      left.source === right.source &&
-      left.flags === right.flags &&
-      left.lastIndex === right.lastIndex
-    );
-  }
-
-  if (
-    left instanceof ArrayBuffer ||
-    right instanceof ArrayBuffer ||
-    isSharedArrayBuffer(left) ||
-    isSharedArrayBuffer(right)
-  ) {
-    const leftIsBuffer = left instanceof ArrayBuffer || isSharedArrayBuffer(left);
-    const rightIsBuffer = right instanceof ArrayBuffer || isSharedArrayBuffer(right);
-    return leftIsBuffer && rightIsBuffer && bytesEqual(left, right);
-  }
-
-  if (ArrayBuffer.isView(left) || ArrayBuffer.isView(right)) {
-    if (!ArrayBuffer.isView(left) || !ArrayBuffer.isView(right)) return false;
-    return (
-      left.byteOffset === right.byteOffset &&
-      left.byteLength === right.byteLength &&
-      left.buffer.byteLength === right.buffer.byteLength &&
-      bytesEqual(left.buffer, right.buffer)
-    );
-  }
-
-  if (isFile(left) || isFile(right)) {
-    if (!isFile(left) || !isFile(right)) return false;
-    if (
-      left.name !== right.name ||
-      left.lastModified !== right.lastModified ||
-      left.type !== right.type ||
-      left.size !== right.size
-    ) {
-      return false;
-    }
-    return bytesEqual(await left.arrayBuffer(), await right.arrayBuffer());
-  }
-
-  if (left instanceof Blob || right instanceof Blob) {
-    if (!(left instanceof Blob) || !(right instanceof Blob)) return false;
-    if (left.type !== right.type || left.size !== right.size) return false;
-    return bytesEqual(await left.arrayBuffer(), await right.arrayBuffer());
-  }
-
-  if (left instanceof Map || right instanceof Map) {
-    if (!(left instanceof Map) || !(right instanceof Map) || left.size !== right.size) return false;
-    const leftEntries = [...left.entries()];
-    const rightEntries = [...right.entries()];
-    for (let index = 0; index < leftEntries.length; index += 1) {
-      const leftEntry = leftEntries[index];
-      const rightEntry = rightEntries[index];
-      if (!leftEntry || !rightEntry) return false;
-      if (!(await rawValuesEqual(leftEntry[0], rightEntry[0], state))) return false;
-      if (!(await rawValuesEqual(leftEntry[1], rightEntry[1], state))) return false;
-    }
-    return true;
-  }
-
-  if (left instanceof Set || right instanceof Set) {
-    if (!(left instanceof Set) || !(right instanceof Set) || left.size !== right.size) return false;
-    const leftValues = [...left.values()];
-    const rightValues = [...right.values()];
-    for (let index = 0; index < leftValues.length; index += 1) {
-      if (!(await rawValuesEqual(leftValues[index], rightValues[index], state))) return false;
-    }
-    return true;
-  }
-
-  if (left instanceof Error || right instanceof Error) {
-    if (!(left instanceof Error) || !(right instanceof Error)) return false;
-    const leftWithCause = left as Error & { cause?: unknown };
-    const rightWithCause = right as Error & { cause?: unknown };
-    const aggregateErrorsEqual =
-      typeof AggregateError === "undefined" ||
-      (!(left instanceof AggregateError) && !(right instanceof AggregateError)) ||
-      (left instanceof AggregateError &&
-        right instanceof AggregateError &&
-        (await rawValuesEqual(left.errors, right.errors, state)));
-    return (
-      left.name === right.name &&
-      left.message === right.message &&
-      left.stack === right.stack &&
-      aggregateErrorsEqual &&
-      (await rawValuesEqual(leftWithCause.cause, rightWithCause.cause, state))
-    );
-  }
-
-  if (
-    typeof DOMException !== "undefined" &&
-    (left instanceof DOMException || right instanceof DOMException)
-  ) {
-    return (
-      left instanceof DOMException &&
-      right instanceof DOMException &&
-      left.name === right.name &&
-      left.message === right.message &&
-      left.code === right.code
-    );
-  }
-
-  const prototype = Object.getPrototypeOf(left);
-  if (prototype !== Object.prototype && prototype !== null) return false;
-  const leftRecord = left as Record<string, unknown>;
-  const rightRecord = right as Record<string, unknown>;
-  const leftKeys = Object.keys(leftRecord);
-  const rightKeys = Object.keys(rightRecord);
-  if (leftKeys.length !== rightKeys.length) return false;
-  for (let index = 0; index < leftKeys.length; index += 1) {
-    const key = leftKeys[index];
-    if (key === undefined || key !== rightKeys[index]) return false;
-    if (!(await rawValuesEqual(leftRecord[key], rightRecord[key], state))) return false;
-  }
-  return true;
+function sameStrings(left: readonly string[], right: readonly string[]): boolean {
+  return left.length === right.length && left.every((value, index) => value === right[index]);
 }
 
 async function keepTransactionActive<T>(
@@ -272,12 +106,14 @@ export async function recoverArchive(
       "Archive state is missing rather than corrupt; initialize it normally before restoring a backup.",
     );
   }
-  const parsedCurrent = archiveStateSchema.safeParse(rawState);
-  if (parsedCurrent.success) {
-    if (parsedCurrent.data.ownerId !== expectedOwnerId) {
+  const parsedCandidate = archiveStateSchema.safeParse(rawState);
+  const parsedCurrent =
+    parsedCandidate.success && hasDurableQuotationRevisions(rawState) ? parsedCandidate.data : undefined;
+  if (parsedCurrent) {
+    if (parsedCurrent.ownerId !== expectedOwnerId) {
       throw new ArchivePersistenceError(
         "BACKUP_OWNER_MISMATCH",
-        `Readable Archive state belongs to owner ${parsedCurrent.data.ownerId}, but recovery was opened for ${expectedOwnerId}; choose the matching owner and backup. No Archive data was changed.`,
+        `Readable Archive state belongs to owner ${parsedCurrent.ownerId}, but recovery was opened for ${expectedOwnerId}; choose the matching owner and backup. No Archive data was changed.`,
       );
     }
   } else {
@@ -298,23 +134,76 @@ export async function recoverArchive(
         "Readable Archive replacement requires the exact state from a freshly exported safety backup. Export the safety backup and confirm replacement again. No Archive data was changed.",
       );
     }
-    if (!parsedCurrent.success || !(await rawValuesEqual(parsedCurrent.data, options.expectedCurrentState))) {
+    if (!parsedCurrent || !(await rawValuesEqual(parsedCurrent, options.expectedCurrentState))) {
       throw new ArchivePersistenceError(
         "RESTORE_CONFLICT",
         "Archive state changed after its safety backup was exported; export a new safety backup and confirm replacement again. No Archive data was changed.",
       );
     }
   }
-  const stateMustBeReplaced = !parsedCurrent.success || replaceReadableState;
+  if (replaceReadableState && options.expectedStateRescueReason === "earned-quotation-missing") {
+    const actualAffectedRecordIds =
+      parsedCurrent?.records
+        .filter((record) => record.lifecycle === "earned" && record.acceptedSaying === null)
+        .map((record) => record.recordId)
+        .sort() ?? [];
+    const expectedAffectedRecordIds = sortedUnique(options.expectedStateRescueAffectedRecordIds ?? []);
+    if (!sameStrings(actualAffectedRecordIds, expectedAffectedRecordIds)) {
+      throw new ArchivePersistenceError(
+        "RECOVERY_REASON_MISMATCH",
+        "The earned-memory quotation gaps no longer match the saved state rescue. Create and save fresh evidence before replacing state. No Archive data was changed.",
+      );
+    }
+  }
+  const stateMustBeReplaced = !parsedCurrent || replaceReadableState;
+  const replacementState = stateMustBeReplaced
+    ? refreshUnearnedQuotationRevisions(incomingState, () => crypto.randomUUID())
+    : incomingState;
+  if (stateMustBeReplaced) assertRestorableEarnedSayings(replacementState);
   const assetsByHash = new Map(incomingAssets.map((asset) => [asset.hash, asset]));
   const requiredHashes = new Set(
-    referencedSourceHashes(stateMustBeReplaced ? incomingState : parsedCurrent.data),
+    referencedSourceHashes(stateMustBeReplaced ? replacementState : parsedCurrent),
   );
-  const inspectedHashes = [...requiredHashes].sort();
+  const outgoingRescueRecords =
+    replaceReadableState && options.expectedStateRescueReason === "source-art-unavailable" && parsedCurrent
+      ? parsedCurrent.records.filter((record) => record.activation !== null)
+      : [];
+  const outgoingRescueHashes = sortedUnique(
+    outgoingRescueRecords.map((record) => record.activation!.visualPin.sourceAssetHash),
+  );
+  const inspectedHashes = [...new Set([...requiredHashes, ...outgoingRescueHashes])].sort();
   const snapshot = new Map<string, unknown>();
   const read = database.transaction(ARCHIVE_OBJECT_STORE, "readonly");
   for (const hash of inspectedHashes) snapshot.set(hash, await read.store.get(hash));
   await read.done;
+
+  if (options.expectedStateRescueReason === "source-art-unavailable") {
+    const unavailableHashes = new Set<string>();
+    for (const hash of outgoingRescueHashes) {
+      const raw = snapshot.get(hash);
+      if (raw === undefined) {
+        unavailableHashes.add(hash);
+        continue;
+      }
+      try {
+        await validateStoredSourceAsset(raw, hash);
+      } catch (error) {
+        if (!(error instanceof ArchivePersistenceError)) throw error;
+        unavailableHashes.add(hash);
+      }
+    }
+    const actualAffectedRecordIds = outgoingRescueRecords
+      .filter((record) => unavailableHashes.has(record.activation!.visualPin.sourceAssetHash))
+      .map((record) => record.recordId)
+      .sort();
+    const expectedAffectedRecordIds = sortedUnique(options.expectedStateRescueAffectedRecordIds ?? []);
+    if (!sameStrings(actualAffectedRecordIds, expectedAffectedRecordIds)) {
+      throw new ArchivePersistenceError(
+        "RECOVERY_REASON_MISMATCH",
+        "The source-art gaps no longer match the saved state rescue. Create and save a fresh safety handoff before replacing state. No Archive data was changed.",
+      );
+    }
+  }
 
   const repairHashes = new Set<string>();
   for (const hash of inspectedHashes) {
@@ -329,11 +218,11 @@ export async function recoverArchive(
       if (incoming && !sourceAssetsEqual(stored, incoming)) repairHashes.add(hash);
     } catch (error) {
       if (!(error instanceof ArchivePersistenceError)) throw error;
-      repairHashes.add(hash);
+      if (requiredHashes.has(hash)) repairHashes.add(hash);
     }
   }
 
-  if (parsedCurrent.success && !replaceReadableState && repairHashes.size === 0) {
+  if (parsedCurrent && !replaceReadableState && repairHashes.size === 0) {
     throw new ArchivePersistenceError(
       "RECOVERY_NOT_REQUIRED",
       "Archive state and every referenced source object are readable; use normal monotonic restore instead of recovery. No Archive data was changed.",
@@ -354,7 +243,7 @@ export async function recoverArchive(
         kind: "quarantined-archive-state",
         quarantineVersion: 1,
         quarantinedAt,
-        reason: parsedCurrent.success ? "incompatible-readable-state" : "unreadable",
+        reason: parsedCurrent ? "incompatible-readable-state" : "unreadable",
         raw: rawState,
       })
     : undefined;
@@ -392,8 +281,12 @@ export async function recoverArchive(
         const snapshotRawSource = snapshot.get(hash);
         if (!(await rawValuesEqual(currentRawSource, snapshotRawSource))) {
           throw new ArchivePersistenceError(
-            "TRANSACTION_FAILED",
-            `Archive recovery stopped because another connection changed source ${hash} after inspection; retry so the newest evidence can be quarantined atomically.`,
+            options.expectedStateRescueReason === "source-art-unavailable"
+              ? "RECOVERY_REASON_MISMATCH"
+              : "TRANSACTION_FAILED",
+            options.expectedStateRescueReason === "source-art-unavailable"
+              ? `Archive recovery stopped because source ${hash} changed after state-rescue inspection. Create a fresh safety handoff before replacing state. No Archive data was changed.`
+              : `Archive recovery stopped because another connection changed source ${hash} after inspection; retry so the newest evidence can be quarantined atomically.`,
           );
         }
       }
@@ -401,11 +294,7 @@ export async function recoverArchive(
     for (const hash of repairHashes) {
       const incoming = assetsByHash.get(hash);
       if (!incoming) {
-        const requirement = sourceRequirement(
-          hash,
-          incomingState,
-          parsedCurrent.success ? parsedCurrent.data : undefined,
-        );
+        const requirement = sourceRequirement(hash, incomingState, parsedCurrent);
         throw new ArchivePersistenceError(
           "BACKUP_INCOMPLETE",
           `Recovery inputs do not contain source ${hash} required by ${requirement}; choose an intact self-contained backup and retry after trusted current sources finish loading. No Archive data was changed.`,
@@ -420,7 +309,7 @@ export async function recoverArchive(
     }
     if (stateQuarantineKey && stateEvidence) {
       await stateStore.put(stateEvidence, stateQuarantineKey);
-      await stateStore.put(incomingState, ARCHIVE_STATE_KEY);
+      await stateStore.put(replacementState, ARCHIVE_STATE_KEY);
     }
     await transaction.done;
   } catch (error) {
@@ -444,7 +333,7 @@ export async function recoverArchive(
   const firstKey = quarantineKeys[0];
   if (!firstKey) throw new Error("Recovery completed without quarantine evidence");
   return {
-    state: stateMustBeReplaced ? incomingState : parsedCurrent.data,
+    state: stateMustBeReplaced ? replacementState : parsedCurrent!,
     stateReplaced: stateMustBeReplaced,
     quarantineKey: firstKey,
     quarantineKeys,

@@ -1,6 +1,4 @@
 import {
-  sayingSizeMetricLabel,
-  validateSaying,
   type ActivationInput,
   type ArchiveRecord,
   type ExactVisualPin,
@@ -20,9 +18,8 @@ export interface ActivationDraft {
 }
 
 export interface SayingActivationState {
-  readonly editing: boolean;
+  readonly sourceChecked: boolean;
   readonly saving: boolean;
-  readonly hasUnsavedDraft: boolean;
 }
 
 export function defaultActivationDraft(): ActivationDraft {
@@ -34,20 +31,8 @@ export function defaultActivationDraft(): ActivationDraft {
   };
 }
 
-export function sayingValidationMessage(title: string, value: string): string | null {
-  const validation = validateSaying(value);
-  if (validation.ok) return null;
-  if (validation.code === "EMPTY") {
-    return `Saying for ${title} is empty; write or accept a badge saying.`;
-  }
-  if (validation.code === "TOO_LARGE_TO_INSPECT") {
-    return `Saying for ${title} is ${validation.count} ${sayingSizeMetricLabel(validation.metric)}; use at most ${validation.limit} so it can be inspected safely.`;
-  }
-  return `Saying for ${title} has ${validation.graphemeCount} graphemes; use at most ${validation.limit}.`;
-}
-
-export function canActivateWithSaying(acceptedSaying: string | null, saying: SayingActivationState): boolean {
-  return Boolean(acceptedSaying) && !saying.editing && !saying.saving && !saying.hasUnsavedDraft;
+export function canActivateWithSaying(saying: SayingActivationState): boolean {
+  return saying.sourceChecked && !saying.saving;
 }
 
 export function selectedArchiveVisual(
@@ -72,7 +57,6 @@ export function activationInputFor(
     occurredEnd: draft.occurredEnd || draft.occurredStart,
     note: draft.note.trim() || null,
     visibility: draft.visibility,
-    saying: record.acceptedSaying ?? "",
     visualPin,
   };
 }

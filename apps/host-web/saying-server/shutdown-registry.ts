@@ -9,7 +9,7 @@ export function registerSayingServerShutdown(
   shutdown: () => Promise<void>,
 ): () => void {
   if (host[SAYING_SERVER_SHUTDOWN]) {
-    throw new Error("Badge saying server shutdown is already registered on this local listener.");
+    throw new Error("Badge quote service shutdown is already registered on this local listener.");
   }
   Object.defineProperty(host, SAYING_SERVER_SHUTDOWN, {
     configurable: true,

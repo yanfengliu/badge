@@ -9,23 +9,45 @@ import {
 
 import { SayingProposalController, subscribeUntilDisposed } from "../src/saying-proposals";
 
+const allowedQuotations = [
+  {
+    id: "muir-mountains-calling",
+    text: "The mountains are calling and I must go.",
+    person: "John Muir",
+    sourceTitle: "Letter to Sarah Muir Galloway, 1873",
+    sourceUrl: "https://www.nps.gov/articles/000/muir-quote.htm",
+  },
+  {
+    id: "muir-mountaineers-home",
+    text: "Therefore we are all, in some sense, mountaineers, and going to the mountains is going home.",
+    person: "John Muir",
+    sourceTitle: "Steep Trails",
+    sourceUrl: "https://www.nps.gov/jomu/learn/historyculture/john-muir-quotes.htm",
+  },
+  {
+    id: "muir-walk-nature",
+    text: "But in every walk with Nature one receives far more than he seeks.",
+    person: "John Muir",
+    sourceTitle: "Steep Trails",
+    sourceUrl: "https://www.nps.gov/jomu/learn/historyculture/john-muir-quotes.htm",
+  },
+] as const;
+
 const promptInput = {
   title: "Yosemite",
   criterion: "Visit Yosemite National Park",
-  allowedQuotations: [
-    {
-      id: "muir-yosemite-temple",
-      text: "The mountains are calling and I must go.",
-      person: "John Muir",
-      sourceTitle: "Letter to Sarah Muir Galloway, 1873",
-      sourceUrl: "https://www.nps.gov/articles/000/muir-quote.htm",
-    },
-  ],
+  allowedQuotations: [...allowedQuotations],
 } satisfies SayingRequest;
+const expectedQuotationRevision = "11111111-1111-4111-8111-111111111111";
 
-function result(saying: string): SayingProviderResult {
+function regenerate(recordId = "record-yosemite", input: SayingRequest = promptInput) {
+  return { type: "regenerate" as const, recordId, expectedQuotationRevision, promptInput: input };
+}
+
+function result(index = 0): SayingProviderResult {
+  const quotation = allowedQuotations[index]!;
   return {
-    response: { kind: "original", saying },
+    response: { kind: "quotation", saying: quotation.text, quotation },
     provenance: {
       provider: "test-provider",
       model: "test-model",
@@ -46,8 +68,8 @@ function deferredResult() {
 }
 
 describe("SayingProposalController", () => {
-  it("calls its provider only for the two explicit generation commands", async () => {
-    const propose = vi.fn(async () => result("Worth every switchback."));
+  it("calls its provider only for the explicit regeneration command", async () => {
+    const propose = vi.fn(async () => result());
     const controller = new SayingProposalController({ propose });
 
     expect(propose).toHaveBeenCalledTimes(0);
@@ -58,21 +80,23 @@ describe("SayingProposalController", () => {
     await controller.dispatch({ type: "archive-restored" });
     expect(propose).toHaveBeenCalledTimes(0);
 
-    await controller.dispatch({ type: "generate", recordId: "record-yosemite", promptInput });
+    await controller.dispatch(regenerate());
     expect(propose).toHaveBeenCalledTimes(1);
-    await controller.dispatch({ type: "try-another", recordId: "record-yosemite", promptInput });
+    await controller.dispatch(regenerate());
     expect(propose).toHaveBeenCalledTimes(2);
   });
 
   it("turns invalid prompt data into visible controller error state without calling the provider", async () => {
-    const propose = vi.fn(async () => result("Should not appear."));
+    const propose = vi.fn(async () => result());
     const controller = new SayingProposalController({ propose });
 
-    await controller.dispatch({
-      type: "generate",
-      recordId: "record-invalid",
-      promptInput: { title: "Bad\ntitle", criterion: "Complete it" },
-    });
+    await controller.dispatch(
+      regenerate("record-invalid", {
+        title: "Bad\ntitle",
+        criterion: "Complete it",
+        allowedQuotations: [...allowedQuotations],
+      }),
+    );
 
     expect(propose).not.toHaveBeenCalled();
     expect(controller.snapshot("record-invalid")).toMatchObject({
@@ -80,6 +104,13 @@ describe("SayingProposalController", () => {
       proposal: null,
     });
     expect(controller.snapshot("record-invalid").error).toContain("control character");
+
+    controller.dismiss("record-invalid");
+    expect(controller.snapshot("record-invalid")).toMatchObject({
+      status: "idle",
+      proposal: null,
+      error: null,
+    });
   });
 
   it("aborts the older request and publishes only the latest result", async () => {
@@ -93,26 +124,23 @@ describe("SayingProposalController", () => {
     };
     const controller = new SayingProposalController(provider);
 
-    const first = controller.dispatch({
-      type: "generate",
-      recordId: "record-yosemite",
-      promptInput,
-    });
-    const second = controller.dispatch({
-      type: "try-another",
-      recordId: "record-yosemite",
-      promptInput,
-    });
+    const first = controller.dispatch(regenerate());
+    const second = controller.dispatch(regenerate());
     expect(requests[0]?.signal.aborted).toBe(true);
 
-    deferred[1]!.resolve(result("Granite keeps the long view."));
+    deferred[1]!.resolve(result(1));
     await second;
-    deferred[0]!.resolve(result("Stale first line."));
+    deferred[0]!.resolve(result(2));
     await first;
 
     expect(controller.snapshot("record-yosemite")).toMatchObject({
       status: "ready",
-      proposal: { kind: "original", saying: "Granite keeps the long view." },
+      proposal: {
+        kind: "quotation",
+        saying: allowedQuotations[1]!.text,
+        quotation: allowedQuotations[1],
+      },
+      expectedQuotationRevision,
       error: null,
     });
   });
@@ -120,16 +148,16 @@ describe("SayingProposalController", () => {
   it("keeps an existing proposal when a retry fails", async () => {
     const propose = vi
       .fn<SayingProvider["propose"]>()
-      .mockResolvedValueOnce(result("Worth every switchback."))
+      .mockResolvedValueOnce(result())
       .mockRejectedValueOnce(new Error("Preview source unavailable."));
     const controller = new SayingProposalController({ propose });
 
-    await controller.dispatch({ type: "generate", recordId: "record-yosemite", promptInput });
-    await controller.dispatch({ type: "try-another", recordId: "record-yosemite", promptInput });
+    await controller.dispatch(regenerate());
+    await controller.dispatch(regenerate());
 
     expect(controller.snapshot("record-yosemite")).toMatchObject({
       status: "error",
-      proposal: { kind: "original", saying: "Worth every switchback." },
+      proposal: { kind: "quotation", saying: allowedQuotations[0]!.text },
       error: "Preview source unavailable.",
     });
   });
@@ -147,22 +175,51 @@ describe("SayingProposalController", () => {
           sourceUrl: "https://example.com/invented",
         },
       },
-      provenance: result("unused").provenance,
+      provenance: result().provenance,
     };
     const propose = vi
       .fn<SayingProvider["propose"]>()
-      .mockResolvedValueOnce(result("Worth every switchback."))
+      .mockResolvedValueOnce(result())
       .mockResolvedValueOnce(fabricated);
     const controller = new SayingProposalController({ propose });
 
-    await controller.dispatch({ type: "generate", recordId: "record-yosemite", promptInput });
-    await controller.dispatch({ type: "try-another", recordId: "record-yosemite", promptInput });
+    await controller.dispatch(regenerate());
+    await controller.dispatch(regenerate());
 
     expect(controller.snapshot("record-yosemite")).toMatchObject({
       status: "error",
-      proposal: { kind: "original", saying: "Worth every switchback." },
+      proposal: { kind: "quotation", saying: allowedQuotations[0]!.text },
     });
     expect(controller.snapshot("record-yosemite").error).toContain("not one of the supplied quotations");
+  });
+
+  it("validates against an immutable private shortlist when a provider mutates its request", async () => {
+    const provider: SayingProvider = {
+      async propose(request) {
+        const quotation = request.promptInput.allowedQuotations[0]!;
+        quotation.text = "A provider-mutated line.";
+        quotation.person = "Imaginary Person";
+        quotation.sourceTitle = "Imaginary Source";
+        quotation.sourceUrl = "https://example.com/provider-mutated";
+        return {
+          response: { kind: "quotation", saying: quotation.text, quotation },
+          provenance: result().provenance,
+        };
+      },
+    };
+    const controller = new SayingProposalController(provider);
+
+    await controller.dispatch(regenerate());
+
+    expect(controller.snapshot("record-yosemite")).toMatchObject({
+      status: "error",
+      proposal: null,
+      request: null,
+    });
+    expect(controller.snapshot("record-yosemite").error).toContain(
+      "does not exactly match the supplied quotation",
+    );
+    expect(promptInput.allowedQuotations[0]).toEqual(allowedQuotations[0]);
   });
 
   it("badge activation cancels pending work while keeping the prior proposal", async () => {
@@ -171,31 +228,27 @@ describe("SayingProposalController", () => {
     const provider: SayingProvider = {
       propose(request) {
         requests.push(request);
-        if (requests.length === 1) return Promise.resolve(result("Worth every switchback."));
+        if (requests.length === 1) return Promise.resolve(result());
         return pending.promise;
       },
     };
     const controller = new SayingProposalController(provider);
-    await controller.dispatch({ type: "generate", recordId: "record-yosemite", promptInput });
-    const retry = controller.dispatch({
-      type: "try-another",
-      recordId: "record-yosemite",
-      promptInput,
-    });
+    await controller.dispatch(regenerate());
+    const retry = controller.dispatch(regenerate());
 
     await controller.dispatch({ type: "badge-activated", recordId: "record-yosemite" });
     expect(requests).toHaveLength(2);
     expect(requests[1]?.signal.aborted).toBe(true);
     expect(controller.snapshot("record-yosemite")).toMatchObject({
       status: "ready",
-      proposal: { kind: "original", saying: "Worth every switchback." },
+      proposal: { kind: "quotation", saying: allowedQuotations[0]!.text },
     });
 
-    pending.resolve(result("A stale replacement."));
+    pending.resolve(result(1));
     await retry;
-    expect(controller.snapshot("record-yosemite").proposal).toEqual({
-      kind: "original",
-      saying: "Worth every switchback.",
+    expect(controller.snapshot("record-yosemite").proposal).toMatchObject({
+      kind: "quotation",
+      saying: allowedQuotations[0]!.text,
     });
   });
 
@@ -205,17 +258,13 @@ describe("SayingProposalController", () => {
     const provider: SayingProvider = {
       propose(request) {
         requests.push(request);
-        if (requests.length === 1) return Promise.resolve(result("Worth every switchback."));
+        if (requests.length === 1) return Promise.resolve(result());
         return pending.promise;
       },
     };
     const controller = new SayingProposalController(provider);
-    await controller.dispatch({ type: "generate", recordId: "record-yosemite", promptInput });
-    const retry = controller.dispatch({
-      type: "try-another",
-      recordId: "record-yosemite",
-      promptInput,
-    });
+    await controller.dispatch(regenerate());
+    const retry = controller.dispatch(regenerate());
 
     await controller.dispatch({ type: "archive-restored" });
     expect(requests).toHaveLength(2);
@@ -227,7 +276,7 @@ describe("SayingProposalController", () => {
       error: null,
     });
 
-    pending.resolve(result("A stale replacement."));
+    pending.resolve(result(1));
     await retry;
     expect(controller.snapshot("record-yosemite").proposal).toBeNull();
   });
@@ -242,22 +291,20 @@ describe("SayingProposalController", () => {
       },
     };
     const controller = new SayingProposalController(provider);
-    const first = controller.dispatch({
-      type: "generate",
-      recordId: "record-yosemite",
-      promptInput,
-    });
-    const second = controller.dispatch({
-      type: "generate",
-      recordId: "record-degree",
-      promptInput: { title: "Degree", criterion: "Complete a degree" },
-    });
+    const first = controller.dispatch(regenerate());
+    const second = controller.dispatch(
+      regenerate("record-degree", {
+        title: "Degree",
+        criterion: "Complete a degree",
+        allowedQuotations: [...allowedQuotations],
+      }),
+    );
 
     controller.cancelAll();
     expect(requests).toHaveLength(2);
     expect(requests.every((request) => request.signal.aborted)).toBe(true);
-    pending[0]!.resolve(result("Stale one."));
-    pending[1]!.resolve(result("Stale two."));
+    pending[0]!.resolve(result(1));
+    pending[1]!.resolve(result(2));
     await Promise.all([first, second]);
     expect(controller.snapshot("record-yosemite").proposal).toBeNull();
     expect(controller.snapshot("record-degree").proposal).toBeNull();
@@ -274,17 +321,13 @@ describe("SayingProposalController", () => {
     });
     const listener = vi.fn();
     const dispose = subscribeUntilDisposed(controller, listener);
-    const request = controller.dispatch({
-      type: "generate",
-      recordId: "record-yosemite",
-      promptInput,
-    });
+    const request = controller.dispatch(regenerate());
 
     dispose();
     expect(requests).toHaveLength(1);
     expect(requests[0]?.signal.aborted).toBe(true);
     const callsAtDispose = listener.mock.calls.length;
-    pending.resolve(result("Stale after unmount."));
+    pending.resolve(result(1));
     await request;
     expect(listener).toHaveBeenCalledTimes(callsAtDispose);
   });

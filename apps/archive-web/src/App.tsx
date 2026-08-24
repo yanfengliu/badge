@@ -3,9 +3,10 @@ import {
   ArchiveApplication,
   IndexedDbArchiveRepository,
   type ArchiveRecoveryMode,
+  type ArchiveRecoveryReasonCode,
   type ArchiveSourceAssetInput,
 } from "@badge/archive-application";
-import { toExactVisualPin, type ArchiveState, type Visibility } from "@badge/archive-domain";
+import { toExactVisualPin, type ArchiveState } from "@badge/archive-domain";
 import { starterBadges, starterCollection } from "@badge/catalogue-fixtures/archive";
 import { BadgeViewer } from "@badge/renderer-web";
 
@@ -19,6 +20,7 @@ import {
 import { ArchiveHeader, type ArchiveSection } from "./ArchiveHeader";
 import { ArchiveNotice, type ArchiveNoticeState } from "./ArchiveNotice";
 import {
+  initializeReviewedSayingDefaults,
   initializeStarterArchive,
   StarterArchiveCompatibilityError,
   validateStarterArchiveForOpen,
@@ -27,15 +29,22 @@ import { ArchiveClosedScreen } from "./ArchiveClosedScreen";
 import { BadgeRail } from "./BadgeRail";
 import { ReplayActivationButton } from "./ReplayActivationButton";
 import { RestoreDialog } from "./RestoreDialog";
-import { SayingActivationControl, SayingComposer } from "./SayingComposer";
+import { SayingComposer } from "./SayingComposer";
 import { SayingDisclosureBoundary } from "./SayingDisclosureBoundary";
 import { TimelineView } from "./TimelineView";
-import { createStarterArchiveState, STARTER_OWNER_ID, STARTER_RECORD_IDS } from "./archive-state";
+import {
+  createStarterArchiveState,
+  createStarterQuotationRequests,
+  STARTER_OWNER_ID,
+  STARTER_RECORD_IDS,
+} from "./archive-state";
 import { downloadBytes, formatDate } from "./browser-utilities";
 import { CheckIcon } from "./icons";
+import { MemoryActivationForm } from "./MemoryActivationForm";
 import { requiresArchiveRecovery } from "./restore-compatibility";
 import {
   archiveRecoveryNotice,
+  ArchiveSafetyHandoffRefreshError,
   ArchiveSafetyReclassificationError,
   inspectArchiveBackupFile,
   nextArchiveRestoreAction,
@@ -47,8 +56,10 @@ import {
   type PendingArchiveRestore,
 } from "./restore-flow";
 import { sourceUrlsForResolvedVisuals, useResolvedVisuals } from "./use-resolved-visuals";
-import { useSayingWorkflow } from "./use-saying-workflow";
-const repository = new IndexedDbArchiveRepository();
+import { stateAfterStaleArchiveMutation, useSayingWorkflow } from "./use-saying-workflow";
+const repository = new IndexedDbArchiveRepository({
+  trustedQuotationRequests: createStarterQuotationRequests(),
+});
 const archive = new ArchiveApplication(repository);
 const forceFallback = new URLSearchParams(window.location.search).has("fallback");
 const starterState = createStarterArchiveState();
@@ -69,6 +80,7 @@ export function App() {
   const starterAssets = useRef(new Map<string, ArchiveSourceAssetInput>());
   const recoveryMode = useRef<ArchiveRecoveryMode>("repair-corruption");
   const safetyHandoff = useRef<ArchiveSafetyHandoff>("full-backup");
+  const stateRescueReason = useRef<ArchiveRecoveryReasonCode | null>(null);
   const { visuals: resolvedVisuals, error: resolvedVisualError } = useResolvedVisuals(archive, state);
   const visibleNotice =
     notice ?? (resolvedVisualError ? { kind: "error" as const, text: resolvedVisualError } : null);
@@ -78,6 +90,7 @@ export function App() {
       try {
         recoveryMode.current = "repair-corruption";
         safetyHandoff.current = "full-backup";
+        stateRescueReason.current = null;
         const loaded = await initializeStarterArchive(archive, starterState, (assets) => {
           starterAssets.current = new Map(assets.map((asset) => [asset.hash, asset]));
         });
@@ -86,7 +99,8 @@ export function App() {
         if (!active) return;
         if (error instanceof StarterArchiveCompatibilityError) {
           recoveryMode.current = "replace-incompatible-readable-state";
-          safetyHandoff.current = "full-backup";
+          safetyHandoff.current = error.requiresStateRescue ? "state-rescue" : "full-backup";
+          stateRescueReason.current = error.stateRescueReason;
         }
         setInitializationFailed(true);
         setNotice({ kind: "error", text: error instanceof Error ? error.message : String(error) });
@@ -137,6 +151,11 @@ export function App() {
     setActivating(true);
     setNotice(null);
     try {
+      if (!saying.acceptedQuotation) {
+        throw new Error(
+          `The selected quote for ${selectedRecord.title} has no verified historical source; regenerate it before activation. No Archive data was changed.`,
+        );
+      }
       const visualPin = toExactVisualPin(selectedRecord.publishedVisual);
       const sourceAsset = starterAssets.current.get(visualPin.sourceAssetHash);
       if (!sourceAsset) {
@@ -147,11 +166,24 @@ export function App() {
       const result = await archive.activate(
         activationInputFor(selectedRecord, draft, visualPin),
         sourceAsset,
+        {
+          kind: "quotation",
+          saying: saying.acceptedQuotation.text,
+          quotation: saying.acceptedQuotation,
+        },
+        selectedRecord.quotationRevision,
       );
       setState(result.state);
       setCeremonyId(selectedRecord.recordId);
     } catch (error) {
-      setNotice({ kind: "error", text: error instanceof Error ? error.message : String(error) });
+      let message = error instanceof Error ? error.message : String(error);
+      try {
+        const refreshedState = await stateAfterStaleArchiveMutation(archive, error);
+        if (refreshedState) setState(refreshedState);
+      } catch (refreshError) {
+        message = `${message} Badge also could not reload the newer Archive state: ${refreshError instanceof Error ? refreshError.message : String(refreshError)}`;
+      }
+      setNotice({ kind: "error", text: message });
     } finally {
       setActivating(false);
     }
@@ -184,6 +216,7 @@ export function App() {
           starterState,
           requiresArchiveRecovery(initializationFailed, resolvedVisualError) ? recoveryMode.current : null,
           safetyHandoff.current,
+          stateRescueReason.current,
         ),
       );
     } catch (error) {
@@ -198,14 +231,21 @@ export function App() {
     try {
       const action = nextArchiveRestoreAction(pendingRestore);
       if (action === "recover") {
-        const recovered = await recoverPendingArchive(archive, pendingRestore, STARTER_OWNER_ID, [
-          ...starterAssets.current.values(),
-        ]);
+        await saying.observe({ type: "archive-restored" });
+        const recovered = await recoverPendingArchive(
+          archive,
+          pendingRestore,
+          STARTER_OWNER_ID,
+          [...starterAssets.current.values()],
+          starterState,
+        );
         await validateStarterArchiveForOpen(archive, starterState, recovered.state, true);
-        setState(recovered.state);
+        const initialized = await initializeReviewedSayingDefaults(archive, starterState, recovered.state);
+        setState(initialized);
         setInitializationFailed(false);
         recoveryMode.current = "repair-corruption";
         safetyHandoff.current = "full-backup";
+        stateRescueReason.current = null;
         setNotice({
           kind: "info",
           text: archiveRecoveryNotice(recovered, pendingRestore.recoveryMode),
@@ -217,19 +257,26 @@ export function App() {
         setNotice({ kind: "info", text: prepared.notice });
         return;
       } else {
-        const restored = await restorePendingArchive(archive, pendingRestore);
+        await saying.observe({ type: "archive-restored" });
+        const restored = await restorePendingArchive(archive, pendingRestore, starterState);
         setState(restored);
         setNotice({
           kind: "info",
           text: `Restored ${restored.records.length} records from ${pendingRestore.fileName} after you confirmed the safety backup was saved.`,
         });
       }
-      await saying.observe({ type: "archive-restored" });
       setPendingRestore(null);
     } catch (error) {
+      if (error instanceof ArchiveSafetyHandoffRefreshError) {
+        downloadBytes(error.preparation.bytes, error.preparation.fileName, error.preparation.mimeType);
+        setPendingRestore(error.preparation.restore);
+        setNotice({ kind: "info", text: error.preparation.notice });
+        return;
+      }
       if (error instanceof ArchiveSafetyReclassificationError) {
         recoveryMode.current = "repair-corruption";
         safetyHandoff.current = "full-backup";
+        stateRescueReason.current = null;
         setPendingRestore(error.restore);
         setNotice({ kind: "info", text: error.message });
         return;
@@ -237,12 +284,14 @@ export function App() {
       let visibleError = error;
       if (error instanceof StarterArchiveCompatibilityError) {
         recoveryMode.current = "replace-incompatible-readable-state";
-        safetyHandoff.current = "full-backup";
+        safetyHandoff.current = error.requiresStateRescue ? "state-rescue" : "full-backup";
+        stateRescueReason.current = error.stateRescueReason;
       } else {
         const message = await unrepairableIncompatibleRecoveryMessage(error, archive, starterState);
         if (message) {
           recoveryMode.current = "replace-incompatible-readable-state";
           safetyHandoff.current = "state-rescue";
+          stateRescueReason.current = "source-art-unavailable";
           visibleError = new Error(message, { cause: error });
         }
       }
@@ -358,25 +407,16 @@ export function App() {
               </p>
 
               <SayingComposer
-                title={selectedRecord.title}
                 lifecycle={selectedRecord.lifecycle}
                 acceptedSaying={selectedRecord.acceptedSaying}
+                acceptedQuotation={saying.acceptedQuotation}
                 proposal={saying.proposal}
-                editing={saying.editing}
-                manualValue={saying.manualValue}
-                manualError={saying.manualError}
-                acceptedSayingProtection={saying.acceptedSayingProtection}
                 saving={saying.saving}
                 generationBlocked={saying.disclosure.phase !== "idle"}
-                proposalSourceLabel={saying.proposalSourceLabel}
                 providerNote={saying.providerNote}
+                successAnnouncement={saying.successAnnouncement}
                 focusTargetRef={sayingDisclosureReturnFocus}
                 onGenerate={saying.request}
-                onUseProposal={saying.useProposal}
-                onStartWriting={saying.startWriting}
-                onCancelWriting={saying.cancelWriting}
-                onManualChange={saying.changeManual}
-                onSaveManual={saying.saveManual}
               />
 
               {selectedRecord.lifecycle === "earned" && selectedRecord.activation ? (
@@ -408,58 +448,16 @@ export function App() {
                   />
                 </div>
               ) : (
-                <form className="memory-form" onSubmit={activate}>
-                  <div className="date-grid">
-                    <label className="field">
-                      <span className="field-label">From</span>
-                      <input
-                        type="date"
-                        required
-                        value={draft.occurredStart}
-                        onChange={(event) => updateDraft({ occurredStart: event.target.value })}
-                      />
-                    </label>
-                    <label className="field">
-                      <span className="field-label">To · optional</span>
-                      <input
-                        type="date"
-                        min={draft.occurredStart || undefined}
-                        value={draft.occurredEnd}
-                        onChange={(event) => updateDraft({ occurredEnd: event.target.value })}
-                      />
-                    </label>
-                  </div>
-                  <label className="field">
-                    <span className="field-label">A note to future you · optional</span>
-                    <textarea
-                      value={draft.note}
-                      placeholder="What made this one stay with you?"
-                      onChange={(event) => updateDraft({ note: event.target.value })}
-                    />
-                  </label>
-                  <label className="field">
-                    <span className="field-label">Visibility</span>
-                    <select
-                      value={draft.visibility}
-                      onChange={(event) => updateDraft({ visibility: event.target.value as Visibility })}
-                    >
-                      <option value="inherit">Use archive default</option>
-                      <option value="private">Private</option>
-                      <option value="public">Public when sharing exists</option>
-                    </select>
-                    <p className="field-hint">
-                      This app stays local. The choice is remembered for future sharing.
-                    </p>
-                  </label>
-                  <SayingActivationControl
-                    buttonRef={ceremonyReturnFocus}
-                    acceptedSaying={selectedRecord.acceptedSaying}
-                    activating={activating}
-                    editing={saying.editing}
-                    saving={saying.saving}
-                    hasUnsavedDraft={saying.hasUnsavedDraft}
-                  />
-                </form>
+                <MemoryActivationForm
+                  draft={draft}
+                  acceptedSaying={selectedRecord.acceptedSaying}
+                  sourceChecked={saying.acceptedQuotation !== null}
+                  activating={activating}
+                  saving={saying.saving}
+                  buttonRef={ceremonyReturnFocus}
+                  onDraftChange={updateDraft}
+                  onSubmit={activate}
+                />
               )}
             </div>
           </section>

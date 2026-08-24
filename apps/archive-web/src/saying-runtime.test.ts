@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { SAYING_PROMPT_VERSION } from "@badge/saying-contract";
+import { starterBadges } from "@badge/catalogue-fixtures/archive";
 import {
   SAYING_DISCLOSURE,
   SAYING_DISCLOSURE_HEADER,
@@ -11,15 +12,17 @@ import {
 import { type SayingFetch } from "./live-saying-client";
 import { createSayingRuntime } from "./saying-runtime";
 
-const source = {
-  title: "Yosemite",
-  criterion: "Visit Yosemite National Park",
-  sayingSuggestions: ["A local line."],
-} as const;
+const source = starterBadges[0]!;
+const quotation = source.historicalQuotations[1]!;
 const intent = {
-  type: "generate" as const,
+  type: "regenerate" as const,
   recordId: "record-yosemite",
-  promptInput: { title: source.title, criterion: source.criterion },
+  expectedQuotationRevision: "11111111-1111-4111-8111-111111111111",
+  promptInput: {
+    title: source.title,
+    criterion: source.criterion,
+    allowedQuotations: [quotation],
+  },
 };
 
 function jsonResponse(body: unknown, status = 200): Response {
@@ -31,7 +34,7 @@ function jsonResponse(body: unknown, status = 200): Response {
 
 function successfulProposal() {
   return {
-    response: { kind: "original", saying: "Worth every switchback." },
+    response: { kind: "quotation", saying: quotation.text, quotation },
     provenance: {
       provider: "claude-code",
       model: SAYING_DISCLOSURE.model,
@@ -51,13 +54,14 @@ describe("saying runtime composition", () => {
     expect(fixture.kind).toBe("fixture");
     expect(fixture.disclosureGate).toBeNull();
     expect(fixture.controller.snapshot(intent.recordId).proposal).toEqual({
-      kind: "original",
-      saying: "A local line.",
+      kind: "quotation",
+      saying: quotation.text,
+      quotation,
     });
     expect(fetcher).not.toHaveBeenCalled();
   });
 
-  it("keeps the first Generate free of provider-model calls until approval, then posts exact reviewed bytes once", async () => {
+  it("keeps the first Regenerate free of provider-model calls until approval, then posts exact reviewed bytes once", async () => {
     const fetcher = vi.fn<SayingFetch>(async (input, init) => {
       if (input === SAYING_DISCLOSURE_PATH && init?.method === "GET") {
         return jsonResponse(SAYING_DISCLOSURE);
@@ -88,12 +92,13 @@ describe("saying runtime composition", () => {
       [SAYING_DISCLOSURE_HEADER]: SAYING_DISCLOSURE.fingerprint,
     });
 
-    await gate.request({ ...intent, type: "try-another" });
+    await gate.request({ ...intent, type: "regenerate" });
     expect(fetcher.mock.calls.filter(([, init]) => init?.method === "GET")).toHaveLength(2);
     expect(fetcher.mock.calls.filter(([, init]) => init?.method === "POST")).toHaveLength(2);
     expect(runtime.controller.snapshot(intent.recordId).proposal).toEqual({
-      kind: "original",
-      saying: "Worth every switchback.",
+      kind: "quotation",
+      saying: quotation.text,
+      quotation,
     });
   });
 
@@ -152,7 +157,7 @@ describe("saying runtime composition", () => {
     const first = gate.approve();
     await Promise.resolve();
     expect(postRequests).toHaveLength(1);
-    const second = gate.request({ ...intent, type: "try-another" });
+    const second = gate.request({ ...intent, type: "regenerate" });
     await Promise.resolve();
 
     expect(postRequests).toHaveLength(2);
@@ -161,7 +166,7 @@ describe("saying runtime composition", () => {
     await Promise.all([first, second]);
     expect(runtime.controller.snapshot(intent.recordId)).toMatchObject({
       status: "ready",
-      proposal: { kind: "original", saying: "Worth every switchback." },
+      proposal: { kind: "quotation", saying: quotation.text, quotation },
     });
   });
 

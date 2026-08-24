@@ -1,48 +1,72 @@
 import { describe, expect, it } from "vitest";
+import { starterBadges } from "@badge/catalogue-fixtures/archive";
+import type { SayingRequest } from "@badge/saying-contract";
 
 import { createFixtureSayingProvider } from "./saying-proposals";
 
+const yosemite = starterBadges[0]!;
 const promptInput = {
-  title: "Yosemite",
-  criterion: "Visit Yosemite National Park",
+  title: yosemite.title,
+  criterion: yosemite.criterion,
 } as const;
 
 describe("fixture saying provider", () => {
-  it("rotates curated local previews only when propose is explicitly called", async () => {
-    const provider = createFixtureSayingProvider(
-      [{ ...promptInput, sayingSuggestions: ["First local line.", "Second local line."] }],
-      () => "2026-08-23T12:00:00.000Z",
-    );
+  it("returns only source-checked quotations supplied by the current request", async () => {
+    const allowedQuotations = yosemite.historicalQuotations.slice(1);
+    const provider = createFixtureSayingProvider([promptInput], () => "2026-08-23T12:00:00.000Z");
     const signal = new AbortController().signal;
 
-    const first = await provider.propose({ requestId: 1, promptInput, signal });
-    const second = await provider.propose({ requestId: 2, promptInput, signal });
+    const first = await provider.propose({
+      requestId: 1,
+      promptInput: { ...promptInput, allowedQuotations },
+      signal,
+    });
+    const second = await provider.propose({
+      requestId: 2,
+      promptInput: { ...promptInput, allowedQuotations },
+      signal,
+    });
 
-    expect(first.response.saying).toBe("First local line.");
-    expect(second.response.saying).toBe("Second local line.");
+    expect(first.response).toEqual({
+      kind: "quotation",
+      saying: allowedQuotations[0]!.text,
+      quotation: allowedQuotations[0],
+    });
+    expect(second.response).toEqual({
+      kind: "quotation",
+      saying: allowedQuotations[1]!.text,
+      quotation: allowedQuotations[1],
+    });
     expect(first.provenance).toMatchObject({
       provider: "fixture-local-preview",
       model: "curated-fixture-v1",
     });
   });
 
-  it("hydrates a source-checked historical quotation after local originals", async () => {
-    const quotation = {
-      id: "john-muir-every-walk-nature",
-      text: "But in every walk with Nature one receives far more than he seeks.",
-      person: "John Muir",
-      sourceTitle: "Steep Trails",
-      sourceUrl: "https://www.nps.gov/jomu/learn/historyculture/john-muir-quotes.htm",
-    };
-    const provider = createFixtureSayingProvider([
-      { ...promptInput, sayingSuggestions: ["An original paragraph."] },
-    ]);
-    const signal = new AbortController().signal;
-    const request = { ...promptInput, allowedQuotations: [quotation] };
+  it("cannot return a fixture quotation omitted from the request shortlist", async () => {
+    const allowedQuotation = yosemite.historicalQuotations[2]!;
+    const provider = createFixtureSayingProvider([yosemite]);
 
-    await provider.propose({ requestId: 1, promptInput: request, signal });
-    await expect(provider.propose({ requestId: 2, promptInput: request, signal })).resolves.toMatchObject({
-      response: { kind: "quotation", saying: quotation.text, quotation },
+    await expect(
+      provider.propose({
+        requestId: 1,
+        promptInput: { ...promptInput, allowedQuotations: [allowedQuotation] },
+        signal: new AbortController().signal,
+      }),
+    ).resolves.toMatchObject({
+      response: { kind: "quotation", saying: allowedQuotation.text, quotation: allowedQuotation },
     });
+  });
+
+  it("refuses to synthesize prose when no quotation is supplied", async () => {
+    const provider = createFixtureSayingProvider([yosemite]);
+
+    await expect(
+      provider.propose({
+        requestId: 1,
+        promptInput: promptInput as unknown as SayingRequest,
+        signal: new AbortController().signal,
+      }),
+    ).rejects.toThrow(/allowedQuotations/u);
   });
 });

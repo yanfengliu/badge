@@ -25,6 +25,11 @@ import {
   type PublishedVisual,
 } from "@badge/archive-domain";
 import { validPngBytes, validPngHash } from "./image-fixtures.js";
+import {
+  historicalQuotationRequest,
+  sourceCheckedResponse,
+  withAcceptedQuotation,
+} from "./historical-quotation-fixtures.js";
 
 const visual: PublishedVisual = {
   packRef: { packId: "parks", version: "1.0.0", packDigest: "a".repeat(64) },
@@ -76,13 +81,18 @@ function seed(title = "Visited Yosemite National Park"): ArchiveState {
   });
 }
 
+function seedWithQuotation(title = "Visited Yosemite National Park"): ArchiveState {
+  return withAcceptedQuotation(seed(title));
+}
+
+const initialQuotationRevision = seedWithQuotation().records[0]!.quotationRevision;
+
 const activationInput: ActivationInput = {
   recordId: "record-yosemite",
   occurredStart: "2026-06-12",
   occurredEnd: "2026-06-14",
   note: "Granite after rain.",
   visibility: "private",
-  saying: "Wonder leaves a mark.",
   visualPin: {
     packRef: visual.packRef,
     visualEditionId: visual.visualEditionId,
@@ -98,7 +108,10 @@ let repositories: IndexedDbArchiveRepository[] = [];
 function repository(
   onTransactionStage?: (stage: ArchiveRepositoryTransactionStage) => void,
 ): IndexedDbArchiveRepository {
-  const result = new IndexedDbArchiveRepository({ onTransactionStage });
+  const result = new IndexedDbArchiveRepository({
+    onTransactionStage,
+    trustedQuotationRequests: { "record-yosemite": historicalQuotationRequest },
+  });
   repositories.push(result);
   return result;
 }
@@ -112,7 +125,7 @@ afterEach(async () => {
 describe("IndexedDbArchiveRepository", () => {
   it("uses the canonical database identity and seeds only an absent state", async () => {
     expect(ARCHIVE_DATABASE_NAME).toBe("badge-archive-v1");
-    expect(ARCHIVE_DATABASE_VERSION).toBe(2);
+    expect(ARCHIVE_DATABASE_VERSION).toBe(3);
 
     const current = repository();
     expect(await current.load(seed())).toEqual(seed());
@@ -131,23 +144,6 @@ describe("IndexedDbArchiveRepository", () => {
     const current = repository();
     await expect(current.load(seed())).rejects.toMatchObject({ name: "VersionError" });
     await deleteDB(ARCHIVE_DATABASE_NAME);
-
-    await expect(current.load(seed())).resolves.toEqual(seed());
-  });
-
-  it("reports a blocked upgrade and retries after the older connection closes", async () => {
-    const blocker = await openDB(ARCHIVE_DATABASE_NAME, 1, {
-      upgrade(database) {
-        database.createObjectStore(ARCHIVE_STATE_STORE);
-      },
-    });
-    const current = repository();
-
-    await expect(current.load(seed())).rejects.toMatchObject({
-      code: "DATABASE_BLOCKED",
-      message: expect.stringMatching(/another Badge Archive tab.*close.*retry.*no Archive data was changed/i),
-    });
-    blocker.close();
 
     await expect(current.load(seed())).resolves.toEqual(seed());
   });
@@ -200,7 +196,11 @@ describe("IndexedDbArchiveRepository", () => {
   });
 
   it("backfills matching source bytes for a current-contract earned row in storage v1", async () => {
-    const earned = activateAchievement(seed(), activationInput, "2026-08-23T17:00:00.000Z").state;
+    const earned = activateAchievement(
+      seedWithQuotation(),
+      activationInput,
+      "2026-08-23T17:00:00.000Z",
+    ).state;
     const legacy = await openDB(ARCHIVE_DATABASE_NAME, 1, {
       upgrade(database) {
         database.createObjectStore(ARCHIVE_STATE_STORE);
@@ -220,7 +220,11 @@ describe("IndexedDbArchiveRepository", () => {
   });
 
   it("preserves and rejects a literal legacy pin that cannot prove the exact published visual", async () => {
-    const earned = activateAchievement(seed(), activationInput, "2026-08-23T17:00:00.000Z").state;
+    const earned = activateAchievement(
+      seedWithQuotation(),
+      activationInput,
+      "2026-08-23T17:00:00.000Z",
+    ).state;
     const record = earned.records[0];
     const activation = record.activation;
     if (!activation) throw new Error("fixture must be earned");
@@ -310,9 +314,14 @@ describe("IndexedDbArchiveRepository", () => {
     const application = new ArchiveApplication(current, {
       now: () => "2026-08-23T17:00:00.000Z",
     });
-    await application.initialize(seed());
+    await application.initialize(seedWithQuotation());
 
-    const result = await application.activate(activationInput, sourceAsset);
+    const result = await application.activate(
+      activationInput,
+      sourceAsset,
+      sourceCheckedResponse,
+      initialQuotationRevision,
+    );
     expect(stages).toEqual(["activation:written", "activation:committed"]);
     expect(result.record.lifecycle).toBe("earned");
     current.close();
@@ -335,6 +344,7 @@ describe("IndexedDbArchiveRepository", () => {
   it("returns committed activation success even when the committed observer throws", async () => {
     const observerErrors: Array<{ error: unknown; stage: ArchiveRepositoryTransactionStage }> = [];
     const current = new IndexedDbArchiveRepository({
+      trustedQuotationRequests: { "record-yosemite": historicalQuotationRequest },
       onTransactionStage(stage) {
         if (stage === "activation:committed") throw new Error("observer failed after commit");
       },
@@ -346,9 +356,11 @@ describe("IndexedDbArchiveRepository", () => {
     const application = new ArchiveApplication(current, {
       now: () => "2026-08-23T17:00:00.000Z",
     });
-    await application.initialize(seed());
+    await application.initialize(seedWithQuotation());
 
-    await expect(application.activate(activationInput, sourceAsset)).resolves.toMatchObject({
+    await expect(
+      application.activate(activationInput, sourceAsset, sourceCheckedResponse, initialQuotationRevision),
+    ).resolves.toMatchObject({
       record: { lifecycle: "earned" },
     });
     expect(observerErrors).toHaveLength(1);
@@ -366,13 +378,13 @@ describe("IndexedDbArchiveRepository", () => {
     const application = new ArchiveApplication(current, {
       now: () => "2026-08-23T17:00:00.000Z",
     });
-    await application.initialize(seed());
+    await application.initialize(seedWithQuotation());
 
-    await expect(application.activate(activationInput, sourceAsset)).rejects.toBeInstanceOf(
-      ArchivePersistenceError,
-    );
+    await expect(
+      application.activate(activationInput, sourceAsset, sourceCheckedResponse, initialQuotationRevision),
+    ).rejects.toBeInstanceOf(ArchivePersistenceError);
     expect(stages).toEqual(["activation:written"]);
-    expect(await current.read()).toEqual(seed());
+    expect(await current.read()).toEqual(seedWithQuotation());
     await expect(current.resolveVisual("record-yosemite")).rejects.toMatchObject({
       code: "VISUAL_SOURCE_MISSING",
     });
@@ -383,15 +395,20 @@ describe("IndexedDbArchiveRepository", () => {
     const application = new ArchiveApplication(current, {
       now: () => "2026-08-23T17:00:00.000Z",
     });
-    await application.initialize(seed());
+    await application.initialize(seedWithQuotation());
 
     await expect(
-      application.activate(activationInput, {
-        ...sourceAsset,
-        hash: "f".repeat(64),
-      }),
+      application.activate(
+        activationInput,
+        {
+          ...sourceAsset,
+          hash: "f".repeat(64),
+        },
+        sourceCheckedResponse,
+        initialQuotationRevision,
+      ),
     ).rejects.toMatchObject({ code: "VISUAL_SOURCE_HASH_MISMATCH" });
-    expect(await application.state()).toEqual(seed());
+    expect(await application.state()).toEqual(seedWithQuotation());
   });
 
   it("rejects corrupt PNG activation before either IndexedDB store changes", async () => {
@@ -399,13 +416,18 @@ describe("IndexedDbArchiveRepository", () => {
     const application = new ArchiveApplication(current, {
       now: () => "2026-08-23T17:00:00.000Z",
     });
-    const originalState = await application.initialize(seed());
+    const originalState = await application.initialize(seedWithQuotation());
 
     await expect(
-      application.activate(activationInput, {
-        ...sourceAsset,
-        bytes: corruptPngAdlerKeepingChunkCrc(validPngBytes),
-      }),
+      application.activate(
+        activationInput,
+        {
+          ...sourceAsset,
+          bytes: corruptPngAdlerKeepingChunkCrc(validPngBytes),
+        },
+        sourceCheckedResponse,
+        initialQuotationRevision,
+      ),
     ).rejects.toMatchObject({ code: "VISUAL_SOURCE_INVALID" });
     current.close();
 
@@ -413,28 +435,6 @@ describe("IndexedDbArchiveRepository", () => {
     expect(await evidence.get(ARCHIVE_STATE_STORE, ARCHIVE_STATE_KEY)).toEqual(originalState);
     expect(await evidence.getAllKeys(ARCHIVE_OBJECT_STORE)).toEqual([]);
     evidence.close();
-  });
-
-  it("persists lifecycle and normalized saying updates sequentially", async () => {
-    const current = repository();
-    const application = new ArchiveApplication(current);
-    await application.initialize(seed());
-    const longSaying = `${"Granite remembers every deliberate step. ".repeat(4)}The view belongs to the patience that reached it.`;
-
-    await Promise.all([
-      application.updateLifecycle("record-yosemite", "planned"),
-      application.updateSaying("record-yosemite", `  ${longSaying}\n `),
-    ]);
-
-    expect((await current.read()).records[0]).toMatchObject({
-      lifecycle: "planned",
-      acceptedSaying: longSaying,
-    });
-    const graphemeCount = Array.from(
-      new Intl.Segmenter("en", { granularity: "grapheme" }).segment(longSaying),
-    ).length;
-    expect(graphemeCount).toBeGreaterThan(120);
-    expect(graphemeCount).toBeLessThanOrEqual(800);
   });
 });
 

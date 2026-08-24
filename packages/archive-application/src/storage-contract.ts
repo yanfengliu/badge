@@ -3,9 +3,10 @@ import type { DBSchema } from "idb";
 import { z } from "zod";
 
 import type { ArchiveSourceAsset } from "./source-assets.js";
+import type { ArchiveRecoveryReasonCode } from "./recovery-evidence.js";
 
 export const ARCHIVE_DATABASE_NAME = "badge-archive-v1";
-export const ARCHIVE_DATABASE_VERSION = 2;
+export const ARCHIVE_DATABASE_VERSION = 3;
 export const ARCHIVE_STATE_STORE = "archive-state";
 export const ARCHIVE_OBJECT_STORE = "archive-objects";
 export const ARCHIVE_STATE_KEY = "archive-state-v1";
@@ -69,4 +70,7 @@ export type ArchiveRecoveryMode = "repair-corruption" | "replace-incompatible-re
 export interface ArchiveRecoveryOptions {
   readonly mode?: ArchiveRecoveryMode;
   readonly expectedCurrentState?: ArchiveState;
+  readonly expectedStateRescueReason?: ArchiveRecoveryReasonCode;
+  readonly expectedStateRescueAffectedRecordIds?: readonly string[];
+  readonly sayingDefaults?: ArchiveState;
 }

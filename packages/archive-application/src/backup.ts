@@ -2,6 +2,7 @@ import { archiveStateSchema, sha256Schema, type ArchiveState } from "@badge/arch
 import { canonicalJsonBytes, sha256Hex } from "@badge/pack-contract";
 import { z } from "zod";
 
+import { MAX_ARCHIVE_BACKUP_STATE_BYTES, requiredEarnedSourceHashes } from "./backup-state.js";
 import { ArchivePersistenceError } from "./errors.js";
 import {
   MAX_ARCHIVE_SOURCE_ASSET_BYTES,
@@ -15,11 +16,18 @@ import {
   type ArchiveSourceAssetInput,
 } from "./source-assets.js";
 
+export { MAX_ARCHIVE_BACKUP_STATE_BYTES } from "./backup-state.js";
+export {
+  archiveRecoveryEvidenceSchema,
+  archiveRecoveryReasonCodeSchema,
+  createArchiveRecoveryEvidence,
+} from "./recovery-evidence.js";
+export type { ArchiveRecoveryEvidence, ArchiveRecoveryReasonCode } from "./recovery-evidence.js";
+
 const BACKUP_MAGIC = new TextEncoder().encode("BADGEARCHIVE\u0002");
 const MANIFEST_DIGEST_BYTES = 32;
 const BACKUP_HEADER_BYTES = BACKUP_MAGIC.byteLength + 4 + MANIFEST_DIGEST_BYTES;
 const MAX_BACKUP_MANIFEST_BYTES = 512 * 1024;
-export const MAX_ARCHIVE_BACKUP_STATE_BYTES = 8 * 1024 * 1024;
 export const MAX_ARCHIVE_BACKUP_TOTAL_DECODED_IMAGE_BYTES = 64 * 1024 * 1024;
 export const MAX_ARCHIVE_BACKUP_BYTES =
   BACKUP_HEADER_BYTES +
@@ -81,27 +89,6 @@ const archiveBackupV2ManifestSchema = z
     }
   });
 
-export const archiveRecoveryEvidenceSchema = z
-  .object({
-    format: z.literal("badgearchive-rescue-evidence"),
-    evidenceVersion: z.literal(1),
-    exportedAt: z.string().datetime({ offset: true }),
-    stateSha256: sha256Schema,
-    limitations: z
-      .object({
-        restorable: z.literal(false),
-        sourceAssetsIncluded: z.literal(false),
-        message: z.literal(
-          "State-only rescue evidence preserves readable records but cannot restore omitted or damaged source art.",
-        ),
-      })
-      .strict(),
-    omittedEarnedSourceHashes: z.array(sha256Schema),
-    state: archiveStateSchema,
-  })
-  .strict();
-export type ArchiveRecoveryEvidence = z.infer<typeof archiveRecoveryEvidenceSchema>;
-
 export const archiveBackupSchema = z.union([legacyArchiveBackupSchema, archiveBackupV2ManifestSchema]);
 export type ArchiveBackupManifest = z.infer<typeof archiveBackupV2ManifestSchema>;
 
@@ -121,16 +108,6 @@ function invalidBackup(message: string, cause?: unknown): ArchivePersistenceErro
     `${message} No Archive data was changed.`,
     cause === undefined ? undefined : { cause },
   );
-}
-
-function requiredEarnedSourceHashes(state: ArchiveState): string[] {
-  return [
-    ...new Set(
-      state.records.flatMap((record) =>
-        record.activation ? [record.activation.visualPin.sourceAssetHash] : [],
-      ),
-    ),
-  ].sort();
 }
 
 function assertBackupClosure(state: ArchiveState, sourceAssets: readonly { readonly hash: string }[]): void {
@@ -251,36 +228,6 @@ export async function createArchiveBackup(
   );
 }
 
-export async function createArchiveRecoveryEvidence(
-  untrustedState: ArchiveState,
-  exportedAt: string,
-): Promise<Uint8Array> {
-  const state = archiveStateSchema.parse(untrustedState);
-  const stateBytes = canonicalJsonBytes(state);
-  if (stateBytes.byteLength === 0 || stateBytes.byteLength > MAX_ARCHIVE_BACKUP_STATE_BYTES) {
-    throw new ArchivePersistenceError(
-      "BACKUP_TOO_LARGE",
-      `Archive rescue state is ${stateBytes.byteLength} bytes; reduce it below ${MAX_ARCHIVE_BACKUP_STATE_BYTES} bytes before exporting. No Archive data was changed.`,
-    );
-  }
-  return canonicalJsonBytes(
-    archiveRecoveryEvidenceSchema.parse({
-      format: "badgearchive-rescue-evidence",
-      evidenceVersion: 1,
-      exportedAt,
-      stateSha256: await sha256Hex(stateBytes),
-      limitations: {
-        restorable: false,
-        sourceAssetsIncluded: false,
-        message:
-          "State-only rescue evidence preserves readable records but cannot restore omitted or damaged source art.",
-      },
-      omittedEarnedSourceHashes: requiredEarnedSourceHashes(state),
-      state,
-    }),
-  );
-}
-
 function parseJson(bytes: Uint8Array, subject: string): unknown {
   let decoded: string;
   try {
@@ -301,6 +248,31 @@ function parseJson(bytes: Uint8Array, subject: string): unknown {
       { cause: error },
     );
   }
+}
+
+function canonicalArchiveStateBytes(rawState: unknown, state: ArchiveState): Uint8Array {
+  const rawRecords =
+    typeof rawState === "object" &&
+    rawState !== null &&
+    "records" in rawState &&
+    Array.isArray(rawState.records)
+      ? rawState.records
+      : [];
+  const isTokenlessLegacyState =
+    rawRecords.length === state.records.length &&
+    rawRecords.every(
+      (record) =>
+        typeof record === "object" &&
+        record !== null &&
+        !Object.prototype.hasOwnProperty.call(record, "quotationRevision"),
+    );
+  if (!isTokenlessLegacyState) return canonicalJsonBytes(state);
+  return canonicalJsonBytes({
+    ...state,
+    records: state.records.map((record) =>
+      Object.fromEntries(Object.entries(record).filter(([key]) => key !== "quotationRevision")),
+    ),
+  });
 }
 
 function parseLegacyBackup(bytes: Uint8Array): ArchiveBackup {
@@ -391,7 +363,8 @@ export async function parseArchiveBackup(bytes: Uint8Array | string): Promise<Ar
       `Archive backup state checksum does not match ${manifest.state.sha256}; choose an intact .badgearchive file. No Archive data was changed.`,
     );
   }
-  const stateResult = archiveStateSchema.safeParse(parseJson(stateBytes, "Archive backup state"));
+  const rawState = parseJson(stateBytes, "Archive backup state");
+  const stateResult = archiveStateSchema.safeParse(rawState);
   if (!stateResult.success) {
     const issue = stateResult.error.issues[0];
     throw invalidBackup(
@@ -399,7 +372,7 @@ export async function parseArchiveBackup(bytes: Uint8Array | string): Promise<Ar
       stateResult.error,
     );
   }
-  if (!sameBytes(stateBytes, canonicalJsonBytes(stateResult.data))) {
+  if (!sameBytes(stateBytes, canonicalArchiveStateBytes(rawState, stateResult.data))) {
     throw invalidBackup("Archive backup state is not canonical; export it again from Badge Archive.");
   }
 

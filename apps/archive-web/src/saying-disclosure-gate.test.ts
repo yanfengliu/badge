@@ -4,20 +4,24 @@ import {
   buildSayingDisclosureReview,
   type SayingDisclosureReview,
 } from "@badge/saying-live-contract";
+import { starterBadges } from "@badge/catalogue-fixtures/archive";
 
-import { SayingDisclosureGate, type SayingGenerationIntent } from "./saying-disclosure-gate";
+import { SayingDisclosureGate, type SayingRegenerationIntent } from "./saying-disclosure-gate";
 
-const yosemiteIntent: SayingGenerationIntent = {
-  type: "generate",
+const yosemiteQuotation = starterBadges[0]!.historicalQuotations[1]!;
+const yosemiteIntent: SayingRegenerationIntent = {
+  type: "regenerate",
   recordId: "record-yosemite",
+  expectedQuotationRevision: "11111111-1111-4111-8111-111111111111",
   promptInput: {
     title: "Yosemite",
     criterion: "Visit Yosemite National Park",
+    allowedQuotations: [yosemiteQuotation],
   },
 };
 
 function authorizedSpy() {
-  return vi.fn(async (intent: SayingGenerationIntent, review: SayingDisclosureReview) => {
+  return vi.fn(async (intent: SayingRegenerationIntent, review: SayingDisclosureReview) => {
     void intent;
     void review;
   });
@@ -66,7 +70,7 @@ describe("SayingDisclosureGate", () => {
     );
     expect(gate.acknowledgedFingerprint()).toBe(SAYING_DISCLOSURE.fingerprint);
 
-    const anotherIntent = { ...yosemiteIntent, type: "try-another" as const };
+    const anotherIntent = { ...yosemiteIntent, type: "regenerate" as const };
     await gate.request(anotherIntent);
     expect(loader).toHaveBeenCalledTimes(1);
     expect(authorized).toHaveBeenCalledTimes(2);
@@ -99,7 +103,7 @@ describe("SayingDisclosureGate", () => {
     const gate = new SayingDisclosureGate(loader, authorized);
 
     const first = gate.request(yosemiteIntent);
-    const second = gate.request({ ...yosemiteIntent, type: "try-another" });
+    const second = gate.request({ ...yosemiteIntent, type: "regenerate" });
     expect(signals[0]?.aborted).toBe(true);
     expect(signals[1]?.aborted).toBe(false);
 
@@ -113,21 +117,21 @@ describe("SayingDisclosureGate", () => {
   it.each([
     {
       label: "title",
-      promptInput: { title: "\n", criterion: yosemiteIntent.promptInput.criterion },
+      promptInput: { ...yosemiteIntent.promptInput, title: "\n" },
       message:
-        "This badge has invalid saying input in title. Provide a non-empty badge title within the supported length before generating a saying.",
+        "This badge has invalid quote input in title. Provide a non-empty badge title within the supported length before regenerating a quote.",
     },
     {
       label: "criterion",
-      promptInput: { title: yosemiteIntent.promptInput.title, criterion: "\n" },
+      promptInput: { ...yosemiteIntent.promptInput, criterion: "\n" },
       message:
-        "This badge has invalid saying input in criterion. Provide a non-empty achievement criterion within the supported length before generating a saying.",
+        "This badge has invalid quote input in criterion. Provide a non-empty achievement criterion within the supported length before regenerating a quote.",
     },
     {
       label: "direction",
       promptInput: { ...yosemiteIntent.promptInput, direction: {} },
       message:
-        "This badge has invalid saying input in direction. Correct or remove the optional direction before generating a saying.",
+        "This badge has invalid quote input in direction. Correct or remove the optional direction before regenerating a quote.",
     },
     {
       label: "allowedQuotations",
@@ -144,7 +148,7 @@ describe("SayingDisclosureGate", () => {
         ],
       },
       message:
-        "This badge has invalid saying input in allowedQuotations. Correct or remove the optional allowedQuotations list before generating a saying.",
+        "This badge has invalid quote input in allowedQuotations. Provide a non-empty source-checked allowedQuotations list before regenerating a quote.",
     },
   ])("names invalid $label input locally and authorizes nothing", async ({ promptInput, message }) => {
     const loader = disclosureLoader();
@@ -153,7 +157,7 @@ describe("SayingDisclosureGate", () => {
 
     await gate.request({
       ...yosemiteIntent,
-      promptInput: promptInput as SayingGenerationIntent["promptInput"],
+      promptInput: promptInput as SayingRegenerationIntent["promptInput"],
     });
 
     expect(loader).not.toHaveBeenCalled();
@@ -175,11 +179,11 @@ describe("SayingDisclosureGate", () => {
         criterion: "\n",
         direction: {},
         allowedQuotations: [],
-      } as SayingGenerationIntent["promptInput"],
+      } as SayingRegenerationIntent["promptInput"],
     });
 
     expect(gate.snapshot().error).toBe(
-      "This badge has invalid saying input in title, criterion, direction, and allowedQuotations. Provide a non-empty badge title within the supported length; provide a non-empty achievement criterion within the supported length; correct or remove the optional direction; and correct or remove the optional allowedQuotations list before generating a saying.",
+      "This badge has invalid quote input in title, criterion, direction, and allowedQuotations. Provide a non-empty badge title within the supported length; provide a non-empty achievement criterion within the supported length; correct or remove the optional direction; and provide a non-empty source-checked allowedQuotations list before regenerating a quote.",
     );
   });
 });

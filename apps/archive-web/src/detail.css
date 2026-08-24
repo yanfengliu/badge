@@ -80,10 +80,6 @@
   font-style: italic;
 }
 
-.saying-editor {
-  margin-top: 16px;
-}
-
 .saying-actions {
   display: flex;
   flex-wrap: wrap;
@@ -108,22 +104,6 @@
   opacity: 0.55;
 }
 
-.proposal {
-  margin-top: 16px;
-  padding: 15px 16px;
-  border-left: 2px solid var(--mineral);
-  background: #eff1ea;
-}
-
-.proposal > p {
-  margin: 0 0 12px;
-  font-family: var(--display);
-  font-size: 18px;
-  font-style: italic;
-  line-height: 1.45;
-  overflow-wrap: anywhere;
-}
-
 .quotation-proposal {
   margin: 0 0 14px;
 }
@@ -135,6 +115,12 @@
   font-style: italic;
   line-height: 1.45;
   overflow-wrap: anywhere;
+}
+
+.accepted-quotation blockquote {
+  max-width: 720px;
+  font-size: clamp(23px, 2.2vw, 31px);
+  line-height: 1.25;
 }
 
 .quotation-proposal figcaption {
@@ -151,21 +137,6 @@
 .quotation-proposal a {
   color: var(--rust-dark);
   font-weight: 650;
-}
-
-.proposal-label {
-  display: block;
-  margin-bottom: 7px;
-  color: var(--mineral);
-  font-size: 10px;
-  font-weight: 650;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-}
-
-.proposal-actions {
-  display: flex;
-  gap: 9px;
 }
 
 .saying-provider-note {

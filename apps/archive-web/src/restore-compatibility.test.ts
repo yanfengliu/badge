@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { MAX_ARCHIVE_BACKUP_BYTES } from "@badge/archive-application";
+import { activateAchievement } from "@badge/archive-domain";
 
 import { createStarterArchiveState } from "./archive-state.js";
 import {
@@ -104,6 +105,31 @@ describe("Archive restore catalogue compatibility", () => {
     expect(() =>
       assertCompatibleStarterCatalogue(expectedRecords, [earned, ...expectedRecords.slice(1)]),
     ).not.toThrow();
+  });
+
+  it("rejects an earned record whose sealed saying is missing without rewriting it", () => {
+    const expected = createStarterArchiveState();
+    const earned = activateAchievement(
+      expected,
+      {
+        recordId: expected.records[0]!.recordId,
+        occurredStart: "2026-08-20",
+        occurredEnd: "2026-08-20",
+        note: null,
+        visibility: "private",
+        visualPin: expected.records[0]!.publishedVisual,
+      },
+      "2026-08-23T17:00:00.000Z",
+    ).state;
+    const earnedNull = {
+      ...earned,
+      records: earned.records.map((record) => ({ ...record, acceptedSaying: null })),
+    };
+
+    expect(() => assertCompatibleStarterArchive(expected, earnedNull)).toThrow(
+      /earned records without their sealed quotation.*will not invent text after activation/i,
+    );
+    expect(earnedNull.records[0]!.acceptedSaying).toBeNull();
   });
 
   it("rejects an earned same-record rebind to an unrelated qualified definition or pack", () => {

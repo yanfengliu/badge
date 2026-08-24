@@ -79,76 +79,40 @@ describe("provider results bound to their saying request", () => {
     ).toThrow(/does not exactly match the supplied quotation/u);
   });
 
-  it("rejects quotation wrapping, attribution prefixes, and lightly altered supplied quotes in freeform output", () => {
+  it("rejects model-written prose at both the model and provider-result boundaries", () => {
     expect(() =>
       resolveSayingModelResponse(
         {
           kind: "original",
-          saying: `“${historicalQuotation.text}” — John Muir`,
+          saying: "Worth every switchback.",
           quotationId: null,
         },
         yosemiteRequest,
       ),
-    ).toThrow(/quotation-style text or attribution/u);
-
+    ).toThrow();
     expect(() =>
-      resolveSayingModelResponse(
-        {
-          kind: "original",
-          saying: `A familiar thought: ${historicalQuotation.text}`,
-          quotationId: null,
-        },
-        yosemiteRequest,
-      ),
-    ).toThrow(/too closely matches a supplied historical quotation/u);
-
-    for (const attributedSuggestion of [
-      "According to John Muir, granite keeps the long view.",
-      "As John Muir said, granite keeps the long view.",
-      "John Muir: Granite keeps the long view.",
-      "Worth every switchback. — John Muir",
-      "Worth every switchback. — John Muir.",
-      "Worth every switchback. — John Muir (Steep Trails)",
-      "Granite keeps the long view. According to John Muir, wonder waits around the bend.",
-      "One ridge became another. As John Muir said, the trail remembers.",
-      "The valley kept its distance. John Muir: Wonder waits below.",
-      "I kept walking. John Muir wrote that the granite remembers.",
-      "The valley, according to John Muir, keeps the long view.",
-      "I learned, as John Muir said, that wonder waits around the bend.",
-      "The words John Muir wrote still echo across the granite.",
-      "One sign read John Muir: Wonder waits below.",
-    ]) {
-      expect(() =>
-        resolveSayingModelResponse(
-          { kind: "original", saying: attributedSuggestion, quotationId: null },
-          yosemiteRequest,
-        ),
-      ).toThrow(/attributes text to a supplied historical person/u);
-    }
-
-    expect(() =>
-      resolveSayingModelResponse(
-        {
-          kind: "original",
-          saying:
-            "It is by far the greatest of all the special temples of Nature I was ever permitted to enter.",
-          quotationId: null,
-        },
-        yosemiteRequest,
-      ),
-    ).toThrow(/too closely matches a supplied historical quotation/u);
+      sayingProviderResultSchema.parse({
+        response: { kind: "original", saying: "Worth every switchback." },
+        provenance,
+      }),
+    ).toThrow();
   });
 });
 
 describe("provider result provenance", () => {
   it("keeps provider and model identity bounded while omitting credentials and raw output", () => {
     expect(sayingProviderProvenanceSchema.parse(provenance)).toEqual(provenance);
+    const response = {
+      kind: "quotation" as const,
+      saying: historicalQuotation.text,
+      quotation: historicalQuotation,
+    };
     expect(
       sayingProviderResultSchema.parse({
-        response: { kind: "original", saying: "Worth every switchback." },
+        response,
         provenance,
       }),
-    ).toEqual({ response: { kind: "original", saying: "Worth every switchback." }, provenance });
+    ).toEqual({ response, provenance });
 
     expect(() => sayingProviderProvenanceSchema.parse({ ...provenance, model: "Model With Spaces" })).toThrow(
       /lowercase stable identifier/u,

@@ -1,26 +1,20 @@
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   subscribeUntilDisposed,
   type ArchiveApplication,
   type SayingInteractionCommand,
   type SayingProposalSnapshot,
 } from "@badge/archive-application";
-import { validateSaying, type ArchiveRecord, type ArchiveState } from "@badge/archive-domain";
+import type { ArchiveRecord, ArchiveState } from "@badge/archive-domain";
 import { starterBadges } from "@badge/catalogue-fixtures/archive";
-import { formatSayingForArchive } from "@badge/saying-contract";
+import type { HistoricalQuotation } from "@badge/saying-contract";
 
-import {
-  manualSayingEditorStartValue,
-  protectAcceptedSaying,
-  type AcceptedSayingProtection,
-} from "./accepted-saying-attribution";
-import { sayingValidationMessage } from "./app-types";
+import { acceptedFixtureQuotation, alternativeFixtureQuotations } from "./fixture-quotations";
 import { isDisclosureRequiredClientMessage } from "./live-saying-client";
 import type { SayingDisclosureGateSnapshot } from "./saying-disclosure-gate";
-import { initialSayingEditorState, reduceSayingEditorState } from "./saying-editor-state";
 import { createSayingRuntime } from "./saying-runtime";
 
-type PassiveSayingCommand = Exclude<SayingInteractionCommand, { readonly type: "generate" | "try-another" }>;
+type PassiveSayingCommand = Exclude<SayingInteractionCommand, { readonly type: "regenerate" }>;
 
 interface UseSayingWorkflowOptions {
   readonly archive: ArchiveApplication;
@@ -32,29 +26,82 @@ interface UseSayingWorkflowOptions {
 
 export interface SayingWorkflow {
   readonly proposal: SayingProposalSnapshot;
-  readonly editing: boolean;
   readonly saving: boolean;
-  readonly hasUnsavedDraft: boolean;
-  readonly manualValue: string;
-  readonly manualError: string | null;
-  readonly acceptedSayingProtection: AcceptedSayingProtection;
+  readonly acceptedQuotation: HistoricalQuotation | null;
   readonly disclosure: SayingDisclosureGateSnapshot;
-  readonly proposalSourceLabel: string;
   readonly providerNote: string;
+  readonly successAnnouncement: string | null;
   readonly request: () => void;
   readonly approveDisclosure: () => void;
   readonly closeDisclosure: () => void;
   readonly retryDisclosure: () => void;
-  readonly useProposal: () => void;
-  readonly startWriting: () => void;
-  readonly cancelWriting: () => void;
-  readonly changeManual: (value: string) => void;
-  readonly saveManual: () => void;
   readonly observe: (command: PassiveSayingCommand) => Promise<void>;
 }
 
 function releaseArchiveFocusForDisclosure(): void {
   if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+}
+
+export async function persistReadyQuotation(
+  archive: Pick<ArchiveApplication, "updateQuotation">,
+  snapshot: SayingProposalSnapshot,
+): Promise<ArchiveState | null> {
+  if (snapshot.status !== "ready" || !snapshot.proposal) return null;
+  return archive.updateQuotation(snapshot.recordId, snapshot.proposal, snapshot.expectedQuotationRevision);
+}
+
+export function trackSayingWrite(activeWrites: Set<Promise<void>>, write: Promise<void>): void {
+  activeWrites.add(write);
+  void write.then(
+    () => activeWrites.delete(write),
+    () => activeWrites.delete(write),
+  );
+}
+
+export async function drainSayingWrites(activeWrites: ReadonlySet<Promise<void>>): Promise<void> {
+  await Promise.allSettled([...activeWrites]);
+}
+
+export function shouldSurfaceSayingWriteOutcome(
+  recordId: string,
+  selectedRecordId: string,
+  writeNavigationEpoch: number,
+  currentNavigationEpoch: number,
+): boolean {
+  return recordId === selectedRecordId && writeNavigationEpoch === currentNavigationEpoch;
+}
+
+export function clearSayingMessagesForNavigation(
+  current: Readonly<Record<string, string | null>>,
+  departingRecordId: string,
+  arrivingRecordId?: string,
+): Readonly<Record<string, string | null>> {
+  const next = { ...current };
+  delete next[departingRecordId];
+  if (arrivingRecordId) delete next[arrivingRecordId];
+  return next;
+}
+
+const staleArchiveMutationCodes = new Set(["ALREADY_EARNED", "INVALID_LIFECYCLE", "SAYING_CONFLICT"]);
+
+export async function stateAfterStaleArchiveMutation(
+  archive: Pick<ArchiveApplication, "state">,
+  error: unknown,
+): Promise<ArchiveState | null> {
+  if (
+    typeof error !== "object" ||
+    error === null ||
+    !("code" in error) ||
+    typeof error.code !== "string" ||
+    !staleArchiveMutationCodes.has(error.code)
+  ) {
+    return null;
+  }
+  return archive.state();
+}
+
+function errorText(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
 }
 
 export function useSayingWorkflow({
@@ -65,7 +112,16 @@ export function useSayingWorkflow({
   onError,
 }: UseSayingWorkflowOptions): SayingWorkflow {
   const [proposals, setProposals] = useState<Record<string, SayingProposalSnapshot>>({});
-  const [editor, dispatchEditor] = useReducer(reduceSayingEditorState, initialSayingEditorState);
+  const [savingRecords, setSavingRecords] = useState<Readonly<Record<string, boolean>>>({});
+  const [generationErrors, setGenerationErrors] = useState<Readonly<Record<string, string | null>>>({});
+  const [successAnnouncements, setSuccessAnnouncements] = useState<Readonly<Record<string, string | null>>>(
+    {},
+  );
+  const [acceptingRecords] = useState(() => new Set<string>());
+  const activeWrites = useRef(new Set<Promise<void>>());
+  const navigationEpoch = useRef(0);
+  const selectedRecordIdRef = useRef(selectedRecordId);
+  const callbacks = useRef({ onArchiveState, onError });
   const [runtime] = useState(() => createSayingRuntime(import.meta.env.MODE, starterBadges));
   const [disclosure, setDisclosure] = useState<SayingDisclosureGateSnapshot>(
     () => runtime.disclosureGate?.snapshot() ?? { phase: "idle", review: null, error: null },
@@ -73,41 +129,119 @@ export function useSayingWorkflow({
   const { controller, disclosureGate } = runtime;
 
   useEffect(() => {
+    selectedRecordIdRef.current = selectedRecordId;
+  }, [selectedRecordId]);
+
+  useEffect(() => {
+    callbacks.current = { onArchiveState, onError };
+  }, [onArchiveState, onError]);
+
+  useEffect(() => {
+    let active = true;
     const unsubscribeController = subscribeUntilDisposed(controller, (snapshot) => {
       setProposals((current) => ({ ...current, [snapshot.recordId]: snapshot }));
       if (isDisclosureRequiredClientMessage(snapshot.error)) releaseArchiveFocusForDisclosure();
       runtime.handleProposalSnapshot(snapshot);
+      if (snapshot.status !== "ready" || !snapshot.proposal || acceptingRecords.has(snapshot.recordId)) {
+        return;
+      }
+
+      acceptingRecords.add(snapshot.recordId);
+      const writeNavigationEpoch = navigationEpoch.current;
+      setSavingRecords((current) => ({ ...current, [snapshot.recordId]: true }));
+      setGenerationErrors((current) => ({ ...current, [snapshot.recordId]: null }));
+      const write = persistReadyQuotation(archive, snapshot)
+        .then((state) => {
+          if (active && state) {
+            callbacks.current.onArchiveState(state);
+            const quotation = snapshot.proposal?.quotation;
+            if (
+              quotation &&
+              shouldSurfaceSayingWriteOutcome(
+                snapshot.recordId,
+                selectedRecordIdRef.current,
+                writeNavigationEpoch,
+                navigationEpoch.current,
+              )
+            ) {
+              setSuccessAnnouncements((current) => ({
+                ...current,
+                [snapshot.recordId]: `Quote regenerated. “${quotation.text}” — ${quotation.person}.`,
+              }));
+            }
+          }
+          controller.dismiss(snapshot.recordId);
+        })
+        .catch(async (error: unknown) => {
+          let message = errorText(error);
+          let refreshedState: ArchiveState | null = null;
+          try {
+            refreshedState = await stateAfterStaleArchiveMutation(archive, error);
+          } catch (refreshError) {
+            message = `${message} Badge also could not reload the newer Archive state: ${errorText(refreshError)}`;
+          }
+          if (active) {
+            if (refreshedState) callbacks.current.onArchiveState(refreshedState);
+            if (
+              shouldSurfaceSayingWriteOutcome(
+                snapshot.recordId,
+                selectedRecordIdRef.current,
+                writeNavigationEpoch,
+                navigationEpoch.current,
+              )
+            ) {
+              setSuccessAnnouncements((current) => ({ ...current, [snapshot.recordId]: null }));
+              setGenerationErrors((current) => ({ ...current, [snapshot.recordId]: message }));
+              callbacks.current.onError(message);
+            }
+          }
+          controller.dismiss(snapshot.recordId);
+        })
+        .finally(() => {
+          acceptingRecords.delete(snapshot.recordId);
+          if (active) {
+            setSavingRecords((current) => ({ ...current, [snapshot.recordId]: false }));
+          }
+        });
+      trackSayingWrite(activeWrites.current, write);
     });
     const unsubscribeDisclosure = disclosureGate?.subscribe(setDisclosure);
     return () => {
+      active = false;
       unsubscribeController();
       unsubscribeDisclosure?.();
       runtime.dispose();
     };
-  }, [controller, disclosureGate, runtime]);
+  }, [acceptingRecords, archive, controller, disclosureGate, runtime]);
 
-  const proposal = proposals[selectedRecordId] ?? controller.snapshot(selectedRecordId);
-  const manualValue = editor.manualSayings[selectedRecordId] ?? selectedRecord?.acceptedSaying ?? "";
-  const manualError = editor.manualErrors[selectedRecordId] ?? null;
-  const editing = editor.editingRecords[selectedRecordId] ?? false;
-  const saving = editor.savingRecords[selectedRecordId] ?? false;
-  const hasUnsavedDraft = editor.dirtyRecords[selectedRecordId] ?? false;
-  const acceptedSayingProtection = protectAcceptedSaying(selectedRecord?.acceptedSaying);
+  const rawProposal = proposals[selectedRecordId] ?? controller.snapshot(selectedRecordId);
+  const localError = generationErrors[selectedRecordId] ?? null;
+  const proposal = localError ? { ...rawProposal, status: "error" as const, error: localError } : rawProposal;
+  const saving = savingRecords[selectedRecordId] ?? false;
+  const successAnnouncement = successAnnouncements[selectedRecordId] ?? null;
+  const fixture = starterBadges.find((badge) => selectedRecord?.recordId === `starter:${badge.definitionId}`);
+  const acceptedQuotation = acceptedFixtureQuotation(fixture, selectedRecord?.acceptedSaying);
 
   function request() {
-    if (!selectedRecord) return;
-    const fixture = starterBadges.find(
-      (badge) => selectedRecord.recordId === `starter:${badge.definitionId}`,
-    );
+    if (!selectedRecord || !fixture) return;
+    const allowedQuotations = alternativeFixtureQuotations(fixture, selectedRecord.acceptedSaying);
+    if (allowedQuotations.length === 0) {
+      setGenerationErrors((current) => ({
+        ...current,
+        [selectedRecord.recordId]: `No alternative source-checked quotations are available for ${selectedRecord.title}.`,
+      }));
+      return;
+    }
+    setGenerationErrors((current) => ({ ...current, [selectedRecord.recordId]: null }));
+    setSuccessAnnouncements((current) => ({ ...current, [selectedRecord.recordId]: null }));
     const intent = {
-      type: proposal.proposal ? "try-another" : "generate",
+      type: "regenerate",
       recordId: selectedRecord.recordId,
+      expectedQuotationRevision: selectedRecord.quotationRevision,
       promptInput: {
         title: selectedRecord.title,
         criterion: selectedRecord.criterion,
-        ...(fixture?.historicalQuotations.length
-          ? { allowedQuotations: fixture.historicalQuotations.map((quotation) => ({ ...quotation })) }
-          : {}),
+        allowedQuotations,
       },
     } as const;
     if (disclosureGate) {
@@ -128,101 +262,47 @@ export function useSayingWorkflow({
     void disclosureGate?.retry();
   }
 
-  function startWriting() {
-    dispatchEditor({
-      type: "begin",
-      recordId: selectedRecordId,
-      fallbackValue: manualSayingEditorStartValue(selectedRecord?.acceptedSaying, acceptedSayingProtection),
-    });
-  }
-
-  function cancelWriting() {
-    dispatchEditor({ type: "cancel", recordId: selectedRecordId });
-  }
-
-  function changeManual(value: string) {
-    const validation = validateSaying(value);
-    dispatchEditor({
-      type: "change",
-      recordId: selectedRecordId,
-      value,
-      error:
-        !validation.ok && validation.code !== "EMPTY"
-          ? sayingValidationMessage(selectedRecord?.title ?? "this badge", value)
-          : null,
-      dirty: validation.value !== (selectedRecord?.acceptedSaying ?? ""),
-    });
-  }
-
-  async function persist(value: string, dismissProposal: boolean) {
-    if (!selectedRecord) return;
-    const recordId = selectedRecord.recordId;
-    const validation = validateSaying(value);
-    if (!validation.ok) {
-      dispatchEditor({
-        type: "validation-error",
-        recordId,
-        error: sayingValidationMessage(selectedRecord.title, value)!,
-      });
-      return;
-    }
-
-    dispatchEditor({ type: "save-started", recordId });
-    try {
-      const state = await archive.updateSaying(recordId, validation.value);
-      onArchiveState(state);
-      dispatchEditor({ type: "save-succeeded", recordId });
-      if (dismissProposal) controller.dismiss(recordId);
-    } catch (error) {
-      onError(error instanceof Error ? error.message : String(error));
-    } finally {
-      dispatchEditor({ type: "save-finished", recordId });
-    }
-  }
-
-  function useProposal() {
-    if (proposal.proposal) void persist(formatSayingForArchive(proposal.proposal), true);
-  }
-
-  function saveManual() {
-    void persist(manualValue, false);
-  }
-
-  function observe(command: PassiveSayingCommand): Promise<void> {
+  async function observe(command: PassiveSayingCommand): Promise<void> {
     if (command.type === "badge-selected") {
-      controller.cancel(selectedRecordId);
+      navigationEpoch.current += 1;
+      controller.dismiss(selectedRecordId);
+      if (command.recordId && command.recordId !== selectedRecordId) {
+        controller.dismiss(command.recordId);
+      }
       disclosureGate?.close();
-      dispatchEditor({ type: "hide", recordId: selectedRecordId });
-      if (command.recordId) dispatchEditor({ type: "resume-dirty", recordId: command.recordId });
+      setGenerationErrors((current) =>
+        clearSayingMessagesForNavigation(current, selectedRecordId, command.recordId),
+      );
+      setSuccessAnnouncements((current) =>
+        clearSayingMessagesForNavigation(current, selectedRecordId, command.recordId),
+      );
     }
     if (command.type === "archive-restored") {
+      navigationEpoch.current += 1;
       disclosureGate?.close();
-      dispatchEditor({ type: "archive-restored" });
+      setGenerationErrors({});
+      setSuccessAnnouncements({});
     }
     if (command.type === "badge-activated") disclosureGate?.close();
-    return controller.dispatch(command);
+    await controller.dispatch(command);
+    if (command.type === "archive-restored") {
+      await drainSayingWrites(activeWrites.current);
+      setGenerationErrors({});
+      setSuccessAnnouncements({});
+    }
   }
 
   return {
     proposal,
-    editing,
     saving,
-    hasUnsavedDraft,
-    manualValue,
-    manualError,
-    acceptedSayingProtection,
+    acceptedQuotation,
     disclosure,
-    proposalSourceLabel: runtime.proposalSourceLabel,
     providerNote: runtime.providerNote,
+    successAnnouncement,
     request,
     approveDisclosure,
     closeDisclosure,
     retryDisclosure,
-    useProposal,
-    startWriting,
-    cancelWriting,
-    changeManual,
-    saveManual,
     observe,
   };
 }

@@ -6,9 +6,10 @@ import {
   type SayingDisclosureReview,
 } from "@badge/saying-live-contract";
 
-export interface SayingGenerationIntent {
-  readonly type: "generate" | "try-another";
+export interface SayingRegenerationIntent {
+  readonly type: "regenerate";
   readonly recordId: string;
+  readonly expectedQuotationRevision: string;
   readonly promptInput: SayingRequest;
 }
 
@@ -21,8 +22,8 @@ export interface SayingDisclosureGateSnapshot {
 }
 
 type DisclosureLoader = (signal: AbortSignal) => Promise<SayingDisclosure>;
-type AuthorizedGeneration = (
-  intent: SayingGenerationIntent,
+type AuthorizedRegeneration = (
+  intent: SayingRegenerationIntent,
   review: SayingDisclosureReview,
 ) => Promise<void> | void;
 type GateListener = (snapshot: SayingDisclosureGateSnapshot) => void;
@@ -40,7 +41,7 @@ const sayingRequestFieldCorrections: Readonly<Record<SayingRequestField, string>
   title: "provide a non-empty badge title within the supported length",
   criterion: "provide a non-empty achievement criterion within the supported length",
   direction: "correct or remove the optional direction",
-  allowedQuotations: "correct or remove the optional allowedQuotations list",
+  allowedQuotations: "provide a non-empty source-checked allowedQuotations list",
 };
 
 const idleSnapshot: SayingDisclosureGateSnapshot = {
@@ -52,7 +53,7 @@ const idleSnapshot: SayingDisclosureGateSnapshot = {
 function publicError(error: unknown): string {
   return error instanceof Error
     ? error.message
-    : "Saying disclosure could not be loaded; retry after restarting the local Badge site.";
+    : "Quote disclosure could not be loaded; retry after restarting the local Badge site.";
 }
 
 function joinList(values: readonly string[], separator: string): string {
@@ -65,28 +66,28 @@ function invalidRequestMessage(issues: readonly RequestValidationIssue[]): strin
   const issueRoots = new Set(issues.map((issue) => issue.path[0]));
   const fields = sayingRequestFieldOrder.filter((field) => issueRoots.has(field));
   if (fields.length === 0) {
-    return "This badge saying request is invalid. Use only a title, criterion, optional direction, and optional allowedQuotations list before generating a saying.";
+    return "This badge quote request is invalid. Use only a title, criterion, required allowedQuotations list, and optional direction before regenerating a quote.";
   }
   const fieldList = joinList(fields, ", ");
   const corrections = joinList(
     fields.map((field) => sayingRequestFieldCorrections[field]),
     "; ",
   );
-  return `This badge has invalid saying input in ${fieldList}. ${corrections[0]!.toUpperCase()}${corrections.slice(1)} before generating a saying.`;
+  return `This badge has invalid quote input in ${fieldList}. ${corrections[0]!.toUpperCase()}${corrections.slice(1)} before regenerating a quote.`;
 }
 
 export class SayingDisclosureGate {
   private currentSnapshot = idleSnapshot;
   private readonly listeners = new Set<GateListener>();
-  private readonly intents = new Map<string, SayingGenerationIntent>();
-  private pendingIntent: SayingGenerationIntent | null = null;
+  private readonly intents = new Map<string, SayingRegenerationIntent>();
+  private pendingIntent: SayingRegenerationIntent | null = null;
   private activeLoad: { readonly id: number; readonly abortController: AbortController } | null = null;
   private nextLoadId = 1;
   private acknowledged: string | null = null;
 
   constructor(
     private readonly loadDisclosure: DisclosureLoader,
-    private readonly onAuthorized: AuthorizedGeneration,
+    private readonly onAuthorized: AuthorizedRegeneration,
   ) {}
 
   snapshot(): SayingDisclosureGateSnapshot {
@@ -102,7 +103,7 @@ export class SayingDisclosureGate {
     return () => this.listeners.delete(listener);
   }
 
-  async request(intent: SayingGenerationIntent): Promise<void> {
+  async request(intent: SayingRegenerationIntent): Promise<void> {
     const parsedInput = sayingRequestSchema.safeParse(intent.promptInput);
     if (!parsedInput.success) {
       this.publish({
@@ -112,7 +113,7 @@ export class SayingDisclosureGate {
       });
       return;
     }
-    const validatedIntent: SayingGenerationIntent = {
+    const validatedIntent: SayingRegenerationIntent = {
       ...intent,
       promptInput: parsedInput.data,
     };
@@ -124,7 +125,7 @@ export class SayingDisclosureGate {
         phase: "error",
         review: null,
         error:
-          "This badge saying request is too large after validation. Shorten its title, criterion, direction, or allowedQuotations list before generating a saying.",
+          "This badge quote request is too large after validation. Shorten its title, criterion, direction, or allowedQuotations list before regenerating a quote.",
       });
       return;
     }
@@ -171,7 +172,7 @@ export class SayingDisclosureGate {
     this.pendingIntent = null;
   }
 
-  private async openReview(intent: SayingGenerationIntent): Promise<void> {
+  private async openReview(intent: SayingRegenerationIntent): Promise<void> {
     this.abortLoad();
     this.pendingIntent = intent;
     const id = this.nextLoadId++;
@@ -187,7 +188,7 @@ export class SayingDisclosureGate {
         JSON.stringify(disclosure) !== JSON.stringify(review.disclosure)
       ) {
         throw new Error(
-          "Saying disclosure changed while it was being reviewed; reload Badge before generating.",
+          "Quote disclosure changed while it was being reviewed; reload Badge before regenerating.",
         );
       }
       this.publish({

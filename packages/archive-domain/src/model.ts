@@ -160,6 +160,10 @@ function visualPinsEqual(left: ExactVisualPin, right: ExactVisualPin): boolean {
   );
 }
 
+export const INITIAL_QUOTATION_REVISION = "00000000-0000-4000-8000-000000000000";
+
+export const quotationRevisionSchema = z.uuid();
+
 export const archiveRecordSchema = z
   .object({
     recordId: identifierSchema,
@@ -171,6 +175,7 @@ export const archiveRecordSchema = z
     lifecycle: archiveLifecycleSchema,
     publishedVisual: publishedVisualSchema,
     acceptedSaying: acceptedSayingSchema.nullable(),
+    quotationRevision: quotationRevisionSchema.default(INITIAL_QUOTATION_REVISION),
     note: z.string().max(10_000).nullable(),
     visibility: visibilitySchema,
     activation: activationRecordSchema.nullable(),
@@ -231,7 +236,7 @@ export type ArchiveState = z.infer<typeof archiveStateSchema>;
 export interface SeededArchiveStateInput {
   schemaVersion?: 1;
   ownerId: string;
-  records: readonly ArchiveRecord[];
+  records: readonly z.input<typeof archiveRecordSchema>[];
 }
 
 export function createSeededArchiveState(input: SeededArchiveStateInput): ArchiveState {

@@ -20,6 +20,14 @@ interface Reply {
 }
 const opened: Array<{ runtime: SayingServerRuntime; server: Server }> = [];
 
+const historicalQuotation = {
+  id: "muir-yosemite",
+  text: "Nature gives more than one seeks.",
+  person: "John Muir",
+  sourceTitle: "Steep Trails",
+  sourceUrl: "https://www.nps.gov/jomu/learn/historyculture/john-muir-quotes.htm",
+};
+
 async function host(generator: SayingGenerator) {
   const runtime = new SayingServerRuntime(generator);
   const server = createServer((incoming, response) => {
@@ -82,11 +90,15 @@ function call(
 function successGenerator() {
   return {
     generate: vi.fn<SayingGenerator["generate"]>(async () => ({
-      response: { kind: "original", saying: "Granite keeps the long view." },
+      response: {
+        kind: "quotation",
+        saying: historicalQuotation.text,
+        quotation: historicalQuotation,
+      },
       provenance: {
         provider: "claude-code",
         model: "claude-sonnet-4-6",
-        promptVersion: "v2" as const,
+        promptVersion: "v3" as const,
         generatedAt: "2026-08-23T12:00:00.000Z",
       },
     })),
@@ -97,7 +109,21 @@ const generationHeaders = {
   "Content-Type": "application/json",
   [SAYING_DISCLOSURE_HEADER]: SAYING_DISCLOSURE_FINGERPRINT,
 };
-const generationBody = JSON.stringify({ title: "Yosemite", criterion: "Visit Yosemite." });
+const generationRequest = {
+  title: "Yosemite",
+  criterion: "Visit Yosemite.",
+  allowedQuotations: [historicalQuotation],
+};
+const generationBody = JSON.stringify(generationRequest);
+const requiredQuotationCorrection = "provide at least one valid source-checked allowedQuotations entry";
+
+function callGeneration(
+  port: number,
+  body = generationBody,
+  headers: Record<string, string> = generationHeaders,
+): Promise<Reply> {
+  return call(port, { method: "POST", path: SAYING_GENERATION_PATH, headers, body });
+}
 
 afterEach(async () => {
   await Promise.all(
@@ -124,34 +150,35 @@ describe("same-listener saying routes", () => {
   it("generates once from a closed, normalized request after fingerprint consent", async () => {
     const generator = successGenerator();
     const { port } = await host(generator);
-    const reply = await call(port, {
-      method: "POST",
-      path: SAYING_GENERATION_PATH,
-      headers: generationHeaders,
-      body: generationBody,
-    });
+    const reply = await callGeneration(port);
     expect(reply.status).toBe(200);
-    expect(JSON.parse(reply.body).response.saying).toBe("Granite keeps the long view.");
+    expect(JSON.parse(reply.body).response.saying).toBe(historicalQuotation.text);
     expect(generator.generate).toHaveBeenCalledOnce();
-    expect(generator.generate.mock.calls[0]![0]).toEqual({
-      title: "Yosemite",
-      criterion: "Visit Yosemite.",
-    });
+    expect(generator.generate.mock.calls[0]![0]).toEqual(generationRequest);
   });
 
   it.each([
-    ["pretty-printed bytes", JSON.stringify({ title: "Yosemite", criterion: "Visit Yosemite." }, null, 2)],
-    ["reordered keys", JSON.stringify({ criterion: "Visit Yosemite.", title: "Yosemite" })],
-    ["normalizable field whitespace", JSON.stringify({ title: " Yosemite ", criterion: "Visit  Yosemite." })],
+    ["pretty-printed bytes", JSON.stringify(generationRequest, null, 2)],
+    [
+      "reordered keys",
+      JSON.stringify({
+        allowedQuotations: [historicalQuotation],
+        criterion: "Visit Yosemite.",
+        title: "Yosemite",
+      }),
+    ],
+    [
+      "normalizable field whitespace",
+      JSON.stringify({
+        title: " Yosemite ",
+        criterion: "Visit  Yosemite.",
+        allowedQuotations: [historicalQuotation],
+      }),
+    ],
   ])("rejects %s that differ from the reviewed canonical bytes", async (_label, body) => {
     const generator = successGenerator();
     const { port } = await host(generator);
-    const reply = await call(port, {
-      method: "POST",
-      path: SAYING_GENERATION_PATH,
-      headers: generationHeaders,
-      body,
-    });
+    const reply = await callGeneration(port, body);
     expect(reply.status).toBe(400);
     expect(JSON.parse(reply.body).error).toMatchObject({ code: "BAD_REQUEST" });
     expect(generator.generate).not.toHaveBeenCalled();
@@ -168,11 +195,9 @@ describe("same-listener saying routes", () => {
   ])("rejects %s before provider spawn", async (_label, changed, status, code) => {
     const generator = successGenerator();
     const { port } = await host(generator);
-    const reply = await call(port, {
-      method: "POST",
-      path: SAYING_GENERATION_PATH,
-      headers: { ...generationHeaders, ...(changed as Record<string, string>) },
-      body: generationBody,
+    const reply = await callGeneration(port, generationBody, {
+      ...generationHeaders,
+      ...(changed as Record<string, string>),
     });
     expect(reply.status).toBe(status);
     expect(JSON.parse(reply.body).error.code).toBe(code);
@@ -197,71 +222,61 @@ describe("same-listener saying routes", () => {
       method: "POST",
       path: SAYING_GENERATION_PATH,
       headers: generationHeaders,
-      body: JSON.stringify({ title: "Yosemite", criterion: "Visit.", note: "private" }),
+      body: JSON.stringify({ ...generationRequest, note: "private" }),
     });
     expect(extra.status).toBe(400);
     expect(generator.generate).not.toHaveBeenCalled();
   });
 
   it.each([
-    {
-      label: "title",
-      body: JSON.stringify({ title: "\n", criterion: "Visit Yosemite." }),
-      message:
-        "The saying request has invalid input in title. Provide a non-empty badge title within the supported length, then review and send the updated canonical JSON.",
-    },
-    {
-      label: "criterion",
-      body: JSON.stringify({ title: "Yosemite", criterion: "\n" }),
-      message:
-        "The saying request has invalid input in criterion. Provide a non-empty achievement criterion within the supported length, then review and send the updated canonical JSON.",
-    },
-    {
-      label: "direction",
-      body: JSON.stringify({ title: "Yosemite", criterion: "Visit Yosemite.", direction: {} }),
-      message:
-        "The saying request has invalid input in direction. Correct or remove the optional direction, then review and send the updated canonical JSON.",
-    },
-    {
-      label: "empty allowedQuotations",
-      body: JSON.stringify({
-        title: "Yosemite",
-        criterion: "Visit Yosemite.",
-        allowedQuotations: [],
+    [
+      "title",
+      "title",
+      JSON.stringify({ ...generationRequest, title: "\n" }),
+      "provide a non-empty badge title within the supported length",
+    ],
+    [
+      "criterion",
+      "criterion",
+      JSON.stringify({ ...generationRequest, criterion: "\n" }),
+      "provide a non-empty achievement criterion within the supported length",
+    ],
+    [
+      "direction",
+      "direction",
+      JSON.stringify({ ...generationRequest, direction: {} }),
+      "correct or remove the optional direction",
+    ],
+    [
+      "missing allowedQuotations",
+      "allowedQuotations",
+      JSON.stringify({ title: "Yosemite", criterion: "Visit Yosemite." }),
+      requiredQuotationCorrection,
+    ],
+    [
+      "empty allowedQuotations",
+      "allowedQuotations",
+      JSON.stringify({ ...generationRequest, allowedQuotations: [] }),
+      requiredQuotationCorrection,
+    ],
+    [
+      "allowedQuotations source",
+      "allowedQuotations",
+      JSON.stringify({
+        ...generationRequest,
+        allowedQuotations: [{ ...historicalQuotation, sourceUrl: "http://example.com/quotation" }],
       }),
-      message:
-        "The saying request has invalid input in allowedQuotations. Correct or remove the optional allowedQuotations list, then review and send the updated canonical JSON.",
-    },
-    {
-      label: "allowedQuotations source",
-      body: JSON.stringify({
-        title: "Yosemite",
-        criterion: "Visit Yosemite.",
-        allowedQuotations: [
-          {
-            id: "muir-yosemite",
-            text: "The mountains are calling.",
-            person: "John Muir",
-            sourceTitle: "Letter",
-            sourceUrl: "http://example.com/quotation",
-          },
-        ],
-      }),
-      message:
-        "The saying request has invalid input in allowedQuotations. Correct or remove the optional allowedQuotations list, then review and send the updated canonical JSON.",
-    },
-  ])("names malformed $label input before provider spawn", async ({ body, message }) => {
+      requiredQuotationCorrection,
+    ],
+  ])("names malformed %s input before provider spawn", async (_label, field, body, correction) => {
     const generator = successGenerator();
     const { port } = await host(generator);
 
-    const reply = await call(port, {
-      method: "POST",
-      path: SAYING_GENERATION_PATH,
-      headers: generationHeaders,
-      body,
-    });
+    const reply = await callGeneration(port, body);
 
     expect(reply.status).toBe(400);
+    const sentence = `${correction[0]!.toUpperCase()}${correction.slice(1)}`;
+    const message = `The quote-selection request has invalid input in ${field}. ${sentence}, then review and send the updated canonical JSON.`;
     expect(JSON.parse(reply.body).error).toEqual({ code: "BAD_REQUEST", message });
     expect(generator.generate).not.toHaveBeenCalled();
   });
@@ -286,29 +301,23 @@ describe("same-listener saying routes", () => {
     generator.generate.mockImplementationOnce(async () => {
       await gate;
       return {
-        response: { kind: "original", saying: "Done." },
+        response: {
+          kind: "quotation",
+          saying: historicalQuotation.text,
+          quotation: historicalQuotation,
+        },
         provenance: {
           provider: "claude-code",
           model: "claude-sonnet-4-6",
-          promptVersion: "v2",
+          promptVersion: "v3",
           generatedAt: "2026-08-23T12:00:00.000Z",
         },
       };
     });
     const { port } = await host(generator);
-    const first = call(port, {
-      method: "POST",
-      path: SAYING_GENERATION_PATH,
-      headers: generationHeaders,
-      body: generationBody,
-    });
+    const first = callGeneration(port);
     while (generator.generate.mock.calls.length === 0) await new Promise((resolve) => setImmediate(resolve));
-    const second = await call(port, {
-      method: "POST",
-      path: SAYING_GENERATION_PATH,
-      headers: generationHeaders,
-      body: generationBody,
-    });
+    const second = await callGeneration(port);
     expect(second.status).toBe(429);
     expect(generator.generate).toHaveBeenCalledOnce();
     release();
@@ -327,12 +336,7 @@ describe("same-listener saying routes", () => {
       }),
     };
     const { port, runtime } = await host(generator);
-    const pending = call(port, {
-      method: "POST",
-      path: SAYING_GENERATION_PATH,
-      headers: generationHeaders,
-      body: generationBody,
-    });
+    const pending = callGeneration(port);
     while (!observedSignal) await new Promise((resolve) => setImmediate(resolve));
     await runtime.shutdown();
     expect(observedSignal.aborted).toBe(true);
@@ -341,17 +345,17 @@ describe("same-listener saying routes", () => {
 
   it("substitutes a bounded sanitized error for oversized provider output", async () => {
     const generator = successGenerator();
+    const oversizedText = "x".repeat(20_000);
     generator.generate.mockResolvedValueOnce({
-      response: { kind: "original", saying: "x".repeat(20_000) },
+      response: {
+        kind: "quotation",
+        saying: oversizedText,
+        quotation: { ...historicalQuotation, text: oversizedText },
+      },
       provenance: {},
     } as never);
     const { port } = await host(generator);
-    const reply = await call(port, {
-      method: "POST",
-      path: SAYING_GENERATION_PATH,
-      headers: generationHeaders,
-      body: generationBody,
-    });
+    const reply = await callGeneration(port);
     expect(reply.status).toBe(502);
     expect(Buffer.byteLength(reply.body)).toBeLessThanOrEqual(16 * 1024);
     expect(reply.body).not.toContain("x".repeat(100));
@@ -391,7 +395,7 @@ describe("same-listener saying routes", () => {
     expect(JSON.parse(reply.body).error).toEqual({
       code: "PROVIDER_UNAVAILABLE",
       message:
-        "Claude Code authentication expired. Run `claude auth login` in a terminal, then retry this saying.",
+        "Claude Code authentication expired. Run `claude auth login` in a terminal, then retry quote regeneration.",
     });
     expect(reply.body).not.toContain("PRIVATE_OAUTH_PROVIDER_RESULT");
   });
@@ -455,7 +459,7 @@ describe("same-listener saying routes", () => {
     while (!observedSignal) await new Promise((resolve) => setImmediate(resolve));
     outgoing.destroy();
     while (!observedSignal.aborted) await new Promise((resolve) => setImmediate(resolve));
-    await expect(runtime.shutdown()).rejects.toThrow("could not clean its private saying workspace");
+    await expect(runtime.shutdown()).rejects.toThrow("could not clean its private quote-selection workspace");
   });
 
   it("propagates cleanup failure caused during server shutdown", async () => {
@@ -477,7 +481,7 @@ describe("same-listener saying routes", () => {
       body: generationBody,
     });
     while (!started) await new Promise((resolve) => setImmediate(resolve));
-    await expect(runtime.shutdown()).rejects.toThrow("could not clean its private saying workspace");
+    await expect(runtime.shutdown()).rejects.toThrow("could not clean its private quote-selection workspace");
     expect((await pending).body).not.toContain("PRIVATE_SHUTDOWN_PATH");
   });
 });

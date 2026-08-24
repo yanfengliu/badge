@@ -41,7 +41,7 @@ export function SayingDisclosureDialog({
           ref={closeButton}
           className="icon-button saying-disclosure-close"
           type="button"
-          aria-label="Close saying provider review without generating"
+          aria-label="Close quote provider review without regenerating"
           onClick={onClose}
         >
           <CloseIcon />
@@ -62,14 +62,15 @@ export function SayingDisclosureDialog({
         ) : state.phase === "error" ? (
           <>
             <p id="saying-disclosure-summary" className="error-copy" role="alert">
-              {state.error ?? "Badge could not load the saying provider disclosure."}
+              {state.error ?? "Badge could not load the quote provider disclosure."}
             </p>
             <p>
-              Generating remains off. Retry the disclosure or close this review without making a model call.
+              Quote regeneration remains off. Retry the disclosure or close this review without making a model
+              call.
             </p>
             <div className="saying-disclosure-actions">
               <button className="secondary-button" type="button" onClick={onClose}>
-                Close without generating
+                Close without regenerating
               </button>
               <button className="primary-button" type="button" onClick={onRetry}>
                 Retry disclosure
@@ -79,10 +80,11 @@ export function SayingDisclosureDialog({
         ) : review ? (
           <>
             <p id="saying-disclosure-summary" className="saying-disclosure-summary">
-              No achievement data has been sent to Claude yet. These are the exact values for this first
-              request. Confirming approves this field contract for the page session; later explicit requests
-              may use a different badge title, criterion, direction, or quotation shortlist without reopening
-              this sheet. Reloading or a provider, destination, model, prompt, field, quotation contract,
+              No achievement data has been sent to Claude yet. These exact values let Claude select one
+              source-checked historical quotation ID; Badge supplies its words and attribution. Confirming
+              approves this field contract for the page session, so later explicit regeneration requests may
+              use a different badge title, criterion, direction, or quotation shortlist without reopening this
+              sheet. Reloading or a provider, destination, model, prompt, field, quotation contract,
               normalization, or limit change asks again.
             </p>
 
@@ -125,11 +127,7 @@ export function SayingDisclosureDialog({
                 <div>
                   <dt>allowedQuotations</dt>
                   <dd>
-                    {review.outbound.allowedQuotations === undefined ? (
-                      <span className="not-sent">Not sent</span>
-                    ) : (
-                      <pre>{JSON.stringify(review.outbound.allowedQuotations, null, 2)}</pre>
-                    )}
+                    <pre>{JSON.stringify(review.outbound.allowedQuotations, null, 2)}</pre>
                   </dd>
                 </div>
               </dl>
@@ -197,10 +195,10 @@ export function SayingDisclosureDialog({
             <p className="saying-fingerprint">Disclosure fingerprint · {review.disclosure.fingerprint}</p>
             <div className="saying-disclosure-actions">
               <button className="secondary-button" type="button" onClick={onClose}>
-                Close without generating
+                Close without regenerating
               </button>
               <button className="primary-button" type="button" onClick={onApprove}>
-                Generate with Claude
+                Regenerate with Claude
               </button>
             </div>
           </>

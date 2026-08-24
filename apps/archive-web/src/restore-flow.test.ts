@@ -3,6 +3,7 @@ import {
   MAX_ARCHIVE_BACKUP_BYTES,
   type ArchiveApplication,
 } from "@badge/archive-application";
+import { activateAchievement } from "@badge/archive-domain";
 import { describe, expect, it, vi } from "vitest";
 
 import { createStarterArchiveState } from "./archive-state.js";
@@ -94,18 +95,23 @@ describe("Archive restore safety flow", () => {
 
   it("binds state-rescue bytes and the final replacement CAS to one checkpoint", async () => {
     const expected = createStarterArchiveState();
+    const record = expected.records[0]!;
+    const earned = activateAchievement(
+      expected,
+      {
+        recordId: record.recordId,
+        occurredStart: "2026-08-20",
+        occurredEnd: "2026-08-20",
+        note: null,
+        visibility: "private",
+        visualPin: record.publishedVisual,
+      },
+      "2026-08-23T17:00:00.000Z",
+    ).state;
     const state = {
-      ...expected,
-      records: expected.records.map((record, index) =>
-        index === 0
-          ? {
-              ...record,
-              publishedVisual: {
-                ...record.publishedVisual,
-                packRef: { ...record.publishedVisual.packRef, packDigest: "a".repeat(64) },
-              },
-            }
-          : record,
+      ...earned,
+      records: earned.records.map((candidate) =>
+        candidate.recordId === record.recordId ? { ...candidate, acceptedSaying: null } : candidate,
       ),
     };
     const bytes = new Uint8Array([1, 2, 3]);
@@ -124,11 +130,13 @@ describe("Archive restore safety flow", () => {
       fileName: "compatible.badgearchive",
       bytes: new Uint8Array([4]),
       exportedAt: "2026-08-23T17:00:00.000Z",
-      incomingEarnedCount: 0,
+      incomingEarnedCount: 1,
       recoveryMode: "replace-incompatible-readable-state",
       safetyBackupOffered: false,
       safetyCheckpointState: null,
       safetyHandoff: "state-rescue",
+      stateRescueReason: "earned-quotation-missing",
+      stateRescueAffectedRecordIds: null,
     };
 
     const prepared = await preparePendingSafetyHandoff(archive, pending, expected);
@@ -138,6 +146,95 @@ describe("Archive restore safety flow", () => {
       mimeType: "application/json",
       restore: { safetyBackupOffered: true, safetyCheckpointState: state },
     });
+    expect(archive.exportBackupCheckpoint).not.toHaveBeenCalled();
+    expect(prepared.notice).toMatch(/non-restorable and excludes source art/i);
+  });
+
+  it("cancels stale state-rescue replacement when another tab makes the Archive compatible", async () => {
+    const expected = createStarterArchiveState();
+    const record = expected.records[0]!;
+    const newer = activateAchievement(
+      expected,
+      {
+        recordId: record.recordId,
+        occurredStart: "2026-08-24",
+        occurredEnd: "2026-08-24",
+        note: "A newer memory that replacement must preserve.",
+        visibility: "private",
+        visualPin: record.publishedVisual,
+      },
+      "2026-08-24T20:00:00.000Z",
+    ).state;
+    const fullBytes = new Uint8Array([8, 9]);
+    const archive = {
+      exportRecoveryEvidenceCheckpoint: vi
+        .fn()
+        .mockRejectedValue(
+          new ArchivePersistenceError(
+            "RECOVERY_REASON_MISMATCH",
+            "No earned record is missing a sealed quotation.",
+          ),
+        ),
+      exportBackupCheckpoint: vi.fn().mockResolvedValue({ bytes: fullBytes, state: newer }),
+    } as unknown as ArchiveApplication;
+    const pending: PendingArchiveRestore = {
+      fileName: "older-compatible.badgearchive",
+      bytes: new Uint8Array([4]),
+      exportedAt: "2026-08-23T17:00:00.000Z",
+      incomingEarnedCount: 0,
+      recoveryMode: "replace-incompatible-readable-state",
+      safetyBackupOffered: false,
+      safetyCheckpointState: null,
+      safetyHandoff: "state-rescue",
+      stateRescueReason: "earned-quotation-missing",
+      stateRescueAffectedRecordIds: null,
+    };
+
+    const prepared = await preparePendingSafetyHandoff(archive, pending, expected);
+
+    expect(prepared).toMatchObject({
+      bytes: fullBytes,
+      fileName: "my-badge-archive-before-restore.badgearchive",
+      restore: {
+        recoveryMode: null,
+        safetyHandoff: "full-backup",
+        safetyCheckpointState: newer,
+      },
+    });
+    expect(nextArchiveRestoreAction(prepared.restore)).toBe("restore");
+  });
+
+  it("never turns an unhandled full-backup failure into forced replacement", async () => {
+    const expected = createStarterArchiveState();
+    const failure = new ArchivePersistenceError(
+      "BACKUP_TOO_LARGE",
+      "The compatible Archive is too large for a full safety backup.",
+    );
+    const archive = {
+      exportRecoveryEvidenceCheckpoint: vi
+        .fn()
+        .mockRejectedValue(
+          new ArchivePersistenceError(
+            "RECOVERY_REASON_MISMATCH",
+            "No earned record is missing a sealed quotation.",
+          ),
+        ),
+      exportBackupCheckpoint: vi.fn().mockRejectedValue(failure),
+    } as unknown as ArchiveApplication;
+    const pending: PendingArchiveRestore = {
+      fileName: "older-compatible.badgearchive",
+      bytes: new Uint8Array([4]),
+      exportedAt: "2026-08-23T17:00:00.000Z",
+      incomingEarnedCount: 0,
+      recoveryMode: "replace-incompatible-readable-state",
+      safetyBackupOffered: false,
+      safetyCheckpointState: null,
+      safetyHandoff: "state-rescue",
+      stateRescueReason: "source-art-unavailable",
+      stateRescueAffectedRecordIds: null,
+    };
+
+    await expect(preparePendingSafetyHandoff(archive, pending, expected)).rejects.toBe(failure);
   });
 
   it("reclassifies a stale forced replacement to normal restore from the exact newer safety snapshot", async () => {
@@ -150,6 +247,14 @@ describe("Archive restore safety flow", () => {
     };
     const bytes = new Uint8Array([8, 9]);
     const archive = {
+      exportRecoveryEvidenceCheckpoint: vi
+        .fn()
+        .mockRejectedValue(
+          new ArchivePersistenceError(
+            "RECOVERY_REASON_MISMATCH",
+            "No earned record is missing a sealed quotation.",
+          ),
+        ),
       exportBackupCheckpoint: vi.fn().mockResolvedValue({ bytes, state: newer }),
     } as unknown as ArchiveApplication;
     const pending: PendingArchiveRestore = {
@@ -160,7 +265,9 @@ describe("Archive restore safety flow", () => {
       recoveryMode: "replace-incompatible-readable-state",
       safetyBackupOffered: false,
       safetyCheckpointState: null,
-      safetyHandoff: "state-rescue",
+      safetyHandoff: "full-backup",
+      stateRescueReason: null,
+      stateRescueAffectedRecordIds: null,
     };
 
     const prepared = await preparePendingSafetyHandoff(archive, pending, expected);
@@ -179,16 +286,42 @@ describe("Archive restore safety flow", () => {
 
   it("reclassifies a compatible state with damaged art to explicit repair", async () => {
     const expected = createStarterArchiveState();
+    const record = expected.records[0]!;
+    const current = activateAchievement(
+      expected,
+      {
+        recordId: record.recordId,
+        occurredStart: "2026-08-24",
+        occurredEnd: "2026-08-24",
+        note: null,
+        visibility: "private",
+        visualPin: record.publishedVisual,
+      },
+      "2026-08-24T17:00:00.000Z",
+    ).state;
     const archive = {
       exportBackupCheckpoint: vi
         .fn()
         .mockRejectedValue(
           new ArchivePersistenceError("VISUAL_SOURCE_MISSING", "A sealed visual source is missing."),
         ),
-      exportRecoveryEvidenceCheckpoint: vi.fn().mockResolvedValue({
-        bytes: new Uint8Array([1]),
-        state: expected,
-      }),
+      exportRecoveryEvidenceCheckpoint: vi.fn().mockImplementation((reason: string) =>
+        reason === "earned-quotation-missing"
+          ? Promise.reject(
+              new ArchivePersistenceError(
+                "RECOVERY_REASON_MISMATCH",
+                "No earned record is missing a sealed quotation.",
+              ),
+            )
+          : Promise.resolve({
+              bytes: new Uint8Array([1]),
+              state: current,
+              recoveryReason: {
+                code: "source-art-unavailable",
+                affectedRecordIds: [record.recordId],
+              },
+            }),
+      ),
     } as unknown as ArchiveApplication;
     const pending: PendingArchiveRestore = {
       fileName: "repair-source.badgearchive",
@@ -198,7 +331,9 @@ describe("Archive restore safety flow", () => {
       recoveryMode: "replace-incompatible-readable-state",
       safetyBackupOffered: false,
       safetyCheckpointState: null,
-      safetyHandoff: "state-rescue",
+      safetyHandoff: "full-backup",
+      stateRescueReason: null,
+      stateRescueAffectedRecordIds: null,
     };
 
     await expect(preparePendingSafetyHandoff(archive, pending, expected)).rejects.toMatchObject({

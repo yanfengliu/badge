@@ -42,6 +42,11 @@ const publishedVisual: PublishedVisual = {
   },
 };
 
+const sourceCheckedSaying =
+  "“It is by far the grandest of all the special temples of Nature I was ever permitted to enter.” — John Muir, Letters to a Friend, July 26, 1868";
+const replacementSourceCheckedSaying =
+  "“The mountains are calling and I must go.” — John Muir, Letter to Sarah Muir Galloway, September 3, 1873";
+
 function seedState(overrides: Partial<ArchiveState> = {}): ArchiveState {
   return createSeededArchiveState({
     ownerId: "local-owner",
@@ -65,7 +70,7 @@ function seedState(overrides: Partial<ArchiveState> = {}): ArchiveState {
         description: "A granite-walled landmark.",
         lifecycle: "suggested",
         publishedVisual,
-        acceptedSaying: null,
+        acceptedSaying: sourceCheckedSaying,
         note: null,
         visibility: "inherit",
         activation: null,
@@ -82,7 +87,6 @@ function activationInput(overrides: Partial<ActivationInput> = {}): ActivationIn
     occurredEnd: "2026-06-14",
     note: "Granite after rain.",
     visibility: "private",
-    saying: "  Wonder\nleaves a mark.  ",
     visualPin: {
       packRef: publishedVisual.packRef,
       visualEditionId: publishedVisual.visualEditionId,
@@ -238,14 +242,14 @@ describe("saying validation", () => {
 });
 
 describe("archive transitions", () => {
-  it("activates immutably with normalized saying and exact visual pins", () => {
+  it("activates immutably with the preselected quote and exact visual pins", () => {
     const original = seedState();
     const result = activateAchievement(original, activationInput(), "2026-08-23T17:00:00.000Z");
 
     expect(original.records[0].lifecycle).toBe("suggested");
     expect(result.record).toMatchObject({
       lifecycle: "earned",
-      acceptedSaying: "Wonder leaves a mark.",
+      acceptedSaying: sourceCheckedSaying,
       note: "Granite after rain.",
       visibility: "private",
     });
@@ -257,6 +261,18 @@ describe("archive transitions", () => {
       visualPin: activationInput().visualPin,
     });
     expect(result.state.records[0].activation).toEqual(result.activation);
+  });
+
+  it("refuses activation until the record already contains an accepted quote", () => {
+    const quoted = seedState();
+    const missingQuote = archiveStateSchema.parse({
+      ...quoted,
+      records: [{ ...quoted.records[0], acceptedSaying: null }],
+    });
+
+    expect(() =>
+      activateAchievement(missingQuote, activationInput(), "2026-08-23T17:00:00.000Z"),
+    ).toThrowError(expect.objectContaining({ code: "INVALID_SAYING" }));
   });
 
   it("refuses stale visual pins, invalid ranges, and duplicate activation", () => {
@@ -356,16 +372,35 @@ describe("archive transitions", () => {
     ).toThrowError(expect.objectContaining({ code: "VISUAL_PIN_MISMATCH" }));
   });
 
-  it("updates sayings and pre-earned lifecycle without mutating the input", () => {
+  it("updates pre-earned quotations and lifecycle without mutating the input", () => {
     const state = seedState();
     const planned = setRecordLifecycle(state, "record-yosemite", "planned");
-    const withSaying = updateAcceptedSaying(planned, "record-yosemite", "  Keep\ngoing. ");
+    const withSaying = updateAcceptedSaying(
+      planned,
+      "record-yosemite",
+      replacementSourceCheckedSaying,
+      "11111111-1111-4111-8111-111111111111",
+    );
 
     expect(state.records[0].lifecycle).toBe("suggested");
     expect(planned.records[0].lifecycle).toBe("planned");
-    expect(withSaying.records[0].acceptedSaying).toBe("Keep going.");
+    expect(withSaying.records[0].acceptedSaying).toBe(replacementSourceCheckedSaying);
     expect(() => setRecordLifecycle(withSaying, "record-yosemite", "earned")).toThrowError(
       ArchiveDomainError,
     );
+  });
+
+  it("seals the accepted quotation after activation", () => {
+    const earned = activateAchievement(seedState(), activationInput(), "2026-08-23T17:00:00.000Z").state;
+
+    expect(() =>
+      updateAcceptedSaying(
+        earned,
+        "record-yosemite",
+        replacementSourceCheckedSaying,
+        "11111111-1111-4111-8111-111111111111",
+      ),
+    ).toThrowError(expect.objectContaining({ code: "INVALID_LIFECYCLE" }));
+    expect(earned.records[0].acceptedSaying).toBe(sourceCheckedSaying);
   });
 });

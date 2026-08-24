@@ -25,7 +25,7 @@ export interface PublishedBadgeFixture {
   renderRecipe: RenderRecipe;
   packRef: PackRef;
   initialLifecycle: FixtureLifecycle;
-  sayingSuggestions: readonly string[];
+  defaultQuotationId: string;
   historicalQuotations: readonly FixtureHistoricalQuotation[];
 }
 

@@ -6,12 +6,15 @@ import {
   type SayingRequest,
   type SayingResponse,
 } from "@badge/saying-contract";
+import { INITIAL_QUOTATION_REVISION } from "@badge/archive-domain";
 
 export type SayingProposalStatus = "idle" | "requesting" | "ready" | "error";
 
 export interface SayingProposalSnapshot {
   readonly recordId: string;
+  readonly expectedQuotationRevision: string;
   readonly status: SayingProposalStatus;
+  readonly request: SayingRequest | null;
   readonly proposal: SayingResponse | null;
   readonly provenance: SayingProviderProvenance | null;
   readonly error: string | null;
@@ -19,8 +22,9 @@ export interface SayingProposalSnapshot {
 
 export type SayingInteractionCommand =
   | {
-      readonly type: "generate" | "try-another";
+      readonly type: "regenerate";
       readonly recordId: string;
+      readonly expectedQuotationRevision: string;
       readonly promptInput: SayingRequest;
     }
   | {
@@ -50,7 +54,9 @@ export function subscribeUntilDisposed(
 function emptySnapshot(recordId: string): SayingProposalSnapshot {
   return {
     recordId,
+    expectedQuotationRevision: INITIAL_QUOTATION_REVISION,
     status: "idle",
+    request: null,
     proposal: null,
     provenance: null,
     error: null,
@@ -59,6 +65,13 @@ function emptySnapshot(recordId: string): SayingProposalSnapshot {
 
 function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
+}
+
+function deepFreeze<T>(value: T): T {
+  if (typeof value !== "object" || value === null || Object.isFrozen(value)) return value;
+  Object.freeze(value);
+  for (const nested of Object.values(value)) deepFreeze(nested);
+  return value;
 }
 
 export class SayingProposalController {
@@ -79,8 +92,8 @@ export class SayingProposalController {
   }
 
   async dispatch(command: SayingInteractionCommand): Promise<void> {
-    if (command.type === "generate" || command.type === "try-another") {
-      await this.request(command.recordId, command.promptInput);
+    if (command.type === "regenerate") {
+      await this.request(command.recordId, command.expectedQuotationRevision, command.promptInput);
       return;
     }
     if (command.type === "badge-activated" && command.recordId) this.cancel(command.recordId);
@@ -120,36 +133,49 @@ export class SayingProposalController {
     for (const listener of this.listeners) listener(snapshot);
   }
 
-  private async request(recordId: string, promptInput: SayingRequest): Promise<void> {
+  private async request(
+    recordId: string,
+    expectedQuotationRevision: string,
+    promptInput: SayingRequest,
+  ): Promise<void> {
     const previous = this.snapshot(recordId);
     this.activeRequests.get(recordId)?.abortController.abort();
 
     const requestId = this.nextRequestId++;
     const abortController = new AbortController();
     this.activeRequests.set(recordId, { requestId, abortController });
-    this.publish({ ...previous, status: "requesting", error: null });
+    this.publish({
+      ...previous,
+      expectedQuotationRevision,
+      status: "requesting",
+      request: null,
+      error: null,
+    });
 
     try {
-      const validatedInput = sayingRequestSchema.parse(promptInput);
+      const originatingRequest = deepFreeze(sayingRequestSchema.parse(promptInput));
+      const providerRequest = structuredClone(originatingRequest);
       const result = validateSayingProviderResultForRequest(
         await this.provider.propose({
           requestId,
-          promptInput: validatedInput,
+          promptInput: providerRequest,
           signal: abortController.signal,
         }),
-        validatedInput,
+        originatingRequest,
       );
       if (!this.isLatest(recordId, requestId) || abortController.signal.aborted) return;
       this.publish({
         recordId,
+        expectedQuotationRevision,
         status: "ready",
+        request: originatingRequest,
         proposal: result.response,
         provenance: result.provenance,
         error: null,
       });
     } catch (error) {
       if (!this.isLatest(recordId, requestId) || abortController.signal.aborted) return;
-      this.publish({ ...previous, status: "error", error: errorMessage(error) });
+      this.publish({ ...previous, expectedQuotationRevision, status: "error", error: errorMessage(error) });
     } finally {
       if (this.isLatest(recordId, requestId)) this.activeRequests.delete(recordId);
     }

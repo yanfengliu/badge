@@ -1,11 +1,20 @@
 import type { ArchiveRecord, ArchiveState } from "@badge/archive-domain";
-import { MAX_ARCHIVE_BACKUP_BYTES } from "@badge/archive-application";
+import { MAX_ARCHIVE_BACKUP_BYTES, earnedRecordIdsMissingSaying } from "@badge/archive-application";
 import { canonicalJson } from "@badge/pack-contract";
 
 type CatalogueRecord = Pick<
   ArchiveRecord,
   "recordId" | "definitionRef" | "collectionRefs" | "title" | "criterion" | "description" | "publishedVisual"
 >;
+
+export class EarnedSayingCompatibilityError extends Error {
+  constructor(recordIds: readonly string[]) {
+    super(
+      `Archive state contains earned records without their sealed quotation: ${formatRecordIds(recordIds)}. Badge will not invent text after activation. Choose an intact backup; the current readable state remains untouched and can be preserved as non-restorable rescue evidence before explicit replacement.`,
+    );
+    this.name = "EarnedSayingCompatibilityError";
+  }
+}
 
 function catalogueLineage(record: CatalogueRecord): CatalogueRecord {
   return {
@@ -56,6 +65,10 @@ export function assertCompatibleStarterArchive(expected: ArchiveState, incoming:
     throw new Error(
       `Archive state belongs to owner ${incoming.ownerId}, but this app expects ${expected.ownerId}. Archive stayed closed; choose that owner's matching backup. No Archive data was changed.`,
     );
+  }
+  const missingSayings = earnedRecordIdsMissingSaying(incoming);
+  if (missingSayings.length > 0) {
+    throw new EarnedSayingCompatibilityError(missingSayings);
   }
   assertCompatibleStarterCatalogue(expected.records, incoming.records);
 }

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { SAYING_RAW_UTF16_CODE_UNIT_LIMIT, toExactVisualPin } from "@badge/archive-domain";
+import { toExactVisualPin } from "@badge/archive-domain";
 
-import { activationInputFor, defaultActivationDraft, sayingValidationMessage } from "./app-types";
+import { activationInputFor, canActivateWithSaying, defaultActivationDraft } from "./app-types";
 import { createStarterArchiveState } from "./archive-state";
 
 describe("Archive saying inputs", () => {
@@ -14,7 +14,7 @@ describe("Archive saying inputs", () => {
     });
   });
 
-  it("activation consumes only the separately accepted saying", () => {
+  it("activation input cannot carry replacement saying text", () => {
     const baseRecord = createStarterArchiveState().records[0]!;
     const record = { ...baseRecord, acceptedSaying: "The chosen line." };
     const draft = {
@@ -23,27 +23,14 @@ describe("Archive saying inputs", () => {
       occurredEnd: "",
     };
 
-    expect(activationInputFor(record, draft, toExactVisualPin(record.publishedVisual)).saying).toBe(
-      "The chosen line.",
-    );
-    expect(
-      activationInputFor({ ...record, acceptedSaying: null }, draft, toExactVisualPin(record.publishedVisual))
-        .saying,
-    ).toBe("");
-  });
-
-  it("reports the shared grapheme limit instead of relying on HTML code-unit truncation", () => {
-    expect(sayingValidationMessage("Yosemite", "🏕️".repeat(120))).toBeNull();
-    expect(sayingValidationMessage("Yosemite", "🏕️".repeat(801))).toBe(
-      "Saying for Yosemite has 801 graphemes; use at most 800.",
+    expect(activationInputFor(record, draft, toExactVisualPin(record.publishedVisual))).not.toHaveProperty(
+      "saying",
     );
   });
 
-  it("reports a raw-size refusal before attempting to segment a combining-mark flood", () => {
-    const oversized = `a${"\u035c".repeat(SAYING_RAW_UTF16_CODE_UNIT_LIMIT)}`;
-
-    expect(sayingValidationMessage("Yosemite", oversized)).toBe(
-      "Saying for Yosemite is 6145 UTF-16 code units; use at most 6144 so it can be inspected safely.",
-    );
+  it("requires a recognized source-checked quotation before activation", () => {
+    expect(canActivateWithSaying({ sourceChecked: true, saving: false })).toBe(true);
+    expect(canActivateWithSaying({ sourceChecked: false, saving: false })).toBe(false);
+    expect(canActivateWithSaying({ sourceChecked: true, saving: true })).toBe(false);
   });
 });

@@ -51,4 +51,4 @@ The product encourages without judging.
 
 An unearned badge is an invitation, not a failure; an earned badge is a memory, not a claim to status over someone else.
 
-The archive may suggest what to try and generate a clever saying, while Badge Studio prepares art outside that experience; only the user decides what belongs in their life and when it was earned.
+The archive may suggest what to try and select a source-checked historical quotation for each badge, while Badge Studio prepares art outside that experience; only the user decides what belongs in their life and when it was earned.

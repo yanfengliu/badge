@@ -17,7 +17,7 @@ import {
   SAYING_QUOTATION_SOURCE_TITLE_UTF8_LIMIT,
   SAYING_QUOTATION_SOURCE_URL_LENGTH_LIMIT,
   SAYING_RESPONSE_UTF8_LIMIT,
-  SAYING_SYSTEM_PROMPT_V2,
+  SAYING_SYSTEM_PROMPT_V3,
   SAYING_THEME_CUE_COUNT_LIMIT,
   SAYING_THEME_CUE_GRAPHEME_LIMIT,
   SAYING_TITLE_GRAPHEME_LIMIT,
@@ -42,7 +42,7 @@ export const SAYING_JSON_MEDIA_TYPE = "application/json" as const;
 export const SAYING_REQUIRED_FETCH_SITE = "same-origin" as const;
 export const SAYING_HTTP_SUCCESS_STATUS = 200 as const;
 export const SAYING_DISCLOSURE_FINGERPRINT =
-  "sha256:0d217c0fc52c782924d490710da59b8ba73edc05fa67261ab66148d446a31393" as const;
+  "sha256:25581e25216d134f4556c3a081348f75173464f3722f65e3f4dc19745628030b" as const;
 export const SAYING_ROUTE_BODY_LIMIT_BYTES = 16 * 1_024;
 export const SAYING_ROUTE_RESPONSE_LIMIT_BYTES = 16 * 1_024;
 export const SAYING_PROVIDER_STDOUT_LIMIT_BYTES = 64 * 1_024;
@@ -69,8 +69,8 @@ export const SAYING_OUTBOUND_FIELDS = freezeRecursively([
   "direction",
   "allowedQuotations",
 ] as const);
-export const SAYING_REQUIRED_FIELDS = freezeRecursively(["title", "criterion"] as const);
-export const SAYING_OPTIONAL_FIELDS = freezeRecursively(["direction", "allowedQuotations"] as const);
+export const SAYING_REQUIRED_FIELDS = freezeRecursively(["title", "criterion", "allowedQuotations"] as const);
+export const SAYING_OPTIONAL_FIELDS = freezeRecursively(["direction"] as const);
 export const SAYING_DIRECTION_FIELDS = freezeRecursively([
   "themeCues",
   "voice",
@@ -92,6 +92,7 @@ export const SAYING_EXCLUDED_FIELDS = freezeRecursively([
   "lifecycle",
   "publishedVisual",
   "acceptedSaying",
+  "quotationRevision",
   "note",
   "visibility",
   "activation",
@@ -131,8 +132,7 @@ export const SAYING_DISCLOSURE_SCOPE = freezeRecursively({
     canonicalUtf8Bytes: SAYING_USER_MESSAGE_UTF8_LIMIT,
     responseUtf8Bytes: SAYING_RESPONSE_UTF8_LIMIT,
   },
-  output:
-    "One compact model-written paragraph targeting one to three sentences, or one exact ID from the supplied source-checked quotation list" as const,
+  output: "One exact ID from the supplied source-checked quotation list" as const,
 });
 
 export function sayingDisclosureFingerprintMaterial(): string {
@@ -142,14 +142,14 @@ export function sayingDisclosureFingerprintMaterial(): string {
     model: SAYING_MODEL_ID,
     promptVersion: SAYING_PROMPT_VERSION,
     scope: SAYING_DISCLOSURE_SCOPE,
-    systemPrompt: SAYING_SYSTEM_PROMPT_V2,
+    systemPrompt: SAYING_SYSTEM_PROMPT_V3,
   });
 }
 
 const sayingDisclosureScopeSchema = z
   .object({
-    requiredFields: z.tuple([z.literal("title"), z.literal("criterion")]),
-    optionalFields: z.tuple([z.literal("direction"), z.literal("allowedQuotations")]),
+    requiredFields: z.tuple([z.literal("title"), z.literal("criterion"), z.literal("allowedQuotations")]),
+    optionalFields: z.tuple([z.literal("direction")]),
     directionFields: z.tuple([
       z.literal("themeCues"),
       z.literal("voice"),
@@ -172,6 +172,7 @@ const sayingDisclosureScopeSchema = z
       z.literal("lifecycle"),
       z.literal("publishedVisual"),
       z.literal("acceptedSaying"),
+      z.literal("quotationRevision"),
       z.literal("note"),
       z.literal("visibility"),
       z.literal("activation"),
@@ -206,9 +207,7 @@ const sayingDisclosureScopeSchema = z
         responseUtf8Bytes: z.literal(SAYING_RESPONSE_UTF8_LIMIT),
       })
       .strict(),
-    output: z.literal(
-      "One compact model-written paragraph targeting one to three sentences, or one exact ID from the supplied source-checked quotation list",
-    ),
+    output: z.literal("One exact ID from the supplied source-checked quotation list"),
   })
   .strict();
 
@@ -219,7 +218,7 @@ export const sayingDisclosureSchema = z
     destination: z.literal(SAYING_PROVIDER_DESTINATION),
     model: z.literal(SAYING_MODEL_ID),
     promptVersion: z.literal(SAYING_PROMPT_VERSION),
-    systemPrompt: z.literal(SAYING_SYSTEM_PROMPT_V2),
+    systemPrompt: z.literal(SAYING_SYSTEM_PROMPT_V3),
     outboundFields: z.tuple([
       z.literal(SAYING_OUTBOUND_FIELDS[0]),
       z.literal(SAYING_OUTBOUND_FIELDS[1]),
@@ -239,7 +238,7 @@ export const SAYING_DISCLOSURE = freezeRecursively(
     destination: SAYING_PROVIDER_DESTINATION,
     model: SAYING_MODEL_ID,
     promptVersion: SAYING_PROMPT_VERSION,
-    systemPrompt: SAYING_SYSTEM_PROMPT_V2,
+    systemPrompt: SAYING_SYSTEM_PROMPT_V3,
     outboundFields: SAYING_OUTBOUND_FIELDS,
     scope: SAYING_DISCLOSURE_SCOPE,
     fingerprint: SAYING_DISCLOSURE_FINGERPRINT,
@@ -318,9 +317,7 @@ export const CLAUDE_SAYING_JSON_SCHEMA = freezeRecursively({
   type: "object",
   additionalProperties: false,
   properties: {
-    kind: { type: "string", enum: ["original", "quotation"] },
-    saying: { type: ["string", "null"] },
-    quotationId: { type: ["string", "null"] },
+    quotationId: { type: "string" },
   },
-  required: ["kind", "saying", "quotationId"],
+  required: ["quotationId"],
 });

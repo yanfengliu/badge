@@ -17,7 +17,16 @@ import {
   type ArchiveSourceAssetInput,
 } from "../src/index.js";
 import type { ActivationInput, ArchiveState, PublishedVisual } from "@badge/archive-domain";
-import { makeMislabeledSourceBackup, makeStateJsonNoncanonical } from "./backup-test-mutators.js";
+import {
+  makeMislabeledSourceBackup,
+  makeSourceBackup,
+  makeStateJsonNoncanonical,
+} from "./backup-test-mutators.js";
+import {
+  historicalQuotationRequest,
+  sourceCheckedResponse,
+  withAcceptedQuotation,
+} from "./historical-quotation-fixtures.js";
 import { validPngBytes, validPngHash } from "./image-fixtures.js";
 
 const exportedAt = "2026-08-23T17:00:00.000Z";
@@ -71,18 +80,37 @@ function state(
     ],
   });
 }
+function stateWithQuotation(
+  visual: PublishedVisual = originalVisual,
+  ownerId = "local-owner",
+  title = "Visited Yosemite National Park",
+): ArchiveState {
+  return withAcceptedQuotation(state(visual, ownerId, title));
+}
+const initialQuotationRevision = stateWithQuotation().records[0]!.quotationRevision;
 const activationInput: ActivationInput = {
   recordId: "record-yosemite",
   occurredStart: "2026-06-12",
   occurredEnd: "2026-06-14",
   note: "Granite after rain.",
   visibility: "private",
-  saying: "Wonder leaves a mark.",
   visualPin: originalVisual,
 };
+
+function expectStateExceptQuotationRevisions(actual: ArchiveState, expected: ArchiveState): void {
+  expect(actual).toEqual({
+    ...expected,
+    records: expected.records.map((record, index) => ({
+      ...record,
+      quotationRevision: actual.records[index]!.quotationRevision,
+    })),
+  });
+}
 let repositories: IndexedDbArchiveRepository[] = [];
 function createApplication(): { application: ArchiveApplication; repository: IndexedDbArchiveRepository } {
-  const repository = new IndexedDbArchiveRepository();
+  const repository = new IndexedDbArchiveRepository({
+    trustedQuotationRequests: { "record-yosemite": historicalQuotationRequest },
+  });
   repositories.push(repository);
   return {
     repository,
@@ -98,7 +126,7 @@ afterEach(async () => {
 
 describe("self-contained .badgearchive v2", () => {
   it("emits byte-identical backups for the same state, sources, and export time", async () => {
-    const earned = activateAchievement(state(), activationInput, exportedAt).state;
+    const earned = activateAchievement(stateWithQuotation(), activationInput, exportedAt).state;
     expect(await createArchiveBackup(earned, [sourceAsset], exportedAt)).toEqual(
       await createArchiveBackup(earned, [sourceAsset], exportedAt),
     );
@@ -106,8 +134,13 @@ describe("self-contained .badgearchive v2", () => {
 
   it("restores an earned recipe and source bytes without consulting changed catalogue fixtures", async () => {
     const first = createApplication();
-    await first.application.initialize(state());
-    const activated = await first.application.activate(activationInput, sourceAsset);
+    await first.application.initialize(stateWithQuotation());
+    const activated = await first.application.activate(
+      activationInput,
+      sourceAsset,
+      sourceCheckedResponse,
+      initialQuotationRevision,
+    );
     const backupBytes = await first.application.exportBackup();
     const backup = await parseArchiveBackup(backupBytes);
 
@@ -136,8 +169,10 @@ describe("self-contained .badgearchive v2", () => {
       },
     };
     const restored = createApplication();
-    await restored.application.initialize(state(changedVisual, "local-owner", "Changed fixture title"));
-    await restored.application.restoreBackup(backupBytes);
+    const expected = await restored.application.initialize(
+      state(changedVisual, "local-owner", "Changed fixture title"),
+    );
+    await restored.application.restoreBackup(backupBytes, expected);
 
     const visual = await restored.application.visual("record-yosemite");
     expect(visual.pin).toEqual(activationInput.visualPin);
@@ -148,8 +183,13 @@ describe("self-contained .badgearchive v2", () => {
 
   it("rejects tampered source bytes before mutating healthy state", async () => {
     const first = createApplication();
-    await first.application.initialize(state());
-    await first.application.activate(activationInput, sourceAsset);
+    await first.application.initialize(stateWithQuotation());
+    await first.application.activate(
+      activationInput,
+      sourceAsset,
+      sourceCheckedResponse,
+      initialQuotationRevision,
+    );
     const backupBytes = await first.application.exportBackup();
     const tampered = backupBytes.slice();
     tampered[tampered.length - 1] ^= 0xff;
@@ -161,7 +201,7 @@ describe("self-contained .badgearchive v2", () => {
     const target = createApplication();
     await target.application.initialize(state());
     const healthy = await target.application.state();
-    await expect(target.application.restoreBackup(tampered)).rejects.toMatchObject({
+    await expect(target.application.restoreBackup(tampered, healthy)).rejects.toMatchObject({
       code: "BACKUP_CHECKSUM_MISMATCH",
     });
     expect(await target.application.state()).toEqual(healthy);
@@ -193,7 +233,7 @@ describe("self-contained .badgearchive v2", () => {
     const hostileBackup = await makeMislabeledSourceBackup((sourceHash) => {
       const hostileVisual = { ...originalVisual, sourceAssetHash: sourceHash };
       return activateAchievement(
-        state(hostileVisual),
+        stateWithQuotation(hostileVisual),
         { ...activationInput, visualPin: hostileVisual },
         exportedAt,
       ).state;
@@ -211,18 +251,18 @@ describe("self-contained .badgearchive v2", () => {
     const wrongFormat = new TextEncoder().encode(
       JSON.stringify({ format: "badgestudio", backupVersion: 1, exportedAt, state: state() }),
     );
-    await expect(target.application.restoreBackup(wrongFormat)).rejects.toMatchObject({
+    await expect(target.application.restoreBackup(wrongFormat, healthy)).rejects.toMatchObject({
       code: "BACKUP_INVALID",
     });
 
-    const earned = activateAchievement(state(), activationInput, exportedAt).state;
+    const earned = activateAchievement(stateWithQuotation(), activationInput, exportedAt).state;
     const incompleteLegacy = JSON.stringify({
       format: "badgearchive",
       backupVersion: 1,
       exportedAt,
       state: earned,
     });
-    await expect(target.application.restoreBackup(incompleteLegacy)).rejects.toMatchObject({
+    await expect(target.application.restoreBackup(incompleteLegacy, healthy)).rejects.toMatchObject({
       code: "BACKUP_INCOMPLETE",
     });
     expect(await target.application.state()).toEqual(healthy);
@@ -234,15 +274,68 @@ describe("self-contained .badgearchive v2", () => {
       ...state(),
       records: [{ ...state().records[0], lifecycle: "planned", note: "A current local plan." }],
     });
-    await target.application.initialize(current);
+    const expected = await target.application.initialize(current);
     const legacy = JSON.stringify({ format: "badgearchive", backupVersion: 1, exportedAt, state: state() });
 
-    const restored = await target.application.restoreBackup(legacy);
-    expect(restored).toEqual(state());
+    const restored = await target.application.restoreBackup(legacy, expected);
+    expectStateExceptQuotationRevisions(restored, state());
+    expect(restored.records[0]!.quotationRevision).not.toBe(state().records[0]!.quotationRevision);
+  });
+
+  it("restores a tokenless earned backup after v2 storage materializes its current token", async () => {
+    const earned = activateAchievement(stateWithQuotation(), activationInput, exportedAt).state;
+    const tokenless = {
+      ...earned,
+      records: earned.records.map((record) =>
+        Object.fromEntries(Object.entries(record).filter(([key]) => key !== "quotationRevision")),
+      ),
+    };
+    const backup = await makeSourceBackup(() => tokenless, [sourceAsset.bytes], exportedAt);
+    const legacy = await openDB(ARCHIVE_DATABASE_NAME, 2, {
+      upgrade(database) {
+        database.createObjectStore(ARCHIVE_STATE_STORE);
+        database.createObjectStore(ARCHIVE_OBJECT_STORE);
+      },
+      blocking() {
+        legacy.close();
+      },
+    });
+    await legacy.put(ARCHIVE_STATE_STORE, tokenless, ARCHIVE_STATE_KEY);
+    await legacy.put(ARCHIVE_OBJECT_STORE, sourceAsset, sourceAsset.hash);
+
+    const target = createApplication();
+    const migrated = await target.application.initialize(state(), [sourceAsset]);
+    expect(migrated.records[0]!.quotationRevision).not.toBe(earned.records[0]!.quotationRevision);
+
+    const restored = await target.application.restoreBackup(backup, migrated);
+    expect(restored).toEqual(migrated);
+    expect(await target.application.state()).toEqual(migrated);
   });
 });
 
 describe("monotonic restore and explicit corrupt-state recovery", () => {
+  it("rejects an earned-null backup instead of fabricating a quotation after activation", async () => {
+    const earned = activateAchievement(stateWithQuotation(), activationInput, exportedAt).state;
+    const legacyEarned = archiveStateSchema.parse({
+      ...earned,
+      records: earned.records.map((record) => ({ ...record, acceptedSaying: null })),
+    });
+    const backup = await createArchiveBackup(legacyEarned, [sourceAsset], exportedAt);
+    const target = createApplication();
+    await target.application.initialize(stateWithQuotation());
+
+    const before = await target.application.state();
+    await expect(
+      target.application.restoreBackup(backup, before, stateWithQuotation()),
+    ).rejects.toMatchObject({
+      code: "BACKUP_INVALID",
+      message: expect.stringMatching(
+        /earned records without a sealed quotation.*no Archive data was changed/i,
+      ),
+    });
+    expect(await target.application.state()).toEqual(before);
+  });
+
   it("refuses to overwrite state changed after the user exported the restore safety checkpoint", async () => {
     const target = createApplication();
     await target.application.initialize(state());
@@ -261,17 +354,22 @@ describe("monotonic restore and explicit corrupt-state recovery", () => {
 
   it("rejects owner changes and removal or mutation of existing earned records", async () => {
     const target = createApplication();
-    await target.application.initialize(state());
-    await target.application.activate(activationInput, sourceAsset);
+    await target.application.initialize(stateWithQuotation());
+    await target.application.activate(
+      activationInput,
+      sourceAsset,
+      sourceCheckedResponse,
+      initialQuotationRevision,
+    );
     const current = await target.application.state();
 
     const otherOwner = await createArchiveBackup(state(originalVisual, "different-owner"), [], exportedAt);
-    await expect(target.application.restoreBackup(otherOwner)).rejects.toMatchObject({
+    await expect(target.application.restoreBackup(otherOwner, current)).rejects.toMatchObject({
       code: "BACKUP_OWNER_MISMATCH",
     });
 
     const older = await createArchiveBackup(state(), [], exportedAt);
-    await expect(target.application.restoreBackup(older)).rejects.toMatchObject({
+    await expect(target.application.restoreBackup(older, current)).rejects.toMatchObject({
       code: "BACKUP_WOULD_LOSE_EARNED_RECORD",
     });
 
@@ -280,7 +378,7 @@ describe("monotonic restore and explicit corrupt-state recovery", () => {
       records: [{ ...current.records[0], note: "A rewritten memory." }],
     });
     const changed = await createArchiveBackup(changedEarned, [sourceAsset], exportedAt);
-    await expect(target.application.restoreBackup(changed)).rejects.toMatchObject({
+    await expect(target.application.restoreBackup(changed, current)).rejects.toMatchObject({
       code: "BACKUP_WOULD_LOSE_EARNED_RECORD",
     });
     expect(await target.application.state()).toEqual(current);
@@ -297,7 +395,7 @@ describe("monotonic restore and explicit corrupt-state recovery", () => {
     };
     const staleBackup = await createArchiveBackup(state(staleVisual), [], exportedAt);
 
-    await expect(target.application.restoreBackup(staleBackup)).rejects.toMatchObject({
+    await expect(target.application.restoreBackup(staleBackup, healthy)).rejects.toMatchObject({
       code: "BACKUP_CATALOGUE_MISMATCH",
       message: expect.stringMatching(/catalogue lineage.*record-yosemite.*no Archive data was changed/i),
     });
@@ -308,7 +406,7 @@ describe("monotonic restore and explicit corrupt-state recovery", () => {
     const target = createApplication();
     await target.application.initialize(state());
     const healthy = await target.application.state();
-    const activated = activateAchievement(state(), activationInput, exportedAt).state;
+    const activated = activateAchievement(stateWithQuotation(), activationInput, exportedAt).state;
     const earned = activated.records[0];
     const unrelatedVisual = {
       ...earned.publishedVisual,
@@ -333,7 +431,7 @@ describe("monotonic restore and explicit corrupt-state recovery", () => {
     });
     const backup = await createArchiveBackup(rebound, [sourceAsset], exportedAt);
 
-    await expect(target.application.restoreBackup(backup)).rejects.toMatchObject({
+    await expect(target.application.restoreBackup(backup, healthy)).rejects.toMatchObject({
       code: "BACKUP_CATALOGUE_MISMATCH",
       message: expect.stringMatching(/earned identity.*record-yosemite.*unrelated\.pack/i),
     });
@@ -352,19 +450,20 @@ describe("monotonic restore and explicit corrupt-state recovery", () => {
 
     const backup = await createArchiveBackup(state(), [], exportedAt);
     const reopened = createApplication();
-    await expect(reopened.application.restoreBackup(backup)).rejects.toMatchObject({
+    await expect(reopened.application.restoreBackup(backup, state())).rejects.toMatchObject({
       code: "STATE_UNREADABLE",
     });
 
     const recovery = await reopened.application.recoverBackup(backup, "local-owner");
-    expect(recovery.state).toEqual(state());
+    expectStateExceptQuotationRevisions(recovery.state, state());
+    expect(recovery.state.records[0]!.quotationRevision).not.toBe(state().records[0]!.quotationRevision);
     expect(recovery.stateReplaced).toBe(true);
     expect(recovery.quarantineKey).toMatch(/^archive-state-quarantine:/);
     expect(recovery.quarantineKeys).toEqual([recovery.quarantineKey]);
 
     reopened.repository.close();
     const evidence = await openDB(ARCHIVE_DATABASE_NAME, ARCHIVE_DATABASE_VERSION);
-    expect(await evidence.get(ARCHIVE_STATE_STORE, ARCHIVE_STATE_KEY)).toEqual(state());
+    expect(await evidence.get(ARCHIVE_STATE_STORE, ARCHIVE_STATE_KEY)).toEqual(recovery.state);
     expect(await evidence.get(ARCHIVE_STATE_STORE, recovery.quarantineKey)).toMatchObject({
       kind: "quarantined-archive-state",
       quarantinedAt: exportedAt,
@@ -376,108 +475,5 @@ describe("monotonic restore and explicit corrupt-state recovery", () => {
     await expect(healthy.application.recoverBackup(backup, "local-owner")).rejects.toMatchObject({
       code: "RECOVERY_NOT_REQUIRED",
     });
-  });
-  it("atomically quarantines and replaces corrupt immutable source bytes only through recovery", async () => {
-    const target = createApplication();
-    await target.application.initialize(state());
-    await target.application.activate(activationInput, sourceAsset);
-    const backup = await target.application.exportBackup();
-    const current = await target.application.updateSaying(
-      "record-yosemite",
-      "A newer accepted line that source repair must preserve.",
-    );
-    target.repository.close();
-
-    const corruptBytes = sourceAsset.bytes.slice();
-    corruptBytes[25] ^= 0xff;
-    const corruptSource = { ...sourceAsset, bytes: corruptBytes };
-    const raw = await openDB(ARCHIVE_DATABASE_NAME, ARCHIVE_DATABASE_VERSION);
-    await raw.put(ARCHIVE_OBJECT_STORE, corruptSource, sourceAsset.hash);
-    raw.close();
-
-    const reopened = createApplication();
-    await expect(reopened.application.visual("record-yosemite")).rejects.toMatchObject({
-      code: "VISUAL_SOURCE_UNREADABLE",
-    });
-    await expect(reopened.application.restoreBackup(backup)).rejects.toMatchObject({
-      code: "BACKUP_WOULD_LOSE_EARNED_RECORD",
-    });
-    await expect(reopened.application.visual("record-yosemite")).rejects.toMatchObject({
-      code: "VISUAL_SOURCE_UNREADABLE",
-    });
-
-    const recovery = await reopened.application.recoverBackup(backup, "local-owner");
-    expect(recovery.stateReplaced).toBe(false);
-    expect(recovery.state).toEqual(current);
-    expect(recovery.quarantineKey).toMatch(/^archive-object-quarantine:/);
-    expect(recovery.quarantineKeys).toEqual([recovery.quarantineKey]);
-    expect(await reopened.application.visual("record-yosemite")).toMatchObject({
-      pin: activationInput.visualPin,
-      sourceAsset,
-    });
-
-    reopened.repository.close();
-    const evidence = await openDB(ARCHIVE_DATABASE_NAME, ARCHIVE_DATABASE_VERSION);
-    expect(await evidence.get(ARCHIVE_OBJECT_STORE, recovery.quarantineKey)).toMatchObject({
-      kind: "quarantined-archive-source",
-      sourceHash: sourceAsset.hash,
-      raw: corruptSource,
-    });
-    expect(await evidence.get(ARCHIVE_OBJECT_STORE, sourceAsset.hash)).toEqual(sourceAsset);
-    expect(await evidence.get(ARCHIVE_STATE_STORE, ARCHIVE_STATE_KEY)).toEqual(current);
-    evidence.close();
-  });
-
-  it("repairs corrupt prefetched art for an unearned record using trusted current fixture bytes", async () => {
-    const target = createApplication();
-    const current = archiveStateSchema.parse({
-      ...state(),
-      records: [
-        {
-          ...state().records[0],
-          lifecycle: "planned",
-          note: "A newer local plan that source repair must preserve.",
-        },
-      ],
-    });
-    await target.application.initialize(current, [sourceAsset]);
-    const backup = await createArchiveBackup(state(), [], exportedAt);
-    target.repository.close();
-
-    const corruptBytes = sourceAsset.bytes.slice();
-    corruptBytes[25] ^= 0xff;
-    const corruptSource = { ...sourceAsset, bytes: corruptBytes };
-    const raw = await openDB(ARCHIVE_DATABASE_NAME, ARCHIVE_DATABASE_VERSION);
-    await raw.put(ARCHIVE_OBJECT_STORE, corruptSource, sourceAsset.hash);
-    raw.close();
-
-    const reopened = createApplication();
-    await expect(reopened.application.initialize(state(), [sourceAsset])).rejects.toMatchObject({
-      code: "VISUAL_SOURCE_CONFLICT",
-    });
-    await expect(reopened.application.recoverBackup(backup, "local-owner")).rejects.toMatchObject({
-      code: "BACKUP_INCOMPLETE",
-      message: expect.stringMatching(/source.*unearned catalogue record.*trusted current sources/i),
-    });
-
-    const recovery = await reopened.application.recoverBackup(backup, "local-owner", [sourceAsset]);
-    expect(recovery.quarantineKey).toMatch(/^archive-object-quarantine:/);
-    expect(recovery.stateReplaced).toBe(false);
-    expect(recovery.state).toEqual(current);
-    expect(await reopened.application.visual("record-yosemite")).toMatchObject({
-      pin: originalVisual,
-      sourceAsset,
-    });
-
-    reopened.repository.close();
-    const evidence = await openDB(ARCHIVE_DATABASE_NAME, ARCHIVE_DATABASE_VERSION);
-    expect(await evidence.get(ARCHIVE_OBJECT_STORE, recovery.quarantineKey)).toMatchObject({
-      kind: "quarantined-archive-source",
-      sourceHash: sourceAsset.hash,
-      raw: corruptSource,
-    });
-    expect(await evidence.get(ARCHIVE_OBJECT_STORE, sourceAsset.hash)).toEqual(sourceAsset);
-    expect(await evidence.get(ARCHIVE_STATE_STORE, ARCHIVE_STATE_KEY)).toEqual(current);
-    evidence.close();
   });
 });

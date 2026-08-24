@@ -47,12 +47,12 @@ const sayingRequestFieldCorrections: Readonly<Record<SayingRequestField, string>
   title: "provide a non-empty badge title within the supported length",
   criterion: "provide a non-empty achievement criterion within the supported length",
   direction: "correct or remove the optional direction",
-  allowedQuotations: "correct or remove the optional allowedQuotations list",
+  allowedQuotations: "provide at least one valid source-checked allowedQuotations entry",
 };
 
 const fatalUtf8 = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true });
 const CLEANUP_FAILURE_MESSAGE =
-  "Badge could not clean its private saying workspace. Close every Badge process, then inspect your system temporary directory and remove only confirmed inactive ordinary badge-saying- prefixed task folders before trying again.";
+  "Badge could not clean its private quote-selection workspace. Close every Badge process, then inspect your system temporary directory and remove only confirmed inactive ordinary badge-saying- prefixed task folders before trying again.";
 
 function publicFailure(code: SayingLiveErrorCode, message: string): RouteFailure {
   return { status: SAYING_HTTP_STATUS_BY_ERROR[code], code, message };
@@ -68,14 +68,14 @@ function invalidRequestMessage(issues: readonly RequestValidationIssue[]): strin
   const issueRoots = new Set(issues.map((issue) => issue.path[0]));
   const fields = sayingRequestFieldOrder.filter((field) => issueRoots.has(field));
   if (fields.length === 0) {
-    return "The saying request fields are invalid. Send only title, criterion, optional direction, and optional allowedQuotations after reviewing the updated canonical JSON.";
+    return "The quote-selection request fields are invalid. Send only title, criterion, required allowedQuotations, and optional direction after reviewing the updated canonical JSON.";
   }
   const fieldList = joinList(fields, ", ");
   const corrections = joinList(
     fields.map((field) => sayingRequestFieldCorrections[field]),
     "; ",
   );
-  return `The saying request has invalid input in ${fieldList}. ${corrections[0]!.toUpperCase()}${corrections.slice(1)}, then review and send the updated canonical JSON.`;
+  return `The quote-selection request has invalid input in ${fieldList}. ${corrections[0]!.toUpperCase()}${corrections.slice(1)}, then review and send the updated canonical JSON.`;
 }
 
 function headerValue(request: IncomingMessage, name: string): string | null {
@@ -97,18 +97,21 @@ function validateRequestBoundary(request: IncomingMessage): RouteFailure | null 
   const host = headerValue(request, "host");
   const fetchSite = headerValue(request, "sec-fetch-site");
   if (!authority || host !== authority || fetchSite !== "same-origin") {
-    return publicFailure("REQUEST_REJECTED", "Saying requests must come from this exact local Badge site.");
+    return publicFailure(
+      "REQUEST_REJECTED",
+      "Quote-selection requests must come from this exact local Badge site.",
+    );
   }
   if (request.method === "POST" && headerValue(request, "origin") !== `http://${authority}`) {
     return publicFailure(
       "REQUEST_REJECTED",
-      "Saying generation must come from this exact local Badge site origin.",
+      "Quote regeneration must come from this exact local Badge site origin.",
     );
   }
   if (headerValue(request, "content-encoding") !== null) {
     return publicFailure(
       "UNSUPPORTED_MEDIA_TYPE",
-      "Compressed saying requests are not accepted; send an unencoded JSON body.",
+      "Compressed quote-selection requests are not accepted; send an unencoded JSON body.",
     );
   }
   return null;
@@ -129,7 +132,7 @@ function writeJson(response: ServerResponse, status: number, value: unknown, all
     body = JSON.stringify({
       error: {
         code: "PROVIDER_FAILED",
-        message: "The saying response exceeded Badge's safety limit; nothing was accepted.",
+        message: "The quote response exceeded Badge's safety limit; the current quote was unchanged.",
       },
     } satisfies SayingLiveErrorResponse);
   }
@@ -157,7 +160,7 @@ function readBoundedBody(request: IncomingMessage, signal: AbortSignal): Promise
       return Promise.reject(
         publicFailure(
           "BAD_REQUEST",
-          "Saying request Content-Length must be one non-negative decimal integer.",
+          "Quote-selection request Content-Length must be one non-negative decimal integer.",
         ),
       );
     }
@@ -166,7 +169,7 @@ function readBoundedBody(request: IncomingMessage, signal: AbortSignal): Promise
       return Promise.reject(
         publicFailure(
           "PAYLOAD_TOO_LARGE",
-          `Saying request bodies must be at most ${SAYING_ROUTE_BODY_LIMIT_BYTES} bytes.`,
+          `Quote-selection request bodies must be at most ${SAYING_ROUTE_BODY_LIMIT_BYTES} bytes.`,
         ),
       );
     }
@@ -205,7 +208,7 @@ function readBoundedBody(request: IncomingMessage, signal: AbortSignal): Promise
         settleReject(
           publicFailure(
             "PAYLOAD_TOO_LARGE",
-            `Saying request bodies must be at most ${SAYING_ROUTE_BODY_LIMIT_BYTES} bytes.`,
+            `Quote-selection request bodies must be at most ${SAYING_ROUTE_BODY_LIMIT_BYTES} bytes.`,
           ),
         );
         return;
@@ -215,8 +218,9 @@ function readBoundedBody(request: IncomingMessage, signal: AbortSignal): Promise
       resolve(Buffer.concat(chunks));
     };
     const onError = () =>
-      settleReject(publicFailure("BAD_REQUEST", "The saying request body could not be read."));
-    const onAbort = () => settleReject(publicFailure("BAD_REQUEST", "The saying request was cancelled."));
+      settleReject(publicFailure("BAD_REQUEST", "The quote-selection request body could not be read."));
+    const onAbort = () =>
+      settleReject(publicFailure("BAD_REQUEST", "The quote regeneration request was cancelled."));
     request.on("data", onData);
     request.once("end", onEnd);
     request.once("error", onError);
@@ -229,13 +233,13 @@ function parseRequestBody(bytes: Buffer): ReturnType<typeof sayingLiveRequestSch
   try {
     text = fatalUtf8.decode(bytes);
   } catch {
-    throw publicFailure("BAD_REQUEST", "The saying request body must be exact UTF-8 JSON.");
+    throw publicFailure("BAD_REQUEST", "The quote-selection request body must be exact UTF-8 JSON.");
   }
   let decoded: unknown;
   try {
     decoded = JSON.parse(text);
   } catch {
-    throw publicFailure("BAD_REQUEST", "The saying request body must be one JSON object.");
+    throw publicFailure("BAD_REQUEST", "The quote-selection request body must be one JSON object.");
   }
   const parsed = sayingLiveRequestSchema.safeParse(decoded);
   if (!parsed.success) {
@@ -247,13 +251,13 @@ function parseRequestBody(bytes: Buffer): ReturnType<typeof sayingLiveRequestSch
   } catch {
     throw publicFailure(
       "BAD_REQUEST",
-      "The saying request is too large after canonical validation; shorten its fields.",
+      "The quote-selection request is too large after canonical validation; shorten its fields.",
     );
   }
   if (text !== canonical) {
     throw publicFailure(
       "BAD_REQUEST",
-      "The saying request body must exactly match the canonical JSON reviewed for this request.",
+      "The quote-selection request body must exactly match the canonical JSON reviewed for this request.",
     );
   }
   return parsed.data;
@@ -263,7 +267,7 @@ function providerFailure(error: unknown): RouteFailure {
   if (!(error instanceof SayingGenerationFailure)) {
     return publicFailure(
       "PROVIDER_FAILED",
-      "The saying provider returned an invalid result; nothing was accepted.",
+      "The quote provider returned an invalid result; the current quote was unchanged.",
     );
   }
   if (error.kind === "timeout") {
@@ -281,7 +285,7 @@ function providerFailure(error: unknown): RouteFailure {
   if (error.kind === "authentication") {
     return publicFailure(
       "PROVIDER_UNAVAILABLE",
-      "Claude Code authentication expired. Run `claude auth login` in a terminal, then retry this saying.",
+      "Claude Code authentication expired. Run `claude auth login` in a terminal, then retry quote regeneration.",
     );
   }
   if (error.kind === "cleanup-failed") {
@@ -290,8 +294,8 @@ function providerFailure(error: unknown): RouteFailure {
   return publicFailure(
     "PROVIDER_FAILED",
     error.kind === "aborted"
-      ? "The saying request was cancelled; nothing was accepted."
-      : "Claude Code could not complete the saying request; nothing was accepted.",
+      ? "The quote regeneration request was cancelled; the current quote was unchanged."
+      : "Claude Code could not complete quote regeneration; the current quote was unchanged.",
   );
 }
 
@@ -338,7 +342,7 @@ export class SayingServerRuntime {
       request.resume();
       writeFailure(
         response,
-        publicFailure("BAD_REQUEST", "Saying API routes do not accept query parameters."),
+        publicFailure("BAD_REQUEST", "Quote-selection API routes do not accept query parameters."),
       );
       return;
     }
@@ -352,7 +356,7 @@ export class SayingServerRuntime {
         request.resume();
         writeFailure(
           response,
-          publicFailure("METHOD_NOT_ALLOWED", "Use GET to review saying disclosure."),
+          publicFailure("METHOD_NOT_ALLOWED", "Use GET to review quote disclosure."),
           "GET",
         );
         return;
@@ -362,14 +366,14 @@ export class SayingServerRuntime {
     }
     if (request.method !== "POST") {
       request.resume();
-      writeFailure(response, publicFailure("METHOD_NOT_ALLOWED", "Use POST to generate a saying."), "POST");
+      writeFailure(response, publicFailure("METHOD_NOT_ALLOWED", "Use POST to regenerate a quote."), "POST");
       return;
     }
     if (!isJsonContentType(headerValue(request, "content-type"))) {
       request.resume();
       writeFailure(
         response,
-        publicFailure("UNSUPPORTED_MEDIA_TYPE", "Saying generation accepts application/json only."),
+        publicFailure("UNSUPPORTED_MEDIA_TYPE", "Quote regeneration accepts application/json only."),
       );
       return;
     }
@@ -379,7 +383,7 @@ export class SayingServerRuntime {
         response,
         publicFailure(
           "DISCLOSURE_REQUIRED",
-          "Review and acknowledge the current saying provider, prompt, and outbound fields first.",
+          "Review and acknowledge the current quote provider, prompt, and outbound fields first.",
         ),
       );
       return;
@@ -388,7 +392,10 @@ export class SayingServerRuntime {
       request.resume();
       writeFailure(
         response,
-        publicFailure("PROVIDER_UNAVAILABLE", "Badge is shutting down; start it again to generate."),
+        publicFailure(
+          "PROVIDER_UNAVAILABLE",
+          "Badge is shutting down; start it again to regenerate a quote.",
+        ),
       );
       return;
     }
@@ -396,7 +403,10 @@ export class SayingServerRuntime {
       request.resume();
       writeFailure(
         response,
-        publicFailure("PROVIDER_BUSY", "Another saying is being generated; wait or cancel it first."),
+        publicFailure(
+          "PROVIDER_BUSY",
+          "Another quote regeneration is still running; wait for it to finish, then retry.",
+        ),
       );
       return;
     }

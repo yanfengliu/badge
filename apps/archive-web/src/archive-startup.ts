@@ -1,11 +1,19 @@
-import { type ArchiveApplication, type ArchiveSourceAssetInput } from "@badge/archive-application";
+import {
+  ArchivePersistenceError,
+  type ArchiveApplication,
+  type ArchiveRecoveryReasonCode,
+  type ArchiveSourceAssetInput,
+} from "@badge/archive-application";
 import type { ArchiveState } from "@badge/archive-domain";
 
-import { assertCompatibleStarterArchive } from "./restore-compatibility.js";
+import { assertCompatibleStarterArchive, EarnedSayingCompatibilityError } from "./restore-compatibility.js";
 import { auditEarnedArchiveVisuals } from "./restore-flow.js";
 import { loadStarterSourceAssets } from "./starter-assets.js";
 
 export class StarterArchiveCompatibilityError extends Error {
+  readonly requiresStateRescue: boolean;
+  readonly stateRescueReason: ArchiveRecoveryReasonCode | null;
+
   constructor(cause: unknown, afterRecovery = false) {
     const detail = cause instanceof Error ? cause.message : String(cause);
     super(
@@ -15,6 +23,9 @@ export class StarterArchiveCompatibilityError extends Error {
       { cause },
     );
     this.name = "StarterArchiveCompatibilityError";
+    this.stateRescueReason =
+      cause instanceof EarnedSayingCompatibilityError ? "earned-quotation-missing" : null;
+    this.requiresStateRescue = this.stateRescueReason !== null;
   }
 }
 
@@ -27,7 +38,31 @@ export async function initializeStarterArchive(
   onAssetsLoaded(assets);
   const loaded = await archive.initialize(expectedState, assets);
   await validateStarterArchiveForOpen(archive, expectedState, loaded);
-  return loaded;
+  return initializeReviewedSayingDefaults(archive, expectedState, loaded);
+}
+
+export async function initializeReviewedSayingDefaults(
+  archive: ArchiveApplication,
+  expectedState: ArchiveState,
+  loaded: ArchiveState,
+): Promise<ArchiveState> {
+  let reviewed = loaded;
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      return await archive.initializeSayingDefaults(expectedState, reviewed);
+    } catch (error) {
+      if (
+        !(error instanceof ArchivePersistenceError) ||
+        error.code !== "INITIALIZATION_CONFLICT" ||
+        attempt === 2
+      ) {
+        throw error;
+      }
+      reviewed = await archive.state();
+      await validateStarterArchiveForOpen(archive, expectedState, reviewed);
+    }
+  }
+  throw new Error("Archive quotation-default initialization exhausted its bounded retry loop.");
 }
 
 export async function validateStarterArchiveForOpen(

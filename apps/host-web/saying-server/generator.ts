@@ -7,7 +7,7 @@ import { TextDecoder } from "node:util";
 import {
   buildCanonicalSayingUserMessage,
   SAYING_PROMPT_VERSION,
-  SAYING_SYSTEM_PROMPT_V2,
+  SAYING_SYSTEM_PROMPT_V3,
   parseSayingModelResponseMessage,
   resolveSayingModelResponse,
   sayingProviderResultSchema,
@@ -164,7 +164,7 @@ async function createTaskRoot(): Promise<TaskRoot> {
   const root = await mkdtemp(path.join(tmpdir(), "badge-saying-"));
   const stats = await lstat(root, { bigint: true });
   if (!stats.isDirectory() || stats.isSymbolicLink() || stats.ino <= 0n) {
-    throw new SayingGenerationFailure("failed", "The saying task directory could not be secured.");
+    throw new SayingGenerationFailure("failed", "The quote-selection task directory could not be secured.");
   }
   return { path: root, device: stats.dev, inode: stats.ino };
 }
@@ -180,7 +180,10 @@ async function cleanupTaskRoot(taskRoot: TaskRoot): Promise<void> {
     relative.startsWith(`..${path.sep}`) ||
     path.isAbsolute(relative)
   ) {
-    throw new SayingGenerationFailure("failed", "The saying task directory failed its cleanup boundary.");
+    throw new SayingGenerationFailure(
+      "failed",
+      "The quote-selection task directory failed its cleanup boundary.",
+    );
   }
   try {
     const stats = await lstat(target, { bigint: true });
@@ -190,7 +193,10 @@ async function cleanupTaskRoot(taskRoot: TaskRoot): Promise<void> {
       stats.dev !== taskRoot.device ||
       stats.ino !== taskRoot.inode
     ) {
-      throw new SayingGenerationFailure("failed", "The saying task directory changed before cleanup.");
+      throw new SayingGenerationFailure(
+        "failed",
+        "The quote-selection task directory changed before cleanup.",
+      );
     }
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") return;
@@ -211,7 +217,7 @@ function claudeArguments(): readonly string[] {
     "--effort",
     "low",
     "--system-prompt",
-    SAYING_SYSTEM_PROMPT_V2,
+    SAYING_SYSTEM_PROMPT_V3,
     "--json-schema",
     JSON.stringify(CLAUDE_SAYING_JSON_SCHEMA),
     "--tools=",
@@ -288,19 +294,27 @@ function parseClaudeEnvelope(bytes: Buffer, request: SayingRequest): SayingProvi
     if (typeof canonicalResponse !== "string") throw new TypeError("Missing structured output.");
     return resolveSayingModelResponse(parseSayingModelResponseMessage(canonicalResponse), request);
   } catch (cause) {
-    throw new SayingGenerationFailure("failed", "Claude Code returned an invalid saying.", { cause });
+    throw new SayingGenerationFailure("failed", "Claude Code returned an invalid quotation selection.", {
+      cause,
+    });
   }
 }
 
 function translateChildFailure(error: unknown): SayingGenerationFailure {
   if (error instanceof SayingGenerationFailure) return error;
   if (!(error instanceof BoundedChildFailure)) {
-    return new SayingGenerationFailure("failed", "Claude Code could not complete the saying request.", {
-      cause: error,
-    });
+    return new SayingGenerationFailure(
+      "failed",
+      "Claude Code could not complete the quote-selection request.",
+      {
+        cause: error,
+      },
+    );
   }
   if (error.kind === "aborted") {
-    return new SayingGenerationFailure("aborted", "The saying request was cancelled.", { cause: error });
+    return new SayingGenerationFailure("aborted", "The quote regeneration request was cancelled.", {
+      cause: error,
+    });
   }
   if (error.kind === "timeout") {
     return new SayingGenerationFailure(
@@ -343,7 +357,9 @@ export class ClaudeSayingGenerator implements SayingGenerator {
   async generate(input: SayingRequest, signal: AbortSignal): Promise<SayingProviderResult> {
     const validated = sayingRequestSchema.parse(input);
     const canonicalUserMessage = buildCanonicalSayingUserMessage(validated);
-    if (signal.aborted) throw new SayingGenerationFailure("aborted", "The saying request was cancelled.");
+    if (signal.aborted) {
+      throw new SayingGenerationFailure("aborted", "The quote regeneration request was cancelled.");
+    }
 
     let taskRoot: TaskRoot | undefined;
     let result: SayingProviderResult | undefined;
@@ -400,14 +416,14 @@ export class ClaudeSayingGenerator implements SayingGenerator {
     if (preserveTaskRoot) {
       throw new SayingGenerationFailure(
         "cleanup-failed",
-        "Badge could not prove its saying process tree stopped, so its private temporary workspace was preserved.",
+        "Badge could not prove its quote-selection process tree stopped, so its private temporary workspace was preserved.",
         { cause: failure },
       );
     }
     if (failure && cleanupFailure) {
       throw new SayingGenerationFailure(
         "cleanup-failed",
-        "The saying request failed and its private temporary workspace could not be cleaned.",
+        "The quote-selection request failed and its private temporary workspace could not be cleaned.",
         { cause: new AggregateError([failure, cleanupFailure]) },
       );
     }
@@ -415,11 +431,11 @@ export class ClaudeSayingGenerator implements SayingGenerator {
     if (cleanupFailure) {
       throw new SayingGenerationFailure(
         "cleanup-failed",
-        "The saying was withheld because its private temporary workspace could not be cleaned.",
+        "The selected quotation was withheld because its private temporary workspace could not be cleaned.",
         { cause: cleanupFailure },
       );
     }
-    if (!result) throw new SayingGenerationFailure("failed", "Claude Code returned no saying.");
+    if (!result) throw new SayingGenerationFailure("failed", "Claude Code returned no quotation selection.");
     return result;
   }
 }
@@ -429,17 +445,12 @@ export class FixtureSayingGenerator implements SayingGenerator {
 
   async generate(input: SayingRequest, signal: AbortSignal): Promise<SayingProviderResult> {
     const validated = sayingRequestSchema.parse(input);
-    if (signal.aborted) throw new SayingGenerationFailure("aborted", "The saying request was cancelled.");
-    const sayings: Record<string, string> = {
-      Yosemite: "Granite keeps the long view.",
-      Sapiens: "A whole species between two covers.",
-      "Bachelor's degree": "The tassel was worth the tangle.",
-    };
+    if (signal.aborted) {
+      throw new SayingGenerationFailure("aborted", "The quote regeneration request was cancelled.");
+    }
+    const quotation = validated.allowedQuotations[0]!;
     return sayingProviderResultSchema.parse({
-      response: {
-        kind: "original",
-        saying: sayings[validated.title] ?? "A fine chapter, honestly earned.",
-      },
+      response: resolveSayingModelResponse({ quotationId: quotation.id }, validated),
       provenance: {
         provider: "fixture-local-preview",
         model: "curated-fixture-v1",

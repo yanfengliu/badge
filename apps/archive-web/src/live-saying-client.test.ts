@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import { SAYING_PROMPT_VERSION } from "@badge/saying-contract";
+import { SAYING_PROMPT_VERSION, type SayingRequest } from "@badge/saying-contract";
+import { starterBadges } from "@badge/catalogue-fixtures/archive";
 import {
   SAYING_DISCLOSURE,
   SAYING_DISCLOSURE_FINGERPRINT,
@@ -17,10 +18,24 @@ import {
   type SayingFetch,
 } from "./live-saying-client";
 
-const promptInput = {
+const quotation = starterBadges[0]!.historicalQuotations[1]!;
+const promptInput: SayingRequest = {
   title: "Yosemite",
   criterion: "Visit Yosemite National Park",
-} as const;
+  allowedQuotations: [{ ...quotation }],
+};
+
+function successfulProposal() {
+  return {
+    response: { kind: "quotation", saying: quotation.text, quotation },
+    provenance: {
+      provider: "claude-code",
+      model: "claude-sonnet-4-6",
+      promptVersion: SAYING_PROMPT_VERSION,
+      generatedAt: "2026-08-23T22:00:00.000Z",
+    },
+  } as const;
+}
 
 function jsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -115,17 +130,7 @@ describe("live saying HTTP client", () => {
 
   it("sends exactly one canonical POST with the acknowledged fingerprint and controller signal", async () => {
     const review = buildSayingDisclosureReview(promptInput);
-    const fetcher = vi.fn<SayingFetch>(async () =>
-      jsonResponse({
-        response: { kind: "original", saying: "Worth every switchback." },
-        provenance: {
-          provider: "claude-code",
-          model: "claude-sonnet-4-6",
-          promptVersion: SAYING_PROMPT_VERSION,
-          generatedAt: "2026-08-23T22:00:00.000Z",
-        },
-      }),
-    );
+    const fetcher = vi.fn<SayingFetch>(async () => jsonResponse(successfulProposal()));
     const signal = new AbortController().signal;
     const provider = createLiveSayingProvider({
       acknowledgedFingerprint: () => SAYING_DISCLOSURE_FINGERPRINT,
@@ -134,7 +139,7 @@ describe("live saying HTTP client", () => {
     });
 
     await expect(provider.propose({ requestId: 1, promptInput, signal })).resolves.toMatchObject({
-      response: { kind: "original", saying: "Worth every switchback." },
+      response: { kind: "quotation", saying: quotation.text, quotation },
     });
     expect(fetcher).toHaveBeenCalledTimes(1);
     const [path, init] = fetcher.mock.calls[0]!;
@@ -156,20 +161,7 @@ describe("live saying HTTP client", () => {
   it.each([201, 202, 204] as const)(
     "rejects generation body under non-contract success status %i",
     async (status) => {
-      const fetcher = vi.fn<SayingFetch>(async () =>
-        successfulLookingResponse(
-          {
-            response: { kind: "original", saying: "Worth every switchback." },
-            provenance: {
-              provider: "claude-code",
-              model: "claude-sonnet-4-6",
-              promptVersion: SAYING_PROMPT_VERSION,
-              generatedAt: "2026-08-23T22:00:00.000Z",
-            },
-          },
-          status,
-        ),
-      );
+      const fetcher = vi.fn<SayingFetch>(async () => successfulLookingResponse(successfulProposal(), status));
       const provider = createLiveSayingProvider({
         acknowledgedFingerprint: () => SAYING_DISCLOSURE_FINGERPRINT,
         canonicalUserMessage: () => buildSayingDisclosureReview(promptInput).canonicalUserMessage,
@@ -313,12 +305,12 @@ describe("live saying HTTP client", () => {
       visible = error instanceof Error ? error.message : String(error);
     }
     expect(visible).toBe(
-      "Saying disclosure could not reach the same-origin Badge saying service; restart the local Badge site and retry.",
+      "Quote provider disclosure could not reach the same-origin Badge quote service; restart the local Badge site and retry.",
     );
     expect(visible).not.toContain(privateSentinel);
   });
 
-  it("translates generation network and redirect failures without exposing engine details", async () => {
+  it("translates regeneration network and redirect failures without exposing engine details", async () => {
     const privateSentinel = "redirect blocked by browser engine";
     const fetcher = vi.fn<SayingFetch>(async () => {
       throw new TypeError(privateSentinel);
@@ -336,7 +328,7 @@ describe("live saying HTTP client", () => {
       visible = error instanceof Error ? error.message : String(error);
     }
     expect(visible).toBe(
-      "Saying generation could not reach the same-origin Badge saying service; restart the local Badge site and retry.",
+      "Quote regeneration could not reach the same-origin Badge quote service; restart the local Badge site and retry.",
     );
     expect(visible).not.toContain(privateSentinel);
   });
@@ -359,7 +351,7 @@ describe("live saying HTTP client", () => {
   it("rejects provenance that is not pinned to the disclosed Claude provider and model", async () => {
     const fetcher = vi.fn<SayingFetch>(async () =>
       jsonResponse({
-        response: { kind: "original", saying: "Worth every switchback." },
+        response: { kind: "quotation", saying: quotation.text, quotation },
         provenance: {
           provider: "another-provider",
           model: "another-model",

@@ -14,7 +14,6 @@ export interface SayingRuntime {
   readonly kind: "fixture" | "live";
   readonly controller: SayingProposalController;
   readonly disclosureGate: SayingDisclosureGate | null;
-  readonly proposalSourceLabel: string;
   readonly providerNote: string;
   readonly handleProposalSnapshot: (snapshot: SayingProposalSnapshot) => void;
   readonly dispose: () => void;
@@ -30,9 +29,7 @@ export function createSayingRuntime(
       kind: "fixture",
       controller: new SayingProposalController(createFixtureSayingProvider(fixtureSources)),
       disclosureGate: null,
-      proposalSourceLabel: "local preview",
-      providerNote:
-        "Fixture mode uses curated local passages and source-checked quotations. No model call is made.",
+      providerNote: "Fixture mode rotates only source-checked historical quotations. No model call is made.",
       handleProposalSnapshot: () => undefined,
       dispose: () => undefined,
     };
@@ -43,7 +40,9 @@ export function createSayingRuntime(
   const disclosureGate = new SayingDisclosureGate(
     (signal) => fetchSayingDisclosure(signal, fetcher),
     async (intent, review) => {
-      if (!controller) throw new Error("Live saying runtime is not initialized; reload Badge and try again.");
+      if (!controller) {
+        throw new Error("Live quote-regeneration runtime is not initialized; reload Badge and try again.");
+      }
       authorizedCanonicalUserMessage = review.canonicalUserMessage;
       try {
         await controller.dispatch(intent);
@@ -67,9 +66,8 @@ export function createSayingRuntime(
     kind: "live",
     controller,
     disclosureGate,
-    proposalSourceLabel: "Claude Code",
     providerNote:
-      "Claude Code writes only when you ask. Historical quotations are selected by ID from Badge’s source-checked list; Claude never supplies their words or attribution.",
+      "Claude Code selects only by ID from Badge’s source-checked quotation list; it never supplies the words or attribution.",
     handleProposalSnapshot: (snapshot) => {
       if (isDisclosureRequiredClientMessage(snapshot.error)) {
         void disclosureGate.reopenForRecord(snapshot.recordId);

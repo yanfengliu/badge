@@ -9,7 +9,6 @@ import {
 export interface FixtureSayingSource {
   readonly title: string;
   readonly criterion: string;
-  readonly sayingSuggestions: readonly string[];
 }
 
 function fixtureKey(title: string, criterion: string): string {
@@ -17,7 +16,7 @@ function fixtureKey(title: string, criterion: string): string {
 }
 
 function abortedRequestError(): Error {
-  const error = new Error("The local saying preview request was cancelled.");
+  const error = new Error("The local quotation-selection request was cancelled.");
   error.name = "AbortError";
   return error;
 }
@@ -39,20 +38,17 @@ export function createFixtureSayingProvider(
       const source = sourceByAchievement.get(key);
       if (!source) {
         throw new Error(
-          `No local saying previews are published for ${input.title}; connect a live provider or publish preview lines.`,
+          `No source-checked quotation bank is published for ${input.title}; add a reviewed quotation bank or use a supported badge.`,
         );
       }
-      const proposals = [
-        ...source.sayingSuggestions.map((saying) => ({ kind: "original" as const, saying })),
-        ...(input.allowedQuotations ?? []).map((quotation) => ({
-          kind: "quotation" as const,
-          saying: quotation.text,
-          quotation,
-        })),
-      ];
+      const proposals = (input.allowedQuotations ?? []).map((quotation) => ({
+        kind: "quotation" as const,
+        saying: quotation.text,
+        quotation,
+      }));
       if (proposals.length === 0) {
         throw new Error(
-          `Local saying previews for ${input.title} are empty; publish at least one preview paragraph or quotation.`,
+          `No alternative source-checked quotations are available for ${input.title}; publish another verified quotation before regenerating.`,
         );
       }
 
