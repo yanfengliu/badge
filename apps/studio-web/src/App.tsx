@@ -3,6 +3,7 @@ import { studioFixtureCandidates } from "@badge/catalogue-fixtures/studio";
 import { BadgeViewer } from "@badge/renderer-web";
 import { DEFAULT_RENDER_RECIPE, type RenderRecipe } from "@badge/render-recipe";
 import { companionAppHref } from "../../local-origins";
+import { ArtDirectionLibrary } from "./ArtDirectionLibrary";
 import { candidateIdentityKey, uploadedCandidateIdentity } from "./candidate-identity";
 import { assertStudioFixtureIntegrity } from "./fixture-integrity";
 import {
@@ -42,13 +43,11 @@ export function App() {
   const uploadInput = useRef<HTMLInputElement>(null);
   const ownedUrls = useRef(new Set<string>());
   const store = useRef<StudioStore | null>(null);
-
   const selected = useMemo(
     () => resolveCandidateSelection(candidates, selectedKey),
     [candidates, selectedKey],
   );
   const capabilities = candidateCapabilities(selected);
-
   const handleStorageFailure = useCallback((error: unknown) => {
     if (error instanceof StudioStoreError) {
       store.current?.close();
@@ -493,6 +492,7 @@ export function App() {
             </button>
           </div>
         </section>
+        <ArtDirectionLibrary />
       </main>
     </div>
   );

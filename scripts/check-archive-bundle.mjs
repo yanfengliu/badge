@@ -9,6 +9,8 @@ const forbiddenText = [
   { label: "the generator-only @jsquash dependency", pattern: /@jsquash/i },
   { label: "a WebP decoder marker", pattern: /webp(?:_dec|decoder|\.wasm)/i },
   { label: "the removed WASM CSP exception", pattern: /wasm-unsafe-eval/i },
+  { label: "the Studio-only catalogue prompt compiler", pattern: /ACHIEVEMENT REFERENCE DATA/i },
+  { label: "the Studio-only art-style registry", pattern: /pixel-cluster-landscape/i },
 ];
 
 const files = await listFiles(archiveOutputDirectory);

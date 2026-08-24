@@ -1,0 +1,15 @@
+{
+  "name": "@badge/catalogue-authoring",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./parks": "./src/us-national-parks.ts",
+    "./styles": "./src/art-styles.ts",
+    "./prompts": "./src/prompt-recipe.ts",
+    "./campaign": "./src/national-parks-campaign.ts",
+    "./common-campaign": "./src/common-achievement-campaign.ts",
+    "./ideas": "./src/common-achievements.ts"
+  }
+}

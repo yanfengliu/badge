@@ -12,6 +12,8 @@ The target is a Node 24 npm workspace with strict TypeScript, React, and Vite, c
 
 The 2026-08-23 foundation implements that workspace, the two route-scoped builds on one remembered localhost origin, separate IndexedDB repositories, inward-facing contract packages, explicit non-destructive saying proposals with direct writing, prompt-v2 model-written paragraphs and source-checked historical-quotation selection, exact minimal-payload contracts, a live same-listener Claude Code adapter with a no-model-call first-use disclosure review, deterministic fixture art, a PNG-only canonical pack compiler and hostile dependency-closed admission module, reproducible and independently admitted starter catalogue and theme pack bytes, self-contained backup of the current Archive records and exact fully decoded earned visual bytes, qualified-identity refusal before restore, state-preserving corrupt-source repair, and a shared React Three Fiber renderer candidate. Durable Archive source images are restricted to strict PNG. Studio and tracked developer fixtures may use WebP or JPEG before publication or deterministic local derivation normalizes their decoded pixels to PNG outside Git. It does not yet implement installed-pack storage or ledgers, complete backup closure for arbitrary installed but unearned packs, Studio project backup or durable release history, `.badgebrief` UI, live art-provider adapters, service workers, the renderer stress/performance gate, or later roadmap scope.
 
+The same foundation now includes a pure Studio-only `catalogue-authoring` package with the official NPS `National Parks (63)` edition, `63` selected source-study manifests, three candidate plans per park, a `24`-revision creator-neutral style registry, deterministic exact source-art prompt compilation, and a `57`-idea common-achievement bank. These records are authoring inputs rather than admitted definitions or published visuals; Archive does not import them, and Phase 3 publication remains incomplete.
+
 The Archive presentation layer exposes Collection and Timeline as ephemeral sections over the same loaded `ArchiveState`. Timeline is a pure earned-record projection: it adds no repository, migration, provider call, or durable navigation field; it uses only record-owned occurrence and activation data plus the exact activation-pinned source and render recipe. The shared renderer composes a recipe-driven static badge preview for every card without allocating a Canvas or WebGL context, and one ephemeral record ID permits at most one card to replace its preview with the live 3D or renderer-independent fallback viewer; opening an entry selects that same record in Collection. Repeat occurrences remain a separate future domain and persistence decision.
 
 The foundation's built-in catalogue still enters Archive as validated fixture state rather than through the future install UI. Its offline generator nevertheless compiles actual canonical `badge.theme.heirloom@1.0.0` and `badge.catalogue.starter@1.0.0-alpha.3` containers, pins their exact digests, independently admits both, and proves the catalogue's exact dependency graph and fallback-template closure. The Studio publishing fixture similarly offers its targeted `.badgepack` together with the exact validated `.badgetheme`; this executable closure must not be described as durable release history or Archive installation.
@@ -30,7 +32,11 @@ The primary dependency directions are:
 
 `studio-web → studio-application → studio-domain`
 
+`studio-web → catalogue-authoring`
+
 `studio-application → authoring-request-contract + pack-compiler + pack-contract + render-recipe + art-generation-contract`
+
+`catalogue-authoring → no Archive, React, persistence, renderer, pack, file, network, or provider implementation`
 
 `pack-compiler → pack-contract + render-recipe`
 
@@ -66,6 +72,7 @@ packages/
   render-recipe/        engine-neutral geometry, material, fallback, and appearance contracts
   renderer-web/         shared live WebGL and renderer-independent fallback adapters
   art-generation-contract/  Studio and art-companion request-response schemas only
+  catalogue-authoring/      sourced catalogue briefs, immutable style revisions, candidate plans, selected-study provenance, and deterministic prompt recipes for Studio only
   saying-contract/      provider-neutral Archive request, response, prompt, and normalization contracts
   saying-live-contract/ exact same-origin disclosure, live route, provider, model, and response protocol
 tests/
@@ -355,6 +362,26 @@ A `TargetedVisualPack` must include the matching authoring-request ID, local def
 Installed versions are immutable by `PackRef`. Installing the same bytes is idempotent, while reusing `(packId, version)` with a different digest is a rejected same-version fork; a changed artifact must increment its version. Archive appends every admitted mapping to an immutable `SeenPackRelease` ledger before installation, and Studio uses its independent `ReservedPackRelease` ledger before export. These small ledgers survive uninstall and project deletion and are unioned, never rolled back, during restore, with any conflicting mapping rejected before mutation. Updates coexist with versions pinned by planned or earned records until an explicit reviewed migration creates a new reference, and uninstall cannot orphan a personal record or delete its required objects.
 
 Each pack is self-contained for the objects in its manifest and may depend only on exact other self-contained packs through `PackRef`; there is no loose asset sidecar. Git contains pack schemas, compiler and admission code, small synthetic source fixtures, source metadata, built-in manifest source, and optional small registry records containing version, byte size, and digest. Heavy curated pack files ship on local disk or release storage outside ordinary Git until an explicitly chosen object store exists.
+
+## Catalogue authoring boundary
+
+`catalogue-authoring` is a pure, read-only Studio input package. It owns sourced semantic briefs, stable candidate roles, immutable creator-neutral style revisions, deterministic prompt assembly, selected-source-study provenance, and unselected common-achievement ideas; it has no browser, persistence, renderer, pack compiler, Archive, file-system, network, or provider authority.
+
+The national-parks edition is keyed as `2026-07-01.nps` from the official National Park Service `National Parks (63)` section, last updated 2026-07-01 and retrieved 2026-08-23. Raw authoring IDs remain independent of NPS site codes because grouped NPS sites can share one public code across distinct statutory units, but they remain planned pack-local IDs rather than qualified Archive identity until Phase 3 assigns and reconciles an exact `packId` lineage.
+
+Each of the `63` park projects records exactly three versioned candidate plans: a recognizable subject-led `landmark-witness`, an original `emblematic-metaphor`, and a terrain-, ecology-, pattern-, or route-led `terrain-memory`. Each selected-source manifest binds one of those plans to a deliberately promoted `896 × 896` JPEG study with exact asset hash, recorded-prompt hash, prompt-recipe revision, candidate key, accessible description, declared campaign date, sanitized generation and rights provenance, source-normalization recipe, and an integrity-bound `128 × 128` list derivative. The digests prove association and immutability rather than historical model-call causation.
+
+The prompt compiler is deterministic over the curated brief, candidate plan, role revision, and style revision. It fixes section order, requires every interpolated field and style directive to be visible NFC text without control or format characters, reports the exact candidate and field when validation fails, caps the result at `16 KiB` UTF-8, and ends with an output-contract section requiring the generated image to be square full-bleed text-free source art without a badge silhouette, physical construction, presentation background, or object-level light treatment.
+
+The `24` initial v1 style entries cover materially different pixel, fiber, paint, print, ink, cartographic, paper, mosaic, geometric, ceramic, and wood directions. Existing `{ styleId, revision }` prompt behavior is immutable after use; under the current ID-only v1 lookup each curated expansion either adds a new creator-neutral style ID for a proved coverage gap or records why the existing library is sufficient. A later revision of an existing style, role, or prompt recipe requires versioned references and dispatch that preserve the prior implementation before it can coexist.
+
+Selected source studies are not `PublishedBadgeVisual` values and do not cross into Archive. The complete parks release still needs selected all-parks composite art, a render recipe and fallback closure for every entry, strict publish-safe normalization, canonical pack compilation, independent admission, and explicit installation.
+
+The `63` selected `896 × 896` JPEG studies are each at or below `256 KiB` and total exactly `15,211,909` bytes, about `14.51 MiB`, as tracked authoring inputs. Their `63` deterministic `128 × 128` list derivatives total `373,657` bytes with an `8,004`-byte maximum; Studio lists use only those derivatives and reserve the one full source for the selected detail. The all-list worst-case decoded-pixel bound is therefore one `896 × 896` image plus sixty-three `128 × 128` images, `7,340,032` bytes, about `7.00 MiB`. That repository and browser result does not establish runtime-pack capacity: strict-PNG admission charges decoded scanline or RGBA size, so direct use of all `63` studies at `896 × 896` would charge about `193 MiB` before the composite or additional maps, above the current `64 MiB` aggregate cap.
+
+Applying the current decoded-image admission formula to `448 × 448` derivatives leaves a plausible route under that cap alongside the current historical sources without weakening hostile-input safety, but Phase 3 must still build the canonical derivatives and admit the complete pack before relying on it. Publication remains blocked in this unit because the product still lacks the complete renderer and fallback closure, lazy-loading behavior at all-parks scale, runtime pack installation and admission flow, starter-lineage migration and raw-ID reconciliation, Archive backup v3 for the installed closure, resolved composite eligibility and catalogue-update semantics, a selected composite presentation, and canonical published bytes.
+
+The `57` common-achievement records are ideation inputs only. Their stable IDs, criteria, cues, and suggested styles do not become Archive suggestions, definitions, visuals, or lifecycle state until a later curation unit creates complete published entries through the same pack boundary.
 
 ## Catalogue behavior
 

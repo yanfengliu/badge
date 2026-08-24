@@ -44,13 +44,14 @@ Before commit, stage the exact unit, then run `node scripts/check-staged-secrets
 
 ## Session start
 
-Read `docs/learning/lessons.md`, `docs/design/vision.md`, `docs/design/product-spec.md`, `docs/design/visual-direction.md`, `docs/architecture/ARCHITECTURE.md`, `docs/design/roadmap.md`, `docs/policies/local-rules.md`, and `docs/devlog/summary.md` before changing product behavior.
+Read `docs/learning/lessons.md`, `docs/design/vision.md`, `docs/design/product-spec.md`, `docs/design/visual-direction.md`, `docs/design/art-style-catalogue.md`, `docs/architecture/ARCHITECTURE.md`, `docs/design/roadmap.md`, `docs/policies/local-rules.md`, and `docs/devlog/summary.md` before changing product behavior.
 
 ## Invariants & boundaries
 
 - Git owns the application, schemas, migrations, curated catalogue source, computed-goal rules, Studio prompt templates, published renderer manifests, optional small pack registry records, tests, and intentionally promoted small assets; it never owns personal achievement state, heavyweight published pack files, or ordinary Studio drafts and media.
 - Archive-local state owns local definitions, issued authoring requests, activations, occurrence dates, notes, sayings, privacy choices, installed packs, and Archive backups; Studio-local state separately owns uploads, generated candidates, selected source art, processing derivatives, drafts, and Studio backups. Preserve unreadable or old data rather than silently resetting it.
 - Generated art contains no typography; titles, sayings, dates, and metadata are rendered by the UI. Uploaded originals are immutable, and processing is non-destructive.
+- Promoted generated catalogue art records accessible descriptions, sanitized generation and rights provenance, recorded exact-prompt association, deterministic normalization, and integrity-bound list derivatives. Hashes prove association rather than generation causation; list views use bounded derivatives and reserve a full source for the selected detail.
 - Shape, material, border color, border width, crop, and positioning are structured appearance data edited only in Badge Studio, frozen by publication, and rendered read-only in the archive.
 - A badge is a versioned, engine-neutral 3D render recipe, not a flattened image or CSS tilt; Badge Studio and archive detail provide live rotation, zoom, and dynamic-light inspection, while gallery thumbnails may be cached renders.
 - Keep camera orbit, zoom, and light position out of durable badge data unless a later decision adds saved showcase poses. Never persist renderer objects, GPU handles, or engine-specific scene graphs.

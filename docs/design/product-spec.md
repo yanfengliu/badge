@@ -142,6 +142,8 @@ A Studio project starts from a theme, packaged catalogue definition, explicitly 
 
 Studio proposes multiple genuinely different art candidates, defaulting to three in the selected design. The current recommendation is to vary them across literal, symbolic, and map, pattern, or narrative compositions; that taxonomy is not an owner-mandated product rule.
 
+The curated catalogue-authoring library records those three roles as `landmark-witness@1`, `emblematic-metaphor@1`, and `terrain-memory@1`, combines them with immutable creator-neutral style revisions, and compiles exact candidate prompts deterministically. These records are Studio release-authoring inputs and never make an unresolved definition visible in Archive.
+
 Candidates appear at a useful comparison size with clear keyboard-reachable selection state. The developer can select one, regenerate the set, refine one candidate, upload an image, process an upload, or leave without losing the Studio draft.
 
 An uploaded original is preserved unchanged in Studio. Optional processing creates new candidates or derivatives and must disclose before an image leaves the device for model processing.
@@ -258,6 +260,10 @@ Artwork may contain lighting that belongs inside the depicted scene, such as sun
 
 Candidate generation and upload processing share a provider-independent Studio application boundary so deterministic fixtures can exercise the complete developer flow without paid calls.
 
+The tracked style library is deliberately diverse rather than one compulsory collection look. Its initial `24` immutable revisions include pixel-cluster landscapes, thread-painted embroidery, historical impressionist qualities expressed through broken color and atmospheric light, printmaking, ink, cartography, paper, mosaic, ceramic, wood, and other creator-neutral media; the complete registry and exact prompt grammar live in [art-style-catalogue.md](art-style-catalogue.md).
+
+Once a `{ styleId, revision }` has compiled a curated candidate, its prompt behavior is immutable. A catalogue expansion reviews visual-family gaps and either introduces a new style ID under the current v1 lookup or records why existing coverage is sufficient; a later revision of an existing ID requires versioned references and retained old-revision dispatch before use, and never silently rewrites prior style directives.
+
 Rejected candidates are Studio-local temporary data until a retention rule is chosen. Selected working finals and uploaded originals are durable Studio project data and belong in a complete Studio backup; the archive receives only the published final, render recipe, sanitized provenance, and required runtime derivatives.
 
 ## Activation flow
@@ -290,7 +296,11 @@ The owner has not confirmed this recommendation, so future agents may implement 
 
 Collections can be handmade or prepopulated.
 
-The initial U.S. National Parks catalogue contains an individual definition for every park in a sourced, versioned edition.
+The initial U.S. National Parks authoring catalogue contains an authoring record and planned pack-local definition ID for every park in the National Park Service `National Parks (63)` section, using edition `2026-07-01.nps` from the official page last updated 2026-07-01 and retrieved 2026-08-23. Those raw IDs do not become qualified Archive definitions until a published pack assigns and reconciles an exact `packId` lineage.
+
+The 2026-08-23 authoring campaign records three planned candidate directions and one selected `896 × 896` source study for each of the `63` parks. Badge Studio exposes searchable park, common-achievement, and art-style segments; keeps the visible result, selected detail, and copyable exact prompt aligned; resets role and style overrides when moving between segments; and uses integrity-bound `128 × 128` derivatives for list rows while reserving the full source for one selected detail. Each source has an accessible visual description plus sanitized generation, rights, normalization, prompt-association, and thumbnail provenance. Those selected studies are not installed or published Archive badges: Phase 3 still requires a proved runtime quality tier, complete renderer recipes and fallback inputs, a separately selected all-parks composite visual, canonical pack publication, runtime installation and independent admission, starter-lineage reconciliation, Archive backup v3 for the installed closure, and resolved composite and catalogue-update semantics.
+
+The same authoring package contains `57` common-achievement ideas across adventure, community, craft, creative work, learning, life, nature, and wellbeing, with three deterministic candidate plans and prompt previews per idea. They are a Studio curation queue with suggested styles, not runtime suggestions or badge states, until selected visuals and complete presentations are published through the ordinary pack boundary.
 
 `Visited every U.S. national park` completes automatically when the active rule's required badge records are activated.
 

@@ -2,6 +2,24 @@
 
 Append decisions newest first. Never rewrite history; add a superseding entry that links to the decision it replaces.
 
+## 2026-08-23 — D-040: Treat the parks artwork as a versioned Studio authoring campaign before publication
+
+**Status:** Implemented for catalogue authoring and selected source studies only; Phase 3 pack construction, publication, admission, installation, and computed-achievement release remain open.
+
+The initial parks authoring edition uses the official National Park Service `National Parks (63)` section from the page last updated 2026-07-01 and retrieved 2026-08-23, with catalogue edition `2026-07-01.nps`. Each park has one raw authoring ID independent of potentially shared NPS site codes, one semantic and visual brief, three planned role-distinct candidates, and one deliberately selected `896 × 896` Studio source study with exact asset and recorded-prompt provenance. Sanitized provenance declares the owner-directed OpenAI image-generation workflow through Codex imagegen, trained-algorithm content origin, rights basis, exact-prompt association, and `national-park-study-jpeg@1` System.Drawing normalization recipe and quality ladder; hashes prove the frozen association, not historical call causation. Those raw IDs remain planned pack-local IDs, not qualified Archive identity, until Phase 3 assigns and reconciles an exact `packId` lineage.
+
+Candidate prompts compile deterministically through `badge-source-art@1` from normalized reference data, one immutable candidate-role revision, one immutable creator-neutral style revision, and a fixed output contract. The initial `24` v1 style entries intentionally span pixel, fiber, paint, print, ink, cartographic, paper, mosaic, geometric, ceramic, and wood approaches; the prompt contract requires text-free full-bleed source art, while shape, crop, border, edge, material, relief, depth, reverse face, and movable physical lighting remain renderer-owned.
+
+Every curated catalogue expansion now performs an explicit style-coverage review. Under the current ID-only v1 lookup, a missing medium, mood, subject, palette, or composition capability receives a new style ID; sufficient existing coverage is recorded in the decision or devlog; no used `{ styleId, revision }`, role revision, or prompt-recipe behavior is edited in place. A later revision of an existing ID requires versioned references and compiler dispatch that preserve the prior implementation before it can coexist.
+
+The selected studies are intentionally promoted Git-tracked authoring inputs under the binary policy, not ordinary candidates and not `PublishedBadgeVisual` values. Rejected candidates, mutable Studio workspaces, provider responses, and heavy pack binaries retain their existing non-Git authority.
+
+Publication is deliberately not inferred from source selection. The sixty-three selected `896 × 896` JPEG studies are each at or below `256 KiB` and total exactly `15,211,909` bytes, about `14.51 MiB`, as tracked authoring inputs; their sixty-three integrity-bound `128 × 128` list thumbnails total `373,657` bytes and keep browsing from decoding an original in every row. Direct strict-PNG runtime use of the sources at full resolution would still charge about `193 MiB` under decoded-image admission before the composite or additional maps, above the current `64 MiB` aggregate cap. Applying the current decoded-image admission formula to `448 × 448` derivatives leaves a plausible route under the cap alongside the current historical sources, but Phase 3 must still build the canonical derivatives and admit the complete pack before relying on that route; this unit does not choose or publish it.
+
+Phase 3 must still prove the chosen quality tier and lazy-loading behavior, finish every renderer recipe and fallback input, select the composite presentation, implement runtime pack installation and independent admission, reconcile starter and future parks lineage without raw-ID rebinding, migrate Archive backup to carry the installed closure, resolve composite eligibility and catalogue-update semantics, and compile canonical bytes. The compact source-study set does not authorize weakening hostile-input limits, silently fragmenting collection identity, or claiming publication from authoring progress.
+
+The accompanying `57` common-achievement ideas are a broader Studio curation queue with stable criteria, cues, and suggested styles. They do not become runtime suggestions, badge definitions, published visuals, or personal records until later curation and ordinary pack publication make each entry complete.
+
 ## 2026-08-23 — D-039: Render Timeline badges from frozen recipes with one live inspector
 
 **Status:** Implemented for the current Archive Timeline; refines D-038's pinned-visual presentation without changing its earned-record projection or the unresolved repeat-occurrence boundary.

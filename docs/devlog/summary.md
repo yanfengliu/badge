@@ -1,5 +1,6 @@
 # Devlog Summary
 
+- 2026-08-23: Established a sourced Studio-only authoring campaign for all 63 national parks with natively reviewed source studies, deterministic parent-derived thumbnails, contained media-repair states, three candidate directions each, 24 immutable diverse art styles, exact prompts, and 57 common-achievement ideas without claiming pack publication.
 - 2026-08-23: Recast Timeline pictures as exact recipe-rendered badge artifacts with one bounded live inspector, and polished Replay activation into a dedicated focus-stable earned-memory coda.
 - 2026-08-23: Replaced the disabled Timeline placeholder with an elegant read-only chronology of earned memories, deterministic real-world date ordering, exact-memory reopening, an empty state, and responsive Archive navigation.
 - 2026-08-23: Expanded saying prompt v2 to compact new paragraphs and source-checked historical quotations selected only by exact ID, with exact request rebinding, explicit attribution, disclosure, and separate generated-versus-accepted safety limits.

@@ -8,4 +8,4 @@ When a lesson becomes a test, lint rule, or fixed gate, delete both the rule and
 
 ## Rules
 
-No anchored lessons yet.
+- A contact sheet proves collection coverage, not source conformance; inspect every promoted generated source at native resolution against factual cues, explicit exclusions, and all four edges. [Evidence](lessons-evidence.md#contact-sheets-hide-source-level-failures)

@@ -45,6 +45,16 @@ The chosen source image remains separate from the artifact construction layer so
 
 Titles, clever sayings, dates, notes, progress, and collection names are rendered by the UI with crisp typography.
 
+## Diverse art-direction library
+
+The first tracked authoring library contains `24` immutable creator-neutral style revisions spanning pixel clusters, thread-painted embroidery, historical impressionist qualities through broken color and atmospheric light, relief and intaglio printmaking, ink, cartography, gouache, tapestry, cut paper, cyanotype, watercolor, charcoal and pastel, screenprint, mosaic, fresco, geometric symbolism, ceramic underglaze, wood marquetry, scratchboard, and luminous clear-line illustration.
+
+This diversity is intentional. A national-parks collection may move between media when the medium strengthens the place, while exact briefs, restrained interface framing, consistent source-art rules, and the shared physical renderer preserve product coherence.
+
+The complete style list, candidate-role grammar, deterministic prompt assembly, and expansion policy live in [art-style-catalogue.md](art-style-catalogue.md).
+
+Every catalogue expansion reviews visual-family gaps before assigning styles. A missing capability receives a new style ID under the current v1 lookup; sufficient existing coverage is recorded in the release decision or devlog; a later revision requires versioned references and retained old-revision dispatch, and existing `{ styleId, revision }` prompt behavior is never edited silently.
+
 ## Material vocabulary
 
 Metal should feel noble and durable: blackened steel, nickel, bronze, titanium, enamel inset, or restrained patina rather than glossy plastic or toy gold.

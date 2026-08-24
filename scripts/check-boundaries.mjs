@@ -216,6 +216,7 @@ assertNoReachable("apps/archive-web/src", [
   "apps/studio-web/src",
   "packages/art-generation-contract/src",
   "packages/authoring-request-contract/src",
+  "packages/catalogue-authoring/src",
   "packages/pack-compiler/src",
 ]);
 assertNoReachable("apps/studio-web/src", [
@@ -242,6 +243,14 @@ assertNoReachable("packages/archive-domain/src", [
 assertNoReachable("packages/archive-application/src", ["apps", "packages/renderer-web/src"]);
 assertNoReachable("packages/pack-contract/src", ["apps", "packages/renderer-web/src"]);
 assertNoReachable("packages/pack-compiler/src", ["apps", "packages/renderer-web/src"]);
+assertNoReachable("packages/catalogue-authoring/src", [
+  "apps",
+  "packages/archive-application/src",
+  "packages/archive-domain/src",
+  "packages/art-generation-contract/src",
+  "packages/pack-compiler/src",
+  "packages/renderer-web/src",
+]);
 assertNoReachable("packages/saying-contract/src", [
   "apps",
   "packages/archive-application/src",
@@ -261,6 +270,7 @@ assertNoExternal("packages/archive-domain/src", ["react", "idb", "three", "@reac
 assertNoExternal("packages/archive-application/src", ["react", "three", "@react-three"]);
 assertNoExternal("packages/pack-contract/src", ["react", "idb", "three", "@react-three"]);
 assertNoExternal("packages/pack-compiler/src", ["react", "idb", "three", "@react-three"]);
+assertNoExternal("packages/catalogue-authoring/src", ["react", "idb", "three", "@react-three"]);
 assertNoExternal("packages/saying-contract/src", ["react", "idb", "three", "@react-three"]);
 assertNoExternal("packages/saying-live-contract/src", ["react", "idb", "three", "@react-three"]);
 assertNoExternalProduction("packages/saying-live-contract/src", ["vite", "@anthropic-ai", "@openai"]);
@@ -279,7 +289,13 @@ for (const scope of ["apps", "packages", "scripts"]) {
 const archiveSources = filesUnder("apps/archive-web/src")
   .map((file) => fs.readFileSync(file, "utf8"))
   .join("\n");
-for (const forbiddenSurface of ["Generate candidates", "source-art proposals", "Process selected again"]) {
+for (const forbiddenSurface of [
+  "Generate candidates",
+  "source-art proposals",
+  "Process selected again",
+  "Exact compiled prompt",
+  "ACHIEVEMENT REFERENCE DATA",
+]) {
   if (archiveSources.includes(forbiddenSurface)) {
     failures.push(`Archive exposes Studio-only surface ${JSON.stringify(forbiddenSurface)}.`);
   }
