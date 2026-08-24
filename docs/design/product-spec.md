@@ -126,6 +126,8 @@ Navigation should make collection browsing, goals, and creation easy without adv
 
 Earned and planned badges must remain visually distinguishable without making planned badges feel like failures.
 
+The current Timeline is a read-only chronology of earned badge records, ordered by the real-world occurrence end date and then start date, activation instant, and stable record ID. It shows the occurrence date or range as the primary time, labels the later activation timestamp separately as `sealed`, uses the record's frozen title, saying, optional note, and pinned visual, and reopens that exact memory in Collection. Before the first activation it presents an intentional empty state and a return-to-Collection action. The selected Archive section is ephemeral, derives from existing local records without another persistence shape, and never invokes a saying or art provider.
+
 The archive has no art-generation, upload, reprocessing, candidate, prompt, crop, material, border, or publish controls. Each visible badge arrives with one decided picture and complete 3D presentation; loading, missing, corrupt, or incompatible pack assets are actionable installation errors rather than invitations to generate in place.
 
 **Provisional Archive-first recommendation pending open decision 19:** creating a local semantic definition in the archive does not make it a browseable badge. The user explicitly exports a minimal Studio authoring request containing a random request ID, local definition ID, current semantic revision, title, criterion, optional deliberately included description, schema version, and a digest of those canonical fields; it excludes visual direction, prompts, owner identity, dates, occurrences, activation, notes, sayings, visibility, collection settings, and assets. Archive durably records the exact issued request as active. Editing the definition creates a new immutable revision, supersedes any active request, and invalidates the current revision's visual binding after warning that Studio work and visual fit are stale; prior fulfilled requests and planned or earned records retain their pinned historical semantics and visuals. A returned Studio target entry must match both durable request state and the current semantic revision before the new revision can enter planning or activation, and it cannot overwrite local semantic or personal fields. Installation marks the request fulfilled with the exact `PackRef`, same-pack replay is idempotent, and stale, superseded, or conflicting returns fail before mutation. Directly reusing another definition's presentation is not assumed until open decision 16 is resolved.
@@ -275,6 +277,8 @@ There is no confetti, bouncing loot, slot-machine motion, rarity burst, or noisy
 The repository recommendation is that the ceremony be replayable and skippable, have a reduced-motion form, and not require sound. Any future sound is optional and user-controlled.
 
 ## Repeat occurrences
+
+The implemented earned-memory Timeline currently contributes one entry per earned badge record and is not a decision about repeat cardinality.
 
 The recommended model is one durable badge with a timeline of occurrence memories, so a second Yosemite visit or reread does not create visual badge duplicates.
 

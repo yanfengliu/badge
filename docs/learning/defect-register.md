@@ -1,5 +1,15 @@
 # Defect Register
 
+## 2026-08-23 — Timeline was visible primary navigation but could not be opened
+
+**Symptom:** Clicking the Archive's `Timeline` tab did nothing because the control was disabled, so a primary section looked broken.
+
+**Investigation:** The header rendered Timeline with `disabled` and a later-slice tooltip, App had no section state or alternate view, README still listed Timeline as unimplemented, and the seeded archive had no earned records to reveal what a future view should do. Existing earned records already contained one real-world occurrence range, a separate activation timestamp, frozen semantics, an optional note, an accepted saying, and an exact visual pin, so a useful first chronology required no persistence migration. Headless Chromium then exercised the empty Timeline, activated Yosemite with a date range, saying, and note, opened the populated Timeline, reopened the exact Collection memory, and reloaded the page at `1100×900`; a second pass covered the previously hidden-navigation width at `900×900`. Both passes showed zero console errors. Independent review found that the first repair dropped keyboard focus to `BODY` when an exit control unmounted; the final repair focuses the persistent Collection control before either exit callback changes the view, and a keyboard-driven Chromium pass proved the handoff.
+
+**Root cause:** A roadmap placeholder was exposed as primary navigation instead of being either omitted or implemented. The responsive stylesheet compounded the same class by hiding the entire Archive section navigation at widths up to `960px`.
+
+**Standing gate:** `ArchiveHeader.test.tsx` requires both section controls to be enabled, exactly marks the active section, rejects the former later-slice copy, exposes the stable Collection focus target, and invokes the Timeline callback; `TimelineView.test.tsx` requires earned-only deterministic occurrence ordering including offset-aware activation ties, accessible date and art semantics, exact memory content, singular and plural announcements, an actionable empty state, and focus-before-navigation on both Timeline exits. Archive visual verification covers empty and populated Timeline states, exact-memory reopening, keyboard focus handoff, a page reload, and visible section navigation above and below `960px`; the existing repository reload tests cover durable activation state.
+
 ## 2026-08-23 — The startup gate printed success and then kept running
 
 **Symptom:** `npm run check:local-startup` printed that the task-owned Archive and Studio listener passed, released port `4180`, and then remained alive instead of returning to the verification chain.

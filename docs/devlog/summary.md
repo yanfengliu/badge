@@ -1,5 +1,6 @@
 # Devlog Summary
 
+- 2026-08-23: Replaced the disabled Timeline placeholder with an elegant read-only chronology of earned memories, deterministic real-world date ordering, exact-memory reopening, an empty state, and responsive Archive navigation.
 - 2026-08-23: Expanded saying prompt v2 to compact new paragraphs and source-checked historical quotations selected only by exact ID, with exact request rebinding, explicit attribution, disclosure, and separate generated-versus-accepted safety limits.
 - 2026-08-23: Connected explicit Archive saying proposals to a bounded same-listener Claude Code adapter with exact no-provider-model-call disclosure, pinned provenance, actionable expired-auth handling, and no API key or fallback.
 - 2026-08-23: Separated explicit fixture-backed saying proposals from accepted lines and added the exact theme-aware runtime prompt, provider-neutral controller, and privacy boundary.

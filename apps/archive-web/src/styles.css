@@ -220,3 +220,48 @@ button {
   grid-template-columns: minmax(570px, 7fr) minmax(410px, 5fr);
   min-height: calc(100vh - 74px);
 }
+
+@media (max-width: 960px) {
+  .archive-header {
+    grid-template-columns: 1fr auto;
+    min-height: 118px;
+    padding-top: 8px;
+  }
+
+  .brand {
+    grid-row: 1;
+    grid-column: 1;
+  }
+
+  .header-actions {
+    grid-row: 1;
+    grid-column: 2;
+  }
+
+  .archive-nav {
+    grid-row: 2;
+    grid-column: 1 / -1;
+    min-height: 44px;
+    justify-self: center;
+    gap: 32px;
+  }
+}
+
+@media (max-width: 640px) {
+  .archive-header {
+    min-height: 108px;
+    padding: 6px 18px 0;
+  }
+
+  .archive-nav {
+    min-height: 40px;
+  }
+
+  .header-actions {
+    gap: 5px;
+  }
+
+  .quiet-button {
+    padding: 0 10px;
+  }
+}

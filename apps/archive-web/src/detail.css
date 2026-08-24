@@ -403,14 +403,6 @@
 }
 
 @media (max-width: 960px) {
-  .archive-header {
-    grid-template-columns: 1fr auto;
-  }
-
-  .archive-nav {
-    display: none;
-  }
-
   .archive-main {
     display: block;
   }
@@ -427,11 +419,6 @@
 }
 
 @media (max-width: 640px) {
-  .archive-header {
-    min-height: 64px;
-    padding: 0 18px;
-  }
-
   .quiet-button span {
     display: none;
   }

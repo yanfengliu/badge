@@ -2,6 +2,16 @@
 
 Append decisions newest first. Never rewrite history; add a superseding entry that links to the decision it replaces.
 
+## 2026-08-23 — D-038: Make Timeline an earned-record projection before deciding repeat occurrences
+
+**Status:** Implemented for the current Archive slice; it does not resolve open decision 1 about repeat occurrences.
+
+The visible Timeline navigation cannot remain a disabled promise. The current Archive already persists one activation with a real-world occurrence range, an activation instant, frozen semantics, an accepted saying, an optional note, visibility, and an exact visual pin for every earned record, so its first useful Timeline is a read-only projection over that existing state rather than a new repository or migration.
+
+Timeline includes only earned records with a non-null activation. It orders them by occurrence end descending, occurrence start descending, actual activation instant descending, and stable record ID; the visible occurrence date or range is primary, while the activation instant is separately labeled `sealed`. Cards use only record-owned text and resolved pinned visuals, and opening one selects that record in Collection. The section choice remains ephemeral, and opening or navigating Timeline has no provider-model-call path.
+
+This projection deliberately contributes at most one entry per current badge record. It does not add another-visit, reread, repeat-memory, delete-occurrence, or secondary-ceremony controls and therefore does not preempt the unresolved repeat-cardinality decision. A future repeat model requires its own schema, migration, restore, composite-progress, and UI decision.
+
 ## 2026-08-23 — D-037: Permit compact model-written paragraphs and source-checked historical quotations
 
 **Status:** Implemented; supersedes D-010's one-line and short-output wording while preserving its independent user-control and non-destructive proposal boundary, supersedes D-035 only for prompt v1, its short-line output contract, and its title-criterion-direction-only payload, and updates D-036's disclosed field scope and fingerprint without changing that decision's explicit-call, provider, transport, credential, or containment boundaries.

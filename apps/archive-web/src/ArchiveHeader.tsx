@@ -1,28 +1,26 @@
 import { useRef, type ChangeEvent } from "react";
 
 import { companionAppHref } from "../../local-origins";
+import { ArchiveSectionNav, type ArchiveSection } from "./ArchiveSectionNav";
 import { ArchiveMark, ArrowIcon, DownloadIcon, UploadIcon } from "./icons";
 
+export type { ArchiveSection } from "./ArchiveSectionNav";
+
 interface ArchiveHeaderProps {
+  activeSection: ArchiveSection;
+  onSectionChange: (section: ArchiveSection) => void;
   onBackup: () => void;
   onRestore: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
-export function ArchiveHeader({ onBackup, onRestore }: ArchiveHeaderProps) {
+export function ArchiveHeader({ activeSection, onSectionChange, onBackup, onRestore }: ArchiveHeaderProps) {
   const restoreInput = useRef<HTMLInputElement>(null);
   return (
     <header className="archive-header">
       <div className="brand">
         <ArchiveMark /> Badge Archive
       </div>
-      <nav className="archive-nav" aria-label="Archive sections">
-        <button className="nav-link" aria-current="page">
-          Collection
-        </button>
-        <button className="nav-link" disabled title="Timeline is coming in a later slice">
-          Timeline
-        </button>
-      </nav>
+      <ArchiveSectionNav activeSection={activeSection} onSectionChange={onSectionChange} />
       <div className="header-actions">
         <button className="quiet-button" type="button" onClick={onBackup}>
           <DownloadIcon />

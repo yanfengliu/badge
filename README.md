@@ -27,7 +27,7 @@ Startup verifies the tracked compact developer artwork, derives strict PNG runti
 
 Use `npm run verify` for the executable TypeScript, lint, unit, build, boundary, documentation, formatting, and dependency gates. Browser-flow and visual verification remain explicit checks for visual changes.
 
-This is a foundation slice rather than the complete roadmap: live Studio art-provider calls, Archive pack installation and seen-release ledger, complete installed-pack backup closure, Studio project backups and durable release history, custom `.badgebrief` handoff UI, computed all-parks completion, timeline, and sharing are not implemented yet. The generated pack fixtures prove exact bytes and dependency closure; they do not imply an Archive install UI or a durable Studio release ledger.
+This is a foundation slice rather than the complete roadmap: live Studio art-provider calls, Archive pack installation and seen-release ledger, complete installed-pack backup closure, Studio project backups and durable release history, custom `.badgebrief` handoff UI, computed all-parks completion, repeat-occurrence authoring, and sharing are not implemented yet. The generated pack fixtures prove exact bytes and dependency closure; they do not imply an Archive install UI or a durable Studio release ledger.
 
 ## Product direction
 
@@ -35,6 +35,7 @@ This is a foundation slice rather than the complete roadmap: live Studio art-pro
 - Git-tracked application code, curated catalogue source, computed-goal rules, Studio prompt templates, published renderer manifests, and small pack registry records.
 - Private local activations, dates, notes, sayings, visibility choices, installed badge packs, and backups.
 - Planned and earned badges, prebuilt collections, custom achievements, and automatically completed collection-level goals.
+- An earned-memory timeline ordered by when achievements happened, with each entry reopening its exact Archive memory; repeat occurrences remain a later product decision.
 - An everyday archive that shows only published badge designs whose picture, shape, material, border, and 3D recipe are already decided.
 - A separate developer-only Badge Studio for multi-candidate art generation, uploads, non-destructive reprocessing, 3D construction, selection, validation, and pack publishing.
 - A real-time 3D badge viewer with dynamic material lighting, mouse rotation, bounded zoom, and direct light adjustment so each artifact can be examined like a physical object.

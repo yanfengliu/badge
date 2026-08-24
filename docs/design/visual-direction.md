@@ -77,6 +77,12 @@ Collection progress is visible but subordinate to the artifact and memory.
 
 Every picture and presentation is already decided by an installed pack. The gallery never shows prompts, candidates, uploads, processing, appearance construction, provider state, or calls to create missing art.
 
+### Memory timeline
+
+The Timeline uses the same warm editorial archive language as Collection: generous margins, one quiet chronological rule, restrained date markers, and substantial memory cards rather than a dense activity feed. Real-world occurrence dates lead; the later sealed timestamp remains secondary.
+
+Each earned entry keeps the frozen badge art, title, saying, and optional note legible, with one low-emphasis action back to the full Collection memory. The empty state is composed and invitational rather than looking disabled or unfinished, and primary Archive navigation remains visible at narrow desktop widths.
+
 ### Badge Studio
 
 The dedicated developer surface separates the creative comparison area from a large live construction preview and visually identifies itself as Studio rather than the personal archive.

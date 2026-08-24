@@ -16,7 +16,8 @@ import {
   selectedArchiveVisual,
   type ActivationDraft,
 } from "./app-types";
-import { ArchiveHeader } from "./ArchiveHeader";
+import { ArchiveHeader, type ArchiveSection } from "./ArchiveHeader";
+import { ArchiveNotice, type ArchiveNoticeState } from "./ArchiveNotice";
 import {
   initializeStarterArchive,
   StarterArchiveCompatibilityError,
@@ -27,6 +28,7 @@ import { BadgeRail } from "./BadgeRail";
 import { RestoreDialog } from "./RestoreDialog";
 import { SayingActivationControl, SayingComposer } from "./SayingComposer";
 import { SayingDisclosureBoundary } from "./SayingDisclosureBoundary";
+import { TimelineView } from "./TimelineView";
 import { createStarterArchiveState, STARTER_OWNER_ID, STARTER_RECORD_IDS } from "./archive-state";
 import { downloadBytes, formatDate } from "./browser-utilities";
 import { CheckIcon } from "./icons";
@@ -52,11 +54,12 @@ const starterState = createStarterArchiveState();
 
 export function App() {
   const [state, setState] = useState<ArchiveState | null>(null);
+  const [activeSection, setActiveSection] = useState<ArchiveSection>("collection");
   const [selectedRecordId, setSelectedRecordId] = useState(STARTER_RECORD_IDS[0]);
   const [drafts, setDrafts] = useState<Record<string, ActivationDraft>>({});
   const [activating, setActivating] = useState(false);
   const [ceremonyId, setCeremonyId] = useState<string | null>(null);
-  const [notice, setNotice] = useState<{ kind: "info" | "error"; text: string } | null>(null);
+  const [notice, setNotice] = useState<ArchiveNoticeState | null>(null);
   const [pendingRestore, setPendingRestore] = useState<PendingArchiveRestore | null>(null);
   const [restoring, setRestoring] = useState(false);
   const [initializationFailed, setInitializationFailed] = useState(false);
@@ -117,6 +120,7 @@ export function App() {
   function selectBadge(recordId: string) {
     void saying.observe({ type: "badge-selected", recordId });
     setSelectedRecordId(recordId);
+    setActiveSection("collection");
     setNotice(null);
   }
 
@@ -268,6 +272,9 @@ export function App() {
     ? state.records.find((record) => record.recordId === ceremonyId)
     : undefined;
   const ceremonyVisual = ceremonyRecord ? resolvedVisuals[ceremonyRecord.recordId] : undefined;
+  const resolvedSourceUrls = Object.fromEntries(
+    Object.entries(resolvedVisuals).map(([recordId, visual]) => [recordId, visual.sourceUrl]),
+  );
 
   return (
     <SayingDisclosureBoundary
@@ -277,180 +284,191 @@ export function App() {
       onApprove={saying.approveDisclosure}
       onRetry={saying.retryDisclosure}
     >
-      <ArchiveHeader onBackup={() => void exportBackup()} onRestore={restoreBackup} />
+      <ArchiveHeader
+        activeSection={activeSection}
+        onSectionChange={setActiveSection}
+        onBackup={() => void exportBackup()}
+        onRestore={restoreBackup}
+      />
 
-      <main className="archive-main">
-        <section className="artifact-pane" aria-label="Badge collection">
-          <div className="collection-heading">
-            <div>
-              <p className="eyebrow">{starterCollection.eyebrow}</p>
-              <h1>{starterCollection.title}</h1>
-            </div>
-            <div className="progress-copy">
-              <strong>
-                {earnedCount} / {state.records.length}
-              </strong>
-              <span>memories sealed</span>
-            </div>
-          </div>
-
-          <div className={`artifact-stage${forceFallback ? " fallback-stage" : ""}`}>
-            <span className={`artifact-status ${selectedRecord.lifecycle === "earned" ? "earned" : ""}`}>
-              {selectedRecord.lifecycle === "earned" ? <CheckIcon /> : null}
-              {selectedRecord.lifecycle}
-            </span>
-            {selectedVisual ? (
-              <BadgeViewer
-                sourceUrl={selectedVisual.sourceUrl}
-                recipe={selectedVisual.pin.renderRecipe}
-                accessibleDescription={selectedVisual.pin.accessibleDescription}
-                readOnly
-                forceFallback={forceFallback}
-              />
-            ) : (
-              <p className="visual-loading" role="status">
-                Resolving the sealed visual…
-              </p>
-            )}
-          </div>
-
-          <BadgeRail
-            state={state}
-            selectedRecordId={selectedRecordId}
-            earnedSourceUrls={Object.fromEntries(
-              Object.entries(resolvedVisuals).map(([recordId, visual]) => [recordId, visual.sourceUrl]),
-            )}
-            onSelect={selectBadge}
-          />
-        </section>
-
-        <section className="story-pane" aria-label={`${selectedRecord.title} memory details`}>
-          <div className="story-content">
-            <div className="pack-line">
-              <span>
-                {(selectedRecord.collectionRefs[0]?.collectionId ?? selectedFixture.collectionId).replaceAll(
-                  "-",
-                  " ",
-                )}
-              </span>
-              <span>Published artifact · v1</span>
-            </div>
-            <h2 className="story-title">{selectedRecord.title}</h2>
-            <p className="criterion">
-              <strong>{selectedRecord.criterion}.</strong> {selectedRecord.description}
-            </p>
-
-            <SayingComposer
-              title={selectedRecord.title}
-              lifecycle={selectedRecord.lifecycle}
-              acceptedSaying={selectedRecord.acceptedSaying}
-              proposal={saying.proposal}
-              editing={saying.editing}
-              manualValue={saying.manualValue}
-              manualError={saying.manualError}
-              acceptedSayingProtection={saying.acceptedSayingProtection}
-              saving={saying.saving}
-              generationBlocked={saying.disclosure.phase !== "idle"}
-              proposalSourceLabel={saying.proposalSourceLabel}
-              providerNote={saying.providerNote}
-              focusTargetRef={sayingDisclosureReturnFocus}
-              onGenerate={saying.request}
-              onUseProposal={saying.useProposal}
-              onStartWriting={saying.startWriting}
-              onCancelWriting={saying.cancelWriting}
-              onManualChange={saying.changeManual}
-              onSaveManual={saying.saveManual}
-            />
-
-            {selectedRecord.lifecycle === "earned" && selectedRecord.activation ? (
-              <div className="earned-memory">
-                <h2>This memory is sealed.</h2>
-                <div className="memory-meta">
-                  <div>
-                    <span>Happened</span>
-                    <strong>
-                      {formatDate(selectedRecord.activation.occurredStart)}
-                      {selectedRecord.activation.occurredEnd !== selectedRecord.activation.occurredStart
-                        ? ` – ${formatDate(selectedRecord.activation.occurredEnd)}`
-                        : ""}
-                    </strong>
-                  </div>
-                  <div>
-                    <span>Visibility</span>
-                    <strong>
-                      {selectedRecord.visibility === "inherit"
-                        ? "Archive default"
-                        : selectedRecord.visibility}
-                    </strong>
-                  </div>
-                </div>
-                {selectedRecord.note ? <p className="memory-note">{selectedRecord.note}</p> : null}
-                <button
-                  ref={ceremonyReturnFocus}
-                  className="secondary-button"
-                  type="button"
-                  onClick={() => replayCeremony(selectedRecord.recordId)}
-                >
-                  Replay activation
-                </button>
+      {activeSection === "timeline" ? (
+        <TimelineView
+          state={state}
+          sourceUrls={resolvedSourceUrls}
+          onOpenMemory={selectBadge}
+          onShowCollection={() => setActiveSection("collection")}
+        />
+      ) : (
+        <main className="archive-main">
+          <section className="artifact-pane" aria-label="Badge collection">
+            <div className="collection-heading">
+              <div>
+                <p className="eyebrow">{starterCollection.eyebrow}</p>
+                <h1>{starterCollection.title}</h1>
               </div>
-            ) : (
-              <form className="memory-form" onSubmit={activate}>
-                <div className="date-grid">
-                  <label className="field">
-                    <span className="field-label">From</span>
-                    <input
-                      type="date"
-                      required
-                      value={draft.occurredStart}
-                      onChange={(event) => updateDraft({ occurredStart: event.target.value })}
-                    />
-                  </label>
-                  <label className="field">
-                    <span className="field-label">To · optional</span>
-                    <input
-                      type="date"
-                      min={draft.occurredStart || undefined}
-                      value={draft.occurredEnd}
-                      onChange={(event) => updateDraft({ occurredEnd: event.target.value })}
-                    />
-                  </label>
-                </div>
-                <label className="field">
-                  <span className="field-label">A note to future you · optional</span>
-                  <textarea
-                    value={draft.note}
-                    placeholder="What made this one stay with you?"
-                    onChange={(event) => updateDraft({ note: event.target.value })}
-                  />
-                </label>
-                <label className="field">
-                  <span className="field-label">Visibility</span>
-                  <select
-                    value={draft.visibility}
-                    onChange={(event) => updateDraft({ visibility: event.target.value as Visibility })}
-                  >
-                    <option value="inherit">Use archive default</option>
-                    <option value="private">Private</option>
-                    <option value="public">Public when sharing exists</option>
-                  </select>
-                  <p className="field-hint">
-                    This app stays local. The choice is remembered for future sharing.
-                  </p>
-                </label>
-                <SayingActivationControl
-                  buttonRef={ceremonyReturnFocus}
-                  acceptedSaying={selectedRecord.acceptedSaying}
-                  activating={activating}
-                  editing={saying.editing}
-                  saving={saying.saving}
-                  hasUnsavedDraft={saying.hasUnsavedDraft}
+              <div className="progress-copy">
+                <strong>
+                  {earnedCount} / {state.records.length}
+                </strong>
+                <span>memories sealed</span>
+              </div>
+            </div>
+
+            <div className={`artifact-stage${forceFallback ? " fallback-stage" : ""}`}>
+              <span className={`artifact-status ${selectedRecord.lifecycle === "earned" ? "earned" : ""}`}>
+                {selectedRecord.lifecycle === "earned" ? <CheckIcon /> : null}
+                {selectedRecord.lifecycle}
+              </span>
+              {selectedVisual ? (
+                <BadgeViewer
+                  sourceUrl={selectedVisual.sourceUrl}
+                  recipe={selectedVisual.pin.renderRecipe}
+                  accessibleDescription={selectedVisual.pin.accessibleDescription}
+                  readOnly
+                  forceFallback={forceFallback}
                 />
-              </form>
-            )}
-          </div>
-        </section>
-      </main>
+              ) : (
+                <p className="visual-loading" role="status">
+                  Resolving the sealed visual…
+                </p>
+              )}
+            </div>
+
+            <BadgeRail
+              state={state}
+              selectedRecordId={selectedRecordId}
+              earnedSourceUrls={resolvedSourceUrls}
+              onSelect={selectBadge}
+            />
+          </section>
+
+          <section className="story-pane" aria-label={`${selectedRecord.title} memory details`}>
+            <div className="story-content">
+              <div className="pack-line">
+                <span>
+                  {(
+                    selectedRecord.collectionRefs[0]?.collectionId ?? selectedFixture.collectionId
+                  ).replaceAll("-", " ")}
+                </span>
+                <span>Published artifact · v1</span>
+              </div>
+              <h2 className="story-title">{selectedRecord.title}</h2>
+              <p className="criterion">
+                <strong>{selectedRecord.criterion}.</strong> {selectedRecord.description}
+              </p>
+
+              <SayingComposer
+                title={selectedRecord.title}
+                lifecycle={selectedRecord.lifecycle}
+                acceptedSaying={selectedRecord.acceptedSaying}
+                proposal={saying.proposal}
+                editing={saying.editing}
+                manualValue={saying.manualValue}
+                manualError={saying.manualError}
+                acceptedSayingProtection={saying.acceptedSayingProtection}
+                saving={saying.saving}
+                generationBlocked={saying.disclosure.phase !== "idle"}
+                proposalSourceLabel={saying.proposalSourceLabel}
+                providerNote={saying.providerNote}
+                focusTargetRef={sayingDisclosureReturnFocus}
+                onGenerate={saying.request}
+                onUseProposal={saying.useProposal}
+                onStartWriting={saying.startWriting}
+                onCancelWriting={saying.cancelWriting}
+                onManualChange={saying.changeManual}
+                onSaveManual={saying.saveManual}
+              />
+
+              {selectedRecord.lifecycle === "earned" && selectedRecord.activation ? (
+                <div className="earned-memory">
+                  <h2>This memory is sealed.</h2>
+                  <div className="memory-meta">
+                    <div>
+                      <span>Happened</span>
+                      <strong>
+                        {formatDate(selectedRecord.activation.occurredStart)}
+                        {selectedRecord.activation.occurredEnd !== selectedRecord.activation.occurredStart
+                          ? ` – ${formatDate(selectedRecord.activation.occurredEnd)}`
+                          : ""}
+                      </strong>
+                    </div>
+                    <div>
+                      <span>Visibility</span>
+                      <strong>
+                        {selectedRecord.visibility === "inherit"
+                          ? "Archive default"
+                          : selectedRecord.visibility}
+                      </strong>
+                    </div>
+                  </div>
+                  {selectedRecord.note ? <p className="memory-note">{selectedRecord.note}</p> : null}
+                  <button
+                    ref={ceremonyReturnFocus}
+                    className="secondary-button"
+                    type="button"
+                    onClick={() => replayCeremony(selectedRecord.recordId)}
+                  >
+                    Replay activation
+                  </button>
+                </div>
+              ) : (
+                <form className="memory-form" onSubmit={activate}>
+                  <div className="date-grid">
+                    <label className="field">
+                      <span className="field-label">From</span>
+                      <input
+                        type="date"
+                        required
+                        value={draft.occurredStart}
+                        onChange={(event) => updateDraft({ occurredStart: event.target.value })}
+                      />
+                    </label>
+                    <label className="field">
+                      <span className="field-label">To · optional</span>
+                      <input
+                        type="date"
+                        min={draft.occurredStart || undefined}
+                        value={draft.occurredEnd}
+                        onChange={(event) => updateDraft({ occurredEnd: event.target.value })}
+                      />
+                    </label>
+                  </div>
+                  <label className="field">
+                    <span className="field-label">A note to future you · optional</span>
+                    <textarea
+                      value={draft.note}
+                      placeholder="What made this one stay with you?"
+                      onChange={(event) => updateDraft({ note: event.target.value })}
+                    />
+                  </label>
+                  <label className="field">
+                    <span className="field-label">Visibility</span>
+                    <select
+                      value={draft.visibility}
+                      onChange={(event) => updateDraft({ visibility: event.target.value as Visibility })}
+                    >
+                      <option value="inherit">Use archive default</option>
+                      <option value="private">Private</option>
+                      <option value="public">Public when sharing exists</option>
+                    </select>
+                    <p className="field-hint">
+                      This app stays local. The choice is remembered for future sharing.
+                    </p>
+                  </label>
+                  <SayingActivationControl
+                    buttonRef={ceremonyReturnFocus}
+                    acceptedSaying={selectedRecord.acceptedSaying}
+                    activating={activating}
+                    editing={saying.editing}
+                    saving={saying.saving}
+                    hasUnsavedDraft={saying.hasUnsavedDraft}
+                  />
+                </form>
+              )}
+            </div>
+          </section>
+        </main>
+      )}
 
       {ceremonyRecord && ceremonyVisual ? (
         <ActivationCeremony
@@ -475,15 +493,7 @@ export function App() {
         />
       ) : null}
 
-      {visibleNotice ? (
-        <div
-          className={`notice${visibleNotice.kind === "error" ? " error" : ""}`}
-          role={visibleNotice.kind === "error" ? "alert" : "status"}
-          onClick={() => setNotice(null)}
-        >
-          {visibleNotice.text}
-        </div>
-      ) : null}
+      <ArchiveNotice notice={visibleNotice} onDismiss={() => setNotice(null)} />
     </SayingDisclosureBoundary>
   );
 }

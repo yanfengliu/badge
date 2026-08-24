@@ -5,6 +5,7 @@ import "./styles.css";
 import "./artifact.css";
 import "./detail.css";
 import "./ceremony.css";
+import "./timeline.css";
 import "./saying-disclosure.css";
 
 const root = document.getElementById("root");
