@@ -7,6 +7,7 @@ import {
   SAYING_DISCLOSURE_HEADER,
   SAYING_DISCLOSURE_PATH,
   SAYING_GENERATION_PATH,
+  SAYING_ROUTE_BODY_LIMIT_BYTES,
 } from "@badge/saying-live-contract";
 import type { SayingGenerator } from "./generator.js";
 import { SayingGenerationFailure } from "./generator.js";
@@ -81,11 +82,11 @@ function call(
 function successGenerator() {
   return {
     generate: vi.fn<SayingGenerator["generate"]>(async () => ({
-      response: { saying: "Granite keeps the long view." },
+      response: { kind: "original", saying: "Granite keeps the long view." },
       provenance: {
         provider: "claude-code",
         model: "claude-sonnet-4-6",
-        promptVersion: "v1" as const,
+        promptVersion: "v2" as const,
         generatedAt: "2026-08-23T12:00:00.000Z",
       },
     })),
@@ -182,7 +183,7 @@ describe("same-listener saying routes", () => {
   it("uses 413 for an over-limit raw body and rejects unknown fields", async () => {
     const generator = successGenerator();
     const { port } = await host(generator);
-    const tooLarge = "x".repeat(8 * 1024 + 1);
+    const tooLarge = "x".repeat(SAYING_ROUTE_BODY_LIMIT_BYTES + 1);
     const oversized = await call(port, {
       method: "POST",
       path: SAYING_GENERATION_PATH,
@@ -199,6 +200,69 @@ describe("same-listener saying routes", () => {
       body: JSON.stringify({ title: "Yosemite", criterion: "Visit.", note: "private" }),
     });
     expect(extra.status).toBe(400);
+    expect(generator.generate).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    {
+      label: "title",
+      body: JSON.stringify({ title: "\n", criterion: "Visit Yosemite." }),
+      message:
+        "The saying request has invalid input in title. Provide a non-empty badge title within the supported length, then review and send the updated canonical JSON.",
+    },
+    {
+      label: "criterion",
+      body: JSON.stringify({ title: "Yosemite", criterion: "\n" }),
+      message:
+        "The saying request has invalid input in criterion. Provide a non-empty achievement criterion within the supported length, then review and send the updated canonical JSON.",
+    },
+    {
+      label: "direction",
+      body: JSON.stringify({ title: "Yosemite", criterion: "Visit Yosemite.", direction: {} }),
+      message:
+        "The saying request has invalid input in direction. Correct or remove the optional direction, then review and send the updated canonical JSON.",
+    },
+    {
+      label: "empty allowedQuotations",
+      body: JSON.stringify({
+        title: "Yosemite",
+        criterion: "Visit Yosemite.",
+        allowedQuotations: [],
+      }),
+      message:
+        "The saying request has invalid input in allowedQuotations. Correct or remove the optional allowedQuotations list, then review and send the updated canonical JSON.",
+    },
+    {
+      label: "allowedQuotations source",
+      body: JSON.stringify({
+        title: "Yosemite",
+        criterion: "Visit Yosemite.",
+        allowedQuotations: [
+          {
+            id: "muir-yosemite",
+            text: "The mountains are calling.",
+            person: "John Muir",
+            sourceTitle: "Letter",
+            sourceUrl: "http://example.com/quotation",
+          },
+        ],
+      }),
+      message:
+        "The saying request has invalid input in allowedQuotations. Correct or remove the optional allowedQuotations list, then review and send the updated canonical JSON.",
+    },
+  ])("names malformed $label input before provider spawn", async ({ body, message }) => {
+    const generator = successGenerator();
+    const { port } = await host(generator);
+
+    const reply = await call(port, {
+      method: "POST",
+      path: SAYING_GENERATION_PATH,
+      headers: generationHeaders,
+      body,
+    });
+
+    expect(reply.status).toBe(400);
+    expect(JSON.parse(reply.body).error).toEqual({ code: "BAD_REQUEST", message });
     expect(generator.generate).not.toHaveBeenCalled();
   });
 
@@ -222,11 +286,11 @@ describe("same-listener saying routes", () => {
     generator.generate.mockImplementationOnce(async () => {
       await gate;
       return {
-        response: { saying: "Done." },
+        response: { kind: "original", saying: "Done." },
         provenance: {
           provider: "claude-code",
           model: "claude-sonnet-4-6",
-          promptVersion: "v1",
+          promptVersion: "v2",
           generatedAt: "2026-08-23T12:00:00.000Z",
         },
       };
@@ -278,7 +342,7 @@ describe("same-listener saying routes", () => {
   it("substitutes a bounded sanitized error for oversized provider output", async () => {
     const generator = successGenerator();
     generator.generate.mockResolvedValueOnce({
-      response: { saying: "x".repeat(20_000) },
+      response: { kind: "original", saying: "x".repeat(20_000) },
       provenance: {},
     } as never);
     const { port } = await host(generator);

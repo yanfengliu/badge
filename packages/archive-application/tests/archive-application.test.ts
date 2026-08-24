@@ -419,16 +419,22 @@ describe("IndexedDbArchiveRepository", () => {
     const current = repository();
     const application = new ArchiveApplication(current);
     await application.initialize(seed());
+    const longSaying = `${"Granite remembers every deliberate step. ".repeat(4)}The view belongs to the patience that reached it.`;
 
     await Promise.all([
       application.updateLifecycle("record-yosemite", "planned"),
-      application.updateSaying("record-yosemite", "  Held\nin memory. "),
+      application.updateSaying("record-yosemite", `  ${longSaying}\n `),
     ]);
 
     expect((await current.read()).records[0]).toMatchObject({
       lifecycle: "planned",
-      acceptedSaying: "Held in memory.",
+      acceptedSaying: longSaying,
     });
+    const graphemeCount = Array.from(
+      new Intl.Segmenter("en", { granularity: "grapheme" }).segment(longSaying),
+    ).length;
+    expect(graphemeCount).toBeGreaterThan(120);
+    expect(graphemeCount).toBeLessThanOrEqual(800);
   });
 });
 

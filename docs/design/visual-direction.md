@@ -95,11 +95,13 @@ The final action is `Validate and publish pack`, not activation. Validation summ
 
 The archive detail view uses the published 3D presentation without exposing construction controls. It keeps rotation, zoom, lighting, reset, dates, memory, and saying authoring visually calm and personal.
 
-The one-line saying editor sits with the published preview. It pairs a direct text field with restrained `Generate saying` or `Try another` and `Use this saying` actions, and a pending proposal never makes the current line disappear.
+The badge-saying editor sits with the published preview. It pairs a direct multiline text field with restrained `Generate saying` or `Try another` and `Use this saying` actions, and a pending proposal never makes the current accepted text disappear.
 
-On first live use, `Generate saying` opens a calm review sheet without sending anything. The sheet names the provider, displays every outbound field and value, and ends with the final generate action; it is a privacy checkpoint, not a technical console or recurring modal after unchanged scope has been acknowledged.
+On first live use, `Generate saying` opens a calm review sheet without sending anything. The sheet names the provider, displays every outbound field and value including any source-checked historical-quotation shortlist, shows the exact prompt v2, and ends with the final generate action; it is a privacy checkpoint, not a technical console or recurring modal after unchanged scope has been acknowledged.
 
-The saying is one logical line, but the read-only composed preview may wrap it at narrow desktop widths rather than truncate it or reduce it below the accessible type scale. Editing shows the full text, remaining allowance, and inline validation without shifting the artifact preview.
+A new model-written proposal is one compact paragraph targeting one to three sentences, with no word-count target and a `600`-grapheme provider limit. The interface calls it `Suggestion · source not verified` because the model cannot prove that no phrase resembles existing writing. A historical-quotation proposal is visually distinct, preserves the verified words inside quotation marks, names the person and source, and offers the supplied source link; in this historical-selection branch the model selects only an exact disclosed quotation ID and never composes the quotation or attribution.
+
+Accepted and directly written sayings may contain up to `800` graphemes within the separate raw/code-point/byte safety ceilings. The read-only composed preview, proposal, attribution, and activation ceremony wrap even uninterrupted text and remain vertically reachable at narrow or short desktop viewports rather than truncating the paragraph or reducing it below the accessible type scale; editing shows the full text, remaining allowance, and inline validation without shifting the artifact preview. Manual quotation entry remains text-first, so the user includes quotation marks and attribution explicitly rather than the interface guessing that unsourced text came from someone else.
 
 ### Activation
 

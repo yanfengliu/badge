@@ -31,7 +31,8 @@ export function createSayingRuntime(
       controller: new SayingProposalController(createFixtureSayingProvider(fixtureSources)),
       disclosureGate: null,
       proposalSourceLabel: "local preview",
-      providerNote: "Fixture mode uses curated local lines for this badge. No model call is made.",
+      providerNote:
+        "Fixture mode uses curated local passages and source-checked quotations. No model call is made.",
       handleProposalSnapshot: () => undefined,
       dispose: () => undefined,
     };
@@ -68,7 +69,7 @@ export function createSayingRuntime(
     disclosureGate,
     proposalSourceLabel: "Claude Code",
     providerNote:
-      "Claude Code writes only when you ask. Your first request in this page session opens a no-model-call disclosure review.",
+      "Claude Code writes only when you ask. Historical quotations are selected by ID from Badge’s source-checked list; Claude never supplies their words or attribution.",
     handleProposalSnapshot: (snapshot) => {
       if (isDisclosureRequiredClientMessage(snapshot.error)) {
         void disclosureGate.reopenForRecord(snapshot.recordId);

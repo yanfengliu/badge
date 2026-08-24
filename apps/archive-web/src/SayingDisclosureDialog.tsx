@@ -79,8 +79,11 @@ export function SayingDisclosureDialog({
         ) : review ? (
           <>
             <p id="saying-disclosure-summary" className="saying-disclosure-summary">
-              No achievement data has been sent to Claude yet. Confirm once for this page session; Badge will
-              ask again if any disclosed detail changes.
+              No achievement data has been sent to Claude yet. These are the exact values for this first
+              request. Confirming approves this field contract for the page session; later explicit requests
+              may use a different badge title, criterion, direction, or quotation shortlist without reopening
+              this sheet. Reloading or a provider, destination, model, prompt, field, quotation contract,
+              normalization, or limit change asks again.
             </p>
 
             <dl className="saying-disclosure-facts">
@@ -99,7 +102,7 @@ export function SayingDisclosureDialog({
             </dl>
 
             <section className="saying-disclosure-section" aria-labelledby="saying-outbound-title">
-              <h3 id="saying-outbound-title">Exact outbound values</h3>
+              <h3 id="saying-outbound-title">Exact outbound values for this request</h3>
               <dl className="saying-outbound-values">
                 <div>
                   <dt>title</dt>
@@ -116,6 +119,16 @@ export function SayingDisclosureDialog({
                       <span className="not-sent">Not sent</span>
                     ) : (
                       <pre>{JSON.stringify(review.outbound.direction, null, 2)}</pre>
+                    )}
+                  </dd>
+                </div>
+                <div>
+                  <dt>allowedQuotations</dt>
+                  <dd>
+                    {review.outbound.allowedQuotations === undefined ? (
+                      <span className="not-sent">Not sent</span>
+                    ) : (
+                      <pre>{JSON.stringify(review.outbound.allowedQuotations, null, 2)}</pre>
                     )}
                   </dd>
                 </div>
@@ -148,6 +161,18 @@ export function SayingDisclosureDialog({
                 <div>
                   <dt>direction may contain</dt>
                   <dd>{review.disclosure.scope.directionFields.join(", ")}</dd>
+                </div>
+                <div>
+                  <dt>allowedQuotations may contain</dt>
+                  <dd>{review.disclosure.scope.allowedQuotationFields.join(", ")}</dd>
+                </div>
+                <div>
+                  <dt>Quotation contract</dt>
+                  <dd>{review.disclosure.scope.quotationContractVersion}</dd>
+                </div>
+                <div>
+                  <dt>Model output</dt>
+                  <dd>{review.disclosure.scope.output}</dd>
                 </div>
                 <div>
                   <dt>Normalization</dt>

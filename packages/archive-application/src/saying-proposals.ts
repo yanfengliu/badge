@@ -1,9 +1,10 @@
 import {
-  sayingProviderResultSchema,
   sayingRequestSchema,
+  validateSayingProviderResultForRequest,
   type SayingProvider,
   type SayingProviderProvenance,
   type SayingRequest,
+  type SayingResponse,
 } from "@badge/saying-contract";
 
 export type SayingProposalStatus = "idle" | "requesting" | "ready" | "error";
@@ -11,7 +12,7 @@ export type SayingProposalStatus = "idle" | "requesting" | "ready" | "error";
 export interface SayingProposalSnapshot {
   readonly recordId: string;
   readonly status: SayingProposalStatus;
-  readonly proposal: string | null;
+  readonly proposal: SayingResponse | null;
   readonly provenance: SayingProviderProvenance | null;
   readonly error: string | null;
 }
@@ -130,18 +131,19 @@ export class SayingProposalController {
 
     try {
       const validatedInput = sayingRequestSchema.parse(promptInput);
-      const result = sayingProviderResultSchema.parse(
+      const result = validateSayingProviderResultForRequest(
         await this.provider.propose({
           requestId,
           promptInput: validatedInput,
           signal: abortController.signal,
         }),
+        validatedInput,
       );
       if (!this.isLatest(recordId, requestId) || abortController.signal.aborted) return;
       this.publish({
         recordId,
         status: "ready",
-        proposal: result.response.saying,
+        proposal: result.response,
         provenance: result.provenance,
         error: null,
       });

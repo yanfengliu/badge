@@ -31,7 +31,7 @@ function jsonResponse(body: unknown, status = 200): Response {
 
 function successfulProposal() {
   return {
-    response: { saying: "Worth every switchback." },
+    response: { kind: "original", saying: "Worth every switchback." },
     provenance: {
       provider: "claude-code",
       model: SAYING_DISCLOSURE.model,
@@ -50,7 +50,10 @@ describe("saying runtime composition", () => {
 
     expect(fixture.kind).toBe("fixture");
     expect(fixture.disclosureGate).toBeNull();
-    expect(fixture.controller.snapshot(intent.recordId).proposal).toBe("A local line.");
+    expect(fixture.controller.snapshot(intent.recordId).proposal).toEqual({
+      kind: "original",
+      saying: "A local line.",
+    });
     expect(fetcher).not.toHaveBeenCalled();
   });
 
@@ -88,7 +91,10 @@ describe("saying runtime composition", () => {
     await gate.request({ ...intent, type: "try-another" });
     expect(fetcher.mock.calls.filter(([, init]) => init?.method === "GET")).toHaveLength(2);
     expect(fetcher.mock.calls.filter(([, init]) => init?.method === "POST")).toHaveLength(2);
-    expect(runtime.controller.snapshot(intent.recordId).proposal).toBe("Worth every switchback.");
+    expect(runtime.controller.snapshot(intent.recordId).proposal).toEqual({
+      kind: "original",
+      saying: "Worth every switchback.",
+    });
   });
 
   it("reopens disclosure instead of falling back when the live provider rejects the fingerprint", async () => {
@@ -155,7 +161,7 @@ describe("saying runtime composition", () => {
     await Promise.all([first, second]);
     expect(runtime.controller.snapshot(intent.recordId)).toMatchObject({
       status: "ready",
-      proposal: "Worth every switchback.",
+      proposal: { kind: "original", saying: "Worth every switchback." },
     });
   });
 

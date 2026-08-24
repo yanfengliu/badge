@@ -25,4 +25,24 @@ describe("fixture saying provider", () => {
       model: "curated-fixture-v1",
     });
   });
+
+  it("hydrates a source-checked historical quotation after local originals", async () => {
+    const quotation = {
+      id: "john-muir-every-walk-nature",
+      text: "But in every walk with Nature one receives far more than he seeks.",
+      person: "John Muir",
+      sourceTitle: "Steep Trails",
+      sourceUrl: "https://www.nps.gov/jomu/learn/historyculture/john-muir-quotes.htm",
+    };
+    const provider = createFixtureSayingProvider([
+      { ...promptInput, sayingSuggestions: ["An original paragraph."] },
+    ]);
+    const signal = new AbortController().signal;
+    const request = { ...promptInput, allowedQuotations: [quotation] };
+
+    await provider.propose({ requestId: 1, promptInput: request, signal });
+    await expect(provider.propose({ requestId: 2, promptInput: request, signal })).resolves.toMatchObject({
+      response: { kind: "quotation", saying: quotation.text, quotation },
+    });
+  });
 });

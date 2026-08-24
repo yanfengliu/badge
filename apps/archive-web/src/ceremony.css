@@ -1,0 +1,84 @@
+.ceremony {
+  position: fixed;
+  z-index: 100;
+  display: grid;
+  inset: 0;
+  align-items: safe center;
+  justify-items: center;
+  overflow-y: auto;
+  padding: 30px;
+  background: rgba(27, 26, 22, 0.78);
+  backdrop-filter: blur(18px);
+  animation: ceremony-in 320ms var(--ease) both;
+}
+
+.ceremony-card {
+  position: relative;
+  width: min(94vw, 860px);
+  max-width: 100%;
+  overflow: hidden;
+  border: 1px solid rgba(245, 238, 224, 0.22);
+  background: #ece5d8;
+  animation: seat-in 680ms var(--ease) both;
+}
+
+.ceremony-viewer {
+  height: clamp(250px, 48dvh, 520px);
+}
+
+.ceremony-copy {
+  padding: 24px 32px 30px;
+  border-top: 1px solid var(--rule);
+  text-align: center;
+}
+
+.ceremony-copy h2 {
+  margin: 3px 0 0;
+  overflow-wrap: anywhere;
+  font-family: var(--display);
+  font-size: 38px;
+  font-weight: 400;
+}
+
+.ceremony-copy p {
+  margin: 8px 0 0;
+  overflow-wrap: anywhere;
+  font-family: var(--display);
+  font-size: 25px;
+  font-style: italic;
+  line-height: 1.35;
+}
+
+.ceremony-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 5;
+  display: grid;
+  width: 44px;
+  padding: 0;
+  place-items: center;
+  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(27, 26, 22, 0.68);
+  color: white;
+}
+
+@keyframes ceremony-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes seat-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.94) translateY(12px);
+  }
+  58% {
+    transform: scale(1.01) translateY(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

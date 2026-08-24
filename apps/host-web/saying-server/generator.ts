@@ -7,8 +7,9 @@ import { TextDecoder } from "node:util";
 import {
   buildCanonicalSayingUserMessage,
   SAYING_PROMPT_VERSION,
-  SAYING_SYSTEM_PROMPT_V1,
-  parseSayingResponseMessage,
+  SAYING_SYSTEM_PROMPT_V2,
+  parseSayingModelResponseMessage,
+  resolveSayingModelResponse,
   sayingProviderResultSchema,
   sayingRequestSchema,
   type SayingProviderResult,
@@ -210,7 +211,7 @@ function claudeArguments(): readonly string[] {
     "--effort",
     "low",
     "--system-prompt",
-    SAYING_SYSTEM_PROMPT_V1,
+    SAYING_SYSTEM_PROMPT_V2,
     "--json-schema",
     JSON.stringify(CLAUDE_SAYING_JSON_SCHEMA),
     "--tools=",
@@ -252,7 +253,7 @@ function claudeApiErrorStatus(bytes: Buffer): number | null {
   }
 }
 
-function parseClaudeEnvelope(bytes: Buffer): SayingProviderResult["response"] {
+function parseClaudeEnvelope(bytes: Buffer, request: SayingRequest): SayingProviderResult["response"] {
   let decoded: string;
   try {
     decoded = fatalUtf8.decode(bytes);
@@ -285,7 +286,7 @@ function parseClaudeEnvelope(bytes: Buffer): SayingProviderResult["response"] {
   try {
     const canonicalResponse = JSON.stringify(envelope.structured_output);
     if (typeof canonicalResponse !== "string") throw new TypeError("Missing structured output.");
-    return parseSayingResponseMessage(canonicalResponse);
+    return resolveSayingModelResponse(parseSayingModelResponseMessage(canonicalResponse), request);
   } catch (cause) {
     throw new SayingGenerationFailure("failed", "Claude Code returned an invalid saying.", { cause });
   }
@@ -375,7 +376,7 @@ export class ClaudeSayingGenerator implements SayingGenerator {
         );
       }
       result = sayingProviderResultSchema.parse({
-        response: parseClaudeEnvelope(run.stdout),
+        response: parseClaudeEnvelope(run.stdout, validated),
         provenance: {
           provider: SAYING_PROVIDER_ID,
           model: SAYING_MODEL_ID,
@@ -435,7 +436,10 @@ export class FixtureSayingGenerator implements SayingGenerator {
       "Bachelor's degree": "The tassel was worth the tangle.",
     };
     return sayingProviderResultSchema.parse({
-      response: { saying: sayings[validated.title] ?? "A fine chapter, honestly earned." },
+      response: {
+        kind: "original",
+        saying: sayings[validated.title] ?? "A fine chapter, honestly earned.",
+      },
       provenance: {
         provider: "fixture-local-preview",
         model: "curated-fixture-v1",

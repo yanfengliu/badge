@@ -1,7 +1,17 @@
 import { createHash } from "node:crypto";
 import { describe, expect, it } from "vitest";
 
-import { SAYING_PROMPT_VERSION, sayingProviderResultSchema } from "@badge/saying-contract";
+import {
+  SAYING_OUTPUT_CODE_POINT_LIMIT,
+  SAYING_OUTPUT_UTF8_LIMIT,
+  SAYING_PROMPT_VERSION,
+  SAYING_QUOTATION_CONTRACT_VERSION,
+  SAYING_QUOTATION_PERSON_CODE_POINT_LIMIT,
+  SAYING_QUOTATION_PERSON_UTF8_LIMIT,
+  SAYING_QUOTATION_SOURCE_TITLE_CODE_POINT_LIMIT,
+  SAYING_QUOTATION_SOURCE_TITLE_UTF8_LIMIT,
+  sayingProviderResultSchema,
+} from "@badge/saying-contract";
 
 import {
   CLAUDE_SAYING_JSON_SCHEMA,
@@ -14,6 +24,7 @@ import {
   SAYING_HTTP_STATUS_BY_ERROR,
   SAYING_MODEL_ID,
   SAYING_ROUTE_RESPONSE_LIMIT_BYTES,
+  SAYING_ALLOWED_QUOTATION_FIELDS,
   SAYING_DIRECTION_FIELDS,
   SAYING_EXCLUDED_FIELDS,
   SAYING_OPTIONAL_FIELDS,
@@ -58,20 +69,39 @@ describe("live saying contract", () => {
     expect(SAYING_DISCLOSURE.scope.requiredFields).toEqual(SAYING_REQUIRED_FIELDS);
     expect(SAYING_DISCLOSURE.scope.optionalFields).toEqual(SAYING_OPTIONAL_FIELDS);
     expect(SAYING_DISCLOSURE.scope.directionFields).toEqual(SAYING_DIRECTION_FIELDS);
+    expect(SAYING_DISCLOSURE.scope.allowedQuotationFields).toEqual(SAYING_ALLOWED_QUOTATION_FIELDS);
+    expect(SAYING_DISCLOSURE.scope.quotationContractVersion).toBe(SAYING_QUOTATION_CONTRACT_VERSION);
     expect(SAYING_DISCLOSURE.scope.excludedFields).toEqual(SAYING_EXCLUDED_FIELDS);
+    expect(SAYING_DISCLOSURE.scope.limits).toMatchObject({
+      outputCodePoints: SAYING_OUTPUT_CODE_POINT_LIMIT,
+      outputUtf8Bytes: SAYING_OUTPUT_UTF8_LIMIT,
+      quotationPersonCodePoints: SAYING_QUOTATION_PERSON_CODE_POINT_LIMIT,
+      quotationPersonUtf8Bytes: SAYING_QUOTATION_PERSON_UTF8_LIMIT,
+      quotationSourceTitleCodePoints: SAYING_QUOTATION_SOURCE_TITLE_CODE_POINT_LIMIT,
+      quotationSourceTitleUtf8Bytes: SAYING_QUOTATION_SOURCE_TITLE_UTF8_LIMIT,
+    });
+    expect(SAYING_DISCLOSURE.scope.limits).not.toHaveProperty("originalSentenceCount");
+    expect(SAYING_DISCLOSURE.scope.output).toContain("targeting one to three sentences");
 
     const parsed = JSON.parse(material) as Record<string, unknown>;
     const variants = [
       { ...parsed, provider: "other-provider" },
       { ...parsed, destination: "another destination" },
       { ...parsed, model: "another-model" },
-      { ...parsed, promptVersion: "v2" },
+      { ...parsed, promptVersion: "v3" },
       { ...parsed, systemPrompt: "different prompt" },
       {
         ...parsed,
         scope: {
           ...(parsed.scope as Record<string, unknown>),
           directionFields: ["themeCues", "voice", "variation", "userDirection", "privateNote"],
+        },
+      },
+      {
+        ...parsed,
+        scope: {
+          ...(parsed.scope as Record<string, unknown>),
+          quotationContractVersion: "v2",
         },
       },
     ];
@@ -85,6 +115,15 @@ describe("live saying contract", () => {
       title: "  Yosemite  ",
       criterion: "Visit   Yosemite National Park.",
       direction: { themeCues: [" granite walls "] },
+      allowedQuotations: [
+        {
+          id: "muir-yosemite",
+          text: "Nature gives more than one seeks.",
+          person: "John Muir",
+          sourceTitle: "Steep Trails",
+          sourceUrl: "https://www.nps.gov/jomu/learn/historyculture/john-muir-quotes.htm",
+        },
+      ],
     };
     const review = buildSayingDisclosureReview(input);
     input.title = "Changed after review";
@@ -94,20 +133,30 @@ describe("live saying contract", () => {
       title: "Yosemite",
       criterion: "Visit Yosemite National Park.",
       direction: { themeCues: ["granite walls"] },
+      allowedQuotations: [
+        {
+          id: "muir-yosemite",
+          text: "Nature gives more than one seeks.",
+          person: "John Muir",
+          sourceTitle: "Steep Trails",
+          sourceUrl: "https://www.nps.gov/jomu/learn/historyculture/john-muir-quotes.htm",
+        },
+      ],
     });
     expect(review.canonicalUserMessage).toBe(
-      '{"title":"Yosemite","criterion":"Visit Yosemite National Park.","direction":{"themeCues":["granite walls"]}}',
+      '{"title":"Yosemite","criterion":"Visit Yosemite National Park.","direction":{"themeCues":["granite walls"]},"allowedQuotations":[{"id":"muir-yosemite","text":"Nature gives more than one seeks.","person":"John Muir","sourceTitle":"Steep Trails","sourceUrl":"https://www.nps.gov/jomu/learn/historyculture/john-muir-quotes.htm"}]}',
     );
     expect(Object.isFrozen(review)).toBe(true);
     expect(Object.isFrozen(review.outbound)).toBe(true);
     expect(Object.isFrozen(review.outbound.direction?.themeCues)).toBe(true);
+    expect(Object.isFrozen(review.outbound.allowedQuotations)).toBe(true);
     expect(() => buildSayingDisclosureReview({ title: "Y", criterion: "C", note: "private" })).toThrow();
     expect(() => buildSayingDisclosureReview({ title: "Y", criterion: "line one\nline two" })).toThrow(
       /control character/u,
     );
   });
 
-  it("deep-freezes disclosure and the closed one-string Claude schema", () => {
+  it("deep-freezes disclosure and the closed original-or-quotation Claude schema", () => {
     expect(Object.isFrozen(SAYING_DISCLOSURE)).toBe(true);
     expect(Object.isFrozen(SAYING_DISCLOSURE.scope.directionFields)).toBe(true);
     expect(Object.isFrozen(CLAUDE_SAYING_JSON_SCHEMA)).toBe(true);
@@ -115,8 +164,12 @@ describe("live saying contract", () => {
     expect(CLAUDE_SAYING_JSON_SCHEMA).toEqual({
       type: "object",
       additionalProperties: false,
-      properties: { saying: { type: "string" } },
-      required: ["saying"],
+      properties: {
+        kind: { type: "string", enum: ["original", "quotation"] },
+        saying: { type: ["string", "null"] },
+        quotationId: { type: ["string", "null"] },
+      },
+      required: ["kind", "saying", "quotationId"],
     });
   });
 
@@ -126,7 +179,7 @@ describe("live saying contract", () => {
       criterion: "Visit Yosemite.",
     });
     const success = {
-      response: { saying: "Granite keeps the long view." },
+      response: { kind: "original", saying: "Granite keeps the long view." },
       provenance: {
         provider: "claude-code",
         model: SAYING_MODEL_ID,

@@ -11,7 +11,7 @@ import {
   type ArchiveRecord,
   type ArchiveState,
 } from "./model.js";
-import { validateSaying } from "./saying.js";
+import { sayingSizeMetricLabel, validateSaying, type SayingValidationResult } from "./saying.js";
 
 export type ArchiveDomainErrorCode =
   | "ALREADY_EARNED"
@@ -77,6 +77,16 @@ function replaceRecord(state: ArchiveState, replacement: ArchiveRecord): Archive
   });
 }
 
+function invalidSayingMessage(title: string, saying: Exclude<SayingValidationResult, { ok: true }>): string {
+  if (saying.code === "EMPTY") {
+    return `Saying for ${title} is empty; write or accept a badge saying.`;
+  }
+  if (saying.code === "TOO_LARGE_TO_INSPECT") {
+    return `Saying for ${title} is ${saying.count} ${sayingSizeMetricLabel(saying.metric)}; use at most ${saying.limit} so it can be inspected safely.`;
+  }
+  return `Saying for ${title} has ${saying.graphemeCount} graphemes; use at most ${saying.limit}.`;
+}
+
 export function activateAchievement(
   untrustedState: ArchiveState,
   untrustedInput: ActivationInput,
@@ -116,12 +126,7 @@ export function activateAchievement(
 
   const saying = validateSaying(input.saying);
   if (!saying.ok) {
-    throw new ArchiveDomainError(
-      "INVALID_SAYING",
-      saying.code === "EMPTY"
-        ? `Saying for ${record.title} is empty; write or accept a one-line saying.`
-        : `Saying for ${record.title} has ${saying.graphemeCount} graphemes; use at most ${saying.limit}.`,
-    );
+    throw new ArchiveDomainError("INVALID_SAYING", invalidSayingMessage(record.title, saying));
   }
 
   const activation: ActivationRecord = {
@@ -157,12 +162,7 @@ export function updateAcceptedSaying(
   const record = requireRecord(state, recordId);
   const saying = validateSaying(input);
   if (!saying.ok) {
-    throw new ArchiveDomainError(
-      "INVALID_SAYING",
-      saying.code === "EMPTY"
-        ? `Saying for ${record.title} is empty; write or accept a one-line saying.`
-        : `Saying for ${record.title} has ${saying.graphemeCount} graphemes; use at most ${saying.limit}.`,
-    );
+    throw new ArchiveDomainError("INVALID_SAYING", invalidSayingMessage(record.title, saying));
   }
   return replaceRecord(state, { ...record, acceptedSaying: saying.value });
 }

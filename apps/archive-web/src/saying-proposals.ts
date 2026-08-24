@@ -42,19 +42,27 @@ export function createFixtureSayingProvider(
           `No local saying previews are published for ${input.title}; connect a live provider or publish preview lines.`,
         );
       }
-      if (source.sayingSuggestions.length === 0) {
+      const proposals = [
+        ...source.sayingSuggestions.map((saying) => ({ kind: "original" as const, saying })),
+        ...(input.allowedQuotations ?? []).map((quotation) => ({
+          kind: "quotation" as const,
+          saying: quotation.text,
+          quotation,
+        })),
+      ];
+      if (proposals.length === 0) {
         throw new Error(
-          `Local saying previews for ${input.title} are empty; publish at least one preview line.`,
+          `Local saying previews for ${input.title} are empty; publish at least one preview paragraph or quotation.`,
         );
       }
 
       const cursor = cursors.get(key) ?? 0;
-      const saying = source.sayingSuggestions[cursor % source.sayingSuggestions.length];
+      const response = proposals[cursor % proposals.length];
       cursors.set(key, cursor + 1);
       await Promise.resolve();
       if (request.signal.aborted) throw abortedRequestError();
       return sayingProviderResultSchema.parse({
-        response: { saying },
+        response,
         provenance: {
           provider: "fixture-local-preview",
           model: "curated-fixture-v1",

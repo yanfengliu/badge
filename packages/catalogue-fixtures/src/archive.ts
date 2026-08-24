@@ -35,6 +35,15 @@ export const starterBadges: readonly PublishedBadgeFixture[] = [
       "Granite keeps the long view.",
       "The valley made time feel wide.",
     ],
+    historicalQuotations: [
+      {
+        id: "john-muir-yosemite-temple-1868",
+        text: "It is by far the grandest of all the special temples of Nature I was ever permitted to enter.",
+        person: "John Muir",
+        sourceTitle: "Letters to a Friend, July 26, 1868",
+        sourceUrl: "https://www.nps.gov/jomu/learn/historyculture/john-muir-quotes.htm",
+      },
+    ],
   },
   {
     definitionId: "read-sapiens",
@@ -60,6 +69,15 @@ export const starterBadges: readonly PublishedBadgeFixture[] = [
     packRef: starterPackRef,
     initialLifecycle: "suggested",
     sayingSuggestions: ["One species, countless stories.", "A longer view of us.", "History got personal."],
+    historicalQuotations: [
+      {
+        id: "francis-bacon-reading-full-man",
+        text: "Reading maketh a full man; conference a ready man; and writing an exact man.",
+        person: "Francis Bacon",
+        sourceTitle: "Of Studies",
+        sourceUrl: "https://en.wikisource.org/wiki/The_Essays_of_Francis_Bacon/L_Of_Studies",
+      },
+    ],
   },
   {
     definitionId: "finished-bachelors-degree",
@@ -85,6 +103,15 @@ export const starterBadges: readonly PublishedBadgeFixture[] = [
     packRef: starterPackRef,
     initialLifecycle: "suggested",
     sayingSuggestions: ["The door was built one day at a time.", "Long work, open horizon."],
+    historicalQuotations: [
+      {
+        id: "frederick-douglass-no-struggle-1857",
+        text: "If there is no struggle, there is no progress.",
+        person: "Frederick Douglass",
+        sourceTitle: "West India Emancipation address, August 3, 1857",
+        sourceUrl: "https://www.archives.gov/exhibits/documented-rights/exhibit/section2/index.html",
+      },
+    ],
   },
   {
     definitionId: "visited-all-us-national-parks",
@@ -110,6 +137,15 @@ export const starterBadges: readonly PublishedBadgeFixture[] = [
     packRef: starterPackRef,
     initialLifecycle: "suggested",
     sayingSuggestions: ["One country, a lifetime of wild places.", "The long way was the point."],
+    historicalQuotations: [
+      {
+        id: "john-muir-every-walk-nature",
+        text: "But in every walk with Nature one receives far more than he seeks.",
+        person: "John Muir",
+        sourceTitle: "Steep Trails",
+        sourceUrl: "https://www.nps.gov/jomu/learn/historyculture/john-muir-quotes.htm",
+      },
+    ],
   },
 ] as const;
 

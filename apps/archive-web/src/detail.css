@@ -62,11 +62,13 @@
 
 .saying-display {
   min-height: 34px;
+  max-width: 720px;
   margin: 0;
   font-family: var(--display);
   font-size: clamp(23px, 2.2vw, 31px);
   font-style: italic;
   line-height: 1.25;
+  overflow-wrap: anywhere;
 }
 
 .saying-empty {
@@ -113,11 +115,42 @@
   background: #eff1ea;
 }
 
-.proposal p {
+.proposal > p {
   margin: 0 0 12px;
   font-family: var(--display);
   font-size: 18px;
   font-style: italic;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.quotation-proposal {
+  margin: 0 0 14px;
+}
+
+.quotation-proposal blockquote {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 18px;
+  font-style: italic;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.quotation-proposal figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 12px;
+  margin-top: 8px;
+  color: var(--ink-soft);
+  font-size: 11px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.quotation-proposal a {
+  color: var(--rust-dark);
+  font-weight: 650;
 }
 
 .proposal-label {
@@ -176,6 +209,7 @@
   resize: vertical;
   padding: 12px 13px;
   line-height: 1.45;
+  overflow-wrap: anywhere;
 }
 
 .field input:focus,
@@ -278,65 +312,6 @@
   line-height: 1.55;
 }
 
-.ceremony {
-  position: fixed;
-  z-index: 100;
-  display: grid;
-  inset: 0;
-  place-items: center;
-  padding: 30px;
-  background: rgba(27, 26, 22, 0.78);
-  backdrop-filter: blur(18px);
-  animation: ceremony-in 320ms var(--ease) both;
-}
-
-.ceremony-card {
-  position: relative;
-  width: min(94vw, 860px);
-  overflow: hidden;
-  border: 1px solid rgba(245, 238, 224, 0.22);
-  background: #ece5d8;
-  animation: seat-in 680ms var(--ease) both;
-}
-
-.ceremony-viewer {
-  height: min(62vh, 520px);
-}
-
-.ceremony-copy {
-  padding: 24px 32px 30px;
-  border-top: 1px solid var(--rule);
-  text-align: center;
-}
-
-.ceremony-copy h2 {
-  margin: 3px 0 0;
-  font-family: var(--display);
-  font-size: 38px;
-  font-weight: 400;
-}
-
-.ceremony-copy p {
-  margin: 8px 0 0;
-  font-family: var(--display);
-  font-size: 25px;
-  font-style: italic;
-}
-
-.ceremony-close {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  z-index: 5;
-  display: grid;
-  width: 44px;
-  padding: 0;
-  place-items: center;
-  border-color: rgba(255, 255, 255, 0.28);
-  background: rgba(27, 26, 22, 0.68);
-  color: white;
-}
-
 .restore-card {
   position: relative;
   width: min(560px, calc(100vw - 40px));
@@ -406,26 +381,6 @@
   overflow: hidden !important;
   clip: rect(1px, 1px, 1px, 1px) !important;
   white-space: nowrap !important;
-}
-
-@keyframes ceremony-in {
-  from {
-    opacity: 0;
-  }
-}
-
-@keyframes seat-in {
-  0% {
-    opacity: 0;
-    transform: scale(0.94) translateY(12px);
-  }
-  58% {
-    transform: scale(1.01) translateY(0);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
 }
 
 @media (max-width: 1180px) {

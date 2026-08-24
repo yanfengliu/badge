@@ -2,8 +2,14 @@ import { describe, expect, it } from "vitest";
 
 import {
   ArchiveDomainError,
+  SAYING_CODE_POINT_LIMIT,
   activateAchievement,
   archiveStateSchema,
+  SAYING_GRAPHEME_LIMIT,
+  SAYING_RAW_UTF16_CODE_UNIT_LIMIT,
+  SAYING_UTF8_LIMIT,
+  acceptedSayingSchema,
+  countSayingGraphemes,
   createSeededArchiveState,
   normalizeSaying,
   setRecordLifecycle,
@@ -148,7 +154,7 @@ describe("ArchiveState v1", () => {
 });
 
 describe("saying validation", () => {
-  it("normalizes pasted whitespace to one logical line", () => {
+  it("normalizes pasted whitespace to one logical paragraph", () => {
     expect(normalizeSaying("  Carved\nby\tcuriosity.  ")).toBe("Carved by curiosity.");
     expect(validateSaying("  Carved\nby\tcuriosity.  ")).toEqual({
       ok: true,
@@ -157,17 +163,66 @@ describe("saying validation", () => {
     });
   });
 
-  it("accepts 120 Unicode graphemes and rejects 121 without truncating", () => {
-    const accepted = "🏞️".repeat(120);
-    const rejected = "🏞️".repeat(121);
+  it("accepts 800 Unicode graphemes and rejects 801 without truncating", () => {
+    const accepted = "🏞️".repeat(800);
+    const rejected = "🏞️".repeat(801);
 
-    expect(validateSaying(accepted)).toMatchObject({ ok: true, graphemeCount: 120 });
+    expect(validateSaying(accepted)).toMatchObject({ ok: true, graphemeCount: 800 });
     expect(validateSaying(rejected)).toEqual({
       ok: false,
       code: "TOO_LONG",
       value: rejected,
-      graphemeCount: 121,
-      limit: 120,
+      graphemeCount: 801,
+      limit: 800,
+    });
+  });
+
+  it("rejects oversized raw representations before grapheme segmentation", () => {
+    const utf16Bomb = `a${"\u0301".repeat(SAYING_RAW_UTF16_CODE_UNIT_LIMIT)}`;
+    const codePointBomb = `a${"\u0301".repeat(SAYING_CODE_POINT_LIMIT)}`;
+    const utf8Bomb = "😀".repeat(SAYING_UTF8_LIMIT / 4 + 1);
+
+    expect(validateSaying(utf16Bomb)).toEqual({
+      ok: false,
+      code: "TOO_LARGE_TO_INSPECT",
+      value: utf16Bomb,
+      graphemeCount: null,
+      metric: "UTF16_CODE_UNITS",
+      count: SAYING_RAW_UTF16_CODE_UNIT_LIMIT + 1,
+      limit: SAYING_RAW_UTF16_CODE_UNIT_LIMIT,
+    });
+    expect(validateSaying(codePointBomb)).toEqual({
+      ok: false,
+      code: "TOO_LARGE_TO_INSPECT",
+      value: codePointBomb,
+      graphemeCount: null,
+      metric: "UNICODE_CODE_POINTS",
+      count: SAYING_CODE_POINT_LIMIT + 1,
+      limit: SAYING_CODE_POINT_LIMIT,
+    });
+    expect(validateSaying(utf8Bomb)).toEqual({
+      ok: false,
+      code: "TOO_LARGE_TO_INSPECT",
+      value: utf8Bomb,
+      graphemeCount: null,
+      metric: "UTF8_BYTES",
+      count: SAYING_UTF8_LIMIT + 4,
+      limit: SAYING_UTF8_LIMIT,
+    });
+    expect(acceptedSayingSchema.safeParse(utf16Bomb).error?.issues[0]?.message).toMatch(
+      /too large to inspect safely.*UTF-16 code units/u,
+    );
+  });
+
+  it("admits a near-limit formatted historical quotation", () => {
+    const formattedQuotation = `“${"Q".repeat(600)}” — ${"P".repeat(64)}, ${"S".repeat(100)}`;
+
+    expect(countSayingGraphemes(formattedQuotation)).toBe(771);
+    expect(countSayingGraphemes(formattedQuotation)).toBeLessThan(SAYING_GRAPHEME_LIMIT);
+    expect(validateSaying(formattedQuotation)).toMatchObject({
+      ok: true,
+      value: formattedQuotation,
+      graphemeCount: 771,
     });
   });
 
@@ -177,7 +232,7 @@ describe("saying validation", () => {
       code: "EMPTY",
       value: "",
       graphemeCount: 0,
-      limit: 120,
+      limit: 800,
     });
   });
 });

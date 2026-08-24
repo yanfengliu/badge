@@ -3,6 +3,14 @@ import type { RenderRecipe } from "@badge/render-recipe";
 
 export type FixtureLifecycle = "suggested" | "planned" | "earned";
 
+export interface FixtureHistoricalQuotation {
+  id: string;
+  text: string;
+  person: string;
+  sourceTitle: string;
+  sourceUrl: string;
+}
+
 export interface PublishedBadgeFixture {
   definitionId: string;
   collectionId: string;
@@ -18,6 +26,7 @@ export interface PublishedBadgeFixture {
   packRef: PackRef;
   initialLifecycle: FixtureLifecycle;
   sayingSuggestions: readonly string[];
+  historicalQuotations: readonly FixtureHistoricalQuotation[];
 }
 
 export interface FixtureCollection {

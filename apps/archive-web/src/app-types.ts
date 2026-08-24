@@ -1,4 +1,5 @@
 import {
+  sayingSizeMetricLabel,
   validateSaying,
   type ActivationInput,
   type ArchiveRecord,
@@ -36,9 +37,13 @@ export function defaultActivationDraft(): ActivationDraft {
 export function sayingValidationMessage(title: string, value: string): string | null {
   const validation = validateSaying(value);
   if (validation.ok) return null;
-  return validation.code === "EMPTY"
-    ? `Saying for ${title} is empty; write or accept a one-line saying.`
-    : `Saying for ${title} has ${validation.graphemeCount} graphemes; use at most ${validation.limit}.`;
+  if (validation.code === "EMPTY") {
+    return `Saying for ${title} is empty; write or accept a badge saying.`;
+  }
+  if (validation.code === "TOO_LARGE_TO_INSPECT") {
+    return `Saying for ${title} is ${validation.count} ${sayingSizeMetricLabel(validation.metric)}; use at most ${validation.limit} so it can be inspected safely.`;
+  }
+  return `Saying for ${title} has ${validation.graphemeCount} graphemes; use at most ${validation.limit}.`;
 }
 
 export function canActivateWithSaying(acceptedSaying: string | null, saying: SayingActivationState): boolean {

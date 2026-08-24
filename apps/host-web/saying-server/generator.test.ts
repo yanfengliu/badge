@@ -7,7 +7,7 @@ import {
   SAYING_PROVIDER_STDOUT_LIMIT_BYTES,
   SAYING_PROVIDER_TIMEOUT_MS,
 } from "@badge/saying-live-contract";
-import { SAYING_SYSTEM_PROMPT_V1, buildCanonicalSayingUserMessage } from "@badge/saying-contract";
+import { SAYING_SYSTEM_PROMPT_V2, buildCanonicalSayingUserMessage } from "@badge/saying-contract";
 
 import {
   ClaudeSayingGenerator,
@@ -36,7 +36,7 @@ function envelope(saying = "Granite keeps the long view."): Buffer {
       modelUsage: {
         [SAYING_MODEL_ID]: { canonicalModel: SAYING_MODEL_ID, provider: "firstParty" },
       },
-      structured_output: { saying },
+      structured_output: { kind: "original", saying, quotationId: null },
     }),
   );
 }
@@ -72,11 +72,11 @@ describe("Claude saying generator", () => {
     const result = await generator.generate(input, new AbortController().signal);
 
     expect(result).toEqual({
-      response: { saying: "Granite keeps the long view." },
+      response: { kind: "original", saying: "Granite keeps the long view." },
       provenance: {
         provider: "claude-code",
         model: SAYING_MODEL_ID,
-        promptVersion: "v1",
+        promptVersion: "v2",
         generatedAt: "2026-08-23T12:00:00.000Z",
       },
     });
@@ -95,9 +95,9 @@ describe("Claude saying generator", () => {
         "--model",
         SAYING_MODEL_ID,
         "--system-prompt",
-        SAYING_SYSTEM_PROMPT_V1,
+        SAYING_SYSTEM_PROMPT_V2,
         "--json-schema",
-        '{"type":"object","additionalProperties":false,"properties":{"saying":{"type":"string"}},"required":["saying"]}',
+        '{"type":"object","additionalProperties":false,"properties":{"kind":{"type":"string","enum":["original","quotation"]},"saying":{"type":["string","null"]},"quotationId":{"type":["string","null"]}},"required":["kind","saying","quotationId"]}',
         "--tools=",
         "--permission-mode",
         "plan",
@@ -124,17 +124,17 @@ describe("Claude saying generator", () => {
       {
         is_error: false,
         modelUsage: { [SAYING_MODEL_ID]: { canonicalModel: SAYING_MODEL_ID, provider: "firstParty" } },
-        result: '{"saying":"leak"}',
+        result: '{"kind":"original","saying":"leak","quotationId":null}',
       },
       {
         is_error: false,
         modelUsage: { [SAYING_MODEL_ID]: { canonicalModel: SAYING_MODEL_ID, provider: "firstParty" } },
-        structured_output: { saying: "Fine", extra: "no" },
+        structured_output: { kind: "original", saying: "Fine", quotationId: null, extra: "no" },
       },
       {
         is_error: false,
         modelUsage: { other: { canonicalModel: "other", provider: "firstParty" } },
-        structured_output: { saying: "Fine" },
+        structured_output: { kind: "original", saying: "Fine", quotationId: null },
       },
     ];
     for (const value of cases) {
@@ -221,9 +221,42 @@ describe("Claude saying generator", () => {
     expect(String(received)).not.toContain("PRIVATE_");
   });
 
-  it("rejects structured output whose canonical JSON exceeds the 4 KiB response boundary", async () => {
-    const saying = `A${"\t".repeat(2_046)}B`;
+  it("rejects structured output whose canonical JSON exceeds the bounded response boundary", async () => {
+    const saying = `A${"\t".repeat(8_190)}B`;
     const { generator } = harness(envelope(saying));
+    await expect(generator.generate(input, new AbortController().signal)).rejects.toMatchObject({
+      kind: "failed",
+    });
+  });
+
+  it("hydrates an exact supplied historical quotation without trusting Claude for its words", async () => {
+    const quotation = {
+      id: "john-muir-every-walk-nature",
+      text: "But in every walk with Nature one receives far more than he seeks.",
+      person: "John Muir",
+      sourceTitle: "Steep Trails",
+      sourceUrl: "https://www.nps.gov/jomu/learn/historyculture/john-muir-quotes.htm",
+    };
+    const quotedEnvelope = Buffer.from(
+      JSON.stringify({
+        is_error: false,
+        modelUsage: {
+          [SAYING_MODEL_ID]: { canonicalModel: SAYING_MODEL_ID, provider: "firstParty" },
+        },
+        structured_output: {
+          kind: "quotation",
+          saying: null,
+          quotationId: quotation.id,
+        },
+      }),
+    );
+    const { generator } = harness(quotedEnvelope);
+
+    await expect(
+      generator.generate({ ...input, allowedQuotations: [quotation] }, new AbortController().signal),
+    ).resolves.toMatchObject({
+      response: { kind: "quotation", saying: quotation.text, quotation },
+    });
     await expect(generator.generate(input, new AbortController().signal)).rejects.toMatchObject({
       kind: "failed",
     });
@@ -320,6 +353,7 @@ describe("provider boundary helpers", () => {
       new AbortController().signal,
     );
     expect(first).toEqual(second);
+    expect(first.response.kind).toBe("original");
     expect(first.response.saying).toBe("Granite keeps the long view.");
   });
 });

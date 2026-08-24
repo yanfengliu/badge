@@ -4,6 +4,7 @@ import {
   type SayingProvider,
   type SayingProviderRequest,
   type SayingProviderResult,
+  type SayingRequest,
 } from "@badge/saying-contract";
 
 import { SayingProposalController, subscribeUntilDisposed } from "../src/saying-proposals";
@@ -11,11 +12,20 @@ import { SayingProposalController, subscribeUntilDisposed } from "../src/saying-
 const promptInput = {
   title: "Yosemite",
   criterion: "Visit Yosemite National Park",
-} as const;
+  allowedQuotations: [
+    {
+      id: "muir-yosemite-temple",
+      text: "The mountains are calling and I must go.",
+      person: "John Muir",
+      sourceTitle: "Letter to Sarah Muir Galloway, 1873",
+      sourceUrl: "https://www.nps.gov/articles/000/muir-quote.htm",
+    },
+  ],
+} satisfies SayingRequest;
 
 function result(saying: string): SayingProviderResult {
   return {
-    response: { saying },
+    response: { kind: "original", saying },
     provenance: {
       provider: "test-provider",
       model: "test-model",
@@ -102,7 +112,7 @@ describe("SayingProposalController", () => {
 
     expect(controller.snapshot("record-yosemite")).toMatchObject({
       status: "ready",
-      proposal: "Granite keeps the long view.",
+      proposal: { kind: "original", saying: "Granite keeps the long view." },
       error: null,
     });
   });
@@ -119,9 +129,40 @@ describe("SayingProposalController", () => {
 
     expect(controller.snapshot("record-yosemite")).toMatchObject({
       status: "error",
-      proposal: "Worth every switchback.",
+      proposal: { kind: "original", saying: "Worth every switchback." },
       error: "Preview source unavailable.",
     });
+  });
+
+  it("rejects a provider-invented quotation and preserves the prior approved proposal", async () => {
+    const fabricated: SayingProviderResult = {
+      response: {
+        kind: "quotation",
+        saying: "History was conveniently invented here.",
+        quotation: {
+          id: "fabricated-history",
+          text: "History was conveniently invented here.",
+          person: "Imaginary Person",
+          sourceTitle: "Imaginary Source",
+          sourceUrl: "https://example.com/invented",
+        },
+      },
+      provenance: result("unused").provenance,
+    };
+    const propose = vi
+      .fn<SayingProvider["propose"]>()
+      .mockResolvedValueOnce(result("Worth every switchback."))
+      .mockResolvedValueOnce(fabricated);
+    const controller = new SayingProposalController({ propose });
+
+    await controller.dispatch({ type: "generate", recordId: "record-yosemite", promptInput });
+    await controller.dispatch({ type: "try-another", recordId: "record-yosemite", promptInput });
+
+    expect(controller.snapshot("record-yosemite")).toMatchObject({
+      status: "error",
+      proposal: { kind: "original", saying: "Worth every switchback." },
+    });
+    expect(controller.snapshot("record-yosemite").error).toContain("not one of the supplied quotations");
   });
 
   it("badge activation cancels pending work while keeping the prior proposal", async () => {
@@ -147,12 +188,15 @@ describe("SayingProposalController", () => {
     expect(requests[1]?.signal.aborted).toBe(true);
     expect(controller.snapshot("record-yosemite")).toMatchObject({
       status: "ready",
-      proposal: "Worth every switchback.",
+      proposal: { kind: "original", saying: "Worth every switchback." },
     });
 
     pending.resolve(result("A stale replacement."));
     await retry;
-    expect(controller.snapshot("record-yosemite").proposal).toBe("Worth every switchback.");
+    expect(controller.snapshot("record-yosemite").proposal).toEqual({
+      kind: "original",
+      saying: "Worth every switchback.",
+    });
   });
 
   it("restore cancels work and clears prior proposal semantics for reused record IDs", async () => {

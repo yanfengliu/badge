@@ -110,22 +110,76 @@ describe("SayingDisclosureGate", () => {
     expect(gate.snapshot().phase).toBe("idle");
   });
 
-  it("rejects invalid input locally with no disclosure or provider call", async () => {
+  it.each([
+    {
+      label: "title",
+      promptInput: { title: "\n", criterion: yosemiteIntent.promptInput.criterion },
+      message:
+        "This badge has invalid saying input in title. Provide a non-empty badge title within the supported length before generating a saying.",
+    },
+    {
+      label: "criterion",
+      promptInput: { title: yosemiteIntent.promptInput.title, criterion: "\n" },
+      message:
+        "This badge has invalid saying input in criterion. Provide a non-empty achievement criterion within the supported length before generating a saying.",
+    },
+    {
+      label: "direction",
+      promptInput: { ...yosemiteIntent.promptInput, direction: {} },
+      message:
+        "This badge has invalid saying input in direction. Correct or remove the optional direction before generating a saying.",
+    },
+    {
+      label: "allowedQuotations",
+      promptInput: {
+        ...yosemiteIntent.promptInput,
+        allowedQuotations: [
+          {
+            id: "muir-yosemite",
+            text: "The mountains are calling.",
+            person: "John Muir",
+            sourceTitle: "Letter",
+            sourceUrl: "http://example.com/quotation",
+          },
+        ],
+      },
+      message:
+        "This badge has invalid saying input in allowedQuotations. Correct or remove the optional allowedQuotations list before generating a saying.",
+    },
+  ])("names invalid $label input locally and authorizes nothing", async ({ promptInput, message }) => {
     const loader = disclosureLoader();
     const authorized = authorizedSpy();
     const gate = new SayingDisclosureGate(loader, authorized);
 
     await gate.request({
       ...yosemiteIntent,
-      promptInput: { title: "\n", criterion: yosemiteIntent.promptInput.criterion },
+      promptInput: promptInput as SayingGenerationIntent["promptInput"],
     });
 
     expect(loader).not.toHaveBeenCalled();
     expect(authorized).not.toHaveBeenCalled();
-    expect(gate.snapshot()).toMatchObject({
+    expect(gate.snapshot()).toEqual({
       phase: "error",
       review: null,
-      error: expect.stringContaining("cannot be sent safely"),
+      error: message,
     });
+  });
+
+  it("names every invalid request field in one actionable local error", async () => {
+    const gate = new SayingDisclosureGate(disclosureLoader(), authorizedSpy());
+
+    await gate.request({
+      ...yosemiteIntent,
+      promptInput: {
+        title: "\n",
+        criterion: "\n",
+        direction: {},
+        allowedQuotations: [],
+      } as SayingGenerationIntent["promptInput"],
+    });
+
+    expect(gate.snapshot().error).toBe(
+      "This badge has invalid saying input in title, criterion, direction, and allowedQuotations. Provide a non-empty badge title within the supported length; provide a non-empty achievement criterion within the supported length; correct or remove the optional direction; and correct or remove the optional allowedQuotations list before generating a saying.",
+    );
   });
 });

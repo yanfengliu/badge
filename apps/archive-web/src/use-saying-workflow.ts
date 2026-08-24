@@ -7,7 +7,13 @@ import {
 } from "@badge/archive-application";
 import { validateSaying, type ArchiveRecord, type ArchiveState } from "@badge/archive-domain";
 import { starterBadges } from "@badge/catalogue-fixtures/archive";
+import { formatSayingForArchive } from "@badge/saying-contract";
 
+import {
+  manualSayingEditorStartValue,
+  protectAcceptedSaying,
+  type AcceptedSayingProtection,
+} from "./accepted-saying-attribution";
 import { sayingValidationMessage } from "./app-types";
 import { isDisclosureRequiredClientMessage } from "./live-saying-client";
 import type { SayingDisclosureGateSnapshot } from "./saying-disclosure-gate";
@@ -31,6 +37,7 @@ export interface SayingWorkflow {
   readonly hasUnsavedDraft: boolean;
   readonly manualValue: string;
   readonly manualError: string | null;
+  readonly acceptedSayingProtection: AcceptedSayingProtection;
   readonly disclosure: SayingDisclosureGateSnapshot;
   readonly proposalSourceLabel: string;
   readonly providerNote: string;
@@ -85,13 +92,23 @@ export function useSayingWorkflow({
   const editing = editor.editingRecords[selectedRecordId] ?? false;
   const saving = editor.savingRecords[selectedRecordId] ?? false;
   const hasUnsavedDraft = editor.dirtyRecords[selectedRecordId] ?? false;
+  const acceptedSayingProtection = protectAcceptedSaying(selectedRecord?.acceptedSaying);
 
   function request() {
     if (!selectedRecord) return;
+    const fixture = starterBadges.find(
+      (badge) => selectedRecord.recordId === `starter:${badge.definitionId}`,
+    );
     const intent = {
       type: proposal.proposal ? "try-another" : "generate",
       recordId: selectedRecord.recordId,
-      promptInput: { title: selectedRecord.title, criterion: selectedRecord.criterion },
+      promptInput: {
+        title: selectedRecord.title,
+        criterion: selectedRecord.criterion,
+        ...(fixture?.historicalQuotations.length
+          ? { allowedQuotations: fixture.historicalQuotations.map((quotation) => ({ ...quotation })) }
+          : {}),
+      },
     } as const;
     if (disclosureGate) {
       if (!disclosureGate.acknowledgedFingerprint()) releaseArchiveFocusForDisclosure();
@@ -115,7 +132,7 @@ export function useSayingWorkflow({
     dispatchEditor({
       type: "begin",
       recordId: selectedRecordId,
-      fallbackValue: selectedRecord?.acceptedSaying ?? "",
+      fallbackValue: manualSayingEditorStartValue(selectedRecord?.acceptedSaying, acceptedSayingProtection),
     });
   }
 
@@ -130,7 +147,7 @@ export function useSayingWorkflow({
       recordId: selectedRecordId,
       value,
       error:
-        !validation.ok && validation.code === "TOO_LONG"
+        !validation.ok && validation.code !== "EMPTY"
           ? sayingValidationMessage(selectedRecord?.title ?? "this badge", value)
           : null,
       dirty: validation.value !== (selectedRecord?.acceptedSaying ?? ""),
@@ -164,7 +181,7 @@ export function useSayingWorkflow({
   }
 
   function useProposal() {
-    if (proposal.proposal) void persist(proposal.proposal, true);
+    if (proposal.proposal) void persist(formatSayingForArchive(proposal.proposal), true);
   }
 
   function saveManual() {
@@ -193,6 +210,7 @@ export function useSayingWorkflow({
     hasUnsavedDraft,
     manualValue,
     manualError,
+    acceptedSayingProtection,
     disclosure,
     proposalSourceLabel: runtime.proposalSourceLabel,
     providerNote: runtime.providerNote,

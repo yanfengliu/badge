@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { SayingProposalSnapshot } from "@badge/archive-application";
 
 import { canActivateWithSaying } from "./app-types";
+import { manualSayingEditorStartValue, type AcceptedSayingProtection } from "./accepted-saying-attribution";
 import { SayingActivationControl, SayingComposer } from "./SayingComposer";
 import { initialSayingEditorState, reduceSayingEditorState } from "./saying-editor-state";
 
@@ -11,6 +12,7 @@ interface RenderOverrides {
   readonly editing?: boolean;
   readonly generationBlocked?: boolean;
   readonly manualValue?: string;
+  readonly acceptedSayingProtection?: AcceptedSayingProtection;
 }
 
 function renderComposer(
@@ -27,6 +29,7 @@ function renderComposer(
       editing={overrides.editing ?? true}
       manualValue={overrides.manualValue ?? "🏕️"}
       manualError={manualError}
+      acceptedSayingProtection={overrides.acceptedSayingProtection ?? null}
       saving={false}
       generationBlocked={overrides.generationBlocked ?? false}
       proposalSourceLabel="local preview"
@@ -62,7 +65,7 @@ describe("SayingComposer", () => {
     const html = renderComposer({
       recordId: "record-yosemite",
       status: "requesting",
-      proposal: "Worth every switchback.",
+      proposal: { kind: "original", saying: "Worth every switchback." },
       provenance: null,
       error: null,
     });
@@ -79,7 +82,7 @@ describe("SayingComposer", () => {
     const html = renderComposer({
       recordId: "record-yosemite",
       status: "error",
-      proposal: "Worth every switchback.",
+      proposal: { kind: "original", saying: "Worth every switchback." },
       provenance: null,
       error: "Preview source unavailable.",
     });
@@ -98,7 +101,7 @@ describe("SayingComposer", () => {
         provenance: null,
         error: null,
       },
-      "Saying for Yosemite has 121 graphemes; use at most 120.",
+      "Saying for Yosemite has 801 graphemes; use at most 800.",
     );
 
     expect(html).toMatch(/<button[^>]*disabled=""[^>]*>Save my saying<\/button>/u);
@@ -153,7 +156,8 @@ describe("SayingComposer", () => {
       },
     );
 
-    expect(html).toContain('value="Unsaved B"');
+    expect(html).toContain("<textarea");
+    expect(html).toContain(">Unsaved B</textarea>");
     expect(html).toContain("Save my saying");
     expect(html).toContain("Cancel");
     expect(
@@ -163,6 +167,77 @@ describe("SayingComposer", () => {
         hasUnsavedDraft,
       }),
     ).toBe(false);
+  });
+
+  it("renders originals plainly and historical sources as one semantic quotation", () => {
+    const original = renderComposer(
+      {
+        recordId: "record-yosemite",
+        status: "ready",
+        proposal: { kind: "original", saying: "The valley kept a little time for me." },
+        provenance: null,
+        error: null,
+      },
+      null,
+      { editing: false },
+    );
+    expect(original).toContain("The valley kept a little time for me.");
+    expect(original).toContain("Suggestion · source not verified");
+    expect(original).not.toContain("New saying");
+    expect(original).not.toContain("Original saying");
+    expect(original).not.toContain("“The valley kept");
+
+    const quotation = renderComposer(
+      {
+        recordId: "record-yosemite",
+        status: "ready",
+        proposal: {
+          kind: "quotation",
+          saying: "But in every walk with Nature one receives far more than he seeks.",
+          quotation: {
+            id: "john-muir-every-walk-nature",
+            text: "But in every walk with Nature one receives far more than he seeks.",
+            person: "John Muir",
+            sourceTitle: "Steep Trails",
+            sourceUrl: "https://www.nps.gov/jomu/learn/historyculture/john-muir-quotes.htm",
+          },
+        },
+        provenance: null,
+        error: null,
+      },
+      null,
+      { editing: false },
+    );
+    expect(quotation.match(/“/gu)).toHaveLength(2);
+    expect(quotation).toContain("— John Muir, Steep Trails");
+    expect(quotation).toContain("View source");
+  });
+
+  it("never preloads an attributed accepted quotation into the personal-text editor", () => {
+    const acceptedQuotation =
+      "“It is by far the grandest of all the special temples of Nature I was ever permitted to enter.” — John Muir, Letters to a Friend, July 26, 1868";
+    const html = renderComposer(
+      {
+        recordId: "record-yosemite",
+        status: "idle",
+        proposal: null,
+        provenance: null,
+        error: null,
+      },
+      null,
+      {
+        acceptedSaying: acceptedQuotation,
+        editing: false,
+        acceptedSayingProtection: { kind: "attributed" },
+      },
+    );
+
+    expect(html).toContain("Replace with my own");
+    expect(html).toContain("The attributed quotation stays exact");
+    expect(manualSayingEditorStartValue(acceptedQuotation)).toBe("");
+    expect(manualSayingEditorStartValue('"Read not to contradict." — Francis Bacon, Of Studies')).toBe("");
+    expect(manualSayingEditorStartValue("A personal line.")).toBe("A personal line.");
+    expect(manualSayingEditorStartValue("A thought — held, gently.")).toBe("A thought — held, gently.");
   });
 });
 

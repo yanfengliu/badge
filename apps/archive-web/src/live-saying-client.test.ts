@@ -117,7 +117,7 @@ describe("live saying HTTP client", () => {
     const review = buildSayingDisclosureReview(promptInput);
     const fetcher = vi.fn<SayingFetch>(async () =>
       jsonResponse({
-        response: { saying: "Worth every switchback." },
+        response: { kind: "original", saying: "Worth every switchback." },
         provenance: {
           provider: "claude-code",
           model: "claude-sonnet-4-6",
@@ -134,7 +134,7 @@ describe("live saying HTTP client", () => {
     });
 
     await expect(provider.propose({ requestId: 1, promptInput, signal })).resolves.toMatchObject({
-      response: { saying: "Worth every switchback." },
+      response: { kind: "original", saying: "Worth every switchback." },
     });
     expect(fetcher).toHaveBeenCalledTimes(1);
     const [path, init] = fetcher.mock.calls[0]!;
@@ -159,7 +159,7 @@ describe("live saying HTTP client", () => {
       const fetcher = vi.fn<SayingFetch>(async () =>
         successfulLookingResponse(
           {
-            response: { saying: "Worth every switchback." },
+            response: { kind: "original", saying: "Worth every switchback." },
             provenance: {
               provider: "claude-code",
               model: "claude-sonnet-4-6",
@@ -359,7 +359,7 @@ describe("live saying HTTP client", () => {
   it("rejects provenance that is not pinned to the disclosed Claude provider and model", async () => {
     const fetcher = vi.fn<SayingFetch>(async () =>
       jsonResponse({
-        response: { saying: "Worth every switchback." },
+        response: { kind: "original", saying: "Worth every switchback." },
         provenance: {
           provider: "another-provider",
           model: "another-model",

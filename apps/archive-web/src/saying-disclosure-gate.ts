@@ -26,6 +26,22 @@ type AuthorizedGeneration = (
   review: SayingDisclosureReview,
 ) => Promise<void> | void;
 type GateListener = (snapshot: SayingDisclosureGateSnapshot) => void;
+type RequestValidationIssue = { readonly path: readonly PropertyKey[] };
+type SayingRequestField = "title" | "criterion" | "direction" | "allowedQuotations";
+
+const sayingRequestFieldOrder: readonly SayingRequestField[] = [
+  "title",
+  "criterion",
+  "direction",
+  "allowedQuotations",
+];
+
+const sayingRequestFieldCorrections: Readonly<Record<SayingRequestField, string>> = {
+  title: "provide a non-empty badge title within the supported length",
+  criterion: "provide a non-empty achievement criterion within the supported length",
+  direction: "correct or remove the optional direction",
+  allowedQuotations: "correct or remove the optional allowedQuotations list",
+};
 
 const idleSnapshot: SayingDisclosureGateSnapshot = {
   phase: "idle",
@@ -37,6 +53,26 @@ function publicError(error: unknown): string {
   return error instanceof Error
     ? error.message
     : "Saying disclosure could not be loaded; retry after restarting the local Badge site.";
+}
+
+function joinList(values: readonly string[], separator: string): string {
+  if (values.length === 1) return values[0]!;
+  if (values.length === 2) return `${values[0]} and ${values[1]}`;
+  return `${values.slice(0, -1).join(separator)}${separator}and ${values.at(-1)}`;
+}
+
+function invalidRequestMessage(issues: readonly RequestValidationIssue[]): string {
+  const issueRoots = new Set(issues.map((issue) => issue.path[0]));
+  const fields = sayingRequestFieldOrder.filter((field) => issueRoots.has(field));
+  if (fields.length === 0) {
+    return "This badge saying request is invalid. Use only a title, criterion, optional direction, and optional allowedQuotations list before generating a saying.";
+  }
+  const fieldList = joinList(fields, ", ");
+  const corrections = joinList(
+    fields.map((field) => sayingRequestFieldCorrections[field]),
+    "; ",
+  );
+  return `This badge has invalid saying input in ${fieldList}. ${corrections[0]!.toUpperCase()}${corrections.slice(1)} before generating a saying.`;
 }
 
 export class SayingDisclosureGate {
@@ -67,19 +103,28 @@ export class SayingDisclosureGate {
   }
 
   async request(intent: SayingGenerationIntent): Promise<void> {
-    let validatedIntent: SayingGenerationIntent;
+    const parsedInput = sayingRequestSchema.safeParse(intent.promptInput);
+    if (!parsedInput.success) {
+      this.publish({
+        phase: "error",
+        review: null,
+        error: invalidRequestMessage(parsedInput.error.issues),
+      });
+      return;
+    }
+    const validatedIntent: SayingGenerationIntent = {
+      ...intent,
+      promptInput: parsedInput.data,
+    };
     let review: SayingDisclosureReview;
     try {
-      validatedIntent = {
-        ...intent,
-        promptInput: sayingRequestSchema.parse(intent.promptInput),
-      };
       review = buildSayingDisclosureReview(validatedIntent.promptInput);
     } catch {
       this.publish({
         phase: "error",
         review: null,
-        error: "This badge title or criterion cannot be sent safely; correct it before generating a saying.",
+        error:
+          "This badge saying request is too large after validation. Shorten its title, criterion, direction, or allowedQuotations list before generating a saying.",
       });
       return;
     }

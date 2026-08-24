@@ -33,12 +33,49 @@ interface RouteFailure {
   readonly message: string;
 }
 
+type RequestValidationIssue = { readonly path: readonly PropertyKey[] };
+type SayingRequestField = "title" | "criterion" | "direction" | "allowedQuotations";
+
+const sayingRequestFieldOrder: readonly SayingRequestField[] = [
+  "title",
+  "criterion",
+  "direction",
+  "allowedQuotations",
+];
+
+const sayingRequestFieldCorrections: Readonly<Record<SayingRequestField, string>> = {
+  title: "provide a non-empty badge title within the supported length",
+  criterion: "provide a non-empty achievement criterion within the supported length",
+  direction: "correct or remove the optional direction",
+  allowedQuotations: "correct or remove the optional allowedQuotations list",
+};
+
 const fatalUtf8 = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true });
 const CLEANUP_FAILURE_MESSAGE =
   "Badge could not clean its private saying workspace. Close every Badge process, then inspect your system temporary directory and remove only confirmed inactive ordinary badge-saying- prefixed task folders before trying again.";
 
 function publicFailure(code: SayingLiveErrorCode, message: string): RouteFailure {
   return { status: SAYING_HTTP_STATUS_BY_ERROR[code], code, message };
+}
+
+function joinList(values: readonly string[], separator: string): string {
+  if (values.length === 1) return values[0]!;
+  if (values.length === 2) return `${values[0]} and ${values[1]}`;
+  return `${values.slice(0, -1).join(separator)}${separator}and ${values.at(-1)}`;
+}
+
+function invalidRequestMessage(issues: readonly RequestValidationIssue[]): string {
+  const issueRoots = new Set(issues.map((issue) => issue.path[0]));
+  const fields = sayingRequestFieldOrder.filter((field) => issueRoots.has(field));
+  if (fields.length === 0) {
+    return "The saying request fields are invalid. Send only title, criterion, optional direction, and optional allowedQuotations after reviewing the updated canonical JSON.";
+  }
+  const fieldList = joinList(fields, ", ");
+  const corrections = joinList(
+    fields.map((field) => sayingRequestFieldCorrections[field]),
+    "; ",
+  );
+  return `The saying request has invalid input in ${fieldList}. ${corrections[0]!.toUpperCase()}${corrections.slice(1)}, then review and send the updated canonical JSON.`;
 }
 
 function headerValue(request: IncomingMessage, name: string): string | null {
@@ -202,10 +239,7 @@ function parseRequestBody(bytes: Buffer): ReturnType<typeof sayingLiveRequestSch
   }
   const parsed = sayingLiveRequestSchema.safeParse(decoded);
   if (!parsed.success) {
-    throw publicFailure(
-      "BAD_REQUEST",
-      "The saying request must contain only a valid title, criterion, and optional direction.",
-    );
+    throw publicFailure("BAD_REQUEST", invalidRequestMessage(parsed.error.issues));
   }
   let canonical: string;
   try {

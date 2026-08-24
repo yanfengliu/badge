@@ -348,6 +348,7 @@ export function App() {
               editing={saying.editing}
               manualValue={saying.manualValue}
               manualError={saying.manualError}
+              acceptedSayingProtection={saying.acceptedSayingProtection}
               saving={saying.saving}
               generationBlocked={saying.disclosure.phase !== "idle"}
               proposalSourceLabel={saying.proposalSourceLabel}

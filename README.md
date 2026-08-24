@@ -4,7 +4,7 @@ Badge is a private, local-first achievement archive for remembering meaningful t
 
 It combines the collectibility of national-park stamps and physical badges with the memory value of a personal journal, without points, competition, external verification, or noisy game mechanics.
 
-The repository now contains a runnable first vertical slice with separately built Badge Archive and Badge Studio applications served as one local website, shared strict contracts, browser-local persistence, deterministic fixture art, pack compilation and admission, and an interactive 3D renderer with a static fallback.
+The repository now contains a runnable first vertical slice with separately built Badge Archive and Badge Studio applications served as one local website, shared strict contracts, browser-local persistence, explicit live Claude Code saying proposals, deterministic fixture art, pack compilation and admission, and an interactive 3D renderer with a static fallback.
 
 ## Run locally
 
@@ -27,7 +27,7 @@ Startup verifies the tracked compact developer artwork, derives strict PNG runti
 
 Use `npm run verify` for the executable TypeScript, lint, unit, build, boundary, documentation, formatting, and dependency gates. Browser-flow and visual verification remain explicit checks for visual changes.
 
-This is a foundation slice rather than the complete roadmap: live model-provider calls, Archive pack installation and seen-release ledger, complete installed-pack backup closure, Studio project backups and durable release history, custom `.badgebrief` handoff UI, computed all-parks completion, timeline, and sharing are not implemented yet. The generated pack fixtures prove exact bytes and dependency closure; they do not imply an Archive install UI or a durable Studio release ledger.
+This is a foundation slice rather than the complete roadmap: live Studio art-provider calls, Archive pack installation and seen-release ledger, complete installed-pack backup closure, Studio project backups and durable release history, custom `.badgebrief` handoff UI, computed all-parks completion, timeline, and sharing are not implemented yet. The generated pack fixtures prove exact bytes and dependency closure; they do not imply an Archive install UI or a durable Studio release ledger.
 
 ## Product direction
 
@@ -38,7 +38,7 @@ This is a foundation slice rather than the complete roadmap: live model-provider
 - An everyday archive that shows only published badge designs whose picture, shape, material, border, and 3D recipe are already decided.
 - A separate developer-only Badge Studio for multi-candidate art generation, uploads, non-destructive reprocessing, 3D construction, selection, validation, and pack publishing.
 - A real-time 3D badge viewer with dynamic material lighting, mouse rotation, bounded zoom, and direct light adjustment so each artifact can be examined like a physical object.
-- Independent one-line saying authoring: generate or regenerate a proposal, accept it explicitly, or write the line directly without changing the badge art.
+- Independent badge-saying authoring: generate a new compact paragraph or select a source-checked historical quotation, accept a proposal explicitly, or write the text directly without changing the badge art.
 - A quiet, elegant gallery with tactile, beautifully made badge art and a sharp, restrained activation ceremony.
 
 ## Start here

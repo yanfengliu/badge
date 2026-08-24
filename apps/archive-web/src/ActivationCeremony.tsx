@@ -61,7 +61,7 @@ export function ActivationCeremony({
         <div className="ceremony-copy">
           <span className="eyebrow">Achievement activated</span>
           <h2 id="ceremony-title">{title}</h2>
-          <p>“{saying}”</p>
+          <p>{saying}</p>
         </div>
       </div>
     </div>
