@@ -9,6 +9,7 @@ import { initialSayingEditorState, reduceSayingEditorState } from "./saying-edit
 interface RenderOverrides {
   readonly acceptedSaying?: string | null;
   readonly editing?: boolean;
+  readonly generationBlocked?: boolean;
   readonly manualValue?: string;
 }
 
@@ -27,6 +28,10 @@ function renderComposer(
       manualValue={overrides.manualValue ?? "🏕️"}
       manualError={manualError}
       saving={false}
+      generationBlocked={overrides.generationBlocked ?? false}
+      proposalSourceLabel="local preview"
+      providerNote="Fixture mode uses curated local lines."
+      focusTargetRef={{ current: null }}
       onGenerate={() => undefined}
       onUseProposal={() => undefined}
       onStartWriting={() => undefined}
@@ -49,6 +54,7 @@ describe("SayingComposer", () => {
 
     expect(html).toContain('role="status"');
     expect(html).toContain('aria-live="polite"');
+    expect(html).toContain('class="saying-block" tabindex="-1"');
     expect(html).not.toContain("maxlength");
   });
 
@@ -62,10 +68,10 @@ describe("SayingComposer", () => {
     });
 
     expect(html).toContain('aria-busy="true"');
-    expect(html).toContain("Preparing a local saying preview.");
+    expect(html).toContain("Preparing a saying proposal.");
     expect(html).toContain("Worth every switchback.");
     expect(html).toMatch(
-      /role="status"[^>]*>.*Preparing a local saying preview\.<\/div><div class="saying-interactions" aria-busy="true">/u,
+      /role="status"[^>]*>.*Preparing a saying proposal\.<\/div><div class="saying-interactions" aria-busy="true">/u,
     );
   });
 
@@ -80,7 +86,7 @@ describe("SayingComposer", () => {
 
     expect(html).toContain("Could not prepare another saying.");
     expect(html).toContain("The previous proposal remains available.");
-    expect(html).not.toContain("Local saying proposal ready:");
+    expect(html).not.toContain("Saying proposal ready:");
   });
 
   it("prevents submitting a manual line that already has an inline error", () => {
@@ -96,6 +102,22 @@ describe("SayingComposer", () => {
     );
 
     expect(html).toMatch(/<button[^>]*disabled=""[^>]*>Save my saying<\/button>/u);
+  });
+
+  it("keeps generation disabled while provider disclosure is open", () => {
+    const html = renderComposer(
+      {
+        recordId: "record-yosemite",
+        status: "idle",
+        proposal: null,
+        provenance: null,
+        error: null,
+      },
+      null,
+      { editing: false, generationBlocked: true },
+    );
+
+    expect(html).toMatch(/<button[^>]*disabled=""[^>]*>.*Review Claude access…<\/button>/u);
   });
 
   it("reopens a retained draft visibly and keeps activation blocked until it is resolved", () => {

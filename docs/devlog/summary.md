@@ -1,5 +1,6 @@
 # Devlog Summary
 
+- 2026-08-23: Connected explicit Archive saying proposals to a bounded same-listener Claude Code adapter with exact no-provider-model-call disclosure, pinned provenance, actionable expired-auth handling, and no API key or fallback.
 - 2026-08-23: Separated explicit fixture-backed saying proposals from accepted lines and added the exact theme-aware runtime prompt, provider-neutral controller, and privacy boundary.
 - 2026-08-23: Removed the pre-release two-origin recovery detour after the owner clarified that no such installation or user data exists; one-site startup now has one state record and one command.
 - 2026-08-23: Unified Archive and Studio under one remembered local site at `/` and `/studio/`, and isolated launcher verification from canonical `.badge-local` state.

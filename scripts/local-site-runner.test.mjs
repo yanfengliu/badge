@@ -27,21 +27,30 @@ async function temporaryRepository() {
 function fakeViteServer(options = {}) {
   let closeCount = 0;
   let idleWaitCount = 0;
-  return {
-    server: {
-      async listen() {
-        if (options.listenError) throw options.listenError;
-      },
-      async waitForRequestsIdle() {
-        idleWaitCount += 1;
-        if (options.idleWaitError) throw options.idleWaitError;
-        if (options.neverIdle) return new Promise(() => undefined);
-      },
-      async close() {
-        closeCount += 1;
-        if (options.closeError) throw options.closeError;
-      },
+  const server = {
+    async listen() {
+      if (options.listenError) throw options.listenError;
     },
+    async waitForRequestsIdle() {
+      options.events?.push("idle");
+      idleWaitCount += 1;
+      if (options.idleWaitError) throw options.idleWaitError;
+      if (options.neverIdle) return new Promise(() => undefined);
+    },
+    async close() {
+      options.events?.push("close");
+      closeCount += 1;
+      if (options.closeError) throw options.closeError;
+    },
+  };
+  if (options.shutdown) {
+    server[Symbol.for("badge.saying-server.shutdown.v1")] = async () => {
+      options.events?.push("sayings");
+      await options.shutdown();
+    };
+  }
+  return {
+    server,
     closeCount: () => closeCount,
     idleWaitCount: () => idleWaitCount,
   };
@@ -68,6 +77,7 @@ describe("single-site runner", () => {
     expect(instance).toMatchObject({ action: "launch", port: 4180, ownsServer: true });
     expect(receivedOptions).toEqual({
       configFile: path.join(repositoryRoot, "apps", "host-web", "vite.config.ts"),
+      mode: "fixture",
       server: { host: "127.0.0.1", port: 4180, strictPort: true },
     });
     expect(await readSitePort(paths.configPath)).toBe(4180);
@@ -77,6 +87,63 @@ describe("single-site runner", () => {
     await instance.close();
     expect(fake.closeCount()).toBe(1);
     expect(fake.idleWaitCount()).toBe(1);
+  });
+
+  it("uses Vite's supported live development mode for normal startup", async () => {
+    const repositoryRoot = await temporaryRepository();
+    const runtimeTarget = createCanonicalRuntimeTarget(repositoryRoot);
+    const fake = fakeViteServer();
+    let receivedOptions;
+
+    const instance = await startLocalSite({
+      runtimeTarget,
+      findFreePort: async () => 4180,
+      inspectSite: async () => "free",
+      createViteServer: async (options) => {
+        receivedOptions = options;
+        return fake.server;
+      },
+    });
+
+    expect(receivedOptions.mode).toBe("development");
+    await instance.close();
+  });
+
+  it("aborts and awaits saying work before Vite request-idle and listener close", async () => {
+    const repositoryRoot = await temporaryRepository();
+    const runtimeTarget = createVerificationRuntimeTarget(repositoryRoot, "saying-shutdown-order");
+    const events = [];
+    const fake = fakeViteServer({ events, shutdown: async () => undefined });
+    const instance = await startLocalSite({
+      runtimeTarget,
+      findFreePort: async () => 4180,
+      inspectSite: async () => "free",
+      createViteServer: async () => fake.server,
+    });
+
+    await instance.close();
+    expect(events).toEqual(["sayings", "idle", "close"]);
+  });
+
+  it("surfaces a saying cleanup incident after still closing its owned listener", async () => {
+    const repositoryRoot = await temporaryRepository();
+    const runtimeTarget = createVerificationRuntimeTarget(repositoryRoot, "saying-cleanup-failure");
+    const events = [];
+    const fake = fakeViteServer({
+      events,
+      shutdown: async () => {
+        throw new Error("fixed private-workspace remediation");
+      },
+    });
+    const instance = await startLocalSite({
+      runtimeTarget,
+      findFreePort: async () => 4180,
+      inspectSite: async () => "free",
+      createViteServer: async () => fake.server,
+    });
+
+    await expect(instance.close()).rejects.toThrow("could not stop active saying work cleanly");
+    expect(events).toEqual(["sayings", "idle", "close"]);
   });
 
   it("reuses an identified site without creating another Vite server", async () => {

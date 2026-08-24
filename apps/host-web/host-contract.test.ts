@@ -3,11 +3,30 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
-import { canonicalStudioLocation, hostEntryPoints, studioEntryRewrite } from "./vite.config.js";
+import {
+  canonicalStudioLocation,
+  hostEntryPoints,
+  hostServerOptions,
+  sayingModeForViteMode,
+  studioEntryRewrite,
+} from "./vite.config.js";
 
 const hostRoot = path.dirname(fileURLToPath(import.meta.url));
 
 describe("single-origin Badge host", () => {
+  it.each([
+    ["fixture", "fixture"],
+    ["test", "fixture"],
+    ["development", "live"],
+    ["production", "live"],
+  ] as const)("configures Vite %s mode with the %s saying surface", (viteMode, expected) => {
+    expect(sayingModeForViteMode(viteMode)).toBe(expected);
+  });
+
+  it("disables Vite's speculative direct-import pre-transforms", () => {
+    expect(hostServerOptions.preTransformRequests).toBe(false);
+  });
+
   it("canonicalizes the Studio segment before Archive history fallback can claim it", () => {
     expect(canonicalStudioLocation("/studio")).toBe("/studio/");
     expect(canonicalStudioLocation("/studio?draft=one")).toBe("/studio/?draft=one");

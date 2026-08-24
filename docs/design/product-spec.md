@@ -160,7 +160,7 @@ Regeneration is non-destructive: a new saying remains a proposal while the curre
 
 A live model request occurs only after the user explicitly activates `Generate saying` or `Try another`. One activation starts at most one provider attempt: adapters do not fan out, retry, or repair through another model automatically. Loading or reloading the app, selecting or opening a badge, opening the activation form, activating a badge, playing or replaying its ceremony, restoring data, and background work never generate a saying.
 
-Before the first live saying request, and again whenever provider or outbound scope changes, the first `Generate saying` activation opens a review sheet without making a request. That sheet identifies the provider and destination, shows the current outbound fields and values, and exposes a final `Generate saying` action that starts exactly one attempt. After acknowledgment, `Generate saying` or `Try another` starts one attempt directly until the disclosed provider or field scope changes; closing the review makes zero calls.
+Before the first live saying request in each page session, and again whenever provider, destination, model, prompt, normalization, limits, or outbound scope changes, the first `Generate saying` activation fetches disclosure metadata from the same local Badge listener and opens a review sheet without making a provider-model request. That sheet identifies Claude Code and Anthropic, shows the pinned `claude-sonnet-4-6` model, exact system prompt, current canonical outbound fields and values, excluded fields, and disclosure fingerprint, then exposes a final `Generate with Claude` action that starts exactly one provider attempt. After in-memory acknowledgment, `Generate saying` or `Try another` starts one attempt directly while the disclosed fingerprint remains current; closing the review sends no provider-model request, and reloading asks again.
 
 The outbound prompt payload is limited to title, criterion, and optional saying-specific direction; it excludes the internal request ID and cancellation signal as well as description, notes, dates, occurrence data, accepted sayings, visibility, art, and unrelated draft state.
 
@@ -174,7 +174,7 @@ One-line means one logical line with no stored newline characters. Input trims o
 
 ### Saying prompt v1
 
-The live adapter sends exactly one system instruction and one canonical JSON user message; provider-specific response-format settings may enforce the same JSON object but cannot add personal context or silently change the writing rules.
+The live adapter sends exactly one system instruction and one canonical JSON user message to the owner's signed-in local Claude Code subscription; provider-specific response-format settings enforce the same one-field JSON object but cannot add personal context or silently change the writing rules. Badge embeds no API key and uses no second port.
 
 ```text
 You write one-line sayings for Badge, a private archive of meaningful real-life achievements.
@@ -212,7 +212,9 @@ The canonical user message is the following JSON shape, omitting absent optional
 
 A conforming response looks like `{"saying":"A little awe between the switchbacks."}`. The adapter accepts at most 4 KiB of raw UTF-8 JSON, parses a closed object with exactly one string field, deterministically trims and collapses whitespace including generated line breaks to one logical line, and applies the shared grapheme validator. The normalized line is bounded to 120 grapheme clusters, 1,024 Unicode code points, and 3,840 UTF-8 bytes; non-whitespace controls, bidirectional controls, and default-ignorable-only output are rejected. Malformed, extra-field, empty, or over-limit output causes no model retry, truncation, acceptance, or fallback mutation, and a public parse error never echoes raw provider output. The 2–12-word instruction is a writing target rather than an acceptance condition because word boundaries vary across languages; closed JSON, one logical line after normalization, and the hard output ceilings are acceptance conditions.
 
-Validated results carry bounded provider and model identifiers, prompt version, and generation timestamp as local provenance outside the model prompt. Credentials, raw provider output, and personal input are never provenance fields.
+Validated live results must carry literal provider `claude-code`, literal model `claude-sonnet-4-6`, prompt v1, and a valid generation timestamp as local provenance outside the model prompt. The same-site client forbids redirects, requires JSON, bounds the streamed response to 16 KiB, and rejects mismatched error status or provenance. The listener requires exact loopback authority, same-origin fetch metadata, exact POST Origin, and the current disclosure fingerprint; it allows one active call, bounds the request to 8 KiB, stops work on cancellation or shutdown, and never retries or silently falls back. Credentials, raw provider output, and personal input are never provenance or public-error fields.
+
+Claude Code runs as a native child in a fresh private temporary directory with a bounded environment that supports its existing local sign-in while excluding API-key and cloud-provider selectors. Tools, project and user settings, MCP servers, sessions, browser integration, slash commands, and dynamic system-prompt additions are disabled. Stdout, stderr, and duration are bounded. On Windows, atomic process creation inside a kill-on-close Job Object contains the complete descendant tree. On Unix, v1 terminates the initial detached process group and proves that group has disappeared before cleanup, but an installed CLI descendant that deliberately creates a new session or process group can escape that boundary; Unix live use therefore trusts the locally installed Claude Code executable not to detach that way until a real supervisor replaces the process-group boundary. Badge withholds the saying and preserves the private workspace if the containment barrier it does own cannot be proved, and it also withholds the saying if validation or private-workspace cleanup fails. Fixture and test builds instead use curated in-process lines and expose no saying HTTP route.
 
 ## Art generation behavior
 
@@ -332,7 +334,7 @@ Activate the last required park → commit that activation → update the compos
 
 ## Explicit open decisions
 
-Future agents must resolve or deliberately defer the open items below rather than inventing an answer. Resolved item 17 remains numbered here so references elsewhere do not silently change meaning.
+Future agents must resolve or deliberately defer the open items below rather than inventing an answer. Resolved items remain numbered here so references elsewhere do not silently change meaning.
 
 1. Confirm one badge with multiple occurrences versus separate badge copies for revisits and rereads.
 2. Decide whether the Studio browser entry point remains sufficient or needs a local companion service or desktop wrapper for art generation, credentials, disk access, and very large workspaces; this must not pull provider code into the archive build.
@@ -351,5 +353,5 @@ Future agents must resolve or deliberately defer the open items below rather tha
 15. Choose the distribution channel and update policy for published packs whose required assets are too large for ordinary Git.
 16. Decide whether several local definitions may intentionally reuse one published presentation or whether every custom definition must receive a unique Studio-published design.
 17. **Resolved by the owner:** Badge is one local website with Archive at `/` and Badge Studio at `/studio/`; navigation links between them on the same remembered origin, while their builds, private databases, repositories, and backup formats remain separate.
-18. Confirm the live saying credential boundary: the current architecture recommends a separately capability-scoped Archive saying companion when browser-safe authorization is unavailable, with manual writing and deterministic fixtures remaining usable without it.
+18. **Resolved by the owner:** live sayings use the owner's signed-in local Claude Code subscription through a bounded capability-scoped adapter on the existing Badge listener, with an explicit session-local disclosure review, no API key or second port, no fixture HTTP surface, and manual writing always available.
 19. Confirm where a completely custom achievement begins: the current recommendation creates its semantic draft in Archive and exports a privacy-scrubbed `.badgebrief` to Studio, while the alternative begins the entire definition and visual project in Studio before publication.

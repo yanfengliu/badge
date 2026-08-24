@@ -10,7 +10,7 @@ This document distinguishes the implemented foundation from the remaining target
 
 The target is a Node 24 npm workspace with strict TypeScript, React, and Vite, containing two independently built desktop-first web applications served as one local website: the everyday Archive at `/` and developer-only Badge Studio at `/studio/`.
 
-The 2026-08-23 foundation implements that workspace, the two route-scoped builds on one remembered localhost origin, separate IndexedDB repositories, inward-facing contract packages, an explicit fixture-backed saying proposal and acceptance controller, the exact provider-neutral saying prompt and payload contract, deterministic fixture art, a PNG-only canonical pack compiler and hostile dependency-closed admission module, reproducible and independently admitted starter catalogue and theme pack bytes, self-contained backup of the current Archive records and exact fully decoded earned visual bytes, qualified-identity refusal before restore, state-preserving corrupt-source repair, and a shared React Three Fiber renderer candidate. Durable Archive source images are restricted to strict PNG. Studio and tracked developer fixtures may use WebP or JPEG before publication or deterministic local derivation normalizes their decoded pixels to PNG outside Git. It does not yet implement installed-pack storage or ledgers, complete backup closure for arbitrary installed but unearned packs, Studio project backup or durable release history, `.badgebrief` UI, live provider adapters or disclosure sheet, service workers, the renderer stress/performance gate, or later roadmap scope.
+The 2026-08-23 foundation implements that workspace, the two route-scoped builds on one remembered localhost origin, separate IndexedDB repositories, inward-facing contract packages, explicit non-destructive saying proposals with direct writing, the exact prompt and minimal-payload contracts, a live same-listener Claude Code adapter with a no-model-call first-use disclosure review, deterministic fixture art, a PNG-only canonical pack compiler and hostile dependency-closed admission module, reproducible and independently admitted starter catalogue and theme pack bytes, self-contained backup of the current Archive records and exact fully decoded earned visual bytes, qualified-identity refusal before restore, state-preserving corrupt-source repair, and a shared React Three Fiber renderer candidate. Durable Archive source images are restricted to strict PNG. Studio and tracked developer fixtures may use WebP or JPEG before publication or deterministic local derivation normalizes their decoded pixels to PNG outside Git. It does not yet implement installed-pack storage or ledgers, complete backup closure for arbitrary installed but unearned packs, Studio project backup or durable release history, `.badgebrief` UI, live art-provider adapters, service workers, the renderer stress/performance gate, or later roadmap scope.
 
 The foundation's built-in catalogue still enters Archive as validated fixture state rather than through the future install UI. Its offline generator nevertheless compiles actual canonical `badge.theme.heirloom@1.0.0` and `badge.catalogue.starter@1.0.0-alpha.3` containers, pins their exact digests, independently admits both, and proves the catalogue's exact dependency graph and fallback-template closure. The Studio publishing fixture similarly offers its targeted `.badgepack` together with the exact validated `.badgetheme`; this executable closure must not be described as durable release history or Archive installation.
 
@@ -18,7 +18,7 @@ Archive and Studio share one browser origin but own separate route entry points,
 
 The local route host mounts the independently built Studio entry point at `/studio/`, but the Archive bundle has no Studio lazy chunk, database access, visual-generation port, art prompt recipe, art-provider SDK, or art-provider endpoint. Studio transfers finished work to Archive only through a closed, data-only published pack that Archive independently validates and installs. Archive may explicitly export a minimal data-only authoring request for Studio, but neither application reads the other's database or receives the other's private state. The separately bounded Archive saying-proposal port does not weaken this visual-authoring boundary.
 
-Live visual generation exists behind a Studio application port. If its provider requires a privileged long-lived credential, an optional loopback-only Studio companion or later desktop wrapper may implement that port. Live saying proposals use a different Archive application port and, when browser-safe authorization is unavailable, a separately capability-scoped Archive saying companion. Neither browser build embeds a privileged credential, and neither companion has the other application's authority.
+Live visual generation exists behind a Studio application port. If its provider requires a privileged long-lived credential, an optional loopback-only Studio companion or later desktop wrapper may implement that port. Live saying proposals use a different Archive application port whose first concrete adapter is mounted inside the existing local route host and delegates only the reviewed prompt to the owner's signed-in native Claude Code process. Neither browser build embeds a privileged credential, and the saying adapter has no Studio, art, persistence, or renderer authority.
 
 The primary dependency directions are:
 
@@ -38,9 +38,9 @@ The primary dependency directions are:
 
 `studio-companion/provider-adapter → art-generation-contract`
 
-`archive-saying-companion → saying-contract`
+`archive-web → saying-live-contract → saying-contract`
 
-`archive-saying-companion/provider-adapter → saying-contract`
+`host-web/saying-server → saying-live-contract → saying-contract`
 
 Persistence, file I/O, image processing, 3D rendering, and model generation are adapters behind their owning application or UI boundary. Domain and contract packages remain independent of React, IndexedDB, browser file APIs, image canvases, WebGL or WebGPU, Three.js, and provider SDKs.
 
@@ -49,10 +49,10 @@ Persistence, file I/O, image processing, 3D rendering, and model generation are 
 ```text
 apps/
   host-web/             one-origin route host for Archive at `/` and Studio at `/studio/`
+    saying-server/      same-listener bounded Claude Code saying adapter and process lifecycle
   archive-web/          gallery, goals, activation, memories, pack admission, and archive backup
   studio-web/           projects, candidates, upload, processing, construction, validation, and publish
   studio-companion/     optional loopback art-provider and credential boundary
-  archive-saying-companion/  optional loopback saying-provider and credential boundary
 packages/
   archive-application/  Archive use cases, repositories, saying port, and pack-install orchestration
   archive-domain/       records, occurrences, activation, visibility, and composite rules
@@ -64,7 +64,8 @@ packages/
   render-recipe/        engine-neutral geometry, material, fallback, and appearance contracts
   renderer-web/         shared live WebGL and renderer-independent fallback adapters
   art-generation-contract/  Studio and art-companion request-response schemas only
-  saying-contract/      Archive and saying-companion request-response schemas only
+  saying-contract/      provider-neutral Archive request, response, prompt, and normalization contracts
+  saying-live-contract/ exact same-origin disclosure, live route, provider, model, and response protocol
 tests/
   browser/archive/      Archive Playwright journeys and visual evidence
   browser/studio/       Studio Playwright journeys and visual evidence
@@ -319,7 +320,7 @@ Only the final `Generate saying` command and `Try another` may invoke that port,
 
 Saying-specific direction is a closed optional object containing curated non-personal theme cues, voice, variation, and deliberately supplied user direction, with the exact field and total-payload ceilings in `docs/design/product-spec.md`. User direction may contain personal text and therefore remains part of the visible outbound disclosure. The internal port request also carries request identity and cancellation state, but those values are never serialized into the model prompt. The adapter owns the exact versioned system and user prompt recorded in the product spec; it never derives prompt context from personal notes, dates, occurrences, accepted sayings, visibility, art, or other Archive state.
 
-`saying-contract` is the provider-neutral executable boundary for that prompt: it canonicalizes and caps the outbound JSON, strictly admits bounded provider JSON, normalizes its one logical line, rejects unsafe Unicode controls and invisible-only content, redacts raw malformed output from public errors, and carries provider, model, prompt-version, and generation-time provenance without credentials.
+`saying-contract` is the provider-neutral executable boundary for that prompt: it canonicalizes and caps the outbound JSON, strictly admits bounded provider JSON, normalizes its one logical line, rejects unsafe Unicode controls and invisible-only content, redacts raw malformed output from public errors, and carries provider, model, prompt-version, and generation-time provenance without credentials. `saying-live-contract` closes the current same-origin protocol around it by pinning Claude Code, `claude-sonnet-4-6`, the exact disclosure fingerprint, route sizes and errors, and literal live provenance.
 
 Archive keeps the accepted saying and pending proposal separate. Retrying a saying request never invokes art generation, changes the published visual binding, or overwrites accepted text; only explicit acceptance or direct editing updates the draft. Studio cannot read either saying value, while installing or updating a pack in Archive preserves both without mutation.
 
@@ -327,11 +328,13 @@ The saying controller assigns a monotonically increasing request ID and applies 
 
 Normalize proposals and direct input by trimming outer whitespace and collapsing internal whitespace, including line breaks, to one space. Count Unicode grapheme clusters through one shared domain validator, reject empty values and values over the provisional 120-grapheme limit, and never truncate stored or displayed text silently.
 
-Tests use separate deterministic Studio art candidates and Archive saying proposals so product work does not spend model budget or require network access.
+Tests and fixture browser runs use separate deterministic Studio art candidates and in-process Archive saying proposals so ordinary verification does not spend model budget or require network access; fixture mode mounts no saying HTTP endpoint.
 
-Live Studio adapters disclose the destination and exact outbound visual fields before media leaves the device. Live Archive saying adapters disclose the destination and exact minimal text fields and exclude description, notes, dates, occurrence data, accepted sayings, visibility, art, and unrelated draft fields by default. Both support cancellation. Privileged Studio credentials remain in the Studio companion, OS credential boundary, or later wrapper; privileged saying credentials remain independently in the Archive saying companion, OS credential boundary, or later wrapper. Neither credential enters browser code, application data, backups, packs, prompts, or Git, and the feature remains manual or fixture-backed when no safe authorization path exists.
+Live Studio adapters disclose the destination and exact outbound visual fields before media leaves the device. The live Archive saying adapter discloses the destination, provider, pinned model, exact system prompt, exact canonical text values, complete allowed field scope, and excluded private fields before its first request in a page session. Its in-memory acknowledgment is fingerprinted over every disclosed contract input and is invalidated by any provider, destination, model, prompt, field, normalization, or limit change. It excludes description, notes, dates, occurrence data, accepted sayings, visibility, art, and unrelated draft fields; closing and navigation send nothing; manual writing always works without Claude.
 
-Pin a product-called model only in its owning adapter's repo-owned configuration when live integration is implemented; do not scatter model IDs through UI or domain code. Archive bundle-graph and blocked-network tests prove no visual provider, prompt recipe, provider SDK, or art endpoint enters the everyday build.
+The route host accepts saying requests only from its exact loopback listener authority and same-origin fetch context; POST additionally requires the exact Origin and current disclosure fingerprint, while the client rejects redirects, non-JSON responses, wrong error statuses, oversized streams, and unpinned live provenance. The server permits one active call, owns cancellation and listener-shutdown termination, and never retries or exposes raw provider output. It resolves an ordinary native Claude executable, passes canonical user JSON over stdin and the exact system prompt as one argument, uses a fresh inode-checked temporary directory plus an explicit environment allowlist, disables tools, settings, MCP, sessions, browser integration, slash commands, and dynamic prompt additions, and bounds stdout, stderr, time, and response bytes. Windows creates the child atomically inside a kill-on-close Job Object and waits for its contained descendant tree before cleanup. Unix instead terminates and waits for the initial detached process group; until a real Unix supervisor exists, live v1 trusts the locally installed Claude Code executable not to escape by creating a new session or process group. A failure to prove the owned containment barrier preserves the task directory and becomes a sticky cleanup incident; otherwise Badge removes the directory only after that barrier settles. Existing Claude Code sign-in is the credential boundary; no API key enters browser code, application data, backups, packs, prompts, or Git.
+
+Pin a product-called model only in its owning adapter's repo-owned live-contract package and reference that contract from UI and server; do not duplicate model IDs in domain code or presentation copy. Archive bundle-graph and blocked-network tests prove no visual provider, prompt recipe, provider SDK, art endpoint, or Node subprocess adapter enters the everyday browser build.
 
 ## Pack publication and admission
 

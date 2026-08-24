@@ -1,5 +1,25 @@
 # Defect Register
 
+## 2026-08-23 — The startup gate printed success and then kept running
+
+**Symptom:** `npm run check:local-startup` printed that the task-owned Archive and Studio listener passed, released port `4180`, and then remained alive instead of returning to the verification chain.
+
+**Investigation:** Instrumenting the exact finalizer proved that both launcher handles closed while native `FSWatcher` handles remained. Instrumenting `server.watcher.add` then captured Vite adding `apps/studio-web/src/main.tsx` after `server.close()`, through `ensureWatchedFile` and `loadAndTransform`; the watcher changed from closed back to open and retained two native handles. Vite's HTML transform starts that direct-import warmup without awaiting it, while its server shutdown closes the watcher and client environment concurrently. Disabling Vite's supported speculative direct-import pre-transform option removed the traced producer. After making the success marker wait for every cleanup result, the fixed serial benchmark completed three exact npm runs in 2,972 ms, 2,727 ms, and 2,970 ms, each with exit code zero, closed port `4180`, and no verification state. The measurement also exposed that `fs.rm` without recursive mode cannot remove an empty directory, so the verification finalizer now uses non-recursive `rmdir` for its shared parent and will not delete another concurrent run.
+
+**Root cause:** Vite returned transformed HTML before its speculative direct-import warmup completed, then closed its watcher concurrently with the environment that was draining that transform. The late transform called Chokidar `add()` after the first close; Chokidar reopened the watcher, but Vite did not close it a second time. A package-import change altered timing and produced a false early diagnosis, while the port-only success marker could not see either retained process handles or leftover verification state.
+
+**Standing gate:** The host contract keeps Vite's speculative direct-import pre-transforms disabled for the shared development host; on-demand transforms and HMR remain enabled. The exact `npm run check:local-startup` process emits its success marker only after the listener and isolated state are released. The one-off three-run serial benchmark remains validation evidence rather than a repository gate.
+
+## 2026-08-23 — An expired Claude token looked like an unexplained generation failure
+
+**Symptom:** After the first explicit `Generate with Claude` approval, the Archive reported only that Claude Code could not complete the request even though `claude auth status` said the local installation was logged in.
+
+**Investigation:** The exact bounded CLI invocation returned exit code `1` with a valid JSON result envelope whose `is_error` flag was true and whose `api_error_status` was `401`; its provider detail said that the OAuth access token had expired. The generator discarded every nonzero result envelope before classifying it, so the middleware could not distinguish this remediable authentication state from an arbitrary provider failure.
+
+**Root cause:** Login-state inspection was treated as proof that a model request could authenticate, and the bounded adapter preserved the provider's failure bytes but never interpreted the one status needed for a safe user action.
+
+**Standing gate:** Generator contracts recognize only a structurally valid failed Claude envelope with numeric API status `401` as expired authentication, never expose its free-form result text, and leave malformed or non-`401` failures generic; middleware contracts map the classified case to a stable `503` instruction to run `claude auth login` and then retry, while preserving proposal and accepted-saying state.
+
 ## 2026-08-23 — Startup offered recovery for an installation that never existed
 
 **Symptom:** The launcher and documentation presented a separate pair-recovery mode even though Badge had only just been built and no user installation had ever used that topology.

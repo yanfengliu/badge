@@ -1,4 +1,4 @@
-import { useEffect, type RefObject } from "react";
+import { useEffect, useLayoutEffect, useRef, type RefObject } from "react";
 
 const focusableSelector = [
   "button:not(:disabled)",
@@ -14,6 +14,18 @@ interface ModalFocusOptions {
   readonly returnFocus?: RefObject<HTMLElement | null>;
 }
 
+interface FocusTarget {
+  focus(): void;
+}
+
+export function updateModalCloseHandler(handlerRef: { current: () => void }, onClose: () => void): void {
+  handlerRef.current = onClose;
+}
+
+export function restoreModalFocus(preferred: FocusTarget | null, previous: FocusTarget | null): void {
+  (preferred ?? previous)?.focus();
+}
+
 export function shouldDismissModalForKey(key: string, escapeEnabled: boolean): boolean {
   return key === "Escape" && escapeEnabled;
 }
@@ -24,15 +36,22 @@ export function useModalFocus(
   onClose: () => void,
   options: ModalFocusOptions = {},
 ) {
+  const onCloseRef = useRef(onClose);
+  useLayoutEffect(() => {
+    updateModalCloseHandler(onCloseRef, onClose);
+  }, [onClose]);
+  const escapeEnabled = options.escapeEnabled ?? true;
+  const returnFocus = options.returnFocus;
+
   useEffect(() => {
     const previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    const focusOnClose = options.returnFocus?.current;
+    const focusOnClose = returnFocus?.current;
     initialFocus.current?.focus();
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.preventDefault();
-        if (shouldDismissModalForKey(event.key, options.escapeEnabled ?? true)) onClose();
+        if (shouldDismissModalForKey(event.key, escapeEnabled)) onCloseRef.current();
         return;
       }
       if (event.key !== "Tab" || !dialog.current) return;
@@ -59,11 +78,7 @@ export function useModalFocus(
     document.addEventListener("keydown", handleKeyDown);
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
-      if (focusOnClose) {
-        focusOnClose.focus();
-      } else {
-        previouslyFocused?.focus();
-      }
+      restoreModalFocus(focusOnClose ?? null, previouslyFocused);
     };
-  }, [dialog, initialFocus, onClose, options.escapeEnabled, options.returnFocus]);
+  }, [dialog, escapeEnabled, initialFocus, returnFocus]);
 }

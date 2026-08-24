@@ -1,0 +1,419 @@
+import { createServer, request as httpRequest, type Server } from "node:http";
+import { once } from "node:events";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import {
+  SAYING_DISCLOSURE,
+  SAYING_DISCLOSURE_FINGERPRINT,
+  SAYING_DISCLOSURE_HEADER,
+  SAYING_DISCLOSURE_PATH,
+  SAYING_GENERATION_PATH,
+} from "@badge/saying-live-contract";
+import type { SayingGenerator } from "./generator.js";
+import { SayingGenerationFailure } from "./generator.js";
+import { SayingServerRuntime } from "./middleware.js";
+
+interface Reply {
+  readonly status: number;
+  readonly headers: Record<string, string | string[] | undefined>;
+  readonly body: string;
+}
+const opened: Array<{ runtime: SayingServerRuntime; server: Server }> = [];
+
+async function host(generator: SayingGenerator) {
+  const runtime = new SayingServerRuntime(generator);
+  const server = createServer((incoming, response) => {
+    runtime.middleware(incoming, response, () => {
+      response.statusCode = 404;
+      response.end("next");
+    });
+  });
+  server.listen(0, "127.0.0.1");
+  await once(server, "listening");
+  opened.push({ runtime, server });
+  const address = server.address();
+  if (!address || typeof address === "string") throw new Error("test listener has no port");
+  return { runtime, port: address.port };
+}
+
+function call(
+  port: number,
+  options: {
+    method?: string;
+    path?: string;
+    body?: string;
+    headers?: Record<string, string>;
+  } = {},
+): Promise<Reply> {
+  const method = options.method ?? "GET";
+  const body = options.body ?? "";
+  return new Promise((resolve, reject) => {
+    const outgoing = httpRequest(
+      {
+        host: "127.0.0.1",
+        port,
+        method,
+        path: options.path ?? SAYING_DISCLOSURE_PATH,
+        headers: {
+          Host: `127.0.0.1:${port}`,
+          "Sec-Fetch-Site": "same-origin",
+          ...(method === "POST" ? { Origin: `http://127.0.0.1:${port}` } : {}),
+          ...(body ? { "Content-Length": String(Buffer.byteLength(body)) } : {}),
+          ...options.headers,
+        },
+      },
+      (incoming) => {
+        const chunks: Buffer[] = [];
+        incoming.on("data", (chunk) => chunks.push(Buffer.from(chunk)));
+        incoming.on("end", () =>
+          resolve({
+            status: incoming.statusCode ?? 0,
+            headers: incoming.headers,
+            body: Buffer.concat(chunks).toString("utf8"),
+          }),
+        );
+      },
+    );
+    outgoing.once("error", reject);
+    outgoing.end(body);
+  });
+}
+
+function successGenerator() {
+  return {
+    generate: vi.fn<SayingGenerator["generate"]>(async () => ({
+      response: { saying: "Granite keeps the long view." },
+      provenance: {
+        provider: "claude-code",
+        model: "claude-sonnet-4-6",
+        promptVersion: "v1" as const,
+        generatedAt: "2026-08-23T12:00:00.000Z",
+      },
+    })),
+  } satisfies SayingGenerator;
+}
+
+const generationHeaders = {
+  "Content-Type": "application/json",
+  [SAYING_DISCLOSURE_HEADER]: SAYING_DISCLOSURE_FINGERPRINT,
+};
+const generationBody = JSON.stringify({ title: "Yosemite", criterion: "Visit Yosemite." });
+
+afterEach(async () => {
+  await Promise.all(
+    opened.splice(0).map(async ({ runtime, server }) => {
+      await runtime.shutdown().catch(() => undefined);
+      server.close();
+      await once(server, "close");
+    }),
+  );
+});
+
+describe("same-listener saying routes", () => {
+  it("serves exact disclosure to a browser-style same-origin GET without Origin", async () => {
+    const generator = successGenerator();
+    const { port } = await host(generator);
+    const reply = await call(port);
+    expect(reply.status).toBe(200);
+    expect(JSON.parse(reply.body)).toEqual(SAYING_DISCLOSURE);
+    expect(reply.headers["access-control-allow-origin"]).toBeUndefined();
+    expect(reply.headers["cache-control"]).toBe("no-store");
+    expect(generator.generate).not.toHaveBeenCalled();
+  });
+
+  it("generates once from a closed, normalized request after fingerprint consent", async () => {
+    const generator = successGenerator();
+    const { port } = await host(generator);
+    const reply = await call(port, {
+      method: "POST",
+      path: SAYING_GENERATION_PATH,
+      headers: generationHeaders,
+      body: generationBody,
+    });
+    expect(reply.status).toBe(200);
+    expect(JSON.parse(reply.body).response.saying).toBe("Granite keeps the long view.");
+    expect(generator.generate).toHaveBeenCalledOnce();
+    expect(generator.generate.mock.calls[0]![0]).toEqual({
+      title: "Yosemite",
+      criterion: "Visit Yosemite.",
+    });
+  });
+
+  it.each([
+    ["pretty-printed bytes", JSON.stringify({ title: "Yosemite", criterion: "Visit Yosemite." }, null, 2)],
+    ["reordered keys", JSON.stringify({ criterion: "Visit Yosemite.", title: "Yosemite" })],
+    ["normalizable field whitespace", JSON.stringify({ title: " Yosemite ", criterion: "Visit  Yosemite." })],
+  ])("rejects %s that differ from the reviewed canonical bytes", async (_label, body) => {
+    const generator = successGenerator();
+    const { port } = await host(generator);
+    const reply = await call(port, {
+      method: "POST",
+      path: SAYING_GENERATION_PATH,
+      headers: generationHeaders,
+      body,
+    });
+    expect(reply.status).toBe(400);
+    expect(JSON.parse(reply.body).error).toMatchObject({ code: "BAD_REQUEST" });
+    expect(generator.generate).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["wrong host", { Host: "localhost:1" }, 403, "REQUEST_REJECTED"],
+    ["wrong fetch site", { "Sec-Fetch-Site": "cross-site" }, 403, "REQUEST_REJECTED"],
+    ["missing origin", { Origin: "" }, 403, "REQUEST_REJECTED"],
+    ["wrong origin", { Origin: "http://localhost:1" }, 403, "REQUEST_REJECTED"],
+    ["compressed", { "Content-Encoding": "gzip" }, 415, "UNSUPPORTED_MEDIA_TYPE"],
+    ["wrong media type", { "Content-Type": "text/plain" }, 415, "UNSUPPORTED_MEDIA_TYPE"],
+    ["missing disclosure", { [SAYING_DISCLOSURE_HEADER]: "" }, 428, "DISCLOSURE_REQUIRED"],
+  ])("rejects %s before provider spawn", async (_label, changed, status, code) => {
+    const generator = successGenerator();
+    const { port } = await host(generator);
+    const reply = await call(port, {
+      method: "POST",
+      path: SAYING_GENERATION_PATH,
+      headers: { ...generationHeaders, ...(changed as Record<string, string>) },
+      body: generationBody,
+    });
+    expect(reply.status).toBe(status);
+    expect(JSON.parse(reply.body).error.code).toBe(code);
+    expect(generator.generate).not.toHaveBeenCalled();
+    expect(reply.headers["access-control-allow-origin"]).toBeUndefined();
+  });
+
+  it("uses 413 for an over-limit raw body and rejects unknown fields", async () => {
+    const generator = successGenerator();
+    const { port } = await host(generator);
+    const tooLarge = "x".repeat(8 * 1024 + 1);
+    const oversized = await call(port, {
+      method: "POST",
+      path: SAYING_GENERATION_PATH,
+      headers: generationHeaders,
+      body: tooLarge,
+    });
+    expect(oversized.status).toBe(413);
+    expect(JSON.parse(oversized.body).error.code).toBe("PAYLOAD_TOO_LARGE");
+
+    const extra = await call(port, {
+      method: "POST",
+      path: SAYING_GENERATION_PATH,
+      headers: generationHeaders,
+      body: JSON.stringify({ title: "Yosemite", criterion: "Visit.", note: "private" }),
+    });
+    expect(extra.status).toBe(400);
+    expect(generator.generate).not.toHaveBeenCalled();
+  });
+
+  it("rejects queries and OPTIONS without CORS", async () => {
+    const generator = successGenerator();
+    const { port } = await host(generator);
+    const query = await call(port, { path: `${SAYING_DISCLOSURE_PATH}?x=1` });
+    expect(query.status).toBe(400);
+    const options = await call(port, { method: "OPTIONS", path: SAYING_GENERATION_PATH });
+    expect(options.status).toBe(405);
+    expect(options.headers.allow).toBe("POST");
+    expect(options.headers["access-control-allow-origin"]).toBeUndefined();
+  });
+
+  it("allows one provider globally and never queues a second request", async () => {
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const generator = successGenerator();
+    generator.generate.mockImplementationOnce(async () => {
+      await gate;
+      return {
+        response: { saying: "Done." },
+        provenance: {
+          provider: "claude-code",
+          model: "claude-sonnet-4-6",
+          promptVersion: "v1",
+          generatedAt: "2026-08-23T12:00:00.000Z",
+        },
+      };
+    });
+    const { port } = await host(generator);
+    const first = call(port, {
+      method: "POST",
+      path: SAYING_GENERATION_PATH,
+      headers: generationHeaders,
+      body: generationBody,
+    });
+    while (generator.generate.mock.calls.length === 0) await new Promise((resolve) => setImmediate(resolve));
+    const second = await call(port, {
+      method: "POST",
+      path: SAYING_GENERATION_PATH,
+      headers: generationHeaders,
+      body: generationBody,
+    });
+    expect(second.status).toBe(429);
+    expect(generator.generate).toHaveBeenCalledOnce();
+    release();
+    expect((await first).status).toBe(200);
+  });
+
+  it("aborts and awaits active work during server shutdown", async () => {
+    let observedSignal: AbortSignal | undefined;
+    const generator: SayingGenerator = {
+      generate: vi.fn(async (_input, signal) => {
+        observedSignal = signal;
+        await new Promise<void>((resolve) =>
+          signal.addEventListener("abort", () => resolve(), { once: true }),
+        );
+        throw new Error("private cancellation detail");
+      }),
+    };
+    const { port, runtime } = await host(generator);
+    const pending = call(port, {
+      method: "POST",
+      path: SAYING_GENERATION_PATH,
+      headers: generationHeaders,
+      body: generationBody,
+    });
+    while (!observedSignal) await new Promise((resolve) => setImmediate(resolve));
+    await runtime.shutdown();
+    expect(observedSignal.aborted).toBe(true);
+    expect((await pending).status).toBe(502);
+  });
+
+  it("substitutes a bounded sanitized error for oversized provider output", async () => {
+    const generator = successGenerator();
+    generator.generate.mockResolvedValueOnce({
+      response: { saying: "x".repeat(20_000) },
+      provenance: {},
+    } as never);
+    const { port } = await host(generator);
+    const reply = await call(port, {
+      method: "POST",
+      path: SAYING_GENERATION_PATH,
+      headers: generationHeaders,
+      body: generationBody,
+    });
+    expect(reply.status).toBe(502);
+    expect(Buffer.byteLength(reply.body)).toBeLessThanOrEqual(16 * 1024);
+    expect(reply.body).not.toContain("x".repeat(100));
+  });
+
+  it("never forwards adapter exception text to the browser", async () => {
+    const generator: SayingGenerator = {
+      generate: async () => {
+        throw new SayingGenerationFailure("failed", "PRIVATE_STDERR_AND_PROMPT_SENTINEL");
+      },
+    };
+    const { port } = await host(generator);
+    const reply = await call(port, {
+      method: "POST",
+      path: SAYING_GENERATION_PATH,
+      headers: generationHeaders,
+      body: generationBody,
+    });
+    expect(reply.status).toBe(502);
+    expect(reply.body).not.toContain("PRIVATE_STDERR_AND_PROMPT_SENTINEL");
+  });
+
+  it("returns fixed actionable 503 remediation for structured authentication failure", async () => {
+    const generator: SayingGenerator = {
+      generate: async () => {
+        throw new SayingGenerationFailure("authentication", "PRIVATE_OAUTH_PROVIDER_RESULT");
+      },
+    };
+    const { port } = await host(generator);
+    const reply = await call(port, {
+      method: "POST",
+      path: SAYING_GENERATION_PATH,
+      headers: generationHeaders,
+      body: generationBody,
+    });
+    expect(reply.status).toBe(503);
+    expect(JSON.parse(reply.body).error).toEqual({
+      code: "PROVIDER_UNAVAILABLE",
+      message:
+        "Claude Code authentication expired. Run `claude auth login` in a terminal, then retry this saying.",
+    });
+    expect(reply.body).not.toContain("PRIVATE_OAUTH_PROVIDER_RESULT");
+  });
+
+  it.each(["cleanup-only-private-path", "provider-and-cleanup-private-path"])(
+    "surfaces fixed cleanup remediation without leaking %s",
+    async (privateCause) => {
+      const generator: SayingGenerator = {
+        generate: async () => {
+          throw new SayingGenerationFailure("cleanup-failed", privateCause);
+        },
+      };
+      const { port } = await host(generator);
+      const reply = await call(port, {
+        method: "POST",
+        path: SAYING_GENERATION_PATH,
+        headers: generationHeaders,
+        body: generationBody,
+      });
+      expect(reply.status).toBe(502);
+      expect(JSON.parse(reply.body).error.message).toContain(
+        "remove only confirmed inactive ordinary badge-saying- prefixed task folders",
+      );
+      expect(reply.body).not.toContain(privateCause);
+
+      const blocked = await call(port);
+      expect(blocked.status).toBe(502);
+      expect(JSON.parse(blocked.body).error.message).toContain(
+        "remove only confirmed inactive ordinary badge-saying- prefixed task folders",
+      );
+    },
+  );
+
+  it("retains and surfaces cleanup failure after a client disconnect", async () => {
+    let observedSignal: AbortSignal | undefined;
+    const generator: SayingGenerator = {
+      generate: async (_input, signal) => {
+        observedSignal = signal;
+        await new Promise<void>((resolve) =>
+          signal.addEventListener("abort", () => resolve(), { once: true }),
+        );
+        throw new SayingGenerationFailure("cleanup-failed", "PRIVATE_DISCONNECT_PATH");
+      },
+    };
+    const { port, runtime } = await host(generator);
+    const outgoing = httpRequest({
+      host: "127.0.0.1",
+      port,
+      method: "POST",
+      path: SAYING_GENERATION_PATH,
+      headers: {
+        Host: `127.0.0.1:${port}`,
+        Origin: `http://127.0.0.1:${port}`,
+        "Sec-Fetch-Site": "same-origin",
+        ...generationHeaders,
+        "Content-Length": String(Buffer.byteLength(generationBody)),
+      },
+    });
+    outgoing.on("error", () => undefined);
+    outgoing.end(generationBody);
+    while (!observedSignal) await new Promise((resolve) => setImmediate(resolve));
+    outgoing.destroy();
+    while (!observedSignal.aborted) await new Promise((resolve) => setImmediate(resolve));
+    await expect(runtime.shutdown()).rejects.toThrow("could not clean its private saying workspace");
+  });
+
+  it("propagates cleanup failure caused during server shutdown", async () => {
+    let started = false;
+    const generator: SayingGenerator = {
+      generate: async (_input, signal) => {
+        started = true;
+        await new Promise<void>((resolve) =>
+          signal.addEventListener("abort", () => resolve(), { once: true }),
+        );
+        throw new SayingGenerationFailure("cleanup-failed", "PRIVATE_SHUTDOWN_PATH");
+      },
+    };
+    const { port, runtime } = await host(generator);
+    const pending = call(port, {
+      method: "POST",
+      path: SAYING_GENERATION_PATH,
+      headers: generationHeaders,
+      body: generationBody,
+    });
+    while (!started) await new Promise((resolve) => setImmediate(resolve));
+    await expect(runtime.shutdown()).rejects.toThrow("could not clean its private saying workspace");
+    expect((await pending).body).not.toContain("PRIVATE_SHUTDOWN_PATH");
+  });
+});

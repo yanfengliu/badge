@@ -1,6 +1,5 @@
 import { useEffect, useReducer, useState } from "react";
 import {
-  SayingProposalController,
   subscribeUntilDisposed,
   type ArchiveApplication,
   type SayingInteractionCommand,
@@ -10,8 +9,10 @@ import { validateSaying, type ArchiveRecord, type ArchiveState } from "@badge/ar
 import { starterBadges } from "@badge/catalogue-fixtures/archive";
 
 import { sayingValidationMessage } from "./app-types";
+import { isDisclosureRequiredClientMessage } from "./live-saying-client";
+import type { SayingDisclosureGateSnapshot } from "./saying-disclosure-gate";
 import { initialSayingEditorState, reduceSayingEditorState } from "./saying-editor-state";
-import { createFixtureSayingProvider } from "./saying-proposals";
+import { createSayingRuntime } from "./saying-runtime";
 
 type PassiveSayingCommand = Exclude<SayingInteractionCommand, { readonly type: "generate" | "try-another" }>;
 
@@ -30,13 +31,23 @@ export interface SayingWorkflow {
   readonly hasUnsavedDraft: boolean;
   readonly manualValue: string;
   readonly manualError: string | null;
+  readonly disclosure: SayingDisclosureGateSnapshot;
+  readonly proposalSourceLabel: string;
+  readonly providerNote: string;
   readonly request: () => void;
+  readonly approveDisclosure: () => void;
+  readonly closeDisclosure: () => void;
+  readonly retryDisclosure: () => void;
   readonly useProposal: () => void;
   readonly startWriting: () => void;
   readonly cancelWriting: () => void;
   readonly changeManual: (value: string) => void;
   readonly saveManual: () => void;
   readonly observe: (command: PassiveSayingCommand) => Promise<void>;
+}
+
+function releaseArchiveFocusForDisclosure(): void {
+  if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
 }
 
 export function useSayingWorkflow({
@@ -48,15 +59,25 @@ export function useSayingWorkflow({
 }: UseSayingWorkflowOptions): SayingWorkflow {
   const [proposals, setProposals] = useState<Record<string, SayingProposalSnapshot>>({});
   const [editor, dispatchEditor] = useReducer(reduceSayingEditorState, initialSayingEditorState);
-  const [controller] = useState(
-    () => new SayingProposalController(createFixtureSayingProvider(starterBadges)),
+  const [runtime] = useState(() => createSayingRuntime(import.meta.env.MODE, starterBadges));
+  const [disclosure, setDisclosure] = useState<SayingDisclosureGateSnapshot>(
+    () => runtime.disclosureGate?.snapshot() ?? { phase: "idle", review: null, error: null },
   );
+  const { controller, disclosureGate } = runtime;
 
   useEffect(() => {
-    return subscribeUntilDisposed(controller, (snapshot) =>
-      setProposals((current) => ({ ...current, [snapshot.recordId]: snapshot })),
-    );
-  }, [controller]);
+    const unsubscribeController = subscribeUntilDisposed(controller, (snapshot) => {
+      setProposals((current) => ({ ...current, [snapshot.recordId]: snapshot }));
+      if (isDisclosureRequiredClientMessage(snapshot.error)) releaseArchiveFocusForDisclosure();
+      runtime.handleProposalSnapshot(snapshot);
+    });
+    const unsubscribeDisclosure = disclosureGate?.subscribe(setDisclosure);
+    return () => {
+      unsubscribeController();
+      unsubscribeDisclosure?.();
+      runtime.dispose();
+    };
+  }, [controller, disclosureGate, runtime]);
 
   const proposal = proposals[selectedRecordId] ?? controller.snapshot(selectedRecordId);
   const manualValue = editor.manualSayings[selectedRecordId] ?? selectedRecord?.acceptedSaying ?? "";
@@ -67,11 +88,27 @@ export function useSayingWorkflow({
 
   function request() {
     if (!selectedRecord) return;
-    void controller.dispatch({
+    const intent = {
       type: proposal.proposal ? "try-another" : "generate",
       recordId: selectedRecord.recordId,
       promptInput: { title: selectedRecord.title, criterion: selectedRecord.criterion },
-    });
+    } as const;
+    if (disclosureGate) {
+      if (!disclosureGate.acknowledgedFingerprint()) releaseArchiveFocusForDisclosure();
+      void disclosureGate.request(intent);
+    } else void controller.dispatch(intent);
+  }
+
+  function approveDisclosure() {
+    void disclosureGate?.approve();
+  }
+
+  function closeDisclosure() {
+    disclosureGate?.close();
+  }
+
+  function retryDisclosure() {
+    void disclosureGate?.retry();
   }
 
   function startWriting() {
@@ -136,12 +173,16 @@ export function useSayingWorkflow({
 
   function observe(command: PassiveSayingCommand): Promise<void> {
     if (command.type === "badge-selected") {
+      controller.cancel(selectedRecordId);
+      disclosureGate?.close();
       dispatchEditor({ type: "hide", recordId: selectedRecordId });
       if (command.recordId) dispatchEditor({ type: "resume-dirty", recordId: command.recordId });
     }
     if (command.type === "archive-restored") {
+      disclosureGate?.close();
       dispatchEditor({ type: "archive-restored" });
     }
+    if (command.type === "badge-activated") disclosureGate?.close();
     return controller.dispatch(command);
   }
 
@@ -152,7 +193,13 @@ export function useSayingWorkflow({
     hasUnsavedDraft,
     manualValue,
     manualError,
+    disclosure,
+    proposalSourceLabel: runtime.proposalSourceLabel,
+    providerNote: runtime.providerNote,
     request,
+    approveDisclosure,
+    closeDisclosure,
+    retryDisclosure,
     useProposal,
     startWriting,
     cancelWriting,

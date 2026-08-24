@@ -26,6 +26,7 @@ import { ArchiveClosedScreen } from "./ArchiveClosedScreen";
 import { BadgeRail } from "./BadgeRail";
 import { RestoreDialog } from "./RestoreDialog";
 import { SayingActivationControl, SayingComposer } from "./SayingComposer";
+import { SayingDisclosureBoundary } from "./SayingDisclosureBoundary";
 import { createStarterArchiveState, STARTER_OWNER_ID, STARTER_RECORD_IDS } from "./archive-state";
 import { downloadBytes, formatDate } from "./browser-utilities";
 import { CheckIcon } from "./icons";
@@ -60,6 +61,7 @@ export function App() {
   const [restoring, setRestoring] = useState(false);
   const [initializationFailed, setInitializationFailed] = useState(false);
   const ceremonyReturnFocus = useRef<HTMLButtonElement>(null);
+  const sayingDisclosureReturnFocus = useRef<HTMLDivElement>(null);
   const starterAssets = useRef(new Map<string, ArchiveSourceAssetInput>());
   const recoveryMode = useRef<ArchiveRecoveryMode>("repair-corruption");
   const safetyHandoff = useRef<ArchiveSafetyHandoff>("full-backup");
@@ -268,7 +270,13 @@ export function App() {
   const ceremonyVisual = ceremonyRecord ? resolvedVisuals[ceremonyRecord.recordId] : undefined;
 
   return (
-    <div className="archive-shell">
+    <SayingDisclosureBoundary
+      state={saying.disclosure}
+      returnFocus={sayingDisclosureReturnFocus}
+      onClose={saying.closeDisclosure}
+      onApprove={saying.approveDisclosure}
+      onRetry={saying.retryDisclosure}
+    >
       <ArchiveHeader onBackup={() => void exportBackup()} onRestore={restoreBackup} />
 
       <main className="archive-main">
@@ -341,6 +349,10 @@ export function App() {
               manualValue={saying.manualValue}
               manualError={saying.manualError}
               saving={saying.saving}
+              generationBlocked={saying.disclosure.phase !== "idle"}
+              proposalSourceLabel={saying.proposalSourceLabel}
+              providerNote={saying.providerNote}
+              focusTargetRef={sayingDisclosureReturnFocus}
               onGenerate={saying.request}
               onUseProposal={saying.useProposal}
               onStartWriting={saying.startWriting}
@@ -471,6 +483,6 @@ export function App() {
           {visibleNotice.text}
         </div>
       ) : null}
-    </div>
+    </SayingDisclosureBoundary>
   );
 }

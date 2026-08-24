@@ -12,6 +12,7 @@ import {
 import { runtimeTargetPaths } from "./local-runtime-target.mjs";
 
 const DEFAULT_REQUEST_IDLE_TIMEOUT_MS = 5_000;
+const SAYING_SERVER_SHUTDOWN = Symbol.for("badge.saying-server.shutdown.v1");
 
 async function waitForRequestsIdle(server, timeoutMs) {
   if (typeof server.waitForRequestsIdle !== "function") return;
@@ -32,11 +33,22 @@ async function waitForRequestsIdle(server, timeoutMs) {
 }
 
 async function closeOwnedServer(server, url, timeoutMs) {
+  const errors = [];
+  const shutdownSayings = server[SAYING_SERVER_SHUTDOWN];
+  if (typeof shutdownSayings === "function") {
+    try {
+      await shutdownSayings();
+    } catch (error) {
+      errors.push(error);
+    }
+  }
+
   let idleError;
   try {
     await waitForRequestsIdle(server, timeoutMs);
   } catch (error) {
     idleError = error;
+    errors.push(error);
   }
 
   let closeError;
@@ -44,12 +56,13 @@ async function closeOwnedServer(server, url, timeoutMs) {
     await server.close();
   } catch (error) {
     closeError = error;
+    errors.push(error);
   }
 
-  if (idleError && closeError) {
+  if (errors.length > 1) {
     throw new AggregateError(
-      [idleError, closeError],
-      `Badge could not finish active request work or close its owned local listener at ${url}. Stop only the process still listening there, then start Badge again.`,
+      errors,
+      `Badge could not stop active saying work, finish active requests, or close its owned local listener at ${url}. Stop only the process still listening there, then start Badge again.`,
     );
   }
   if (closeError) {
@@ -62,6 +75,13 @@ async function closeOwnedServer(server, url, timeoutMs) {
     throw new Error(
       `Badge closed its owned local listener at ${url}, but could not confirm active request work became idle before shutdown: ${idleError instanceof Error ? idleError.message : String(idleError)}. Start Badge again if you still need it.`,
       { cause: idleError },
+    );
+  }
+  if (errors.length === 1) {
+    const shutdownError = errors[0];
+    throw new Error(
+      `Badge closed its owned local listener at ${url}, but could not stop active saying work cleanly: ${shutdownError instanceof Error ? shutdownError.message : String(shutdownError)}. Start Badge again if you still need it.`,
+      { cause: shutdownError },
     );
   }
 }
@@ -95,6 +115,7 @@ export async function startLocalSite(options) {
   try {
     server = await createViteServer({
       configFile: path.join(target.repositoryRoot, "apps", "host-web", "vite.config.ts"),
+      mode: target.kind === "verification" ? "fixture" : "development",
       server: { host: LOOPBACK_HOST, port: plan.port, strictPort: true },
     });
     await server.listen();

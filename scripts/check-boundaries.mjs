@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import { builtinModules } from "node:module";
 import path from "node:path";
 import process from "node:process";
 import ts from "typescript";
@@ -6,6 +7,23 @@ import ts from "typescript";
 const root = process.cwd();
 const sourceExtensions = new Set([".js", ".mjs", ".ts", ".tsx"]);
 const failures = [];
+const nodeBuiltinRoots = new Set(
+  builtinModules.map((specifier) => specifier.replace(/^node:/u, "").split("/", 1)[0]),
+);
+
+export function isNodeBuiltinSpecifier(specifier) {
+  const bare = specifier.replace(/^node:/u, "");
+  return nodeBuiltinRoots.has(bare.split("/", 1)[0]);
+}
+
+for (const control of ["fs", "node:fs", "fs/promises", "node:fs/promises", "child_process"]) {
+  if (!isNodeBuiltinSpecifier(control))
+    failures.push(`Boundary checker failed its Node builtin control for ${control}.`);
+}
+for (const control of ["zod", "vite", "@badge/saying-contract"]) {
+  if (isNodeBuiltinSpecifier(control))
+    failures.push(`Boundary checker misclassified external control ${control}.`);
+}
 
 function filesUnder(relativeRoot) {
   const absoluteRoot = path.join(root, relativeRoot);
@@ -164,7 +182,37 @@ function assertNoExternal(scope, forbiddenRoots) {
   }
 }
 
+function assertNoExternalProduction(scope, forbiddenRoots) {
+  for (const file of filesUnder(scope)) {
+    if (/\.test\.[cm]?[jt]sx?$/u.test(file)) continue;
+    for (const specifier of externalImports.get(file) ?? []) {
+      if (
+        forbiddenRoots.some(
+          (rootName) =>
+            specifier === rootName ||
+            specifier.startsWith(`${rootName}/`) ||
+            (rootName.endsWith(":") && specifier.startsWith(rootName)),
+        )
+      ) {
+        failures.push(`${relative(file)} imports forbidden production module ${specifier}.`);
+      }
+    }
+  }
+}
+
+function assertNoNodeBuiltinsProduction(scope) {
+  for (const file of filesUnder(scope)) {
+    if (/\.test\.[cm]?[jt]sx?$/u.test(file)) continue;
+    for (const specifier of externalImports.get(file) ?? []) {
+      if (isNodeBuiltinSpecifier(specifier)) {
+        failures.push(`${relative(file)} imports forbidden production Node builtin ${specifier}.`);
+      }
+    }
+  }
+}
+
 assertNoReachable("apps/archive-web/src", [
+  "apps/host-web/saying-server",
   "apps/studio-web/src",
   "packages/art-generation-contract/src",
   "packages/authoring-request-contract/src",
@@ -172,9 +220,19 @@ assertNoReachable("apps/archive-web/src", [
 ]);
 assertNoReachable("apps/studio-web/src", [
   "apps/archive-web/src",
+  "apps/host-web/saying-server",
   "packages/archive-application/src",
   "packages/archive-domain/src",
   "packages/saying-contract/src",
+  "packages/saying-live-contract/src",
+]);
+assertNoReachable("apps/host-web/saying-server", [
+  "apps/archive-web/src",
+  "apps/studio-web/src",
+  "packages/archive-application/src",
+  "packages/archive-domain/src",
+  "packages/art-generation-contract/src",
+  "packages/renderer-web/src",
 ]);
 assertNoReachable("packages/archive-domain/src", [
   "apps",
@@ -191,12 +249,25 @@ assertNoReachable("packages/saying-contract/src", [
   "packages/art-generation-contract/src",
   "packages/renderer-web/src",
 ]);
+assertNoReachable("packages/saying-live-contract/src", [
+  "apps",
+  "packages/archive-application/src",
+  "packages/archive-domain/src",
+  "packages/art-generation-contract/src",
+  "packages/renderer-web/src",
+]);
 
 assertNoExternal("packages/archive-domain/src", ["react", "idb", "three", "@react-three"]);
 assertNoExternal("packages/archive-application/src", ["react", "three", "@react-three"]);
 assertNoExternal("packages/pack-contract/src", ["react", "idb", "three", "@react-three"]);
 assertNoExternal("packages/pack-compiler/src", ["react", "idb", "three", "@react-three"]);
 assertNoExternal("packages/saying-contract/src", ["react", "idb", "three", "@react-three"]);
+assertNoExternal("packages/saying-live-contract/src", ["react", "idb", "three", "@react-three"]);
+assertNoExternalProduction("packages/saying-live-contract/src", ["vite", "@anthropic-ai", "@openai"]);
+assertNoNodeBuiltinsProduction("packages/saying-live-contract/src");
+assertNoExternal("apps/host-web/saying-server", ["react", "idb", "three", "@react-three"]);
+assertNoNodeBuiltinsProduction("apps/archive-web/src");
+assertNoNodeBuiltinsProduction("apps/studio-web/src");
 
 for (const scope of ["apps", "packages", "scripts"]) {
   for (const file of filesUnder(scope)) {

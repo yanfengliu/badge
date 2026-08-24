@@ -14,6 +14,10 @@ interface SayingComposerProps {
   readonly manualValue: string;
   readonly manualError: string | null;
   readonly saving: boolean;
+  readonly generationBlocked: boolean;
+  readonly proposalSourceLabel: string;
+  readonly providerNote: string;
+  readonly focusTargetRef: RefObject<HTMLDivElement | null>;
   readonly onGenerate: () => void;
   readonly onUseProposal: () => void;
   readonly onStartWriting: () => void;
@@ -32,14 +36,14 @@ interface SayingActivationControlProps {
 }
 
 function proposalAnnouncement(proposal: SayingProposalSnapshot): string {
-  if (proposal.status === "requesting") return "Preparing a local saying preview.";
+  if (proposal.status === "requesting") return "Preparing a saying proposal.";
   if (proposal.status === "error") {
     return proposal.proposal
       ? `Could not prepare another saying. ${proposal.error ?? "The request failed."} The previous proposal remains available.`
       : `Could not prepare a saying. ${proposal.error ?? "The request failed."}`;
   }
   return proposal.status === "ready" && proposal.proposal
-    ? `Local saying proposal ready: ${proposal.proposal}`
+    ? `Saying proposal ready: ${proposal.proposal}`
     : "";
 }
 
@@ -97,6 +101,10 @@ export function SayingComposer({
   manualValue,
   manualError,
   saving,
+  generationBlocked,
+  proposalSourceLabel,
+  providerNote,
+  focusTargetRef,
   onGenerate,
   onUseProposal,
   onStartWriting,
@@ -109,7 +117,7 @@ export function SayingComposer({
   const graphemeCount = countSayingGraphemes(manualValue.trim().replace(/\s+/gu, " "));
 
   return (
-    <div className="saying-block">
+    <div ref={focusTargetRef} className="saying-block" tabIndex={-1}>
       <span className="saying-label">One-line saying</span>
       {acceptedSaying ? (
         <p className="saying-display">“{acceptedSaying}”</p>
@@ -159,13 +167,13 @@ export function SayingComposer({
 
         {!isEarned && proposal.proposal ? (
           <div className="proposal">
-            <span className="proposal-label">Proposal · local preview</span>
+            <span className="proposal-label">Proposal · {proposalSourceLabel}</span>
             <p>“{proposal.proposal}”</p>
             <div className="proposal-actions">
               <button
                 className="secondary-button"
                 type="button"
-                disabled={saving || proposal.status === "requesting"}
+                disabled={saving || generationBlocked || proposal.status === "requesting"}
                 onClick={onUseProposal}
               >
                 {saving ? "Saving…" : "Use this saying"}
@@ -180,15 +188,17 @@ export function SayingComposer({
               <button
                 className="text-button"
                 type="button"
-                disabled={saving || proposal.status === "requesting"}
+                disabled={saving || generationBlocked || proposal.status === "requesting"}
                 onClick={onGenerate}
               >
                 <SparkIcon />
-                {proposal.status === "requesting"
-                  ? "Preparing…"
-                  : proposal.proposal
-                    ? "Try another"
-                    : "Generate saying"}
+                {generationBlocked
+                  ? "Review Claude access…"
+                  : proposal.status === "requesting"
+                    ? "Preparing…"
+                    : proposal.proposal
+                      ? "Try another"
+                      : "Generate saying"}
               </button>
               {!editing ? (
                 <button className="text-button" type="button" disabled={saving} onClick={onStartWriting}>
@@ -196,9 +206,7 @@ export function SayingComposer({
                 </button>
               ) : null}
             </div>
-            <p className="saying-provider-note">
-              Local preview uses curated lines for this badge. Live model generation is not connected yet.
-            </p>
+            <p className="saying-provider-note">{providerNote}</p>
             {proposal.error ? <p className="error-copy">{proposal.error}</p> : null}
           </>
         ) : null}
