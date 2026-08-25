@@ -9,6 +9,7 @@ import type { ArchiveState } from "@badge/archive-domain";
 import { assertCompatibleStarterArchive, EarnedSayingCompatibilityError } from "./restore-compatibility.js";
 import { auditEarnedArchiveVisuals } from "./restore-flow.js";
 import { loadStarterSourceAssets } from "./starter-assets.js";
+import { createStarterVisualUpgradePlan } from "./starter-visual-upgrade.js";
 
 export class StarterArchiveCompatibilityError extends Error {
   readonly requiresStateRescue: boolean;
@@ -37,8 +38,36 @@ export async function initializeStarterArchive(
   const assets = await loadStarterSourceAssets();
   onAssetsLoaded(assets);
   const loaded = await archive.initialize(expectedState, assets);
-  await validateStarterArchiveForOpen(archive, expectedState, loaded);
-  return initializeReviewedSayingDefaults(archive, expectedState, loaded);
+  const upgraded = await initializeStarterVisualUpgrade(archive, expectedState, loaded, assets);
+  await validateStarterArchiveForOpen(archive, expectedState, upgraded);
+  return initializeReviewedSayingDefaults(archive, expectedState, upgraded);
+}
+
+export async function initializeStarterVisualUpgrade(
+  archive: ArchiveApplication,
+  expectedState: ArchiveState,
+  loaded: ArchiveState,
+  assets: readonly ArchiveSourceAssetInput[],
+): Promise<ArchiveState> {
+  const plan = createStarterVisualUpgradePlan(expectedState);
+  if (plan.upgrades.length === 0) return loaded;
+  let reviewed = loaded;
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    await validateStarterArchiveForOpen(archive, expectedState, reviewed);
+    try {
+      return await archive.upgradeCatalogueVisuals(plan, assets, reviewed);
+    } catch (error) {
+      if (
+        !(error instanceof ArchivePersistenceError) ||
+        error.code !== "CATALOGUE_UPGRADE_CONFLICT" ||
+        attempt === 2
+      ) {
+        throw error;
+      }
+      reviewed = await archive.state();
+    }
+  }
+  throw new Error("Archive catalogue-visual initialization exhausted its bounded retry loop.");
 }
 
 export async function initializeReviewedSayingDefaults(

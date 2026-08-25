@@ -35,6 +35,14 @@ Do not copy recognizable characters, compositions, logos, product trade dress, i
 
 Badge Studio generates text-free artwork that remains legible both as a large hero artifact and a collection thumbnail.
 
+Every newly generated or deliberately refreshed badge face is designed first for a physical `32 mm` artifact and must remain immediately readable in a `48 × 48` pixel proof. The face uses `3–5` primary forms, no more than `3` supporting accents, and no more than `6` visually distinct color families; a recognition-critical form or mark is at least `1 mm` or `3.125%` of the face width, and an essential negative gap is at least `0.8 mm` or `2.5%` of the width. Noncritical construction lines follow their medium-specific floor, from `0.35 mm` for enamel or cloisonne joins to `1.25 mm` for embroidery, and the manufacturer still owns final production preflight.
+
+The production grammar favors broad silhouettes, continuous masses, deliberate negative space, and one unmistakable subject over miniature scenic narration. Repeated scenery is merged, isolated specks and hairlines are removed, and the design must not depend on texture, implied depth, or a dense field of tiny objects to explain the achievement.
+
+Visual diversity comes from believable face-making languages rather than added detail. Suitable treatments include stained-glass or cloisonne cells, embroidery and woven-thread fields, kiln enamel, relief or spot-color printing, broad etched line and fill, die-cut or contour inlay, ceramic underglaze, mosaic, marquetry, and other media whose joins and marks can survive the miniature proof. No single treatment is the default for a collection, and a medium is chosen because it strengthens the subject.
+
+This manufacturing compatibility belongs to source-art composition, while the live renderer still owns the actual badge silhouette, rim, thickness, relief, material response, shadows, and inspection lighting. A candidate may use the flat visual language of thread, glass, ceramic, paper, ink, or wood, but it may not depict a completed patch, coin, medallion, pin, or presentation mockup.
+
 Generated candidates are flat source illustrations without a finished badge silhouette, rim, bevel, thickness, cast shadow, presentation background, or object-level material and studio highlight. Scene lighting inside an illustration is allowed; physical badge lighting belongs exclusively to the construction renderer.
 
 Candidate concepts are meaningfully different rather than three random seeds of the same composition.
@@ -53,7 +61,7 @@ This diversity is intentional. A national-parks collection may move between medi
 
 The complete style list, candidate-role grammar, deterministic prompt assembly, and expansion policy live in [art-style-catalogue.md](art-style-catalogue.md).
 
-Every catalogue expansion reviews visual-family gaps before assigning styles. A missing capability receives a new style ID under the current v1 lookup; sufficient existing coverage is recorded in the release decision or devlog; a later revision requires versioned references and retained old-revision dispatch, and existing `{ styleId, revision }` prompt behavior is never edited silently.
+Every catalogue expansion reviews visual-family gaps before assigning styles. A missing capability receives a new style ID under the current lookup; sufficient existing coverage is recorded in the release decision or devlog; a later revision requires versioned references and retained old-revision dispatch, and existing `{ styleId, revision }` prompt behavior is never edited silently. `badge-source-art@2` is current for new or refreshed work, while exact `badge-source-art@1` dispatch remains available for recorded historical studies whose pixels have not been deliberately regenerated.
 
 ## Material vocabulary
 
@@ -147,6 +155,9 @@ The following optimized fixture-only captures are current implementation referen
 
 - [Collection reference](assets/archive-collection-2026-08-25.png): route `/#collection`, `1440 × 1000` browser viewport override, one earned Yosemite fixture, one represented U.S. National Parks shelf expanded, inherent shelf browse surface hovered, captured 2026-08-25.
 - [Discover reference](assets/archive-discover-2026-08-25.png): route `/#discover`, `1440 × 1000` browser viewport override, U.S. States selected, `0 / 50 collected`, first bounded page of reviewed potential badges, captured 2026-08-25.
+- [Manufactured Yosemite reference](assets/archive-manufactured-yosemite-2026-08-25.jpg): route `/#discover` with the published Yosemite preparation detail open, `1440 × 1000` browser viewport override, fixture-only alpha.4 cloisonne face rendered through its enamel recipe beside the verified quotation, captured 2026-08-25 after front, oblique, edge, and back inspection.
+- [Manufactured Studio source-art reference](assets/studio-manufactured-source-art-2026-08-25.jpg): route `/#studio`, `1440 × 1000` browser viewport override, deterministic alpha.4 Yosemite cloisonne, ceramic-underglaze, and relief-print candidates beside the live constructed badge, captured 2026-08-25.
+- [Manufactured face proof reference](assets/manufactured-face-proofs-2026-08-25.jpg): fixture-only proof surface showing all six replacement sources at both `96 × 96` and exact CSS `48 × 48` sizes, with all twelve images fully decoded from their `896 × 896` normalized sources, captured 2026-08-25.
 - [Archive phone reference](assets/archive-discover-mobile-2026-08-25.png): route `/#discover`, exact `390 × 844` CSS viewport and decoded PNG bitmap, fixture-only U.S. States selected with `0 / 50 collected`, four primary destinations visible and the set selector represented as a horizontal touch rail, captured 2026-08-25.
 - [Discover study phone reference](assets/archive-discover-study-mobile-2026-08-25.png): route `/#discover`, exact `390 × 844` CSS viewport and decoded PNG bitmap, fixture-only Acadia source-study preview with no personal state, showing the bounded selected-study art, truthful nonpublication status, set membership, capability note, and close action, captured 2026-08-25.
 - [Studio phone reference](assets/studio-mobile-2026-08-25.png): visual-only reference captured on the superseded `/studio/` document at an exact `390 × 844` CSS viewport and decoded PNG bitmap, with deterministic Yosemite fixture candidate selection, all four primary destinations visible, and the candidate comparison represented as a horizontal touch rail; the current Studio surface is `/#studio`, and this asset has not yet been recaptured on the single-root host.

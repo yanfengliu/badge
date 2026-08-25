@@ -12,8 +12,15 @@ import {
   expectedArchiveFixtures,
   sha256Hex,
 } from "./archive-fixture-contract.mjs";
+import { expectedLegacyArchiveRepairFixtures } from "./archive-legacy-repair-contract.mjs";
 
 export { expectedArchiveFixtures } from "./archive-fixture-contract.mjs";
+export { expectedLegacyArchiveRepairFixtures } from "./archive-legacy-repair-contract.mjs";
+
+export const expectedGeneratedArchiveFixtures = [
+  ...expectedArchiveFixtures,
+  ...expectedLegacyArchiveRepairFixtures,
+];
 
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const sourceDirectory = path.join(repositoryRoot, "packages", "catalogue-fixtures", "assets");
@@ -62,7 +69,7 @@ export async function generateArchiveFixtures(target = canonicalTarget) {
 
     try {
       const generated = [];
-      for (const expected of expectedArchiveFixtures) {
+      for (const expected of expectedGeneratedArchiveFixtures) {
         const source = await readVerifiedSource(expected);
         const decoded = await decodeWebp(exactArrayBuffer(source));
         if (decoded.width !== expected.width || decoded.height !== expected.height) {
@@ -243,7 +250,7 @@ async function readExistingFixtures(target) {
   const entries = await readdir(target.outputDirectory, { withFileTypes: true });
   const byName = new Map(entries.map((entry) => [entry.name, entry]));
   const fixtures = [];
-  for (const expected of expectedArchiveFixtures) {
+  for (const expected of expectedGeneratedArchiveFixtures) {
     const entry = byName.get(expected.fileName);
     if (!entry) return undefined;
     if (!entry.isFile()) {
@@ -264,7 +271,7 @@ async function readExistingFixtures(target) {
     }
     fixtures.push({ ...expected, byteLength: output.byteLength });
   }
-  const expectedNames = new Set(expectedArchiveFixtures.map((fixture) => fixture.fileName));
+  const expectedNames = new Set(expectedGeneratedArchiveFixtures.map((fixture) => fixture.fileName));
   return {
     fixtures,
     unexpectedNames: entries.map((entry) => entry.name).filter((name) => !expectedNames.has(name)),
@@ -280,7 +287,7 @@ async function publishGeneratedFixtures(target, stagingDirectory, token) {
   }
   assertRealDirectory(outputStatus, target.outputDirectory, "output");
   await assertNoLinksInTree(target.outputDirectory);
-  for (const expected of expectedArchiveFixtures) {
+  for (const expected of expectedGeneratedArchiveFixtures) {
     const destination = path.join(target.outputDirectory, expected.fileName);
     const destinationStatus = await lstatOrUndefined(destination);
     if (destinationStatus?.isSymbolicLink() || (destinationStatus && !destinationStatus.isFile())) {
@@ -291,7 +298,7 @@ async function publishGeneratedFixtures(target, stagingDirectory, token) {
   await removeUnexpectedOutputEntries(
     target,
     (await readdir(target.outputDirectory)).filter(
-      (name) => !expectedArchiveFixtures.some((expected) => expected.fileName === name),
+      (name) => !expectedGeneratedArchiveFixtures.some((expected) => expected.fileName === name),
     ),
   );
   await removeOwnedDirectory(target, stagingDirectory, "staging", token);

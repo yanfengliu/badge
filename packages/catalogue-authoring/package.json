@@ -8,6 +8,7 @@
     "./parks": "./src/us-national-parks.ts",
     "./styles": "./src/art-styles.ts",
     "./prompts": "./src/prompt-recipe.ts",
+    "./manufacturable-prompts": "./src/manufacturable-prompt-recipe.ts",
     "./campaign": "./src/national-parks-campaign.ts",
     "./common-campaign": "./src/common-achievement-campaign.ts",
     "./ideas": "./src/common-achievements.ts",

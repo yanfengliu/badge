@@ -11,11 +11,11 @@ const FIXED_ZIP_OPTIONS = Object.freeze({
 const PNG_SIGNATURE = Uint8Array.from([137, 80, 78, 71, 13, 10, 26, 10]);
 const encoder = new TextEncoder();
 const EXPECTED_THEME_PACK_DIGEST = "92ec4fd60efdabbc925e3e1077c4a1f1f05ccfad79466d9f386e027e815ca910";
-const EXPECTED_STARTER_PACK_DIGEST = "5b7135a70477130907050a9921da342e927980838ee9b1ae03a4d41809c6ffe3";
+const EXPECTED_STARTER_PACK_DIGEST = "cb3e08d6ef3067cec797529368bdc1dc876f7b6aa483e38b43160033f416cf9f";
 
 export const starterPackFixtureMetadata = Object.freeze({
   packId: "badge.catalogue.starter",
-  version: "1.0.0-alpha.3",
+  version: "1.0.0-alpha.4",
   badges: [
     {
       definitionId: "visited-yosemite",
@@ -24,14 +24,15 @@ export const starterPackFixtureMetadata = Object.freeze({
       title: "Yosemite",
       criterion: "Visit Yosemite National Park",
       description: "Granite, river, and wonder—kept as one honest memory.",
-      accessibleDescription: "An engraved Yosemite valley with El Capitan and a turquoise river.",
-      visualEditionId: "visual.yosemite.literal.png.v1",
-      sourceAssetHash: "21173941d3ad44ff0f245dcef0f1bbf2606b39163442afcc24777d442dda2ece",
+      accessibleDescription:
+        "Broad cloisonné-style fields show El Capitan, three pines, a gold sun, and a turquoise river.",
+      visualEditionId: "visual.yosemite.cloisonne.png.v2",
+      sourceAssetHash: "a4fae2312feca2c2da6407eeed7ecda32bccd8936c6b190c1082c4523a12841c",
       renderRecipe: {
         version: 1,
         shape: "circle",
-        material: "metal",
-        borderColor: "#8f806c",
+        material: "enamel",
+        borderColor: "#514637",
         borderWidth: 0.075,
         thickness: 0.13,
         relief: 0.032,
@@ -45,9 +46,10 @@ export const starterPackFixtureMetadata = Object.freeze({
       title: "Read Sapiens",
       criterion: "Finish reading Sapiens",
       description: "A long view of the stories people build together.",
-      accessibleDescription: "Layered human silhouettes and paths flowing toward a distant horizon.",
-      visualEditionId: "visual.sapiens.journey.png.v1",
-      sourceAssetHash: "296c08b967b50dfbefdb8c8187f48943c11b3d3976d4d724fd248be335431729",
+      accessibleDescription:
+        "Four large embroidered human profiles face a gold path and sun across broad teal and rust fields.",
+      visualEditionId: "visual.sapiens.embroidered.png.v2",
+      sourceAssetHash: "8bc3dd807fe4447bfad073437d00e01738c81248ade14c712af23ee8e5e319e4",
       renderRecipe: {
         version: 1,
         shape: "rectangle",
@@ -66,9 +68,10 @@ export const starterPackFixtureMetadata = Object.freeze({
       title: "Bachelor's degree",
       criterion: "Complete a bachelor's degree",
       description: "Years of patient work resolving into an open threshold.",
-      accessibleDescription: "Ascending stone planes lead to a bright open doorway.",
-      visualEditionId: "visual.degree.threshold.png.v1",
-      sourceAssetHash: "2af87c6a64740642f85ae37bc702a206c8c817531acb9d5aaf44269c5369a737",
+      accessibleDescription:
+        "Three broad marquetry steps rise between dark wood planes toward an open gold doorway.",
+      visualEditionId: "visual.degree.marquetry.png.v2",
+      sourceAssetHash: "450f283bfb5f2706ef1b89d6eff82694ea3a92a44f22884a5254ff0a534ba926",
       renderRecipe: {
         version: 1,
         shape: "shield",
@@ -88,9 +91,9 @@ export const starterPackFixtureMetadata = Object.freeze({
       criterion: "Visit every park in the active U.S. National Parks catalogue",
       description: "A composite journey whose final picture was published before the last activation.",
       accessibleDescription:
-        "Many American landscapes connected by one fine trail across a topographic field.",
-      visualEditionId: "visual.all-parks.constellation.png.v1",
-      sourceAssetHash: "0b2ec88a2ee72eb85de9525020bfdc419fada5f1dfc6a6ea381df3ff32fa3c6c",
+        "Large cut-paper forms combine a redwood, mountain, desert arch, sun, trail, and ocean wave.",
+      visualEditionId: "visual.all-parks.cut-paper.png.v2",
+      sourceAssetHash: "8923a01460dc2f0ce42cc746720c36ca43c7fb8cd6959c8dea749df99095a20e",
       renderRecipe: {
         version: 1,
         shape: "circle",

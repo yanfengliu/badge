@@ -25,7 +25,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import {
   archiveFixtureTestRootDirectory,
   createArchiveFixtureTestTarget,
-  expectedArchiveFixtures,
+  expectedGeneratedArchiveFixtures as expectedArchiveFixtures,
   generateArchiveFixtures,
 } from "./generate-archive-fixtures.mjs";
 

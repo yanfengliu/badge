@@ -1,6 +1,12 @@
 import type { ArchiveRecord, ArchiveState } from "@badge/archive-domain";
-import { MAX_ARCHIVE_BACKUP_BYTES, earnedRecordIdsMissingSaying } from "@badge/archive-application";
+import {
+  MAX_ARCHIVE_BACKUP_BYTES,
+  applyCatalogueVisualUpgradePlan,
+  earnedRecordIdsMissingSaying,
+} from "@badge/archive-application";
 import { canonicalJson } from "@badge/pack-contract";
+
+import { createStarterVisualUpgradePlan } from "./starter-visual-upgrade.js";
 
 type CatalogueRecord = Pick<
   ArchiveRecord,
@@ -70,7 +76,8 @@ export function assertCompatibleStarterArchive(expected: ArchiveState, incoming:
   if (missingSayings.length > 0) {
     throw new EarnedSayingCompatibilityError(missingSayings);
   }
-  assertCompatibleStarterCatalogue(expected.records, incoming.records);
+  const upgraded = applyCatalogueVisualUpgradePlan(incoming, createStarterVisualUpgradePlan(expected)).state;
+  assertCompatibleStarterCatalogue(expected.records, upgraded.records);
 }
 
 export function assertCompatibleStarterCatalogue(

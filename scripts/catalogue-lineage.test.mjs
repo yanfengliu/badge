@@ -4,6 +4,7 @@ import process from "node:process";
 
 import { admitPack } from "@badge/pack-contract";
 import { starterBadges } from "@badge/catalogue-fixtures/archive";
+import { legacyStarterRepairSources } from "@badge/catalogue-fixtures/legacy-repair";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { compileHeirloomThemePack } from "../apps/studio-web/src/heirloom-theme-pack.js";
@@ -85,5 +86,9 @@ describe.sequential("starter catalogue exact pack lineage", () => {
         packRef: generated.catalogue.packRef,
       });
     }
+    const publishedHashes = new Set(generated.catalogue.manifest.objects.map((object) => object.hash));
+    expect(legacyStarterRepairSources.every((source) => !publishedHashes.has(source.sourceAssetHash))).toBe(
+      true,
+    );
   });
 });

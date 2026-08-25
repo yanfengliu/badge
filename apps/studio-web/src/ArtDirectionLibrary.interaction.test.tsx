@@ -72,11 +72,13 @@ describe("ArtDirectionLibrary mounted interactions", () => {
     await selectOption("art-direction-style-override", "thread-painted-embroidery");
     expect(container.textContent).toContain("acadia:terrain-memory");
     expect(promptText()).toContain("Thread-painted embroidery");
+    expect(promptText()).toContain("SMALL-BADGE MANUFACTURING CONTRACT");
 
     await clickButton("Common achievements");
     expect(pressedButton("Landmark")?.getAttribute("aria-pressed")).toBe("true");
     expect(container.textContent).toContain("saw-northern-lights:landmark-witness");
     expect(promptText()).not.toContain("Thread-painted embroidery");
+    expect(promptText()).toContain("SMALL-BADGE MANUFACTURING CONTRACT");
 
     await changeSearch("ideas", "marathon");
     expect(detailTitle()).toBe("Finished a marathon");

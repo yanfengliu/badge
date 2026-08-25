@@ -39,6 +39,12 @@ describe("ArtDirectionLibrary", () => {
     });
     expect(park.subjectTitle).toBe("Yosemite");
     expect(idea.subjectTitle).toBe("Reached a mountain summit");
+    expect(park.compiled.recipe).toEqual({ id: "badge-source-art", revision: 2 });
+    expect(park.promptStatus).toBe("manufacturable-candidate");
+    expect(park.compiled.prompt).toContain("SMALL-BADGE MANUFACTURING CONTRACT");
+    expect(idea.compiled.recipe).toEqual({ id: "badge-source-art", revision: 2 });
+    expect(idea.promptStatus).toBe("manufacturable-candidate");
+    expect(idea.compiled.prompt).toContain("SMALL-BADGE MANUFACTURING CONTRACT");
   });
 
   it("uses locale-independent case folding for catalogue search", () => {
@@ -68,7 +74,10 @@ describe("ArtDirectionLibrary", () => {
     expect(preview.role).toBe("terrain-memory");
     expect(preview.style.id).toBe("thread-painted-embroidery");
     expect(preview.compiled.prompt).toContain("Thread-painted embroidery");
+    expect(preview.compiled.prompt).toContain("SMALL-BADGE MANUFACTURING CONTRACT");
+    expect(preview.compiled.prompt).toContain("48 × 48 pixels");
     expect(preview.compiled.prompt).toContain("No finished badge, patch, coin, medallion");
+    expect(preview.compiled.recipe).toEqual({ id: "badge-source-art", revision: 2 });
     expect(preview.sourceStudyDescription).toMatch(/El Capitan.*Half Dome.*Yosemite Valley/iu);
   });
 

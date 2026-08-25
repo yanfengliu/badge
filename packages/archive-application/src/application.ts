@@ -8,6 +8,10 @@ import type { SayingResponse } from "@badge/saying-contract";
 
 import { createArchiveBackup, parseArchiveBackup } from "./backup.js";
 import {
+  applyCatalogueVisualUpgradePlan,
+  type ArchiveCatalogueVisualUpgradePlan,
+} from "./catalogue-visual-upgrade.js";
+import {
   createArchiveRecoveryEvidence,
   type ArchiveRecoveryReason,
   type ArchiveRecoveryReasonCode,
@@ -52,6 +56,14 @@ export class ArchiveApplication {
     expectedCurrentState: ArchiveState,
   ): Promise<ArchiveState> {
     return this.repository.initializeSayingDefaults(defaultState, expectedCurrentState);
+  }
+
+  upgradeCatalogueVisuals(
+    upgradePlan: ArchiveCatalogueVisualUpgradePlan,
+    sourceAssets: readonly ArchiveSourceAssetInput[],
+    expectedCurrentState: ArchiveState,
+  ): Promise<ArchiveState> {
+    return this.repository.upgradeCatalogueVisuals(upgradePlan, sourceAssets, expectedCurrentState);
   }
 
   state(): Promise<ArchiveState> {
@@ -119,9 +131,13 @@ export class ArchiveApplication {
     bytes: Uint8Array | string,
     expectedCurrentState: ArchiveState,
     sayingDefaults?: ArchiveState,
+    catalogueVisualUpgradePlan?: ArchiveCatalogueVisualUpgradePlan,
   ): Promise<ArchiveState> {
     const backup = await parseArchiveBackup(bytes);
-    return this.repository.restore(backup.state, backup.sourceAssets, expectedCurrentState, sayingDefaults);
+    const state = catalogueVisualUpgradePlan
+      ? applyCatalogueVisualUpgradePlan(backup.state, catalogueVisualUpgradePlan).state
+      : backup.state;
+    return this.repository.restore(state, backup.sourceAssets, expectedCurrentState, sayingDefaults);
   }
 
   async recoverBackup(
@@ -131,13 +147,17 @@ export class ArchiveApplication {
     options: ArchiveRecoveryOptions = {},
   ): Promise<ArchiveRecoveryResult> {
     const backup = await parseArchiveBackup(bytes);
+    const state = options.catalogueVisualUpgradePlan
+      ? applyCatalogueVisualUpgradePlan(backup.state, options.catalogueVisualUpgradePlan).state
+      : backup.state;
+    const repositoryOptions = { ...options, catalogueVisualUpgradePlan: undefined };
     return this.repository.recover(
-      backup.state,
+      state,
       backup.sourceAssets,
       trustedRepairSourceAssets,
       this.now(),
       expectedOwnerId,
-      options,
+      repositoryOptions,
     );
   }
 }

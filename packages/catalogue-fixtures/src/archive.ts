@@ -4,8 +4,8 @@ export const STARTER_PACK_ID = "badge.catalogue.starter";
 
 const starterPackRef = {
   packId: STARTER_PACK_ID,
-  version: "1.0.0-alpha.3",
-  packDigest: "5b7135a70477130907050a9921da342e927980838ee9b1ae03a4d41809c6ffe3",
+  version: "1.0.0-alpha.4",
+  packDigest: "cb3e08d6ef3067cec797529368bdc1dc876f7b6aa483e38b43160033f416cf9f",
 } as const;
 
 export const starterBadges: readonly PublishedBadgeFixture[] = [
@@ -16,15 +16,16 @@ export const starterBadges: readonly PublishedBadgeFixture[] = [
     shortTitle: "Yosemite",
     criterion: "Visit Yosemite National Park",
     description: "Granite, river, and wonder—kept as one honest memory.",
-    accessibleDescription: "An engraved Yosemite valley with El Capitan and a turquoise river.",
-    sourceAssetHash: "21173941d3ad44ff0f245dcef0f1bbf2606b39163442afcc24777d442dda2ece",
+    accessibleDescription:
+      "Broad cloisonné-style fields show El Capitan, three pines, a gold sun, and a turquoise river.",
+    sourceAssetHash: "a4fae2312feca2c2da6407eeed7ecda32bccd8936c6b190c1082c4523a12841c",
     sourceUrl: "/yosemite-literal.png",
-    visualEditionId: "visual.yosemite.literal.png.v1",
+    visualEditionId: "visual.yosemite.cloisonne.png.v2",
     renderRecipe: {
       version: 1,
       shape: "circle",
-      material: "metal",
-      borderColor: "#8f806c",
+      material: "enamel",
+      borderColor: "#514637",
       borderWidth: 0.075,
       thickness: 0.13,
       relief: 0.032,
@@ -67,10 +68,11 @@ export const starterBadges: readonly PublishedBadgeFixture[] = [
     shortTitle: "Sapiens",
     criterion: "Finish reading Sapiens",
     description: "A long view of the stories people build together.",
-    accessibleDescription: "Layered human silhouettes and paths flowing toward a distant horizon.",
-    sourceAssetHash: "296c08b967b50dfbefdb8c8187f48943c11b3d3976d4d724fd248be335431729",
+    accessibleDescription:
+      "Four large embroidered human profiles face a gold path and sun across broad teal and rust fields.",
+    sourceAssetHash: "8bc3dd807fe4447bfad073437d00e01738c81248ade14c712af23ee8e5e319e4",
     sourceUrl: "/sapiens.png",
-    visualEditionId: "visual.sapiens.journey.png.v1",
+    visualEditionId: "visual.sapiens.embroidered.png.v2",
     renderRecipe: {
       version: 1,
       shape: "rectangle",
@@ -118,10 +120,11 @@ export const starterBadges: readonly PublishedBadgeFixture[] = [
     shortTitle: "Degree",
     criterion: "Complete a bachelor's degree",
     description: "Years of patient work resolving into an open threshold.",
-    accessibleDescription: "Ascending stone planes lead to a bright open doorway.",
-    sourceAssetHash: "2af87c6a64740642f85ae37bc702a206c8c817531acb9d5aaf44269c5369a737",
+    accessibleDescription:
+      "Three broad marquetry steps rise between dark wood planes toward an open gold doorway.",
+    sourceAssetHash: "450f283bfb5f2706ef1b89d6eff82694ea3a92a44f22884a5254ff0a534ba926",
     sourceUrl: "/bachelors-degree.png",
-    visualEditionId: "visual.degree.threshold.png.v1",
+    visualEditionId: "visual.degree.marquetry.png.v2",
     renderRecipe: {
       version: 1,
       shape: "shield",
@@ -169,10 +172,11 @@ export const starterBadges: readonly PublishedBadgeFixture[] = [
     shortTitle: "All parks",
     criterion: "Visit every park in the active U.S. National Parks catalogue",
     description: "A composite journey whose final picture was published before the last activation.",
-    accessibleDescription: "Many American landscapes connected by one fine trail across a topographic field.",
-    sourceAssetHash: "0b2ec88a2ee72eb85de9525020bfdc419fada5f1dfc6a6ea381df3ff32fa3c6c",
+    accessibleDescription:
+      "Large cut-paper forms combine a redwood, mountain, desert arch, sun, trail, and ocean wave.",
+    sourceAssetHash: "8923a01460dc2f0ce42cc746720c36ca43c7fb8cd6959c8dea749df99095a20e",
     sourceUrl: "/all-parks.png",
-    visualEditionId: "visual.all-parks.constellation.png.v1",
+    visualEditionId: "visual.all-parks.cut-paper.png.v2",
     renderRecipe: {
       version: 1,
       shape: "circle",

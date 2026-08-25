@@ -1,29 +1,29 @@
-import literalUrl from "../assets/yosemite-literal.webp";
-import symbolicUrl from "../assets/yosemite-symbolic.webp";
-import topographicUrl from "../assets/yosemite-topographic.webp";
+import literalUrl from "../assets/yosemite-literal-manufactured-v2.webp";
+import symbolicUrl from "../assets/yosemite-symbolic-manufactured-v2.webp";
+import topographicUrl from "../assets/yosemite-topographic-manufactured-v2.webp";
 import type { StudioCandidateFixture } from "./types";
 
 export const studioFixtureCandidates: readonly StudioCandidateFixture[] = [
   {
     id: "candidate-literal",
-    label: "Valley witness",
-    direction: "Literal landscape",
+    label: "Cloisonné valley",
+    direction: "Stained-glass field",
     sourceUrl: literalUrl,
-    sourceAssetHash: "66ff0b12c95341493dd674f77b427be0c8de81350e7e20286d1984e20722a35b",
+    sourceAssetHash: "ca4a1fade0aea9340114978c27c9df8e838568015bcc81e3f0dc02c52e22f907",
   },
   {
     id: "candidate-symbolic",
-    label: "Granite portal",
-    direction: "Symbolic passage",
+    label: "Underglaze portal",
+    direction: "Ceramic field",
     sourceUrl: symbolicUrl,
-    sourceAssetHash: "b2ef9b66c7009bfb0716e0b404ec9e236ad2d2723c252a917de3ac9de43848a1",
+    sourceAssetHash: "8dfb334b62e82cfe462e8544bc537e7a65f75c78c4b6ae9a748c56f6f9edfe32",
   },
   {
     id: "candidate-topographic",
-    label: "Contour journey",
-    direction: "Map and pattern",
+    label: "Blockprint route",
+    direction: "Relief-print terrain",
     sourceUrl: topographicUrl,
-    sourceAssetHash: "1c1c4396a99ec00a142d0fee2317482858133cf6ca667d1bee1aa1fb3616ece6",
+    sourceAssetHash: "86572d56789350193e161ada5560842b793b6ea35d2d0259b1c78ebb698a1218",
   },
 ] as const;
 

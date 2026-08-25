@@ -3,6 +3,7 @@ import "fake-indexeddb/auto";
 import { readFile } from "node:fs/promises";
 import { deleteDB, openDB } from "idb";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { DEFAULT_RENDER_RECIPE } from "@badge/render-recipe";
 
 import {
   generatedCandidateIdentity,
@@ -48,16 +49,12 @@ const derivativeBytes = Uint8Array.from([
 ]);
 const descendantBytes = Uint8Array.from(derivativeBytes);
 descendantBytes[descendantBytes.length - 13] ^= 1;
-const recipe = {
-  version: 1 as const,
-  shape: "circle" as const,
-  material: "metal" as const,
-  borderColor: "#b87333",
-  borderWidth: 0.08,
-  thickness: 0.1,
-  relief: 0.03,
-  crop: { x: 0.5, y: 0.5, scale: 1 },
-};
+const recipe = DEFAULT_RENDER_RECIPE;
+const currentGeneratedFixturePaths = [
+  "../../../packages/catalogue-fixtures/assets/yosemite-literal-manufactured-v2.webp",
+  "../../../packages/catalogue-fixtures/assets/yosemite-symbolic-manufactured-v2.webp",
+  "../../../packages/catalogue-fixtures/assets/yosemite-topographic-manufactured-v2.webp",
+] as const;
 
 let stores: StudioStore[] = [];
 
@@ -89,16 +86,18 @@ function imageBlob(bytes: Uint8Array): Blob {
   return new Blob([new Uint8Array(bytes)], { type: "image/png" });
 }
 
+async function fixtureBlob(path: string): Promise<Blob> {
+  const bytes = await readFile(new URL(path, import.meta.url));
+  return new Blob([new Uint8Array(bytes)], { type: "image/webp" });
+}
+
 async function saveUploadedOriginal(current: StudioStore) {
   const blob = imageBlob(originalBytes);
   return current.saveOriginal(blob, uploadedCandidateIdentity(await current.hashBlob(blob)));
 }
 
 async function pinnedFixtureBlob(): Promise<Blob> {
-  const bytes = await readFile(
-    new URL("../../../packages/catalogue-fixtures/assets/yosemite-literal.webp", import.meta.url),
-  );
-  return new Blob([new Uint8Array(bytes)], { type: "image/webp" });
+  return fixtureBlob(currentGeneratedFixturePaths[0]);
 }
 
 function graphMetadata(assets: Awaited<ReturnType<StudioStore["loadAssets"]>>) {

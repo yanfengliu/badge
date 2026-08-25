@@ -3,6 +3,7 @@ import { studioFixtureCandidates } from "@badge/catalogue-fixtures/studio";
 import {
   candidateIdentityKey,
   generatedCandidateIdentity,
+  historicalGeneratedCandidateIdentityForHash,
   uploadedCandidateIdentity,
   type CandidateIdentity,
   type CandidateOrigin,
@@ -121,13 +122,17 @@ export function restoreStudioCandidates({
       label:
         asset.kind === "original"
           ? identity.origin === "generated"
-            ? "Generated artwork"
+            ? "Historical generated artwork"
             : "Uploaded artwork"
           : operation === "publication-png-v1"
             ? "Publish-safe PNG"
             : "Warm mineral treatment",
       direction:
-        asset.kind === "original" ? "Restored immutable upload" : "Restored non-destructive derivative",
+        asset.kind === "original"
+          ? identity.origin === "generated"
+            ? "Restored generated fixture"
+            : "Restored immutable upload"
+          : "Restored non-destructive derivative",
       sourceUrl: sourceUrlFor(asset),
       hash: asset.hash,
       origin: identity.origin,
@@ -146,6 +151,12 @@ export function restoreStudioCandidates({
         continue;
       }
       const uploadedIdentity = uploadedCandidateIdentity(asset.hash);
+      const historicalGeneratedIdentity = historicalGeneratedCandidateIdentityForHash(asset.hash);
+      if (historicalGeneratedIdentity) {
+        addAssetCandidate(asset, historicalGeneratedIdentity);
+        addAssetCandidate(asset, uploadedIdentity);
+        continue;
+      }
       const selectedUploaded =
         selectedIdentity && candidateIdentityKey(selectedIdentity) === candidateIdentityKey(uploadedIdentity);
       if (!fixtureHashes.has(asset.hash) || selectedUploaded) {

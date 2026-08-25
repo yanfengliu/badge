@@ -1,5 +1,6 @@
 import type { ArchiveSourceAssetInput, ArchiveSourceMimeType } from "@badge/archive-application";
 import { starterBadges } from "@badge/catalogue-fixtures/archive";
+import { legacyStarterRepairSources } from "@badge/catalogue-fixtures/legacy-repair";
 
 function sourceMimeType(value: string): ArchiveSourceMimeType {
   const mimeType = value.split(";", 1)[0].trim();
@@ -11,16 +12,16 @@ function sourceMimeType(value: string): ArchiveSourceMimeType {
 
 export async function loadStarterSourceAssets(): Promise<readonly ArchiveSourceAssetInput[]> {
   return Promise.all(
-    starterBadges.map(async (badge) => {
-      const response = await fetch(badge.sourceUrl);
+    [...starterBadges, ...legacyStarterRepairSources].map(async (source) => {
+      const response = await fetch(source.sourceUrl);
       if (!response.ok) {
         throw new Error(
-          `Archive source art for ${badge.title} returned HTTP ${response.status}; rebuild the app and retry.`,
+          `Archive source art for ${source.title} returned HTTP ${response.status}; rebuild the app and retry.`,
         );
       }
       const blob = await response.blob();
       return {
-        hash: badge.sourceAssetHash,
+        hash: source.sourceAssetHash,
         mimeType: sourceMimeType(blob.type),
         bytes: new Uint8Array(await blob.arrayBuffer()),
       };

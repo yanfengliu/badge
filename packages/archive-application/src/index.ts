@@ -1,5 +1,6 @@
 export * from "./application.js";
 export * from "./backup.js";
+export * from "./catalogue-visual-upgrade.js";
 export * from "./errors.js";
 export type { TrustedQuotationRequests } from "./quotation-admission.js";
 export * from "./repository.js";

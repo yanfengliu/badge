@@ -79,7 +79,7 @@ describe("TimelineView", () => {
     expect(html).toContain(`Badge artifact: ${newer.activation?.visualPin.accessibleDescription}`);
     expect(html).not.toContain("A later catalogue visual that was not activated.");
     expect(html).toContain("badge-preview timeline-badge-preview");
-    expect(html).toContain("badge-material--metal");
+    expect(html).toContain("badge-material--enamel");
     expect(html).toContain("badge-shape--circle");
     expect(html).toContain("badge-material--wool");
     expect(html).toContain("badge-shape--rectangle");

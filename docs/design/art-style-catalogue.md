@@ -89,7 +89,15 @@ Scene-local light remains valid subject matter. Shape, material, edge, relief, d
 
 The compiler requires visible NFC text, rejects blank values plus control and format characters with exact candidate and field context, and refuses a prompt larger than `16 KiB` of UTF-8 rather than silently normalizing, truncating, or changing the recipe.
 
-Run `npm run catalogue:prompts -- acadia` to print the exact selected Acadia prompt as JSON, pass several park slugs to inspect several selected prompts, or omit slugs to print all `63`. Run `npm run catalogue:state-prompts -- washington california` for selected state prompts, pass other state selectors for a focused set, or omit selectors to print all `50`. Candidate comparison in Studio may compile any of the three plans through the same function before selection.
+`badge-source-art@2` is the current recipe for newly generated or deliberately refreshed source art. It appends a mandatory `small-badge-face@1` miniature-production contract after the complete immutable v1 prompt; explicit compiler dispatch retains both revisions, and the existing park and state studies remain associated with their recorded v1 prompts until their pixels are deliberately regenerated and reviewed.
+
+The miniature proof uses a `32 mm` reference face and a `48 × 48` pixel reduction. A composition uses `3–5` primary forms, no more than `3` supporting accents, and no more than `6` visually distinct color families; a recognition-critical form or mark is at least `1 mm` or `3.125%` of the face width, and a recognition-critical negative gap is at least `0.8 mm` or `2.5%` of the width. A noncritical construction line follows the registered treatment floor—`0.35 mm` for stained-glass or cloisonne joins and `1.25 mm` for embroidery, for example—before vendor-specific production preflight.
+
+Anything that disappears at the proof size is merged, enlarged, or omitted. Microdetail, hairlines, dense hatching, stipple fields, tiny knots or threads, minute tesserae, scattered specks, dense foliage, tiny figures, and background objects that require magnification are excluded even when a v1 style directive permits finer surface texture.
+
+The same diverse style library remains available, but v2 translates each style family into a production-compatible face language: embroidery or woven-thread fields, stained-glass or cloisonné cells, kiln-enamel color blocking, spot-color relief printing, broad etched line and fill, stepped woven blocks, die-cut inlay, etched contour inlay, hard-enamel cells, underglaze color fields, or wood marquetry and fitted inlay. Those are flat source-art grammars, not depictions of a manufactured object; the recipe still prohibits typography, a finished badge or patch, rim, border, backing, clasp, thickness, cast shadow, mockup, and other renderer-owned construction.
+
+Run `npm run catalogue:prompts -- acadia` to print the exact recorded v1 selected Acadia prompt as JSON, pass several park slugs to inspect several selected prompts, or omit slugs to print all `63`. Run `npm run catalogue:state-prompts -- washington california` for recorded state prompts, pass other state selectors for a focused set, or omit selectors to print all `50`. New candidate generation requests the current v2 recipe, while provenance replay dispatches the exact recorded revision.
 
 ## Common-achievement idea bank
 
@@ -119,7 +127,7 @@ When a meaningful visual gap exists under the current v1 ID-only lookup, add a n
 
 An existing `{ styleId, revision }` is immutable once used. Never edit its directives, label semantics, or prompt behavior in place; supporting revision `2` of an existing ID first requires versioned candidate and common-idea references plus a lookup and compiler that retain revision `1`, and only then may the new explicit revision coexist.
 
-The current candidate-role and prompt-recipe revisions are likewise single-dispatch v1 contracts. Introduce a later revision only with explicit versioned dispatch that keeps the prior compiler callable; until then, add new content without rewriting old behavior.
+The candidate-role revision remains a single-dispatch v1 contract. Prompt compilation now dispatches explicitly between immutable `badge-source-art@1` and miniature-production `badge-source-art@2`; introducing any later revision must keep both prior compilers callable and must never rewrite recorded prompt behavior.
 
 New styles must retain the flat, text-free, full-bleed source-art contract and must not bake renderer-owned physical construction into generated pixels.
 

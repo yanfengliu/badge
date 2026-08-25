@@ -9,6 +9,7 @@ import {
   assertCompatibleStarterCatalogue,
   requiresArchiveRecovery,
 } from "./restore-compatibility.js";
+import { LEGACY_STARTER_VISUAL_LINEAGES } from "./starter-visual-upgrade.js";
 
 const expectedState = createStarterArchiveState();
 const expectedRecords = expectedState.records;
@@ -57,6 +58,25 @@ describe("Archive restore catalogue compatibility", () => {
     expect(() => assertCompatibleStarterCatalogue(expectedRecords, incoming)).toThrow(
       /incompatible unearned catalogue lineage.*starter:read-sapiens.*no Archive data was changed/i,
     );
+  });
+
+  it("accepts the one frozen alpha.3 unearned lineage for bounded upgrade to current", () => {
+    const legacyById = new Map<string, (typeof LEGACY_STARTER_VISUAL_LINEAGES)[number]>(
+      LEGACY_STARTER_VISUAL_LINEAGES.map((lineage) => [lineage.recordId, lineage]),
+    );
+    const incoming = {
+      ...expectedState,
+      records: expectedState.records.map((record, index) => ({
+        ...record,
+        publishedVisual: legacyById.get(record.recordId)!.publishedVisual,
+        note: index === 0 ? "Keep this personal note through upgrade." : record.note,
+        visibility: index === 0 ? ("private" as const) : record.visibility,
+      })),
+    };
+
+    expect(() => assertCompatibleStarterArchive(expectedState, incoming)).not.toThrow();
+    expect(incoming.records[0]!.publishedVisual.packRef.version).toBe("1.0.0-alpha.3");
+    expect(incoming.records[0]!.note).toBe("Keep this personal note through upgrade.");
   });
 
   it("accepts an exact catalogue in any order and permits personal unearned state changes", () => {

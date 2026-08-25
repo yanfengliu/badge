@@ -7,6 +7,8 @@
     "./archive": "./src/archive.ts",
     "./discovery": "./src/discovery.ts",
     "./future-expansion": "./src/future-expansion.ts",
+    "./legacy-repair": "./src/legacy-repair.ts",
+    "./manufacturing": "./src/manufacturing.ts",
     "./studio": "./src/studio.ts"
   }
 }

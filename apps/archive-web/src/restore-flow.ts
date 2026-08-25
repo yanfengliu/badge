@@ -13,6 +13,7 @@ import type { ArchiveState } from "@badge/archive-domain";
 import { canonicalJson } from "@badge/pack-contract";
 
 import { assertArchiveBackupFileSize, assertCompatibleStarterArchive } from "./restore-compatibility.js";
+import { createStarterVisualUpgradePlan } from "./starter-visual-upgrade.js";
 
 export type ArchiveRestoreAction = "offer-safety-backup" | "restore" | "recover";
 export type ArchiveSafetyHandoff = "full-backup" | "state-rescue";
@@ -311,6 +312,7 @@ export async function recoverPendingArchive(
         ? (restore.stateRescueAffectedRecordIds ?? undefined)
         : undefined,
       sayingDefaults,
+      catalogueVisualUpgradePlan: createStarterVisualUpgradePlan(sayingDefaults),
     });
   } catch (error) {
     if (!replacingFromStateRescue || !isRecoveryReasonMismatch(error)) throw error;
@@ -332,6 +334,7 @@ export function restorePendingArchive(
     restore.bytes,
     requireSafetyCheckpointState(restore, "restore"),
     sayingDefaults,
+    createStarterVisualUpgradePlan(sayingDefaults),
   );
 }
 

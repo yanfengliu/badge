@@ -15,11 +15,17 @@ import { canonicalJson } from "@badge/pack-contract";
 import { formatSayingForArchive, type SayingResponse } from "@badge/saying-contract";
 
 import { abortQuietly, openArchiveDatabase, parseStoredState } from "./archive-database.js";
+import type { ArchiveCatalogueVisualUpgradePlan } from "./catalogue-visual-upgrade.js";
+import {
+  prepareCatalogueVisualUpgrade,
+  upgradeStoredCatalogueVisuals,
+} from "./catalogue-visual-upgrade-storage.js";
 import { ArchivePersistenceError } from "./errors.js";
-import { TrustedQuotationAdmission, type TrustedQuotationRequests } from "./quotation-admission.js";
+import { TrustedQuotationAdmission } from "./quotation-admission.js";
 import { recoverArchive } from "./recovery.js";
 import { inspectRecoveryEvidenceSnapshot } from "./recovery-evidence-snapshot.js";
 import type { ArchiveRecoveryReasonCode } from "./recovery-evidence.js";
+import type { IndexedDbArchiveRepositoryOptions } from "./repository-contract.js";
 import {
   assertCompatibleRepositorySource,
   mergeRepositorySourceAssets,
@@ -50,15 +56,7 @@ import {
   type ResolvedArchiveVisual,
 } from "./storage-contract.js";
 
-export type ArchiveRepositoryTransactionStage = "activation:written" | "activation:committed";
-export type ArchiveRepositoryRecoveryStage = "recovery:inspected";
-
-export interface IndexedDbArchiveRepositoryOptions {
-  onTransactionStage?: (stage: ArchiveRepositoryTransactionStage) => void;
-  onObserverError?: (error: unknown, stage: ArchiveRepositoryTransactionStage) => void;
-  onRecoveryStage?: (stage: ArchiveRepositoryRecoveryStage) => void | Promise<void>;
-  trustedQuotationRequests?: TrustedQuotationRequests;
-}
+export * from "./repository-contract.js";
 
 interface Mutation<T> {
   state: ArchiveState;
@@ -197,6 +195,15 @@ export class IndexedDbArchiveRepository {
         );
       }
     });
+  }
+
+  async upgradeCatalogueVisuals(
+    upgradePlan: ArchiveCatalogueVisualUpgradePlan,
+    sourceAssets: readonly ArchiveSourceAssetInput[],
+    expectedCurrentState: ArchiveState,
+  ): Promise<ArchiveState> {
+    const prepared = await prepareCatalogueVisualUpgrade(upgradePlan, sourceAssets, expectedCurrentState);
+    return this.enqueueWrite(async () => upgradeStoredCatalogueVisuals(await this.database(), prepared));
   }
 
   async read(): Promise<ArchiveState> {

@@ -3,6 +3,7 @@ import type { DBSchema } from "idb";
 import { z } from "zod";
 
 import type { ArchiveSourceAsset } from "./source-assets.js";
+import type { ArchiveCatalogueVisualUpgradePlan } from "./catalogue-visual-upgrade.js";
 import type { ArchiveRecoveryReasonCode } from "./recovery-evidence.js";
 
 export const ARCHIVE_DATABASE_NAME = "badge-archive-v1";
@@ -73,4 +74,5 @@ export interface ArchiveRecoveryOptions {
   readonly expectedStateRescueReason?: ArchiveRecoveryReasonCode;
   readonly expectedStateRescueAffectedRecordIds?: readonly string[];
   readonly sayingDefaults?: ArchiveState;
+  readonly catalogueVisualUpgradePlan?: ArchiveCatalogueVisualUpgradePlan;
 }
