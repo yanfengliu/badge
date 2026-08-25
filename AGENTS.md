@@ -2,7 +2,7 @@
 
 ## What this is
 
-Badge is a desktop-first, local-first web app for one person to plan, create, activate, and revisit meaningful life achievements.
+Badge is a desktop-first, phone-capable, local-first web app for one person to plan, create, activate, and revisit meaningful life achievements.
 
 The first version has no accounts, server, social graph, external verification, or public publishing; those are later possibilities, not implicit scope.
 
@@ -63,5 +63,5 @@ Read `docs/learning/lessons.md`, `docs/design/vision.md`, `docs/design/product-s
 
 - Product direction lives in `docs/design/`; structural changes update `docs/architecture/ARCHITECTURE.md` and append to `docs/architecture/drift-log.md`; non-obvious tradeoffs append to `docs/architecture/decisions.md` and are superseded, never erased.
 - Devlog history lives in `docs/devlog/summary.md` plus dated files under `docs/devlog/detailed/`; lessons and evidence follow the fleet templates in `docs/learning/`.
-- Visual work includes separate evidence for the archive gallery and Badge Studio, Studio upload/reprocess and candidate selection, 3D front/edge/back views, multiple light positions and zoom levels, activation ceremony, GPU fallback, and reduced-motion behavior at more than one desktop-like viewport.
+- Visual work includes separate evidence for the archive gallery and Badge Studio, Studio upload/reprocess and candidate selection, 3D front/edge/back views, multiple light positions and zoom levels, activation ceremony, GPU fallback, reduced-motion behavior, wide and compact desktop, phone portrait down to `320px`, and short landscape.
 - Keep application modules aligned with the dependency direction documented in `docs/architecture/ARCHITECTURE.md`; domain and application logic remain independent of React, persistence, file APIs, and model providers.

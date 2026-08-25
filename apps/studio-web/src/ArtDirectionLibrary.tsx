@@ -415,7 +415,11 @@ function PromptDetail({
         <div>
           <span>Recommended: {preview.recommendedStyle.label}</span>
           {overrideStyleId && (
-            <button type="button" onClick={() => onStyleChange(null)}>
+            <button
+              type="button"
+              className="art-direction-library__restore-recommendation"
+              onClick={() => onStyleChange(null)}
+            >
               Restore recommendation
             </button>
           )}

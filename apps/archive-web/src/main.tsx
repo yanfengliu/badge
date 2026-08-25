@@ -12,6 +12,7 @@ import "./discovery.css";
 import "./replay-activation.css";
 import "./memory-replay.css";
 import "./saying-disclosure.css";
+import "./mobile.css";
 
 const root = document.getElementById("root");
 

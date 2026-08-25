@@ -19,6 +19,7 @@ interface FallbackStyle extends CSSProperties {
   "--badge-edge-width": string;
   "--badge-aspect": string;
   "--badge-inner-size": string;
+  "--badge-stage-fit-inline": string;
 }
 
 interface LoadedSourceDimensions {
@@ -38,6 +39,7 @@ export function BadgeFallback({
   const [failedSourceUrl, setFailedSourceUrl] = useState<string | null>(null);
   const [loadedSource, setLoadedSource] = useState<LoadedSourceDimensions | null>(null);
   const sourceFailed = failedSourceUrl === sourceArtUrl;
+  const frameAspect = fallbackFrameAspect(recipe.shape);
   const framingPlan =
     loadedSource?.sourceArtUrl === sourceArtUrl
       ? createSourceFramingPlan(recipe.shape, recipe.crop, loadedSource)
@@ -46,8 +48,9 @@ export function BadgeFallback({
   const style: FallbackStyle = {
     "--badge-border-color": recipe.borderColor,
     "--badge-edge-width": `${Math.max(7, recipe.thickness * 160)}px`,
-    "--badge-aspect": String(fallbackFrameAspect(recipe.shape)),
+    "--badge-aspect": String(frameAspect),
     "--badge-inner-size": `${Math.max(0.72, 1 - recipe.borderWidth) * 100}%`,
+    "--badge-stage-fit-inline": `${frameAspect * 100}cqb`,
   };
   const sourceStyle: CSSProperties = imagePlacement
     ? {

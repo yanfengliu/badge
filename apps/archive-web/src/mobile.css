@@ -1,0 +1,498 @@
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+}
+
+html,
+body,
+#root {
+  min-width: 0;
+  max-width: 100%;
+}
+
+html,
+body {
+  overflow-x: clip;
+}
+
+body,
+.archive-shell,
+.loading-screen {
+  min-height: 100dvh;
+}
+
+.ceremony,
+.memory-replay,
+.saying-disclosure-dialog {
+  padding-top: max(30px, var(--safe-top));
+  padding-right: max(30px, var(--safe-right));
+  padding-bottom: max(30px, var(--safe-bottom));
+  padding-left: max(30px, var(--safe-left));
+}
+
+.saying-disclosure-card {
+  max-height: calc(100dvh - clamp(36px, 8vw, 104px) - var(--safe-top) - var(--safe-bottom));
+}
+
+@media (max-width: 640px) {
+  .archive-header {
+    min-height: calc(108px + var(--safe-top));
+    padding-top: calc(6px + var(--safe-top));
+    padding-right: max(18px, var(--safe-right));
+    padding-left: max(18px, var(--safe-left));
+  }
+
+  .archive-main,
+  .collection-main,
+  .timeline-main,
+  .discovery-main {
+    min-height: calc(100dvh - 108px - var(--safe-top));
+  }
+
+  .collection-main,
+  .timeline-main,
+  .discovery-main,
+  .story-content {
+    padding-bottom: calc(56px + var(--safe-bottom));
+  }
+
+  .notice {
+    top: calc(120px + var(--safe-top));
+    right: max(14px, var(--safe-right));
+    left: max(14px, var(--safe-left));
+    max-width: none;
+  }
+
+  .ceremony {
+    align-items: start;
+    padding-top: max(12px, var(--safe-top));
+    padding-right: max(12px, var(--safe-right));
+    padding-bottom: max(12px, var(--safe-bottom));
+    padding-left: max(12px, var(--safe-left));
+  }
+
+  .ceremony-card,
+  .restore-card {
+    width: min(560px, 100%);
+    max-height: calc(100dvh - 24px - var(--safe-top) - var(--safe-bottom));
+    overflow-y: auto;
+  }
+
+  .ceremony-viewer {
+    height: auto;
+  }
+  .ceremony-viewer > .badge-viewer__viewport,
+  .ceremony-viewer > .badge-fallback {
+    flex: none;
+    block-size: clamp(220px, 42dvh, 360px);
+    min-block-size: 0;
+  }
+
+  .ceremony-viewer .badge-viewer__viewport canvas,
+  .ceremony-viewer .badge-fallback__stage,
+  .memory-replay__viewer .badge-viewer__viewport canvas,
+  .memory-replay__viewer .badge-fallback__stage {
+    min-block-size: 0;
+  }
+
+  .ceremony-viewer .badge-fallback__stage,
+  .memory-replay__viewer .badge-fallback__stage {
+    container-type: size;
+    overflow: hidden;
+    padding: 12px;
+  }
+
+  .ceremony-viewer .badge-fallback__object-frame,
+  .memory-replay__viewer .badge-fallback__object-frame {
+    inline-size: min(70cqi, var(--badge-stage-fit-inline));
+    block-size: auto;
+    max-inline-size: none;
+  }
+  .ceremony-copy {
+    padding: 20px 20px calc(24px + var(--safe-bottom));
+  }
+
+  .ceremony-copy h2 {
+    font-size: 32px;
+  }
+
+  .ceremony-copy p {
+    font-size: 21px;
+  }
+
+  .restore-card {
+    padding: 34px 22px 24px;
+  }
+
+  .restore-actions {
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+
+  .restore-actions > button {
+    width: 100%;
+    white-space: normal;
+  }
+
+  .memory-replay {
+    padding: 0;
+  }
+
+  .memory-replay__close {
+    top: calc(12px + var(--safe-top));
+    right: calc(12px + var(--safe-right));
+  }
+
+  .memory-replay__details {
+    padding-bottom: calc(50px + var(--safe-bottom));
+  }
+
+  .saying-disclosure-dialog {
+    padding-top: max(10px, var(--safe-top));
+    padding-right: max(10px, var(--safe-right));
+    padding-bottom: max(10px, var(--safe-bottom));
+    padding-left: max(10px, var(--safe-left));
+  }
+
+  .saying-disclosure-card {
+    width: 100%;
+    max-height: calc(100dvh - 20px - var(--safe-top) - var(--safe-bottom));
+    padding-bottom: calc(24px + var(--safe-bottom));
+  }
+}
+
+@media (max-width: 480px) {
+  .archive-header {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: 54px 48px;
+    min-height: calc(102px + var(--safe-top));
+    padding: var(--safe-top) max(10px, var(--safe-right)) 0 max(10px, var(--safe-left));
+  }
+
+  .brand {
+    min-width: 0;
+    width: auto;
+    gap: 7px;
+    font-size: 17px;
+    white-space: nowrap;
+  }
+
+  .brand svg {
+    width: 21px;
+    height: 21px;
+  }
+
+  .header-actions {
+    gap: 3px;
+  }
+
+  .quiet-button {
+    width: 44px;
+    padding: 0;
+  }
+
+  .quiet-button span {
+    display: none;
+  }
+
+  .avatar {
+    width: 38px;
+    min-height: 38px;
+  }
+
+  .archive-nav {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    width: 100%;
+    min-height: 48px;
+    gap: 0;
+    justify-self: stretch;
+  }
+
+  .nav-link {
+    min-width: 0;
+    min-height: 48px;
+    padding: 0 3px;
+    justify-content: center;
+    font-size: 12px;
+    line-height: 1.05;
+    text-align: center;
+  }
+
+  .archive-main,
+  .collection-main,
+  .timeline-main,
+  .discovery-main {
+    min-height: calc(100dvh - 102px - var(--safe-top));
+  }
+
+  .collection-main,
+  .timeline-main,
+  .discovery-main {
+    padding-right: max(14px, var(--safe-right));
+    padding-left: max(14px, var(--safe-left));
+  }
+
+  .collection-stats span,
+  .discovery-card__status {
+    font-size: 10px;
+    letter-spacing: 0.05em;
+  }
+
+  .collection-shelf__art {
+    pointer-events: auto;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: x proximity;
+    touch-action: auto;
+  }
+
+  .collection-shelf__art .collected-badge {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
+
+  .discovery-hero h1,
+  .collection-title-block h1 {
+    font-size: clamp(42px, 15vw, 56px);
+  }
+
+  .discovery-set-browser {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(158px, 72vw);
+    grid-template-columns: none;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-inline: contain;
+  }
+
+  .discovery-set-button {
+    min-height: 68px;
+    padding: 12px 14px;
+    scroll-snap-align: start;
+  }
+
+  .discovery-set-button strong {
+    font-size: 16px;
+  }
+
+  .discovery-results-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .discovery-card__copy button,
+  .discovery-pagination button,
+  .collection-empty-callout button,
+  .memory-replay__sets button,
+  .memory-replay__set-label,
+  .text-button {
+    min-height: 44px;
+  }
+
+  .timeline-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .timeline-count {
+    min-width: 0;
+    padding: 0;
+    text-align: left;
+  }
+
+  .timeline-list {
+    padding-left: 20px;
+  }
+
+  .timeline-copy {
+    padding: 24px 20px;
+  }
+
+  .artifact-pane {
+    grid-template-rows: auto auto auto;
+    min-height: auto;
+    gap: 14px;
+    padding: 24px max(14px, var(--safe-right)) calc(20px + var(--safe-bottom)) max(14px, var(--safe-left));
+  }
+
+  .artifact-stage {
+    min-height: 0;
+  }
+
+  .artifact-pane .badge-viewer__viewport,
+  .artifact-pane .badge-viewer__viewport canvas,
+  .artifact-pane .badge-fallback {
+    min-block-size: clamp(250px, 46dvh, 330px);
+  }
+
+  .collection-heading {
+    gap: 12px;
+  }
+
+  .progress-copy {
+    min-width: 76px;
+  }
+
+  .story-content {
+    padding: 34px max(18px, var(--safe-right)) calc(52px + var(--safe-bottom)) max(18px, var(--safe-left));
+  }
+
+  .story-title {
+    font-size: clamp(42px, 14vw, 56px);
+  }
+
+  .field :is(input, textarea, select) {
+    font-size: 16px;
+  }
+
+  .restore-card h2 {
+    margin-right: 38px;
+  }
+
+  .saying-disclosure-card h2 {
+    margin-right: 42px;
+  }
+
+  .saying-disclosure-actions > button {
+    width: 100%;
+    white-space: normal;
+  }
+
+  .notice {
+    top: calc(114px + var(--safe-top));
+  }
+}
+
+@media (max-height: 430px) and (orientation: landscape) {
+  .archive-header {
+    min-height: calc(96px + var(--safe-top));
+    padding-top: var(--safe-top);
+    padding-right: max(clamp(24px, 3.5vw, 58px), var(--safe-right));
+    padding-left: max(clamp(24px, 3.5vw, 58px), var(--safe-left));
+  }
+
+  .archive-main,
+  .collection-main,
+  .timeline-main,
+  .discovery-main {
+    min-height: calc(100dvh - 96px - var(--safe-top));
+  }
+
+  .collection-main {
+    padding-right: max(clamp(20px, 3.7vw, 58px), var(--safe-right));
+    padding-bottom: calc(84px + var(--safe-bottom));
+    padding-left: max(clamp(20px, 3.7vw, 58px), var(--safe-left));
+  }
+
+  .timeline-main {
+    padding-right: max(clamp(28px, 8vw, 128px), var(--safe-right));
+    padding-bottom: calc(90px + var(--safe-bottom));
+    padding-left: max(clamp(28px, 8vw, 128px), var(--safe-left));
+  }
+
+  .discovery-main {
+    padding-right: max(clamp(24px, 5vw, 76px), var(--safe-right));
+    padding-bottom: calc(80px + var(--safe-bottom));
+    padding-left: max(clamp(24px, 5vw, 76px), var(--safe-left));
+  }
+
+  .artifact-pane {
+    padding-right: max(28px, var(--safe-right));
+    padding-bottom: calc(34px + var(--safe-bottom));
+    padding-left: max(28px, var(--safe-left));
+  }
+
+  .story-content {
+    padding-right: max(28px, var(--safe-right));
+    padding-bottom: calc(70px + var(--safe-bottom));
+    padding-left: max(28px, var(--safe-left));
+  }
+
+  .notice {
+    top: calc(108px + var(--safe-top));
+    right: max(24px, var(--safe-right));
+    left: max(24px, var(--safe-left));
+    width: auto;
+    margin-left: auto;
+  }
+
+  .discovery-card__copy button,
+  .discovery-pagination button,
+  .collection-empty-callout button,
+  .memory-replay__sets button,
+  .memory-replay__set-label,
+  .text-button {
+    min-height: 44px;
+  }
+
+  .field :is(input, textarea, select) {
+    font-size: 16px;
+  }
+
+  .artifact-pane .badge-viewer__viewport,
+  .artifact-pane .badge-fallback {
+    block-size: 220px;
+    min-block-size: 220px;
+  }
+
+  .artifact-pane .badge-viewer__viewport canvas {
+    min-block-size: 0;
+  }
+
+  .timeline-badge-viewer .badge-viewer__viewport,
+  .timeline-badge-viewer .badge-fallback {
+    block-size: 220px;
+    min-block-size: 220px;
+  }
+
+  .timeline-badge-viewer .badge-viewer__viewport canvas {
+    min-block-size: 0;
+  }
+
+  .ceremony-viewer {
+    height: auto;
+  }
+  .ceremony-viewer > .badge-viewer__viewport,
+  .ceremony-viewer > .badge-fallback {
+    flex: none;
+    block-size: min(280px, 72dvh);
+    min-block-size: 0;
+  }
+
+  .memory-replay__viewer > .badge-viewer__viewport,
+  .memory-replay__viewer > .badge-fallback {
+    flex: 1;
+    min-block-size: 0;
+  }
+
+  .ceremony-viewer .badge-viewer__viewport canvas,
+  .ceremony-viewer .badge-fallback__stage,
+  .memory-replay__viewer .badge-viewer__viewport canvas,
+  .memory-replay__viewer .badge-fallback__stage {
+    min-block-size: 0;
+  }
+
+  .ceremony-viewer .badge-fallback__stage,
+  .memory-replay__viewer .badge-fallback__stage {
+    container-type: size;
+    overflow: hidden;
+    padding: 12px;
+  }
+
+  .ceremony-viewer .badge-fallback__object-frame,
+  .memory-replay__viewer .badge-fallback__object-frame {
+    inline-size: min(70cqi, var(--badge-stage-fit-inline));
+    block-size: auto;
+    max-inline-size: none;
+  }
+  .memory-replay__viewer {
+    height: 58dvh;
+    min-height: 58dvh;
+  }
+}

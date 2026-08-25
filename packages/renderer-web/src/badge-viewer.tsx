@@ -1,5 +1,4 @@
 import {
-  Component,
   useCallback,
   useEffect,
   useId,
@@ -8,7 +7,6 @@ import {
   useState,
   type KeyboardEvent,
   type PointerEvent,
-  type ReactNode,
 } from "react";
 import { Canvas } from "@react-three/fiber";
 import { ACESFilmicToneMapping, SRGBColorSpace } from "three";
@@ -32,6 +30,7 @@ import {
   type ViewerState,
 } from "./viewer-state";
 import { viewerRenderKeys, viewerSessionChanged } from "./viewer-lifecycle";
+import { ViewerErrorBoundary } from "./viewer-error-boundary";
 import { addViewerWheelListener } from "./wheel-listener";
 import { useReducedMotion, useSingleTurn } from "./single-turn";
 import "./badge-viewer.css";
@@ -60,33 +59,17 @@ export interface BadgeViewerProps {
   onCapabilityChange?: (capability: Exclude<RendererCapability, "checking">) => void;
 }
 
-interface BoundaryProps {
-  children: ReactNode;
-  onError: (reason: string) => void;
-}
-
-class ViewerErrorBoundary extends Component<BoundaryProps, { failed: boolean }> {
-  state = { failed: false };
-
-  static getDerivedStateFromError() {
-    return { failed: true };
-  }
-
-  componentDidCatch(error: Error) {
-    this.props.onError(`Live 3D could not render this badge: ${error.message}`);
-  }
-
-  render() {
-    return this.state.failed ? null : this.props.children;
-  }
-}
-
 interface ActivePointer {
   id: number;
   x: number;
   y: number;
+  startX: number;
+  startY: number;
+  touch: boolean;
+  claimed: boolean;
 }
 
+const TOUCH_DIRECTION_THRESHOLD_PX = 8;
 export function BadgeViewer({
   sourceUrl,
   recipe,
@@ -214,22 +197,55 @@ export function BadgeViewer({
   }, [capability, forceFallback, onCapabilityChange]);
 
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
-    if (event.button !== 0) return;
-    event.currentTarget.focus();
-    event.currentTarget.setPointerCapture(event.pointerId);
-    activePointer.current = { id: event.pointerId, x: event.clientX, y: event.clientY };
-    updateEngagement(true);
+    if (event.button !== 0 || activePointer.current) return;
+    const touch = event.pointerType === "touch";
+    if (!touch) {
+      event.currentTarget.focus();
+      event.currentTarget.setPointerCapture(event.pointerId);
+    }
+    activePointer.current = {
+      id: event.pointerId,
+      x: event.clientX,
+      y: event.clientY,
+      startX: event.clientX,
+      startY: event.clientY,
+      touch,
+      claimed: !touch,
+    };
+    updateEngagement(!touch);
   };
 
   const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
-    const pointer = activePointer.current;
+    let pointer = activePointer.current;
     if (!pointer || pointer.id !== event.pointerId) return;
-    const deltaX = event.clientX - pointer.x;
-    const deltaY = event.clientY - pointer.y;
-    activePointer.current = { id: pointer.id, x: event.clientX, y: event.clientY };
+    let deltaX = event.clientX - pointer.x;
+    let deltaY = event.clientY - pointer.y;
+    if (pointer.touch && !pointer.claimed) {
+      const totalX = event.clientX - pointer.startX;
+      const totalY = event.clientY - pointer.startY;
+      if (Math.max(Math.abs(totalX), Math.abs(totalY)) < TOUCH_DIRECTION_THRESHOLD_PX) return;
+      if (Math.abs(totalY) >= Math.abs(totalX)) {
+        releasePointer();
+        updateEngagement(false);
+        return;
+      }
+      event.currentTarget.setPointerCapture(event.pointerId);
+      pointer = { ...pointer, claimed: true };
+      updateEngagement(true);
+      deltaX = totalX;
+      deltaY = 0;
+    }
+    activePointer.current = { ...pointer, x: event.clientX, y: event.clientY };
     setView((current) =>
       mode === "object" ? moveObject(current, deltaX, deltaY) : moveLight(current, deltaX, deltaY),
     );
+  };
+
+  const handlePointerEnd = (event: PointerEvent<HTMLDivElement>) => {
+    const pointer = activePointer.current;
+    if (!pointer || pointer.id !== event.pointerId) return;
+    releasePointer();
+    if (pointer.touch) updateEngagement(false);
   };
 
   useEffect(() => {
@@ -323,7 +339,7 @@ export function BadgeViewer({
     : (fallbackReason ?? "The live 3D renderer is unavailable.");
   const instructions = engaged
     ? `${mode === "object" ? "Rotate the badge" : "Move the key light"} with arrow keys. Hold Shift for precise arrows. Use plus or minus to zoom; hold Alt for precise zoom. Press Escape to release.`
-    : "Press Enter or Space to engage the viewer. Drag to inspect. Wheel zoom starts only while engaged.";
+    : "Press Enter or Space to engage the viewer. Drag with a mouse or swipe sideways to inspect; vertical swipes scroll the page. Wheel zoom starts only while engaged.";
 
   return (
     <section
@@ -360,9 +376,9 @@ export function BadgeViewer({
             tabIndex={singleTurn ? undefined : 0}
             onPointerDown={singleTurn ? undefined : handlePointerDown}
             onPointerMove={singleTurn ? undefined : handlePointerMove}
-            onPointerUp={singleTurn ? undefined : releasePointer}
-            onPointerCancel={singleTurn ? undefined : releasePointer}
-            onLostPointerCapture={singleTurn ? undefined : releasePointer}
+            onPointerUp={singleTurn ? undefined : handlePointerEnd}
+            onPointerCancel={singleTurn ? undefined : handlePointerEnd}
+            onLostPointerCapture={singleTurn ? undefined : handlePointerEnd}
             onKeyDown={singleTurn ? undefined : handleKeyDown}
             onBlur={
               singleTurn

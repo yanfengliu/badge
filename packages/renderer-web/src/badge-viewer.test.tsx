@@ -1,8 +1,11 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { DEFAULT_RENDER_RECIPE } from "@badge/render-recipe";
+import { DEFAULT_RENDER_RECIPE, type BadgeShape } from "@badge/render-recipe";
 
 import { BadgeViewer } from "./badge-viewer.js";
+import { fallbackFrameAspect } from "./fallback-geometry.js";
+
+const SHAPES: readonly BadgeShape[] = ["circle", "square", "rectangle", "shield"];
 
 describe("BadgeViewer single-turn presentation", () => {
   it("renders a passive fallback frame without inspection, scale, reset, or fallback-view controls", () => {
@@ -43,5 +46,19 @@ describe("BadgeViewer single-turn presentation", () => {
     expect(html).toContain('aria-label="Fallback view"');
     expect(html).toContain("Static inspection remains available.");
     expect(html.match(/<button/gu)).toHaveLength(3);
+  });
+
+  it.each(SHAPES)("publishes a stage-height fit length for the %s fallback ratio", (shape) => {
+    const html = renderToStaticMarkup(
+      <BadgeViewer
+        sourceUrl="blob:shape-art"
+        recipe={{ ...DEFAULT_RENDER_RECIPE, shape }}
+        accessibleDescription={`A ${shape} badge.`}
+        presentation="single-turn"
+        forceFallback
+      />,
+    );
+
+    expect(html).toContain(`--badge-stage-fit-inline:${fallbackFrameAspect(shape) * 100}cqb`);
   });
 });

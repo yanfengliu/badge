@@ -70,17 +70,16 @@
   border-radius: 10px;
   background: var(--viewer-paper);
   cursor: grab;
-  touch-action: pan-y;
+  touch-action: pan-y pinch-zoom;
 }
 
 .badge-viewer__viewport.is-engaged {
   cursor: grabbing;
-  touch-action: none;
 }
 
 .badge-viewer__viewport--passive {
   cursor: default;
-  touch-action: pan-y;
+  touch-action: pan-y pinch-zoom;
 }
 
 .badge-viewer__viewport canvas {
@@ -153,6 +152,8 @@
 }
 
 .badge-viewer__quiet-action {
+  min-inline-size: 44px;
+  min-block-size: 44px;
   padding: 7px 11px;
   text-decoration: underline;
   text-decoration-color: transparent;

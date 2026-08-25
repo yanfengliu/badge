@@ -33,9 +33,9 @@ Visual creation follows a separate developer loop: open Badge Studio → generat
 
 ## Scope stance
 
-Version one is a desktop-first local web application for one person.
+Version one is a desktop-first, fully phone-capable local web application for one person.
 
-The everyday archive supports installed and local collections, suggested and handmade achievement definitions, planned and earned states, pre-decided published badge pictures and presentations, mouse-driven 3D examination with dynamic lighting, activation memories, automatic composite achievements, and local backup and restore.
+The everyday archive supports installed and local collections, suggested and handmade achievement definitions, planned and earned states, pre-decided published badge pictures and presentations, mouse, touch, and keyboard 3D examination with dynamic lighting, activation memories, automatic composite achievements, and local backup and restore.
 
 Badge Studio is a separate developer mode for multiple art candidates, uploaded and reprocessed images, appearance construction, selection, and pack publishing; none of those creation controls appear in the archive experience.
 

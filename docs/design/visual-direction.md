@@ -135,11 +135,11 @@ A recommended first-activation sequence is: commit state → brief alignment or 
 
 If one action also completes a composite badge, reveal the individual badge first, close the collection progress state, then present the composite artifact.
 
-## Implemented Archive surface record — 2026-08-25
+## Implemented Archive and phone-capable surface record — 2026-08-25
 
 ### Status and capture contract
 
-This dated record preserves the implemented Collection and Discover visual system so later catalogue work can distinguish accepted interface behavior from a new design proposal; the promoted collection and Atelier mockups remain mood, layout, and finish seeds rather than pixel specifications for these implemented surfaces.
+This dated record preserves the implemented Collection, Discover, and phone-capable Archive and Studio visual system so later catalogue work can distinguish accepted interface behavior from a new design proposal; the promoted collection and Atelier mockups remain mood, layout, and finish seeds rather than pixel specifications for these implemented surfaces.
 
 The executable values remain authoritative in Archive CSS, while this section records their semantic roles, component states, interaction hierarchy, and responsive intent so a mechanical restyle cannot silently erase the accepted design.
 
@@ -147,8 +147,12 @@ The following optimized fixture-only captures are current implementation referen
 
 - [Collection reference](assets/archive-collection-2026-08-25.png): route `/#collection`, `1440 × 1000` browser viewport override, one earned Yosemite fixture, one represented U.S. National Parks shelf expanded, inherent shelf browse surface hovered, captured 2026-08-25.
 - [Discover reference](assets/archive-discover-2026-08-25.png): route `/#discover`, `1440 × 1000` browser viewport override, U.S. States selected, `0 / 50 collected`, first bounded page of reviewed potential badges, captured 2026-08-25.
+- [Archive phone reference](assets/archive-discover-mobile-2026-08-25.png): route `/#discover`, exact `390 × 844` CSS viewport and decoded PNG bitmap, fixture-only U.S. States selected with `0 / 50 collected`, four primary destinations visible and the set selector represented as a horizontal touch rail, captured 2026-08-25.
+- [Studio phone reference](assets/studio-mobile-2026-08-25.png): route `/studio/`, exact `390 × 844` CSS viewport and decoded PNG bitmap, deterministic Yosemite fixture candidate selection with the four primary destinations visible and the candidate comparison represented as a horizontal touch rail, captured 2026-08-25.
 
-Both states were also inspected at a `900 × 900` browser viewport override. The compact Collection shelf starts closed, the five Discover set segments wrap without an empty pseudo-segment, neither page overflows horizontally, and all 24 initially rendered state thumbnails decode successfully.
+Both desktop Archive states were also inspected at a `900 × 900` browser viewport override. The compact Collection shelf starts closed, the five Discover set segments wrap without an empty pseudo-segment, neither page overflows horizontally, and all 24 initially rendered state thumbnails decode successfully.
+
+Phone verification covered Archive and Studio at `320 × 568`, Archive at `430 × 932`, Discover at `390 × 844`, and both applications in short landscape at `844 × 390`. The inspected documents had no horizontal overflow; their four primary destinations remained visible; internal set, candidate, and collected-artifact rails retained deliberate horizontal touch scrolling; ordinary inspected controls met the `44px` target floor; and all inspected form fields retained `16px` text. A fresh Yosemite activation then proved the complete phone ceremony, populated Collection shelf, passive live replay, and forced live-renderer fallback in portrait and short landscape. The first fallback pass exposed a width-sized static badge spilling into replay details; the corrected fallback stage and art frame now have equal client and scroll heights and remain wholly inside the viewer. A dedicated browser harness then rendered circle, square, rectangle, and shield in both interactive ceremony and passive replay at the phone floor and short landscape: all sixteen frames stayed contained and preserved their recipe aspect ratio within `0.000143`. Studio's live viewer accepted a protocol-level vertical touch swipe that advanced the page while retaining `pan-y pinch-zoom`, the conditional restore-recommendation target measured `44px`, and simulated `37px` left plus `41px` right safe insets reached both library panes without document overflow. Both canonical mobile captures are exact `390 × 844` PNG bitmaps and are fully decoded by the promoted-asset gate.
 
 ### Shared tokens
 
@@ -171,7 +175,7 @@ Both states were also inspected at a `900 × 900` browser viewport override. The
 | Interface type  | Aptos, `Segoe UI Variable`, `Segoe UI`, system UI, sans serif                    | Controls, labels, status, and utility copy                             |
 | Controlled ease | `cubic-bezier(0.2, 0.72, 0.2, 1)`                                                | Short disclosure and surface-state transitions                         |
 
-The shared desktop content measure is at most `1480px`; the Archive header is `74px` high on wide desktop, becomes a `118px` two-row header at `1180px` and below, and becomes `108px` high at `640px` and below.
+The shared desktop content measure is at most `1480px`; the Archive header is `74px` high on wide desktop, becomes a `118px` two-row header at `1180px` and below, becomes `108px` high at `640px` and below, and resolves to a compact `102px` identity-and-navigation shell at `480px` and below before safe-area padding.
 
 ### Collection state contract
 
@@ -223,14 +227,18 @@ Keyboard focus uses the shared focus token, selected states retain text or seman
 
 ### Responsive and reduced-motion record
 
-| Width or preference              | Implemented response                                                                                                                                             |
-| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `1180px` and below               | Archive header becomes two rows; Collection masthead becomes one column; Collection memory grids and Discover badge results become two columns                   |
-| `900px` and below                | Discover hero becomes one column and its five set segments wrap into balanced flexible rows without leaving a false empty segment                                |
-| `820px` and below                | Collection shelf copy and disclosure form the first row while the artifact strip becomes a second, horizontally scrollable row                                   |
-| `640px` and below                | Header becomes `108px`; Collection statistics become a two-by-two matrix; Collection memory grids, Discover set segments, and Discover results become one column |
-| `420px` and below                | Discover cards reserve a `112px` art column with a `96 × 96px` image and compact status and copy spacing                                                         |
-| `prefers-reduced-motion: reduce` | Collection browse and disclosure transitions and Discover art-filter transitions are removed without changing state, focus, or direct control response           |
+| Width or preference                 | Implemented response                                                                                                                                                                                                                                                                                                                                                     |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `1180px` and below                  | Archive header becomes two rows; Collection masthead becomes one column; Collection memory grids and Discover badge results become two columns                                                                                                                                                                                                                           |
+| `900px` and below                   | Discover hero becomes one column and its five set segments wrap into balanced flexible rows without leaving a false empty segment                                                                                                                                                                                                                                        |
+| `820px` and below                   | Collection shelf copy and disclosure form the first row while the artifact strip becomes a second, horizontally scrollable row                                                                                                                                                                                                                                           |
+| `640px` and below                   | Header becomes `108px`; Collection statistics become a two-by-two matrix; Collection memory grids, Discover set segments, and Discover results become one column                                                                                                                                                                                                         |
+| `480px` and below                   | Archive and Studio use a `102px` two-row safe-area shell with four equal primary destinations; set, candidate, and collected-artifact rows become intentional touch rails; Timeline headings and forms stack; 3D viewers, dialogs, controls, and publication actions fit the phone measure; ordinary controls retain a `44px` target floor and inputs retain `16px` text |
+| `420px` and below                   | Discover cards reserve a `112px` art column with a `96 × 96px` image and compact status and copy spacing                                                                                                                                                                                                                                                                 |
+| `430px` high and below in landscape | Archive and Studio use a `96px` shell and bound inspection surfaces to `220px`; replay uses `58dvh`, while the activation ceremony bounds its stage to `min(280px, 72dvh)` and lets instructions and controls flow below it so the surrounding action and memory surfaces remain reachable                                                                               |
+| `prefers-reduced-motion: reduce`    | Collection browse and disclosure transitions and Discover art-filter transitions are removed without changing state, focus, or direct control response                                                                                                                                                                                                                   |
+
+Phone layout uses `viewport-fit=cover`, `env(safe-area-inset-*)`, and `100dvh` for both independently built applications. The document itself never scrolls horizontally at the `320px` supported floor; only the named ordered rails may do so. Interactive badge canvases declare browser-owned vertical pan and pinch behavior. Touch begins unclaimed, yields to a predominantly vertical page gesture, and captures only after a predominantly horizontal drag establishes viewer intent.
 
 ### Catalogue scaling trigger
 
@@ -238,7 +246,7 @@ This record captures an implementation designed and visually verified with four 
 
 The first scaling decision is implemented: Collection renders only sets represented by earned records, while Discover searches the complete catalogue and places no more than 24 matching cards in the DOM before an explicit progressive-reveal action. Further set growth must group or otherwise restructure the wrapping selector before it becomes an unbounded taxonomy rail.
 
-The scale proof must measure DOM and card counts, list-image request counts, decoded dimensions and worst-case pixel bounds, horizontal overflow, keyboard reachability, and empty, mixed-state, filtered, and missing-preview layouts at the required wide and compact desktop viewports; `loading="lazy"` alone is not evidence that the expanded catalogue remains bounded.
+The scale proof must measure DOM and card counts, list-image request counts, decoded dimensions and worst-case pixel bounds, document horizontal overflow, keyboard and touch reachability, and empty, mixed-state, filtered, and missing-preview layouts at the required wide, compact desktop, phone portrait, and short-landscape viewports; `loading="lazy"` alone is not evidence that the expanded catalogue remains bounded.
 
 ## Motion and sound
 
@@ -263,6 +271,6 @@ Sound is not required. If added later, it is restrained, optional, and separatel
 
 ## Visual verification contract
 
-Inspect the archive gallery, planned and earned states, badge detail, activation start and end states, and pack-installation failures without any Studio controls; separately inspect Badge Studio projects, candidates, upload processing, every shape and material preset, validation, publish success and failure, and clean installation into the archive. Across both builds inspect front, oblique, edge, and back camera angles, near and far zoom bounds, several key-light positions, narrow and wide desktop layouts, reduced motion, GPU fallback, loading, empty, and actionable error states.
+Inspect the archive gallery, planned and earned states, badge detail, activation start and end states, and pack-installation failures without any Studio controls; separately inspect Badge Studio projects, candidates, upload processing, every shape and material preset, validation, publish success and failure, and clean installation into the archive. Across both builds inspect front, oblique, edge, and back camera angles, near and far zoom bounds, several key-light positions, narrow and wide desktop layouts, phone portrait at the `320px` floor, short landscape, safe-area and dynamic-height behavior, touch page-scroll ownership, reduced motion, GPU fallback, loading, empty, and actionable error states.
 
 Screenshots are evidence inputs, not the conclusion: compare the rendered implementation with the selected mockups at matched viewport and state, capture a short interaction recording for rotation, zoom, and light movement, fix visible differences, and then sweep the full surface for defects outside the changed area.

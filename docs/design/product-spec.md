@@ -10,6 +10,8 @@ The open decisions at the end are hard boundaries future agents must not silentl
 
 The initial user is the repository owner, using the app locally with no account or server.
 
+Badge remains desktop-first in information density and visual character, but Archive and Badge Studio are complete phone-capable applications rather than desktop pages that merely shrink. Their supported layout floor is a `320px` CSS viewport in portrait and short landscape: all four primary destinations remain reachable, the document has no horizontal overflow, safe areas and dynamic viewport height are respected, ordinary controls provide at least a `44 × 44px` target, and text-entry controls retain a `16px` font size so mobile browsers do not zoom the page unexpectedly.
+
 ## Domain language
 
 ### Collection
@@ -92,9 +94,9 @@ Primary mouse drag rotates the badge around its center, and the wheel or trackpa
 
 A separate visible `Adjust light` mode lets pointer drag orbit the key light while leaving ordinary drag dedicated to the object. Rotation and lighting update highlights, reflections, self-shadow, and relief in real time; the effect is not baked into the source image.
 
-The viewer provides visible `Reset view` and `Reset light` actions, concise interaction instructions, pointer capture during drag, and an obvious way to release focus so wheel zoom does not trap page scrolling.
+The viewer provides visible `Reset view` and `Reset light` actions, concise interaction instructions, deliberate pointer capture only after the viewer owns a drag, and an obvious way to release focus so wheel zoom does not trap page scrolling.
 
-Pointer-down focuses and engages the viewer, then begins object or light drag according to the visible mode. Keyboard focus alone shows instructions without intercepting navigation; `Enter` or `Space` engages keyboard control, `Escape` disengages it while retaining focus, and focus moving outside returns the viewer to rest. Pointer-up, pointer-cancel, lost capture, or a mode change ends any active drag.
+Mouse pointer-down focuses, engages, captures, and begins the object or light drag selected by the visible mode. A touch pointer starts pending without capture: predominantly vertical movement remains page-owned scrolling, while predominantly horizontal movement claims the pointer and rotates the object or moves the light; touch release always disengages. Keyboard focus alone shows instructions without intercepting navigation; `Enter` or `Space` engages keyboard control, `Escape` disengages it while retaining focus, and focus moving outside returns the viewer to rest. Pointer-up, pointer-cancel, lost capture, or a mode change ends any active drag.
 
 Camera orbit, zoom, and light position are session viewer state and reset to a deliberate studio default when reopened. Saving a personal showcase pose is deferred and must not be inferred from ordinary examination.
 
@@ -127,6 +129,8 @@ The opening experience uses a warm field-cabinet treatment with one collapsed sh
 The selected gallery direction uses a warm editorial field archive with a large crafted badge, concise metadata, restrained topographic detail, and generous space.
 
 The primary navigation presents exactly four destinations in both applications: Collection, Timeline, Discover, and Badge Studio. The first three are ephemeral Archive sections at `/`; Badge Studio is the separate `/studio/` application and is visually a peer destination without sharing its runtime or persistence boundary.
+
+At phone widths those four destinations form an always-visible four-column navigation row beneath the product identity and utilities. Dense desktop rows become explicit touch-scroll rails only where the ordered content remains understandable—Collection artifacts, Discover sets, and Studio candidates—while Timeline headings, forms, dialogs, inspectors, and publication controls reflow vertically. Internal rails may scroll horizontally; the document itself may not.
 
 Discover searches and browses all `116` unique visualized badge concepts in tracked product inputs through four canonical sets: four published starter badges, sixty-two additional national-park studies after Yosemite deduplication, and fifty U.S.-state source studies. An earned published badge is full color and opens its exact memory replay; every unearned concept is grey. A published unearned badge may enter preparation and activation without leaving Discover, while a source study remains labeled `Potential` and `Not yet published` with no activation, quotation, 3D, install, provider, or authoring action. Search and set filtering apply to the complete projection, while the card grid renders an initial `24` matches and reveals subsequent batches only on explicit request. Selecting a set from memory replay opens that exact Discover set, and entering Discover from primary navigation clears that transient set context for independent browsing.
 
@@ -361,6 +365,7 @@ Activate the last required park → commit that activation → update the compos
 - `prefers-reduced-motion` produces a crisp success state without disorienting travel, flashing, or parallax.
 - Reduced motion disables inertia, automatic orbit, decorative camera travel, and the replay's one automatic turn, while preserving immediate user-controlled 3D rotation, zoom, and light adjustment on inspection surfaces.
 - The viewer exposes concise instructions and current interaction mode to assistive technology, and a textual badge description remains available when the canvas is unavailable or not useful.
+- Phone layouts preserve the same complete task and state model as desktop, keep primary navigation visible, use at least `44 × 44px` ordinary interactive targets, retain `16px` text-entry fonts, respect display safe areas and dynamic viewport height, and do not make vertical page scrolling compete with touch rotation inside a live badge viewer.
 
 ## Explicit open decisions
 

@@ -88,6 +88,29 @@ describe("ArtDirectionLibrary mounted interactions", () => {
     expect(selectedResult()?.textContent).toContain("Thread-painted embroidery");
   });
 
+  it("restores the recommended style after an explicit override", async () => {
+    const styleSelect = container.querySelector<HTMLSelectElement>("#art-direction-style-override");
+    if (!styleSelect) throw new Error("Mounted test could not find the source-art style control.");
+    const recommendedStyleId = styleSelect.value;
+
+    expect(container.querySelector(".art-direction-library__restore-recommendation")).toBeNull();
+    await selectOption("art-direction-style-override", "thread-painted-embroidery");
+
+    const restore = container.querySelector<HTMLButtonElement>(
+      ".art-direction-library__restore-recommendation",
+    );
+    if (!restore) throw new Error("Mounted test could not find the restore recommendation control.");
+    expect(restore.textContent).toContain("Restore recommendation");
+    expect(styleSelect.value).toBe("thread-painted-embroidery");
+    expect(promptText()).toContain("Thread-painted embroidery");
+
+    await act(async () => restore.click());
+
+    expect(container.querySelector(".art-direction-library__restore-recommendation")).toBeNull();
+    expect(styleSelect.value).toBe(recommendedStyleId);
+    expect(promptText()).not.toContain("Thread-painted embroidery");
+  });
+
   it("moves tab focus and selection with arrow keys", async () => {
     const parksTab = buttonWithText("National parks");
     parksTab.focus();

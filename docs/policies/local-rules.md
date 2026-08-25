@@ -90,6 +90,8 @@ The badge itself is a real-time 3D artifact in Badge Studio and archive detail v
 
 Mouse rotation, bounded zoom, responsive lighting, a separate light-adjustment control, keyboard equivalents, reset, reduced-motion behavior, and a clear GPU fallback are product requirements rather than optional polish.
 
+Interactive inspection on touch devices must arbitrate intent before pointer capture: vertical movement remains page-owned, horizontal movement may claim badge manipulation, and release returns the viewer to an unengaged state.
+
 Those examination controls remain available in Archive detail, Timeline inspection, Badge Studio, and the first activation ceremony. The earned-state activation replay is passive: after live artwork is ready the badge makes one complete 360-degree turn and rests, with no object-versus-light toggle, zoom or scale action, reset action, fallback-view switcher, or direct-manipulation input; reduced motion and renderer fallback show the stable badge without autoplay.
 
 Activation data commits before its ceremony begins. The ceremony is replayable or skippable, respects reduced motion, and never substitutes spectacle for persistence correctness.
@@ -104,4 +106,6 @@ Avoid cartoon rendering, careless generated art, souvenir-shop kitsch, cheap gra
 
 Do not fake the required object with CSS perspective on a flat image or bake highlights and shadows into the only authoritative preview. Material response must change as the object or key light moves.
 
-Visual changes are not complete until the relevant full flow is exercised in a real browser and inspected at more than one desktop-like viewport, including loading, empty, error, keyboard, and reduced-motion states when applicable.
+Archive and Badge Studio remain desktop-first in composition but are complete phone-capable applications. Relevant UI changes preserve a `320px` CSS viewport floor with no document-level horizontal overflow, keep all four primary destinations reachable, respect safe-area insets and dynamic viewport height, use at least `44 × 44px` ordinary touch targets and `16px` form text, and bound dialogs and live viewers in portrait and short landscape; named ordered content rails may scroll horizontally when their continuation remains evident.
+
+Visual changes are not complete until the relevant full flow is exercised in a real browser and inspected at wide and compact desktop, phone portrait down to the `320px` floor, and short landscape, including loading, empty, error, keyboard, touch-scroll ownership, reduced-motion, and GPU-fallback states when applicable.

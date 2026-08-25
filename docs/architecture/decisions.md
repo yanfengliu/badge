@@ -2,6 +2,16 @@
 
 Append decisions newest first. Never rewrite history; add a superseding entry that links to the decision it replaces.
 
+## 2026-08-25 — D-048: Keep the desktop-first archive complete and usable on phones
+
+**Status:** Owner-confirmed and implemented for the current Archive, Badge Studio, and shared interactive viewer; it strengthens the presentation and verification requirements without changing domain, persistence, pack, catalogue, or publication authority.
+
+Archive and Badge Studio retain the quiet field-archive visual language and desktop information density, but neither route may depend on a desktop-width floor. Both independently support a `320px` CSS viewport in portrait and short landscape, advertise edge-to-edge safe-area support, use dynamic viewport height for full-height surfaces, keep Collection, Timeline, Discover, and Badge Studio visible in one equal phone navigation row, and prohibit document-level horizontal overflow. Dense ordered content becomes an explicit horizontal rail only for Collection artifacts, Discover sets, and Studio candidates; Timeline headings, detail panes, forms, dialogs, appearance controls, publication actions, and library search reflow or bound themselves to the phone measure.
+
+Ordinary phone actions retain at least a `44 × 44px` target and form controls retain `16px` text. Safe-area insets reach headers, page edges, overlays, notices, and dialog actions; short-landscape inspection surfaces are bounded so the surrounding content remains reachable. These behaviors live in final route-owned responsive CSS layers and one cross-application CSSOM contract rather than in domain models or shared persistence.
+
+The shared live viewer no longer captures touch on contact. Touch begins pending, yields a predominantly vertical gesture to page scrolling, captures only after predominantly horizontal intent, and always disengages on release; mouse and keyboard inspection semantics remain unchanged, replay remains passive, and the viewport keeps browser-owned vertical-pan and pinch behavior. Contract tests cover the direction threshold, release class, conditional target floor, symmetric safe-area ownership, live plus fallback stage bounds, all four shape-derived fallback fit lengths, and exact promoted PNG references. Browser evidence covers Archive and Studio at the `320px` floor, intermediate portrait widths, short landscape, an actual activation and populated Collection, live and forced-fallback ceremony and replay, all four fallback shape ratios on both surfaces, simulated nonzero safe insets, and protocol-level touch page scrolling with no document overflow.
+
 ## 2026-08-25 — D-047: Expand Discover with a fifty-state source-study edition and keep future editions planning-only
 
 **Status:** Owner-confirmed and implemented for the fifty-state authoring and safe Discover projection, Collection scaling, Discover progressive reveal, and versioned planning briefs; it supersedes D-043 and D-046 only where their catalogue counts and empty-shelf behavior described the smaller prior projection.
