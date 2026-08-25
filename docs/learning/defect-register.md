@@ -1,5 +1,15 @@
 # Defect Register
 
+## 2026-08-25 — Discover badge cards looked clickable but only small CTAs worked
+
+**Symptom:** The owner said the badges in Discover should be clickable. Published results offered a small `Prepare badge` or `View memory` button while their artwork, title, criterion, status, and surrounding card did nothing; the much larger source-study population offered no click destination at all.
+
+**Investigation:** `DiscoveryCard` rendered an ordinary article and placed the only published interaction at the bottom of its copy column. Source studies had no `recordId`, admitted render recipe, quotation bank, or activation authority, so routing them into preparation would have manufactured a runtime badge; leaving them inert, however, made the catalogue's primary visual objects break the interaction model established by Collection. Contract-first mounted tests distinguished three legitimate outcomes: collected published cards reopen exact memory, published unearned cards enter existing preparation, and source studies open only a focus-contained read-only preview of their already-admitted thumbnail and safe projection fields. Browser checks then clicked directly on card artwork at wide desktop and short landscape, exercised focus containment and return, and inspected the preview at `320 × 568` and `844 × 390` with zero document overflow.
+
+**Root cause:** Discover treated the visible badge card as descriptive layout around a small action instead of making the badge itself the action, and its source-study safety boundary was expressed as total inertness rather than a bounded read-only inspection destination.
+
+**Standing gate:** `DiscoveryView.test.tsx` requires exactly one full-card native action for every result, action-specific accessible names, stretched coverage, and visible hover and keyboard focus. `DiscoveryView.interaction.test.tsx` requires separate preparation, replay, and read-only study-preview outcomes; Escape, Close, Tab containment, inert background isolation, and exact trigger return for the preview; and preservation of a revealed page when preparation temporarily unmounts Discover. The mounted real-App saying flow requires collected Discover replay and preparation to return focus to their originating full-card actions, including after revealing forty-eight results. `mobile-layout-contract.test.ts` requires the stretched action and phone-bounded study overlay. Browser verification repeats direct artwork clicks, hover, focus return, desktop, `320px` phone, and short-landscape containment while source-study contracts continue to forbid runtime badge authority.
+
 ## 2026-08-24 — Collection felt limited because it mixed catalogue work with earned memories
 
 **Symptom:** The owner said the collection page felt too limited. Collection did not read as the accumulated personal achievement surface: it mixed unearned starter records, preparation, and activation with earned memories, had no set-complete browsing path, no meaningful collection statistics, and could not drill from an activated badge through its exact memory into the rest of its set.

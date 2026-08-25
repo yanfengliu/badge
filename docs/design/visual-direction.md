@@ -91,7 +91,7 @@ Every picture and presentation is already decided by an installed pack. The gall
 
 Discover is the complete set browser rather than another personal gallery. A generous catalogue heading, wrapping canonical set rail, `x / y collected` progress, one search field, a responsive card grid, and bounded progressive reveal make all created visual concepts findable without turning the surface into a dashboard. The hierarchy borrows the useful category-progress, earned timestamp, and earned-versus-unearned scan cues of mature achievement systems while retaining Badge's quiet archival materials rather than game chrome, points, or rewards.
 
-Earned badges use full color, state `Collected`, and open the exact memory replay. Every potential badge is grey: a published unearned entry says `Ready to collect` and can open preparation in place, while a selected study says `Potential` and `Not yet published` and provides no false activation, quotation, 3D, install, provider, or authoring action. Missing thumbnails retain the complete searchable card with an explicit preview fallback rather than hiding the concept.
+Every badge card is one coherent click and keyboard target rather than a passive card with a small CTA. Earned badges use full color, state `Collected`, and open the exact memory replay. Every potential badge is grey: a published unearned entry says `Ready to collect` and opens preparation in place, while a selected study says `Potential` and `Not yet published` and opens a read-only editorial preview of its admitted list art and safe metadata without false activation, quotation, 3D, install, provider, or authoring capability. Missing thumbnails retain the complete searchable card with an explicit preview fallback rather than hiding the concept.
 
 ### Memory timeline
 
@@ -148,6 +148,7 @@ The following optimized fixture-only captures are current implementation referen
 - [Collection reference](assets/archive-collection-2026-08-25.png): route `/#collection`, `1440 × 1000` browser viewport override, one earned Yosemite fixture, one represented U.S. National Parks shelf expanded, inherent shelf browse surface hovered, captured 2026-08-25.
 - [Discover reference](assets/archive-discover-2026-08-25.png): route `/#discover`, `1440 × 1000` browser viewport override, U.S. States selected, `0 / 50 collected`, first bounded page of reviewed potential badges, captured 2026-08-25.
 - [Archive phone reference](assets/archive-discover-mobile-2026-08-25.png): route `/#discover`, exact `390 × 844` CSS viewport and decoded PNG bitmap, fixture-only U.S. States selected with `0 / 50 collected`, four primary destinations visible and the set selector represented as a horizontal touch rail, captured 2026-08-25.
+- [Discover study phone reference](assets/archive-discover-study-mobile-2026-08-25.png): route `/#discover`, exact `390 × 844` CSS viewport and decoded PNG bitmap, fixture-only Acadia source-study preview with no personal state, showing the bounded selected-study art, truthful nonpublication status, set membership, capability note, and close action, captured 2026-08-25.
 - [Studio phone reference](assets/studio-mobile-2026-08-25.png): route `/studio/`, exact `390 × 844` CSS viewport and decoded PNG bitmap, deterministic Yosemite fixture candidate selection with the four primary destinations visible and the candidate comparison represented as a horizontal touch rail, captured 2026-08-25.
 
 Both desktop Archive states were also inspected at a `900 × 900` browser viewport override. The compact Collection shelf starts closed, the five Discover set segments wrap without an empty pseudo-segment, neither page overflows horizontally, and all 24 initially rendered state thumbnails decode successfully.
@@ -200,9 +201,9 @@ Discover is the complete created-concept browser: a generous editorial hero and 
 | -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
 | All sets                   | The `All sets` segment is bright paper with a three-pixel rust underline; the hero reports Archive progress                                   | All created visual concepts participate in search and results                                |
 | Selected set               | The selected segment uses the same bright-paper and rust-underline treatment, and the hero adopts that set's title, description, and progress | `aria-pressed` and explicit `x / y collected` text communicate selection without color alone |
-| Collected badge            | Full-color art, collected-success framing, and explicit `Collected` pill                                                                      | `View memory` opens the exact earned replay                                                  |
-| Published unearned badge   | Quiet grey art with explicit `Ready to collect` pill                                                                                          | `Prepare badge` opens the existing preparation flow in place                                 |
-| Selected source study      | Quiet grey art with explicit `Potential` pill and `Not yet published` copy                                                                    | It exposes no activation, quotation, 3D, install, provider, or authoring action              |
+| Collected badge            | Full-color art, collected-success framing, explicit `Collected` pill, and whole-card hover or focus lift                                      | The complete card opens the exact earned replay                                              |
+| Published unearned badge   | Quiet grey art with explicit `Ready to collect` pill and whole-card hover or focus lift                                                       | The complete card opens the existing preparation flow in place                               |
+| Selected source study      | Quiet grey art with explicit `Potential` pill, `Not yet published` copy, and whole-card hover or focus lift                                   | The complete card opens a focus-contained read-only preview with no runtime badge capability |
 | Missing reviewed thumbnail | The complete card and copy remain, with an explicit `Preview unavailable` image fallback                                                      | Missing list art never hides the concept or invents an action                                |
 | Progressive reveal         | The first 24 matching cards render with explicit `Showing x of y` copy and one quiet `Show n more` action                                     | Each action adds at most 24 cards; changing the set or query resets the bounded window       |
 | Search miss                | A centered, generous empty field names the failed search and suggests valid catalogue dimensions                                              | Set selection remains intact while the query changes                                         |
@@ -213,15 +214,15 @@ At wide desktop the set selector uses five flexible segments for `All sets` and 
 
 ### Interaction precedence
 
-| Surface                                     | Primary action                        | Independent neighboring action                                |
-| ------------------------------------------- | ------------------------------------- | ------------------------------------------------------------- |
-| Collection ordinary canonical shelf segment | Browse that exact set in Discover     | None                                                          |
-| Collection shaped artifact                  | Replay that exact earned memory       | It must not browse or expand the shelf                        |
-| Collection circular disclosure              | Expand or collapse collected memories | It must not browse or replay                                  |
-| Discover set segment                        | Select one catalogue set              | It must not prepare or replay a badge                         |
-| Discover collected card action              | View exact memory                     | Card art and status remain descriptive                        |
-| Discover published-unearned card action     | Prepare exact badge                   | It does not route through Collection                          |
-| Discover source-study card                  | No action                             | Status and nonpublication copy remain selectable and readable |
+| Surface                                     | Primary action                        | Independent neighboring action                        |
+| ------------------------------------------- | ------------------------------------- | ----------------------------------------------------- |
+| Collection ordinary canonical shelf segment | Browse that exact set in Discover     | None                                                  |
+| Collection shaped artifact                  | Replay that exact earned memory       | It must not browse or expand the shelf                |
+| Collection circular disclosure              | Expand or collapse collected memories | It must not browse or replay                          |
+| Discover set segment                        | Select one catalogue set              | It must not prepare or replay a badge                 |
+| Discover collected badge card               | View exact memory                     | One stretched native button covers the complete card  |
+| Discover published-unearned badge card      | Prepare exact badge                   | One stretched native button covers the complete card  |
+| Discover source-study badge card            | View safe read-only study preview     | It cannot plan, activate, inspect 3D, or enter Studio |
 
 Keyboard focus uses the shared focus token, selected states retain text or semantics in addition to color, and overlapping shelf controls preserve the same action boundaries for pointer, keyboard, and assistive-technology users.
 

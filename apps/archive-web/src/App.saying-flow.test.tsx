@@ -207,10 +207,21 @@ describe("mounted historical-quotation flow", () => {
       expect(container.querySelector("#discovery-set-heading")?.textContent).toBe("U.S. National Parks"),
     );
     expect(container.textContent).toContain("1 / 64 collected");
-    expect(
-      container.querySelector('.discovery-card--collected [aria-label="Replay collected memory Yosemite"]'),
-    ).not.toBeNull();
+    const discoverReplay = container.querySelector<HTMLButtonElement>(
+      '.discovery-card--collected [aria-label="Replay collected memory Yosemite"]',
+    );
+    expect(discoverReplay?.classList.contains("discovery-card__action")).toBe(true);
     expect(container.querySelector(".discovery-card--potential")).not.toBeNull();
+
+    discoverReplay?.focus();
+    await act(async () => discoverReplay?.click());
+    await waitFor(() => expect(container.querySelector(".memory-replay")).not.toBeNull());
+    const closeDiscoverReplay = container.querySelector<HTMLButtonElement>(
+      'button[aria-label="Close memory replay"]',
+    );
+    await act(async () => closeDiscoverReplay?.click());
+    await waitFor(() => expect(container.querySelector(".memory-replay")).toBeNull());
+    expect(document.activeElement).toBe(discoverReplay);
 
     const reader = new IndexedDbArchiveRepository({
       trustedQuotationRequests: createStarterQuotationRequests(),
@@ -271,6 +282,27 @@ describe("mounted historical-quotation flow", () => {
     await waitFor(() => expect(container.textContent).toContain("Discover sets"));
     expect(container.querySelector<HTMLInputElement>('input[type="search"]')?.value).toBe("Sapiens");
     expect(container.textContent).toContain("1 result");
+    expect(document.activeElement).toBe(
+      container.querySelector('button[aria-label="Prepare Read Sapiens to collect"]'),
+    );
+  });
+
+  it("preserves a revealed result window across preparation and Back", async () => {
+    await waitFor(() => expect(container.textContent).toContain("The Field Archive"));
+    await clickButton("Discover");
+    await waitFor(() => expect(container.textContent).toContain("Discover sets"));
+
+    await clickButton("Show 24 more");
+    expect(container.querySelectorAll(".discovery-card")).toHaveLength(48);
+    const openSapiens = container.querySelector<HTMLButtonElement>(
+      'button[aria-label="Prepare Read Sapiens to collect"]',
+    );
+    if (!openSapiens) throw new Error("Mounted Archive test could not prepare Sapiens after reveal.");
+    await act(async () => openSapiens.click());
+    await waitFor(() => expect(container.querySelector(".story-title")?.textContent).toBe("Read Sapiens"));
+
+    await clickButton("Back to set");
+    await waitFor(() => expect(container.querySelectorAll(".discovery-card")).toHaveLength(48));
     expect(document.activeElement).toBe(
       container.querySelector('button[aria-label="Prepare Read Sapiens to collect"]'),
     );

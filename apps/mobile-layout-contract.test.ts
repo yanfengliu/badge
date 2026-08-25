@@ -46,6 +46,11 @@ describe("phone layout contract", () => {
       "apps/archive-web/src/mobile.css",
       "(max-height: 430px) and (orientation: landscape)",
     );
+    const studyPhone = mediaCss("apps/archive-web/src/discovery-study.css", "(max-width: 700px)");
+    const studyShortLandscape = mediaCss(
+      "apps/archive-web/src/discovery-study.css",
+      "(max-height: 430px) and (orientation: landscape)",
+    );
 
     expect(entry.lastIndexOf('import "./mobile.css"')).toBeGreaterThan(
       entry.lastIndexOf('import "./saying-disclosure.css"'),
@@ -62,7 +67,15 @@ describe("phone layout contract", () => {
     expect(phone).toMatch(/\.collection-shelf__art\s*\{[^}]*touch-action:\s*auto/su);
     expect(phone).toMatch(/\.restore-actions\s*\{[^}]*flex-direction:\s*column-reverse/su);
     expect(phone).toMatch(/\.field\s+:is\(input, textarea, select\)\s*\{[^}]*font-size:\s*16px/su);
-    expect(phone).toMatch(/\.discovery-card__copy button[^{]*\{[^}]*min-height:\s*44px/su);
+    expect(read("apps/archive-web/src/discovery.css")).toMatch(
+      /\.discovery-card__action\s*\{[^}]*position:\s*absolute[^}]*inset:\s*0/su,
+    );
+    expect(studyPhone).toMatch(
+      /\.discovery-study__card\s*\{[^}]*max-height:\s*calc\(100dvh - 24px - var\(--safe-top\) - var\(--safe-bottom\)\)/su,
+    );
+    expect(studyShortLandscape).toMatch(
+      /\.discovery-study__card\s*\{[^}]*max-height:\s*calc\(100dvh - 20px - var\(--safe-top\) - var\(--safe-bottom\)\)/su,
+    );
     expect(phone).toMatch(/\.ceremony-viewer\s*\{[^}]*height:\s*auto/su);
     expect(phone).toMatch(
       /\.ceremony-viewer > \.badge-viewer__viewport[^{]*\{[^}]*block-size:\s*clamp\(220px, 42dvh, 360px\)[^}]*min-block-size:\s*0/su,

@@ -60,6 +60,7 @@ import {
 import { sourceUrlsForResolvedVisuals, useResolvedVisuals } from "./use-resolved-visuals";
 import { useArchiveSectionLocation } from "./use-archive-section-location";
 import { stateAfterStaleArchiveMutation, useSayingWorkflow } from "./use-saying-workflow";
+import { useDiscoveryViewState } from "./use-discovery-view-state";
 const repository = new IndexedDbArchiveRepository({
   trustedQuotationRequests: createStarterQuotationRequests(),
 });
@@ -75,8 +76,7 @@ export function App() {
   const [selectedRecordId, setSelectedRecordId] = useState(STARTER_RECORD_IDS[0]);
   const [preparingRecordId, setPreparingRecordId] = useState<string | null>(null);
   const [replayRecordId, setReplayRecordId] = useState<string | null>(null);
-  const [selectedDiscoverSetId, setSelectedDiscoverSetId] = useState<string | null>(null);
-  const [discoveryQuery, setDiscoveryQuery] = useState("");
+  const discovery = useDiscoveryViewState();
   const [drafts, setDrafts] = useState<Record<string, ActivationDraft>>({});
   const [activating, setActivating] = useState(false);
   const [ceremonyRecordId, setCeremonyRecordId] = useState<string | null>(null);
@@ -126,6 +126,7 @@ export function App() {
   useArchiveSectionLocation((section) => {
     setPreparingRecordId(null);
     setReplayRecordId(null);
+    if (section === "discover") discovery.resetPage();
     setActiveSection(section);
   });
   const selectedFixture =
@@ -167,7 +168,7 @@ export function App() {
 
   function navigateSection(section: ArchiveSection) {
     setPreparingRecordId(null);
-    if (section === "discover") setSelectedDiscoverSetId(null);
+    if (section === "discover") discovery.enterDiscover();
     setActiveSection(section);
     writeArchiveSectionHash(section);
     setNotice(null);
@@ -192,7 +193,7 @@ export function App() {
   function browseSet(setId: string | null) {
     setReplayRecordId(null);
     setPreparingRecordId(null);
-    setSelectedDiscoverSetId(setId);
+    discovery.browseSet(setId);
     setActiveSection("discover");
     writeArchiveSectionHash("discover");
     requestAnimationFrame(() => document.getElementById("discovery-set-heading")?.focus());
@@ -439,10 +440,7 @@ export function App() {
         <DiscoveryView
           collectedRecordIds={collectedRecordIds}
           resolvedSourceUrls={resolvedSourceUrls}
-          selectedSetId={selectedDiscoverSetId}
-          query={discoveryQuery}
-          onSetChange={setSelectedDiscoverSetId}
-          onQueryChange={setDiscoveryQuery}
+          {...discovery.viewProps}
           onOpenAvailableBadge={prepareBadge}
           onOpenCollectedBadge={replayMemory}
         />

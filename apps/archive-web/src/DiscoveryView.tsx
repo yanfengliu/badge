@@ -1,13 +1,15 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   discoveryBadges,
   discoverySets,
   type DiscoveryBadge,
   type DiscoverySet,
+  type SourceStudyDiscoveryBadge,
 } from "@badge/catalogue-fixtures/discovery";
 
 import { filterDiscoveryBadges } from "./discovery-filter";
 import { resolveDiscoveryThumbnail } from "./discovery-media";
+import { DiscoveryStudyDialog } from "./DiscoveryStudyDialog";
 
 interface DiscoveryViewProps {
   readonly badges?: readonly DiscoveryBadge[];
@@ -15,6 +17,8 @@ interface DiscoveryViewProps {
   readonly resolvedSourceUrls: Readonly<Record<string, string>>;
   readonly selectedSetId: string | null;
   readonly query: string;
+  readonly visibleLimit?: number;
+  readonly onVisibleLimitChange?: (visibleLimit: number) => void;
   readonly onSetChange: (setId: string | null) => void;
   readonly onQueryChange: (query: string) => void;
   readonly onOpenAvailableBadge: (recordId: string, trigger: HTMLButtonElement) => void;
@@ -34,6 +38,8 @@ export function DiscoveryView({
   resolvedSourceUrls,
   selectedSetId,
   query,
+  visibleLimit: controlledVisibleLimit,
+  onVisibleLimitChange,
   onSetChange,
   onQueryChange,
   onOpenAvailableBadge,
@@ -46,10 +52,22 @@ export function DiscoveryView({
   );
   const pageKey = discoveryPageKey(selectedSetId, query, badges.length);
   const [page, setPage] = useState({ key: pageKey, limit: DISCOVERY_PAGE_SIZE });
-  const visibleLimit = page.key === pageKey ? page.limit : DISCOVERY_PAGE_SIZE;
+  const [selectedStudy, setSelectedStudy] = useState<SourceStudyDiscoveryBadge | null>(null);
+  const studyReturnFocus = useRef<HTMLButtonElement>(null);
+  const paginationIsControlled = controlledVisibleLimit !== undefined && onVisibleLimitChange !== undefined;
+  const visibleLimit = paginationIsControlled
+    ? controlledVisibleLimit
+    : page.key === pageKey
+      ? page.limit
+      : DISCOVERY_PAGE_SIZE;
   const renderedBadges = visibleBadges.slice(0, visibleLimit);
   const selectedSet = discoverySets.find((set) => set.setId === selectedSetId) ?? null;
   const allProgress = progressForBadges(badges, collectedRecordIds);
+
+  function updateVisibleLimit(nextKey: string, nextLimit: number) {
+    if (paginationIsControlled) onVisibleLimitChange(nextLimit);
+    else setPage({ key: nextKey, limit: nextLimit });
+  }
 
   return (
     <main className="discovery-main">
@@ -80,7 +98,7 @@ export function DiscoveryView({
           type="button"
           aria-pressed={selectedSetId === null}
           onClick={() => {
-            setPage({ key: discoveryPageKey(null, query, badges.length), limit: DISCOVERY_PAGE_SIZE });
+            updateVisibleLimit(discoveryPageKey(null, query, badges.length), DISCOVERY_PAGE_SIZE);
             onSetChange(null);
           }}
         >
@@ -95,10 +113,7 @@ export function DiscoveryView({
             collectedRecordIds={collectedRecordIds}
             active={selectedSetId === set.setId}
             onSelect={() => {
-              setPage({
-                key: discoveryPageKey(set.setId, query, badges.length),
-                limit: DISCOVERY_PAGE_SIZE,
-              });
+              updateVisibleLimit(discoveryPageKey(set.setId, query, badges.length), DISCOVERY_PAGE_SIZE);
               onSetChange(set.setId);
             }}
           />
@@ -115,10 +130,10 @@ export function DiscoveryView({
               placeholder="Badge, place, or criterion"
               onChange={(event) => {
                 const nextQuery = event.target.value;
-                setPage({
-                  key: discoveryPageKey(selectedSetId, nextQuery, badges.length),
-                  limit: DISCOVERY_PAGE_SIZE,
-                });
+                updateVisibleLimit(
+                  discoveryPageKey(selectedSetId, nextQuery, badges.length),
+                  DISCOVERY_PAGE_SIZE,
+                );
                 onQueryChange(nextQuery);
               }}
             />
@@ -146,6 +161,10 @@ export function DiscoveryView({
                 resolveThumbnail={resolveThumbnail}
                 onOpenAvailableBadge={onOpenAvailableBadge}
                 onOpenCollectedBadge={onOpenCollectedBadge}
+                onOpenStudyBadge={(study, trigger) => {
+                  studyReturnFocus.current = trigger;
+                  setSelectedStudy(study);
+                }}
               />
             ))}
           </div>
@@ -163,7 +182,7 @@ export function DiscoveryView({
             {renderedBadges.length < visibleBadges.length ? (
               <button
                 type="button"
-                onClick={() => setPage({ key: pageKey, limit: renderedBadges.length + DISCOVERY_PAGE_SIZE })}
+                onClick={() => updateVisibleLimit(pageKey, renderedBadges.length + DISCOVERY_PAGE_SIZE)}
               >
                 Show {Math.min(DISCOVERY_PAGE_SIZE, visibleBadges.length - renderedBadges.length)} more
               </button>
@@ -171,6 +190,14 @@ export function DiscoveryView({
           </div>
         ) : null}
       </section>
+      {selectedStudy ? (
+        <DiscoveryStudyDialog
+          badge={selectedStudy}
+          sourceUrl={resolveThumbnail(selectedStudy.thumbnailKey)}
+          returnFocus={studyReturnFocus}
+          onClose={() => setSelectedStudy(null)}
+        />
+      ) : null}
     </main>
   );
 }
@@ -225,6 +252,7 @@ function DiscoveryCard({
   resolveThumbnail,
   onOpenAvailableBadge,
   onOpenCollectedBadge,
+  onOpenStudyBadge,
 }: {
   readonly badge: DiscoveryBadge;
   readonly selectedSetId: string | null;
@@ -233,6 +261,7 @@ function DiscoveryCard({
   readonly resolveThumbnail: (fileName: string) => string | null;
   readonly onOpenAvailableBadge: (recordId: string, trigger: HTMLButtonElement) => void;
   readonly onOpenCollectedBadge: (recordId: string, trigger: HTMLButtonElement) => void;
+  readonly onOpenStudyBadge: (badge: SourceStudyDiscoveryBadge, trigger: HTMLButtonElement) => void;
 }) {
   const sourceUrl =
     badge.availability === "available"
@@ -247,9 +276,28 @@ function DiscoveryCard({
     : badge.availability === "available"
       ? "Ready to collect"
       : "Potential";
+  const actionLabel = collected
+    ? `Replay collected memory ${badge.title}`
+    : badge.availability === "available"
+      ? `Prepare ${badge.title} to collect`
+      : `Inspect potential badge ${badge.title}`;
+  const actionCopy = collected
+    ? "View memory"
+    : badge.availability === "available"
+      ? "Prepare badge"
+      : "View study";
+
+  function openBadge(trigger: HTMLButtonElement) {
+    if (badge.availability === "source-study") {
+      onOpenStudyBadge(badge, trigger);
+      return;
+    }
+    if (collected) onOpenCollectedBadge(badge.recordId, trigger);
+    else onOpenAvailableBadge(badge.recordId, trigger);
+  }
 
   return (
-    <article className={`discovery-card discovery-card--${state}`}>
+    <article className={`discovery-card discovery-card--${state} discovery-card--actionable`}>
       <div className="discovery-card__art">
         {sourceUrl ? (
           <img src={sourceUrl} alt={badge.accessibleDescription} loading="lazy" decoding="async" />
@@ -266,29 +314,22 @@ function DiscoveryCard({
         </p>
         <h3>{badge.title}</h3>
         <span>{badge.criterion}</span>
-        {badge.availability === "available" ? (
-          collected ? (
-            <button
-              type="button"
-              aria-label={`Replay collected memory ${badge.title}`}
-              onClick={(event) => onOpenCollectedBadge(badge.recordId, event.currentTarget)}
-            >
-              View memory
-            </button>
-          ) : (
-            <button
-              type="button"
-              aria-label={`Prepare ${badge.title} to collect`}
-              data-prepare-record-id={badge.recordId}
-              onClick={(event) => onOpenAvailableBadge(badge.recordId, event.currentTarget)}
-            >
-              Prepare badge
-            </button>
-          )
-        ) : (
-          <small>Not yet published</small>
-        )}
+        {badge.availability === "source-study" ? <small>Not yet published</small> : null}
+        <span className="discovery-card__action-copy" aria-hidden="true">
+          {actionCopy}
+        </span>
       </div>
+      <button
+        className="discovery-card__action"
+        type="button"
+        aria-label={actionLabel}
+        {...(badge.availability === "available"
+          ? { "data-prepare-record-id": collected ? undefined : badge.recordId }
+          : {})}
+        onClick={(event) => openBadge(event.currentTarget)}
+      >
+        <span className="visually-hidden">{actionLabel}</span>
+      </button>
     </article>
   );
 }

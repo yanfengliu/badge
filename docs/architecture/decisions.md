@@ -2,6 +2,16 @@
 
 Append decisions newest first. Never rewrite history; add a superseding entry that links to the decision it replaces.
 
+## 2026-08-25 — D-049: Make every Discover badge card its own action
+
+**Status:** Owner-confirmed and implemented for the current safe Discover projection; it supersedes only the non-actionable-card presentation in D-043, D-046, and D-047 without granting source studies runtime badge authority.
+
+Every rendered Discover badge card owns one stretched native button covering the complete card surface, so its artwork, title, criterion, status, and visible action copy all lead to the same destination with one tab stop. A collected published card opens its exact earned-memory replay; a published unearned card opens the existing preparation flow inside Discover; an unpublished source-study card opens a focus-contained read-only preview of the same safe metadata and integrity-bound `128 × 128` derivative already admitted to the list.
+
+The source-study preview is catalogue inspection, not installation or badge detail. It exposes no full Studio source, prompt, provenance, candidate, visual construction, quote, 3D recipe, plan, activation, provider, authoring control, personal record, or persistence write, and it explicitly says that those runtime capabilities do not yet exist. Escape or Close restores focus to the exact originating card, background content is inert while the preview is open, and phone portrait plus short landscape keep the preview internally bounded without document overflow.
+
+This interaction adds no catalogue, persistence, pack, quotation, backup, or Archive-domain shape. It preserves the grey `Potential` and `Not yet published` truth while making every visual concept in Discover genuinely clickable.
+
 ## 2026-08-25 — D-048: Keep the desktop-first archive complete and usable on phones
 
 **Status:** Owner-confirmed and implemented for the current Archive, Badge Studio, and shared interactive viewer; it strengthens the presentation and verification requirements without changing domain, persistence, pack, catalogue, or publication authority.

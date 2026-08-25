@@ -9,6 +9,7 @@ import "./detail.css";
 import "./ceremony.css";
 import "./timeline.css";
 import "./discovery.css";
+import "./discovery-study.css";
 import "./replay-activation.css";
 import "./memory-replay.css";
 import "./saying-disclosure.css";

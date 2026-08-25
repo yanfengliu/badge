@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { discoveryBadges, type DiscoveryBadge } from "@badge/catalogue-fixtures/discovery";
@@ -142,9 +143,11 @@ describe("DiscoveryView", () => {
     );
 
     expect(html).toContain(`aria-label="Replay collected memory ${available.title}"`);
+    expect(html).toContain(`aria-label="Inspect potential badge ${sourceStudy.title}"`);
     expect(html).toContain("Collected");
     expect(html).toContain("Potential");
     expect(html).toContain("Not yet published");
+    expect(html).toContain("View study");
     expect(html).toContain("blob:earned-art");
     expect(html).not.toContain("Regenerate quote");
   });
@@ -168,6 +171,30 @@ describe("DiscoveryView", () => {
     expect(html).toContain(`aria-label="Prepare ${available.title} to collect"`);
     expect(html).toContain("Ready to collect");
     expect(html).not.toContain("Open in Collection");
+  });
+
+  it("covers each actionable card with one native button and visible hover and keyboard focus", () => {
+    const html = renderToStaticMarkup(
+      <DiscoveryView
+        badges={[available, sourceStudy]}
+        collectedRecordIds={new Set()}
+        resolvedSourceUrls={{}}
+        selectedSetId={null}
+        query=""
+        onSetChange={() => undefined}
+        onQueryChange={() => undefined}
+        onOpenAvailableBadge={() => undefined}
+        onOpenCollectedBadge={() => undefined}
+        resolveThumbnail={(fileName) => `/thumbnails/${fileName}`}
+      />,
+    );
+    const css = readFileSync(new URL("./discovery.css", import.meta.url), "utf8");
+
+    expect(html.match(/class="discovery-card__action"/g)).toHaveLength(2);
+    expect(html.match(/discovery-card--actionable/g)).toHaveLength(2);
+    expect(css).toMatch(/\.discovery-card__action\s*\{[^}]*position:\s*absolute[^}]*inset:\s*0/su);
+    expect(css).toMatch(/\.discovery-card--actionable:hover/);
+    expect(css).toMatch(/\.discovery-card__action:focus-visible/);
   });
 
   it("keeps a missing reviewed thumbnail discoverable with an explicit fallback", () => {

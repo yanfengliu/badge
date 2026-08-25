@@ -1,10 +1,11 @@
 // @vitest-environment happy-dom
 
-import { act, useState } from "react";
+import { act, useRef, useState } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { discoveryBadges } from "@badge/catalogue-fixtures/discovery";
 
+import { focusPreparedBadgeTrigger } from "./archive-section-focus.js";
 import { DiscoveryView } from "./DiscoveryView.js";
 
 (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
@@ -29,7 +30,7 @@ describe("DiscoveryView mounted interactions", () => {
     await act(async () => root.unmount());
   });
 
-  it("opens collected and uncollected published records through separate actions", async () => {
+  it("opens every badge from one full-card action and returns focus after a study preview", async () => {
     const prepared: Array<{ recordId: string; trigger: HTMLButtonElement }> = [];
     const replayed: string[] = [];
     await act(async () =>
@@ -49,11 +50,43 @@ describe("DiscoveryView mounted interactions", () => {
       ),
     );
 
-    const button = container.querySelector<HTMLButtonElement>(".discovery-card button");
-    expect(button?.textContent).toContain("Prepare badge");
+    const button = container.querySelector<HTMLButtonElement>(
+      `.discovery-card [aria-label="Prepare ${available.title} to collect"]`,
+    );
+    expect(button?.classList.contains("discovery-card__action")).toBe(true);
     await act(async () => button?.click());
     expect(prepared).toEqual([{ recordId: available.recordId, trigger: button }]);
     expect(replayed).toEqual([]);
+
+    const sourceCard = [...container.querySelectorAll<HTMLElement>(".discovery-card")].find((card) =>
+      card.textContent?.includes(sourceStudy.title),
+    );
+    const studyAction = sourceCard?.querySelector<HTMLButtonElement>(
+      `[aria-label="Inspect potential badge ${sourceStudy.title}"]`,
+    );
+    expect(studyAction?.classList.contains("discovery-card__action")).toBe(true);
+    studyAction?.focus();
+    await act(async () => studyAction?.click());
+    expect(container.querySelector('[role="dialog"]')?.textContent).toContain(sourceStudy.criterion);
+    expect(document.activeElement).toBe(
+      container.querySelector<HTMLButtonElement>('[aria-label="Close potential badge preview"]'),
+    );
+    expect(sourceCard?.closest("section")?.hasAttribute("inert")).toBe(true);
+    await act(async () => document.dispatchEvent(new KeyboardEvent("keydown", { key: "Tab" })));
+    expect(document.activeElement).toBe(
+      container.querySelector<HTMLButtonElement>('[aria-label="Close potential badge preview"]'),
+    );
+    await act(async () => document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" })));
+    expect(container.querySelector('[role="dialog"]')).toBeNull();
+    expect(document.activeElement).toBe(studyAction);
+    expect(sourceCard?.closest("section")?.hasAttribute("inert")).toBe(false);
+
+    await act(async () => studyAction?.click());
+    await act(async () =>
+      container.querySelector<HTMLButtonElement>('[aria-label="Close potential badge preview"]')?.click(),
+    );
+    expect(container.querySelector('[role="dialog"]')).toBeNull();
+    expect(document.activeElement).toBe(studyAction);
 
     await act(async () =>
       root.render(
@@ -71,15 +104,12 @@ describe("DiscoveryView mounted interactions", () => {
         />,
       ),
     );
-    const replayButton = container.querySelector<HTMLButtonElement>(".discovery-card button");
-    expect(replayButton?.textContent).toContain("View memory");
+    const replayButton = container.querySelector<HTMLButtonElement>(
+      `.discovery-card [aria-label="Replay collected memory ${available.title}"]`,
+    );
+    expect(replayButton?.classList.contains("discovery-card__action")).toBe(true);
     await act(async () => replayButton?.click());
     expect(replayed).toEqual([available.recordId]);
-
-    const sourceCard = [...container.querySelectorAll<HTMLElement>(".discovery-card")].find((card) =>
-      card.textContent?.includes(sourceStudy.title),
-    );
-    expect(sourceCard?.querySelector("button")).toBeNull();
   });
 
   it("updates result state from search and availability controls", async () => {
@@ -199,5 +229,81 @@ describe("DiscoveryView mounted interactions", () => {
     });
     expect(container.querySelectorAll(".discovery-card")).toHaveLength(24);
     expect(showMore()?.textContent).toContain("Show 24 more");
+  });
+
+  it("keeps a revealed preparation card mounted and restores its focus after returning", async () => {
+    const revealedAvailable = {
+      ...available,
+      discoveryId: "revealed-available",
+      title: "Revealed preparation badge",
+    };
+    const manyBadges = [
+      ...Array.from({ length: 24 }, (_, index) => ({
+        ...sourceStudy,
+        discoveryId: `preceding-study-${index}`,
+        title: `Preceding study ${index}`,
+      })),
+      revealedAvailable,
+    ];
+
+    function PreparationHarness() {
+      const [visibleLimit, setVisibleLimit] = useState(24);
+      const [preparing, setPreparing] = useState(false);
+      const returnFocus = useRef<HTMLButtonElement | null>(null);
+      if (preparing) {
+        return (
+          <button
+            type="button"
+            onClick={() => {
+              setPreparing(false);
+              requestAnimationFrame(() => focusPreparedBadgeTrigger(returnFocus.current));
+            }}
+          >
+            Back to Discover
+          </button>
+        );
+      }
+      return (
+        <DiscoveryView
+          badges={manyBadges}
+          collectedRecordIds={new Set()}
+          resolvedSourceUrls={{}}
+          selectedSetId={null}
+          query=""
+          visibleLimit={visibleLimit}
+          onVisibleLimitChange={setVisibleLimit}
+          onSetChange={() => undefined}
+          onQueryChange={() => undefined}
+          onOpenAvailableBadge={(_recordId, trigger) => {
+            returnFocus.current = trigger;
+            setPreparing(true);
+          }}
+          onOpenCollectedBadge={() => undefined}
+          resolveThumbnail={(fileName) => `/thumbnails/${fileName}`}
+        />
+      );
+    }
+
+    await act(async () => root.render(<PreparationHarness />));
+    await act(async () =>
+      container.querySelector<HTMLButtonElement>(".discovery-pagination button")?.click(),
+    );
+    const revealedAction = container.querySelector<HTMLButtonElement>(
+      `[aria-label="Prepare ${revealedAvailable.title} to collect"]`,
+    );
+    expect(revealedAction).not.toBeNull();
+    await act(async () => revealedAction?.click());
+    expect(container.textContent).toContain("Back to Discover");
+
+    await act(async () => {
+      container.querySelector<HTMLButtonElement>("button")?.click();
+      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+    });
+    const restoredAction = container.querySelector<HTMLButtonElement>(
+      `[aria-label="Prepare ${revealedAvailable.title} to collect"]`,
+    );
+    expect(restoredAction).not.toBeNull();
+    expect(restoredAction).not.toBe(revealedAction);
+    expect(document.activeElement).toBe(restoredAction);
   });
 });

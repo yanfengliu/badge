@@ -285,7 +285,6 @@ body,
     gap: 6px;
   }
 
-  .discovery-card__copy button,
   .discovery-pagination button,
   .collection-empty-callout button,
   .memory-replay__sets button,
@@ -422,7 +421,6 @@ body,
     margin-left: auto;
   }
 
-  .discovery-card__copy button,
   .discovery-pagination button,
   .collection-empty-callout button,
   .memory-replay__sets button,

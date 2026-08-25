@@ -166,6 +166,7 @@
 }
 
 .discovery-card {
+  position: relative;
   display: grid;
   grid-template-columns: 156px minmax(0, 1fr);
   min-width: 0;
@@ -173,11 +174,28 @@
   border: 1px solid var(--rule);
   border-radius: 9px;
   background: rgba(250, 247, 240, 0.76);
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
 }
 
 .discovery-card--collected {
   border-color: #9aa493;
   box-shadow: 0 10px 22px rgba(51, 65, 54, 0.1);
+}
+
+.discovery-card--actionable {
+  cursor: pointer;
+}
+
+.discovery-card--actionable:hover,
+.discovery-card--actionable:focus-within {
+  border-color: rgba(174, 77, 45, 0.58);
+  background: var(--paper-bright);
+  box-shadow: 0 14px 30px rgba(63, 47, 37, 0.14);
+  transform: translateY(-2px);
 }
 
 .discovery-card__art {
@@ -274,22 +292,20 @@
   line-height: 1.45;
 }
 
-.discovery-card__copy button {
+.discovery-card__action-copy {
   width: max-content;
-  min-height: 40px;
   margin-top: 18px;
-  padding: 0 13px;
-  border: 1px solid var(--rust);
-  border-radius: 7px;
-  background: transparent;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(174, 77, 45, 0.5);
   color: var(--rust-dark);
-  cursor: pointer;
   font-size: 12px;
   font-weight: 700;
+  line-height: 1.35;
 }
 
-.discovery-card__copy button:hover {
-  background: rgba(174, 77, 45, 0.08);
+.discovery-card__action-copy::after {
+  margin-left: 7px;
+  content: "→";
 }
 
 .discovery-card__copy small {
@@ -298,6 +314,28 @@
   font-size: 11px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+}
+
+.discovery-card__action {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  width: 100%;
+  min-height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+
+.discovery-card__action:focus {
+  outline: none;
+}
+
+.discovery-card__action:focus-visible {
+  outline: 3px solid var(--rust);
+  outline-offset: -4px;
 }
 
 .discovery-pagination {
@@ -411,6 +449,15 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .discovery-card {
+    transition: none;
+  }
+
+  .discovery-card--actionable:hover,
+  .discovery-card--actionable:focus-within {
+    transform: none;
+  }
+
   .discovery-card__art img {
     transition: none;
   }

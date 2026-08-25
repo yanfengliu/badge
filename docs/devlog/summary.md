@@ -1,5 +1,6 @@
 # Devlog Summary
 
+- 2026-08-25: Made every Discover badge a full-card pointer and keyboard action, routing collected cards to exact memory, published potentials to preparation, and unpublished studies to a bounded read-only preview with truthful capability limits.
 - 2026-08-25: Made Archive and Badge Studio complete at a 320-pixel phone floor with safe-area and dynamic-height layouts, always-visible four-destination navigation, deliberate touch rails, bounded portrait and landscape surfaces, touch-versus-page-scroll arbitration in the live viewer, responsive contracts, and canonical phone references.
 - 2026-08-25: Added a sourced and visually reviewed fifty-state discovery edition across twenty-four art styles, exact historical-quotation defaults, progressive searchable Discover scaling, represented-only Collection shelves, truthful future catalogue plans, and a durable UI visual record.
 - 2026-08-24: Made each canonical Collection shelf itself the Discover set action with a full-segment hover and keyboard-focus highlight, while keeping badge replay and disclosure controls independent and removing the redundant `Browse set` label.
