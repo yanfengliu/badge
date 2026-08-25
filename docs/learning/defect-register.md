@@ -1,5 +1,15 @@
 # Defect Register
 
+## 2026-08-24 — Wool badges looked built from tiny triangles at grazing angles
+
+**Symptom:** At certain object or inspection-light angles, the repeated surface detail made a wool badge look as though its artwork and border were constructed from many tiny triangles. The owner-provided _Sapiens_ capture showed the lattice across the whole front, not only along the 3D edge.
+
+**Investigation:** The native _Sapiens_ source contained no lattice. A geometry probe found `260` front-face vertices and `258` indexed triangles but exactly one normal, `(0, 0, 1)`, across every vertex, ruling out front-face polygon normals. Moving only the key light to a five-degree grazing elevation reproduced the defect while leaving camera and UV sampling unchanged. The wool detail map encoded a hard four-pixel over-under step inside eight-pixel horizontal and vertical carriers, added diagonal high-frequency variation, repeated the `64 × 64` tile five times, and drove albedo, bump, and roughness at a front bump scale of `0.0704` for _Sapiens_. Its strongest absolute short-period correlation was `0.9919`. The replacement `badge-wool-fibers-v2` texture stamps deterministic irregular paired microfibers into a seamless field, repeats it three times, caps its tonal range, lowers wool bump strengths, and uses renderer-bounded anisotropy; the full two-dimensional two-through-sixteen-pixel correlation sweep now peaks at `0.0546`.
+
+**Root cause:** A short-period, high-contrast procedural weave was treated as physical height and roughness. Grazing light revealed its synthetic checker gradients as a geometric chevron lattice, while missing anisotropic sampling worsened oblique-camera shimmer.
+
+**Standing gate:** `wool-texture.test.ts` proves its instrument rejects the exact former carrier above `0.95`, then requires deterministic opaque pixels, bounded but visible fiber contrast, absolute autocorrelation below `0.15` across every two-through-sixteen-pixel two-dimensional offset, no distinctive tile-edge seam, the exact `badge-wool-fibers-v2` identity, mipmapped trilinear repeat sampling, and anisotropy clamped across unavailable, ordinary, and excessive device reports. Archive browser verification uses the real _Sapiens_ wool recipe at maximum zoom across front, oblique, steep, edge, back, normal-light, and five-degree grazing-light views at `1440 × 1000` plus an oblique `900 × 900` control. Badge Studio repeats front, oblique, grazing-light, and narrow edge checks after candidate selection and non-destructive reprocessing. Each sweep requires one Canvas, zero browser errors, preserved textile construction, and no recurring triangular carrier.
+
 ## 2026-08-23 — Timeline showed source pictures instead of badge artifacts
 
 **Symptom:** Earned Timeline cards showed the selected source artwork as an ordinary rectangular picture instead of showing the shaped, bordered, material badge the memory actually earned.

@@ -165,6 +165,7 @@ export function BadgeMesh({ recipe, sourceArtUrl, view, onTextureReady }: BadgeM
       ),
     [cropScale, cropX, cropY, framingShape, gl, sourceTexture],
   );
+  const materialAnisotropy = Math.min(8, gl.capabilities.getMaxAnisotropy());
   const borderColor = useMemo(() => new Color(recipe.borderColor), [recipe.borderColor]);
   const constructionColor = useMemo(
     () => (recipe.material === "wool" ? borderColor.clone().lerp(new Color("#453b33"), 0.5) : borderColor),
@@ -175,8 +176,8 @@ export function BadgeMesh({ recipe, sourceArtUrl, view, onTextureReady }: BadgeM
     [constructionColor, recipe.material],
   );
   const woolWeave = useMemo(
-    () => (recipe.material === "wool" ? createWoolWeaveTexture() : null),
-    [recipe.material],
+    () => (recipe.material === "wool" ? createWoolWeaveTexture(materialAnisotropy) : null),
+    [materialAnisotropy, recipe.material],
   );
   const innerScale = Math.max(0.72, 1 - recipe.borderWidth);
   const bevelReach = Math.min(recipe.thickness * 0.28, 0.025);
@@ -213,7 +214,7 @@ export function BadgeMesh({ recipe, sourceArtUrl, view, onTextureReady }: BadgeM
           color={constructionColor}
           map={woolWeave ?? undefined}
           bumpMap={woolWeave ?? undefined}
-          bumpScale={recipe.material === "wool" ? 0.09 : 0}
+          bumpScale={recipe.material === "wool" ? 0.032 : 0}
           metalness={response.metalness}
           roughness={response.roughness}
           roughnessMap={woolWeave ?? undefined}
@@ -229,7 +230,7 @@ export function BadgeMesh({ recipe, sourceArtUrl, view, onTextureReady }: BadgeM
         <meshPhysicalMaterial
           map={source}
           bumpMap={woolWeave ?? source}
-          bumpScale={recipe.material === "wool" ? 0.065 + recipe.relief * 0.3 : recipe.relief}
+          bumpScale={recipe.material === "wool" ? 0.026 + recipe.relief * 0.15 : recipe.relief}
           metalness={recipe.material === "metal" ? 0.38 : 0.04}
           roughness={response.roughness}
           roughnessMap={woolWeave ?? undefined}
@@ -265,7 +266,7 @@ export function BadgeMesh({ recipe, sourceArtUrl, view, onTextureReady }: BadgeM
           color={constructionColor.clone().multiplyScalar(recipe.material === "wool" ? 0.78 : 0.58)}
           map={woolWeave ?? undefined}
           bumpMap={woolWeave ?? undefined}
-          bumpScale={recipe.material === "wool" ? 0.085 : 0}
+          bumpScale={recipe.material === "wool" ? 0.03 : 0}
           metalness={response.metalness}
           roughness={Math.min(1, response.roughness + 0.12)}
           roughnessMap={woolWeave ?? undefined}
@@ -287,7 +288,7 @@ export function BadgeMesh({ recipe, sourceArtUrl, view, onTextureReady }: BadgeM
           color={backPanelColor}
           map={woolWeave ?? undefined}
           bumpMap={woolWeave ?? undefined}
-          bumpScale={recipe.material === "wool" ? 0.075 : 0}
+          bumpScale={recipe.material === "wool" ? 0.026 : 0}
           metalness={recipe.material === "metal" ? 0.52 : 0}
           roughness={response.roughness}
           roughnessMap={woolWeave ?? undefined}
