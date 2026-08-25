@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { toExactVisualPin, type ArchiveState } from "@badge/archive-domain";
@@ -28,6 +29,17 @@ function earnedYosemite(): ArchiveState {
 }
 
 describe("CollectionView", () => {
+  it("highlights only the inherent browse surface, not independent shelf actions", () => {
+    const styles = readFileSync(new URL("./collection.css", import.meta.url), "utf8");
+
+    expect(styles).toMatch(
+      /\.collection-shelf__browse-surface:hover,\s*\.collection-shelf__browse-surface:focus-visible\s*\{/su,
+    );
+    expect(styles).not.toMatch(
+      /\.collection-shelf__row:(?:hover|focus-within)\s+\.collection-shelf__browse-surface/su,
+    );
+  });
+
   it("shows a deliberate empty cabinet and routes the first-memory action to Discover", () => {
     const html = renderToStaticMarkup(
       <CollectionView
@@ -65,7 +77,10 @@ describe("CollectionView", () => {
     expect(html).toContain("Books Read");
     expect(html).toContain("Life Milestones");
     expect(html).toContain('aria-label="Replay Yosemite activation"');
+    expect(html).toContain('aria-label="Browse U.S. National Parks set"');
+    expect(html).toContain("collection-shelf__browse-surface");
     expect(html).toContain('aria-expanded="false"');
+    expect(html).not.toContain("collection-set-link");
     expect(html).not.toContain("Read Sapiens");
     expect(html).not.toContain("Every national park");
     expect(html).not.toContain("PLANNED");

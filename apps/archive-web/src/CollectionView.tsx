@@ -147,6 +147,14 @@ function CollectionShelfRow({
     <section className="collection-shelf" data-expanded={open || undefined}>
       <div className="collection-shelf__rail" aria-hidden="true" />
       <div className="collection-shelf__row">
+        {shelf.setId ? (
+          <button
+            className="collection-shelf__browse-surface"
+            type="button"
+            aria-label={`Browse ${shelf.title} set`}
+            onClick={() => onBrowseSet(shelf.setId!)}
+          />
+        ) : null}
         <div className="collection-shelf__art" aria-label={`${shelf.title} collected memories`}>
           {previews.length > 0 ? (
             previews.map((record) => (
@@ -170,11 +178,6 @@ function CollectionShelfRow({
           </strong>
         </div>
         <div className="collection-shelf__actions">
-          {shelf.setId ? (
-            <button className="collection-set-link" type="button" onClick={() => onBrowseSet(shelf.setId!)}>
-              Browse set
-            </button>
-          ) : null}
           <button
             className="collection-disclosure"
             type="button"

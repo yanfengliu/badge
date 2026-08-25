@@ -46,7 +46,7 @@ describe("CollectionView interactions", () => {
     await act(async () => root.unmount());
   });
 
-  it("replays a collected badge, expands its set, and browses that set", async () => {
+  it("replays and expands without navigation, then browses from the inherent shelf surface", async () => {
     const replayed: string[] = [];
     const browsed: string[] = [];
     await act(async () =>
@@ -64,6 +64,7 @@ describe("CollectionView interactions", () => {
     const badge = container.querySelector<HTMLButtonElement>('[aria-label="Replay Yosemite activation"]');
     await act(async () => badge?.click());
     expect(replayed).toEqual([STARTER_RECORD_IDS[0]]);
+    expect(browsed).toEqual([]);
 
     const disclosure = container.querySelector<HTMLButtonElement>(
       '[aria-label="Expand U.S. National Parks collected memories"]',
@@ -72,10 +73,13 @@ describe("CollectionView interactions", () => {
     await act(async () => disclosure?.click());
     expect(disclosure?.getAttribute("aria-expanded")).toBe("true");
     expect(container.textContent).toContain("Visit Yosemite National Park");
+    expect(browsed).toEqual([]);
 
-    const browse = [...container.querySelectorAll<HTMLButtonElement>("button")].find(
-      (button) => button.textContent?.trim() === "Browse set",
+    const browse = container.querySelector<HTMLButtonElement>(
+      '[aria-label="Browse U.S. National Parks set"]',
     );
+    expect(browse?.classList.contains("collection-shelf__browse-surface")).toBe(true);
+    expect(browse?.textContent).toBe("");
     await act(async () => browse?.click());
     expect(browsed).toEqual(["us-national-parks"]);
   });
