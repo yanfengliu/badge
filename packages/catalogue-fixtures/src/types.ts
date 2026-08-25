@@ -7,6 +7,7 @@ export interface FixtureHistoricalQuotation {
   id: string;
   text: string;
   person: string;
+  personWikipediaUrl?: string;
   sourceTitle: string;
   sourceUrl: string;
 }

@@ -9,12 +9,18 @@ import {
   ArchiveApplication,
   IndexedDbArchiveRepository,
   createArchiveBackup,
+  type ArchiveSourceAssetInput,
 } from "../src/index.js";
 import { historicalQuotationRequest, withAcceptedQuotation } from "./historical-quotation-fixtures.js";
-import { validPngHash } from "./image-fixtures.js";
+import { validPngBytes, validPngHash } from "./image-fixtures.js";
 
 const exportedAt = "2026-08-24T17:00:00.000Z";
 const repositories: IndexedDbArchiveRepository[] = [];
+const sourceAsset: ArchiveSourceAssetInput = {
+  hash: validPngHash,
+  mimeType: "image/png",
+  bytes: validPngBytes,
+};
 
 function state(): ArchiveState {
   return createSeededArchiveState({
@@ -77,6 +83,29 @@ function inventedEarnedDefaults(seed: ArchiveState): ArchiveState {
   };
 }
 
+function earnedLegacyState(seed: ArchiveState): ArchiveState {
+  const record = seed.records[0]!;
+  const earned = activateAchievement(
+    withAcceptedQuotation(seed),
+    {
+      recordId: record.recordId,
+      occurredStart: "2026-08-24",
+      occurredEnd: "2026-08-24",
+      note: null,
+      visibility: "private",
+      visualPin: record.publishedVisual,
+    },
+    exportedAt,
+  ).state;
+  return {
+    ...earned,
+    records: earned.records.map((candidate) => ({
+      ...candidate,
+      acceptedSaying: "A sealed saying from the earlier design.",
+    })),
+  };
+}
+
 function application(): ArchiveApplication {
   const repository = new IndexedDbArchiveRepository({
     trustedQuotationRequests: { "record-yosemite": historicalQuotationRequest },
@@ -91,6 +120,67 @@ afterEach(async () => {
 });
 
 describe("trusted quotation defaults", () => {
+  it.each(["restore", "recovery"] as const)(
+    "preserves an earned legacy saying byte-for-byte during %s when defaults are supplied",
+    async (boundary) => {
+      const archive = application();
+      const base = state();
+      const reviewed = await archive.initialize(base, [sourceAsset]);
+      const incoming = earnedLegacyState(base);
+      const defaults = withAcceptedQuotation(base);
+      const backup = await createArchiveBackup(incoming, [sourceAsset], exportedAt);
+
+      const restored =
+        boundary === "restore"
+          ? await archive.restoreBackup(backup, reviewed, defaults)
+          : (
+              await archive.recoverBackup(backup, reviewed.ownerId, [sourceAsset], {
+                mode: "replace-incompatible-readable-state",
+                expectedCurrentState: reviewed,
+                sayingDefaults: defaults,
+              })
+            ).state;
+
+      expect(restored.records[0]?.acceptedSaying).toBe("A sealed saying from the earlier design.");
+      expect((await archive.state()).records[0]?.acceptedSaying).toBe(
+        "A sealed saying from the earlier design.",
+      );
+    },
+  );
+
+  it.each(["restore", "recovery"] as const)(
+    "standardizes an unverified unearned saying during %s before persistence",
+    async (boundary) => {
+      const archive = application();
+      const base = state();
+      const reviewed = await archive.initialize(base, [sourceAsset]);
+      const legacy = {
+        ...base,
+        records: base.records.map((record) => ({
+          ...record,
+          acceptedSaying: "Worth every switchback.",
+        })),
+      };
+      const defaults = withAcceptedQuotation(base);
+      const backup = await createArchiveBackup(legacy, [], exportedAt);
+
+      const standardized =
+        boundary === "restore"
+          ? await archive.restoreBackup(backup, reviewed, defaults)
+          : (
+              await archive.recoverBackup(backup, reviewed.ownerId, [sourceAsset], {
+                mode: "replace-incompatible-readable-state",
+                expectedCurrentState: reviewed,
+                sayingDefaults: defaults,
+              })
+            ).state;
+
+      expect(standardized.records[0]?.acceptedSaying).toBe(defaults.records[0]?.acceptedSaying);
+      expect(standardized.records[0]?.quotationRevision).not.toBe(legacy.records[0]?.quotationRevision);
+      expect((await archive.state()).records[0]?.acceptedSaying).toBe(defaults.records[0]?.acceptedSaying);
+    },
+  );
+
   it.each(["initialization", "restore", "recovery"] as const)(
     "rejects an invented quotation hidden behind an earned lifecycle during %s",
     async (boundary) => {

@@ -52,7 +52,7 @@
 .saying-label,
 .field-label {
   display: block;
-  margin-bottom: 8px;
+  margin: 0 0 8px;
   color: var(--ink-faint);
   font-size: 11px;
   font-weight: 650;
@@ -124,14 +124,36 @@
 }
 
 .quotation-proposal figcaption {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px 12px;
-  margin-top: 8px;
+  display: grid;
+  gap: 7px;
+  margin-top: 13px;
   color: var(--ink-soft);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.45;
   overflow-wrap: anywhere;
+}
+
+.quotation-provenance-row {
+  display: grid;
+  grid-template-columns: 100px minmax(0, 1fr) auto;
+  gap: 8px 13px;
+  align-items: baseline;
+}
+
+.quotation-provenance-label {
+  color: var(--ink-faint);
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.quotation-provenance-row strong,
+.quotation-provenance-row cite {
+  min-width: 0;
+  color: var(--ink-soft);
+  font-style: normal;
+  font-weight: 500;
 }
 
 .quotation-proposal a {
@@ -421,6 +443,14 @@
 
   .story-content {
     padding: 42px 22px 60px;
+  }
+
+  .quotation-provenance-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .quotation-provenance-label {
+    grid-column: 1 / -1;
   }
 
   .date-grid,

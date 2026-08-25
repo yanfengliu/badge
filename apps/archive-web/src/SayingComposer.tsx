@@ -52,10 +52,22 @@ function AcceptedSaying({
       <figure className="quotation-proposal accepted-quotation">
         <blockquote>“{acceptedQuotation.text}”</blockquote>
         <figcaption>
-          — {acceptedQuotation.person}, {acceptedQuotation.sourceTitle}
-          <a href={acceptedQuotation.sourceUrl} target="_blank" rel="noreferrer">
-            View source
-          </a>
+          <span className="quotation-provenance-row">
+            <span className="quotation-provenance-label">Historical figure</span>
+            <strong>{acceptedQuotation.person}</strong>
+            {acceptedQuotation.personWikipediaUrl ? (
+              <a href={acceptedQuotation.personWikipediaUrl} target="_blank" rel="noreferrer">
+                Wikipedia
+              </a>
+            ) : null}
+          </span>
+          <span className="quotation-provenance-row">
+            <span className="quotation-provenance-label">Quote source</span>
+            <cite>{acceptedQuotation.sourceTitle}</cite>
+            <a href={acceptedQuotation.sourceUrl} target="_blank" rel="noreferrer">
+              View quote source
+            </a>
+          </span>
         </figcaption>
       </figure>
     );
@@ -110,13 +122,13 @@ export function SayingComposer({
 
   return (
     <div ref={focusTargetRef} className="saying-block" tabIndex={-1}>
-      <span className="saying-label">
+      <h3 className="saying-label">
         {acceptedQuotation
-          ? "Historical quote"
+          ? "Verified historical quotation"
           : acceptedSaying
             ? "Legacy saying · source unverified"
             : "Historical quote"}
-      </span>
+      </h3>
       <AcceptedSaying acceptedSaying={acceptedSaying} acceptedQuotation={acceptedQuotation} />
       <div className="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
         {proposalAnnouncement(proposal, saving, successAnnouncement)}

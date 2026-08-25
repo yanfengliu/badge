@@ -6,6 +6,7 @@ import {
   SAYING_GRAPHEME_LIMIT,
   SAYING_RAW_UTF16_CODE_UNIT_LIMIT,
   SAYING_UTF8_LIMIT,
+  activateAchievement,
   createSeededArchiveState,
   validateSaying,
   type ArchiveState,
@@ -109,7 +110,7 @@ afterEach(async () => {
 });
 
 describe("historical quotation storage closure", () => {
-  it("backfills only missing seeded sayings and preserves an existing accepted value", async () => {
+  it("backfills missing sayings, replaces unverified unearned prose, and preserves a trusted selection", async () => {
     const current = createApplication();
     const stored = await current.application.initialize(state());
     const defaults = withAcceptedQuotation(stored);
@@ -120,15 +121,33 @@ describe("historical quotation storage closure", () => {
       initialized,
     );
 
-    const regenerated = await current.application.updateQuotation(
+    const legacy = {
+      ...initialized,
+      records: initialized.records.map((record) => ({
+        ...record,
+        acceptedSaying: "Worth every switchback.",
+      })),
+    };
+    await current.repository.close();
+    await deleteDB(ARCHIVE_DATABASE_NAME);
+    const legacyArchive = createApplication();
+    const storedLegacy = await legacyArchive.application.initialize(legacy);
+    const upgraded = await legacyArchive.application.initializeSayingDefaults(defaults, storedLegacy);
+
+    expect(upgraded.records[0]?.acceptedSaying).toBe(defaults.records[0]?.acceptedSaying);
+    expect(upgraded.records[0]?.quotationRevision).not.toBe(storedLegacy.records[0]?.quotationRevision);
+
+    const regenerated = await legacyArchive.application.updateQuotation(
       "record-yosemite",
       alternateSourceCheckedResponse,
-      initialized.records[0]!.quotationRevision,
+      upgraded.records[0]!.quotationRevision,
     );
-    await expect(current.application.initializeSayingDefaults(defaults, regenerated)).resolves.toEqual(
+    await expect(legacyArchive.application.initializeSayingDefaults(defaults, regenerated)).resolves.toEqual(
       regenerated,
     );
-    expect((await current.application.state()).records[0]?.acceptedSaying).toBe(alternateSourceCheckedSaying);
+    expect((await legacyArchive.application.state()).records[0]?.acceptedSaying).toBe(
+      alternateSourceCheckedSaying,
+    );
   });
 
   it("refuses a saying-default backfill when Archive state changed after compatibility review", async () => {
@@ -145,6 +164,39 @@ describe("historical quotation storage closure", () => {
       lifecycle: "planned",
       acceptedSaying: null,
     });
+  });
+
+  it("preserves an earned legacy saying exactly instead of rewriting sealed memory", async () => {
+    const quoted = withAcceptedQuotation(state());
+    const record = quoted.records[0]!;
+    const earned = activateAchievement(
+      quoted,
+      {
+        recordId: record.recordId,
+        occurredStart: "2026-08-24",
+        occurredEnd: "2026-08-24",
+        note: null,
+        visibility: "private",
+        visualPin: record.publishedVisual,
+      },
+      "2026-08-24T18:00:00.000Z",
+    ).state;
+    const earnedLegacy = {
+      ...earned,
+      records: earned.records.map((candidate) => ({
+        ...candidate,
+        acceptedSaying: "A sealed saying from the earlier design.",
+      })),
+    };
+    const current = createApplication();
+    const stored = await current.application.initialize(earnedLegacy);
+
+    await expect(
+      current.application.initializeSayingDefaults(withAcceptedQuotation(state()), stored),
+    ).resolves.toEqual(stored);
+    expect((await current.application.state()).records[0]?.acceptedSaying).toBe(
+      "A sealed saying from the earlier design.",
+    );
   });
 
   it("rejects a caller-invented default outside the record-bound trusted quotation bank", async () => {
@@ -327,7 +379,11 @@ describe("historical quotation storage closure", () => {
   it("applies saying defaults inside restore before returning or persisting state", async () => {
     const current = createApplication();
     const reviewed = await current.application.initialize(state());
-    const incoming = state();
+    const seed = state();
+    const incoming = {
+      ...seed,
+      records: seed.records.map((record) => ({ ...record, acceptedSaying: "Worth every switchback." })),
+    };
     const defaults = withAcceptedQuotation(incoming);
     const backup = await createArchiveBackup(incoming, [], "2026-08-23T17:00:00.000Z");
 

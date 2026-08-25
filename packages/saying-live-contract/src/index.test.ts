@@ -72,7 +72,16 @@ describe("live saying contract", () => {
     expect(SAYING_OPTIONAL_FIELDS).toEqual(["direction"]);
     expect(SAYING_DISCLOSURE.scope.directionFields).toEqual(SAYING_DIRECTION_FIELDS);
     expect(SAYING_DISCLOSURE.scope.allowedQuotationFields).toEqual(SAYING_ALLOWED_QUOTATION_FIELDS);
+    expect(SAYING_ALLOWED_QUOTATION_FIELDS).toEqual([
+      "id",
+      "text",
+      "person",
+      "personWikipediaUrl",
+      "sourceTitle",
+      "sourceUrl",
+    ]);
     expect(SAYING_DISCLOSURE.scope.quotationContractVersion).toBe(SAYING_QUOTATION_CONTRACT_VERSION);
+    expect(SAYING_QUOTATION_CONTRACT_VERSION).toBe("v3");
     expect(SAYING_DISCLOSURE.scope.excludedFields).toEqual(SAYING_EXCLUDED_FIELDS);
     expect(SAYING_DISCLOSURE.scope.limits).toMatchObject({
       outputCodePoints: SAYING_OUTPUT_CODE_POINT_LIMIT,
@@ -124,6 +133,7 @@ describe("live saying contract", () => {
           id: "muir-yosemite",
           text: "Nature gives more than one seeks.",
           person: "John Muir",
+          personWikipediaUrl: "https://en.wikipedia.org/wiki/John_Muir",
           sourceTitle: "Steep Trails",
           sourceUrl: "https://www.nps.gov/jomu/learn/historyculture/john-muir-quotes.htm",
         },
@@ -142,13 +152,14 @@ describe("live saying contract", () => {
           id: "muir-yosemite",
           text: "Nature gives more than one seeks.",
           person: "John Muir",
+          personWikipediaUrl: "https://en.wikipedia.org/wiki/John_Muir",
           sourceTitle: "Steep Trails",
           sourceUrl: "https://www.nps.gov/jomu/learn/historyculture/john-muir-quotes.htm",
         },
       ],
     });
     expect(review.canonicalUserMessage).toBe(
-      '{"title":"Yosemite","criterion":"Visit Yosemite National Park.","direction":{"themeCues":["granite walls"]},"allowedQuotations":[{"id":"muir-yosemite","text":"Nature gives more than one seeks.","person":"John Muir","sourceTitle":"Steep Trails","sourceUrl":"https://www.nps.gov/jomu/learn/historyculture/john-muir-quotes.htm"}]}',
+      '{"title":"Yosemite","criterion":"Visit Yosemite National Park.","direction":{"themeCues":["granite walls"]},"allowedQuotations":[{"id":"muir-yosemite","text":"Nature gives more than one seeks.","person":"John Muir","personWikipediaUrl":"https://en.wikipedia.org/wiki/John_Muir","sourceTitle":"Steep Trails","sourceUrl":"https://www.nps.gov/jomu/learn/historyculture/john-muir-quotes.htm"}]}',
     );
     expect(Object.isFrozen(review)).toBe(true);
     expect(Object.isFrozen(review.outbound)).toBe(true);

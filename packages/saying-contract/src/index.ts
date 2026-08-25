@@ -22,7 +22,7 @@ export const SAYING_VOICE_GRAPHEME_LIMIT = 120;
 export const SAYING_VARIATION_GRAPHEME_LIMIT = 120;
 export const SAYING_USER_DIRECTION_GRAPHEME_LIMIT = 240;
 export const SAYING_ALLOWED_QUOTATION_COUNT_LIMIT = 6;
-export const SAYING_QUOTATION_CONTRACT_VERSION = "v2" as const;
+export const SAYING_QUOTATION_CONTRACT_VERSION = "v3" as const;
 export const SAYING_QUOTATION_ID_LENGTH_LIMIT = 128;
 export const SAYING_QUOTATION_PERSON_GRAPHEME_LIMIT = 64;
 export const SAYING_QUOTATION_PERSON_CODE_POINT_LIMIT = 128;
@@ -31,6 +31,7 @@ export const SAYING_QUOTATION_SOURCE_TITLE_GRAPHEME_LIMIT = 100;
 export const SAYING_QUOTATION_SOURCE_TITLE_CODE_POINT_LIMIT = 256;
 export const SAYING_QUOTATION_SOURCE_TITLE_UTF8_LIMIT = 1_024;
 export const SAYING_QUOTATION_SOURCE_URL_LENGTH_LIMIT = 512;
+export const SAYING_QUOTATION_PERSON_WIKIPEDIA_URL_LENGTH_LIMIT = 512;
 export const SAYING_OUTPUT_GRAPHEME_LIMIT = 600;
 export const SAYING_OUTPUT_CODE_POINT_LIMIT = 2_048;
 export const SAYING_OUTPUT_UTF8_LIMIT = 7_680;
@@ -209,6 +210,51 @@ const httpsSourceUrlSchema = z
     }
   });
 
+const personWikipediaUrlSchema = z
+  .string()
+  .max(SAYING_QUOTATION_PERSON_WIKIPEDIA_URL_LENGTH_LIMIT)
+  .url()
+  .superRefine((value, context) => {
+    let url: URL;
+    try {
+      url = new URL(value);
+    } catch {
+      return;
+    }
+    if (url.protocol !== "https:") {
+      context.addIssue({ code: "custom", message: "Historical figure Wikipedia URL must use HTTPS." });
+      return;
+    }
+    const encodedArticleTitle = url.pathname.slice("/wiki/".length);
+    let articleTitle: string;
+    try {
+      articleTitle = decodeURIComponent(encodedArticleTitle);
+    } catch {
+      context.addIssue({
+        code: "custom",
+        message: "Historical figure Wikipedia URL must contain a valid article title.",
+      });
+      return;
+    }
+    if (
+      url.hostname !== "en.wikipedia.org" ||
+      !url.pathname.startsWith("/wiki/") ||
+      articleTitle.trim() === "" ||
+      articleTitle.includes("/") ||
+      articleTitle.includes(":") ||
+      url.username !== "" ||
+      url.password !== "" ||
+      url.port !== "" ||
+      url.search !== "" ||
+      url.hash !== ""
+    ) {
+      context.addIssue({
+        code: "custom",
+        message: "Historical figure Wikipedia URL must link to an English Wikipedia article.",
+      });
+    }
+  });
+
 export const historicalQuotationSchema = z
   .object({
     id: quotationIdentifierSchema,
@@ -217,6 +263,7 @@ export const historicalQuotationSchema = z
       codePoints: SAYING_QUOTATION_PERSON_CODE_POINT_LIMIT,
       utf8Bytes: SAYING_QUOTATION_PERSON_UTF8_LIMIT,
     }),
+    personWikipediaUrl: personWikipediaUrlSchema.optional(),
     sourceTitle: boundedPromptText("Quotation source title", SAYING_QUOTATION_SOURCE_TITLE_GRAPHEME_LIMIT, {
       codePoints: SAYING_QUOTATION_SOURCE_TITLE_CODE_POINT_LIMIT,
       utf8Bytes: SAYING_QUOTATION_SOURCE_TITLE_UTF8_LIMIT,
@@ -226,6 +273,10 @@ export const historicalQuotationSchema = z
   .strict();
 export type HistoricalQuotation = z.infer<typeof historicalQuotationSchema>;
 
+function formatHistoricalQuotationForArchive(quotation: HistoricalQuotation): string {
+  return `“${quotation.text}” — ${quotation.person}, ${quotation.sourceTitle}`;
+}
+
 const allowedQuotationsSchema = z
   .array(historicalQuotationSchema)
   .min(1)
@@ -233,6 +284,15 @@ const allowedQuotationsSchema = z
   .superRefine((quotations, context) => {
     if (new Set(quotations.map((quotation) => quotation.id)).size !== quotations.length) {
       context.addIssue({ code: "custom", message: "Allowed quotation IDs must be unique." });
+    }
+    if (
+      new Set(quotations.map((quotation) => formatHistoricalQuotationForArchive(quotation))).size !==
+      quotations.length
+    ) {
+      context.addIssue({
+        code: "custom",
+        message: "Allowed quotation persisted saying values must be unique.",
+      });
     }
   });
 
@@ -406,5 +466,5 @@ export function validateSayingResponseForRequest(
 
 export function formatSayingForArchive(untrustedResponse: unknown): string {
   const response = sayingResponseSchema.parse(untrustedResponse);
-  return `“${response.saying}” — ${response.quotation.person}, ${response.quotation.sourceTitle}`;
+  return formatHistoricalQuotationForArchive(response.quotation);
 }

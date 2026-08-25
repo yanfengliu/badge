@@ -56,6 +56,15 @@ export class TrustedQuotationAdmission {
     this.requestFor(record);
   }
 
+  hasTrustedAcceptedSaying(record: ArchiveRecord): boolean {
+    if (record.acceptedSaying === null) return false;
+    return this.requestFor(record).allowedQuotations.some(
+      (quotation) =>
+        formatSayingForArchive({ kind: "quotation", saying: quotation.text, quotation }) ===
+        record.acceptedSaying,
+    );
+  }
+
   private requestFor(record: ArchiveRecord): SayingRequest {
     const request = this.requests.get(record.recordId);
     if (!request) {

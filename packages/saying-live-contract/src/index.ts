@@ -11,6 +11,7 @@ import {
   SAYING_QUOTATION_ID_LENGTH_LIMIT,
   SAYING_QUOTATION_PERSON_CODE_POINT_LIMIT,
   SAYING_QUOTATION_PERSON_GRAPHEME_LIMIT,
+  SAYING_QUOTATION_PERSON_WIKIPEDIA_URL_LENGTH_LIMIT,
   SAYING_QUOTATION_PERSON_UTF8_LIMIT,
   SAYING_QUOTATION_SOURCE_TITLE_CODE_POINT_LIMIT,
   SAYING_QUOTATION_SOURCE_TITLE_GRAPHEME_LIMIT,
@@ -42,7 +43,7 @@ export const SAYING_JSON_MEDIA_TYPE = "application/json" as const;
 export const SAYING_REQUIRED_FETCH_SITE = "same-origin" as const;
 export const SAYING_HTTP_SUCCESS_STATUS = 200 as const;
 export const SAYING_DISCLOSURE_FINGERPRINT =
-  "sha256:25581e25216d134f4556c3a081348f75173464f3722f65e3f4dc19745628030b" as const;
+  "sha256:f714d85f810bcb726065ca522080afc6f8e00191a683222e736784789a9366e8" as const;
 export const SAYING_ROUTE_BODY_LIMIT_BYTES = 16 * 1_024;
 export const SAYING_ROUTE_RESPONSE_LIMIT_BYTES = 16 * 1_024;
 export const SAYING_PROVIDER_STDOUT_LIMIT_BYTES = 64 * 1_024;
@@ -81,6 +82,7 @@ export const SAYING_ALLOWED_QUOTATION_FIELDS = freezeRecursively([
   "id",
   "text",
   "person",
+  "personWikipediaUrl",
   "sourceTitle",
   "sourceUrl",
 ] as const);
@@ -125,6 +127,7 @@ export const SAYING_DISCLOSURE_SCOPE = freezeRecursively({
     quotationPersonGraphemes: SAYING_QUOTATION_PERSON_GRAPHEME_LIMIT,
     quotationPersonCodePoints: SAYING_QUOTATION_PERSON_CODE_POINT_LIMIT,
     quotationPersonUtf8Bytes: SAYING_QUOTATION_PERSON_UTF8_LIMIT,
+    quotationPersonWikipediaUrlCharacters: SAYING_QUOTATION_PERSON_WIKIPEDIA_URL_LENGTH_LIMIT,
     quotationSourceTitleGraphemes: SAYING_QUOTATION_SOURCE_TITLE_GRAPHEME_LIMIT,
     quotationSourceTitleCodePoints: SAYING_QUOTATION_SOURCE_TITLE_CODE_POINT_LIMIT,
     quotationSourceTitleUtf8Bytes: SAYING_QUOTATION_SOURCE_TITLE_UTF8_LIMIT,
@@ -160,6 +163,7 @@ const sayingDisclosureScopeSchema = z
       z.literal("id"),
       z.literal("text"),
       z.literal("person"),
+      z.literal("personWikipediaUrl"),
       z.literal("sourceTitle"),
       z.literal("sourceUrl"),
     ]),
@@ -199,6 +203,7 @@ const sayingDisclosureScopeSchema = z
         quotationPersonGraphemes: z.literal(SAYING_QUOTATION_PERSON_GRAPHEME_LIMIT),
         quotationPersonCodePoints: z.literal(SAYING_QUOTATION_PERSON_CODE_POINT_LIMIT),
         quotationPersonUtf8Bytes: z.literal(SAYING_QUOTATION_PERSON_UTF8_LIMIT),
+        quotationPersonWikipediaUrlCharacters: z.literal(SAYING_QUOTATION_PERSON_WIKIPEDIA_URL_LENGTH_LIMIT),
         quotationSourceTitleGraphemes: z.literal(SAYING_QUOTATION_SOURCE_TITLE_GRAPHEME_LIMIT),
         quotationSourceTitleCodePoints: z.literal(SAYING_QUOTATION_SOURCE_TITLE_CODE_POINT_LIMIT),
         quotationSourceTitleUtf8Bytes: z.literal(SAYING_QUOTATION_SOURCE_TITLE_UTF8_LIMIT),

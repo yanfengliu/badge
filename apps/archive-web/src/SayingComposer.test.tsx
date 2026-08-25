@@ -59,11 +59,16 @@ describe("SayingComposer", () => {
   it("shows a preselected sourced quotation with one regeneration action and no authoring UI", () => {
     const html = renderComposer(idleProposal);
 
-    expect(html).toContain("Historical quote");
+    expect(html).toContain("Verified historical quotation");
     expect(html).toContain(defaultQuotation.text);
-    expect(html).toContain(`— ${defaultQuotation.person}, ${defaultQuotation.sourceTitle}`);
+    expect(html).toContain("Historical figure");
+    expect(html).toContain(defaultQuotation.person);
+    expect(html).toContain("Quote source");
+    expect(html).toContain(defaultQuotation.sourceTitle);
     expect(html).toContain(`href="${defaultQuotation.sourceUrl}"`);
-    expect(html).toContain("View source");
+    expect(html).toContain("View quote source");
+    expect(html).toContain('href="https://en.wikipedia.org/wiki/John_Muir"');
+    expect(html).toContain("Wikipedia");
     expect(html).toContain("Regenerate quote");
     expect(html.match(/<button/gu)).toHaveLength(1);
     expect(html).not.toContain("Generate saying");
@@ -71,6 +76,23 @@ describe("SayingComposer", () => {
     expect(html).not.toContain("Write my own");
     expect(html).not.toContain("Replace with my own");
     expect(html).not.toContain("<textarea");
+  });
+
+  it("omits the optional biography link without weakening quotation provenance", () => {
+    const quotationWithoutWikipedia: HistoricalQuotation = {
+      id: defaultQuotation.id,
+      text: defaultQuotation.text,
+      person: defaultQuotation.person,
+      sourceTitle: defaultQuotation.sourceTitle,
+      sourceUrl: defaultQuotation.sourceUrl,
+    };
+    const html = renderComposer(idleProposal, { acceptedQuotation: quotationWithoutWikipedia });
+
+    expect(html).toContain("Historical figure");
+    expect(html).toContain(defaultQuotation.person);
+    expect(html).toContain("Quote source");
+    expect(html).toContain(`href="${defaultQuotation.sourceUrl}"`);
+    expect(html).not.toContain("Wikipedia");
   });
 
   it("keeps the accepted quote visible and announces regeneration while a request is pending", () => {

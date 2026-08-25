@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
@@ -5,6 +6,12 @@ import { createStarterArchiveState } from "./archive-state.js";
 import { BadgeRail } from "./BadgeRail.js";
 
 describe("BadgeRail", () => {
+  it("keeps empty artwork spans dimensional when compact layout leaves CSS grid", () => {
+    const styles = readFileSync(new URL("./artifact.css", import.meta.url), "utf8");
+
+    expect(styles).toMatch(/\.thumb-art\s*\{[^}]*display:\s*block;/su);
+  });
+
   it("renders restored earned semantics from the frozen record rather than the current fixture", () => {
     const seeded = createStarterArchiveState();
     const historicalRecord = {
@@ -24,6 +31,7 @@ describe("BadgeRail", () => {
     );
 
     expect(markup).toContain("Old Valley Visit");
+    expect(markup).toContain('aria-label="Old Valley Visit, earned"');
     expect(markup).not.toContain(">Yosemite</strong>");
   });
 });

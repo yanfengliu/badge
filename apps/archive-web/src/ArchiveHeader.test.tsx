@@ -24,6 +24,9 @@ describe("ArchiveHeader", () => {
     expect(html).toMatch(/<button[^>]*aria-current="page"[^>]*>Discover<\/button>/u);
     expect(html).toContain('id="archive-section-collection"');
     expect(html).toContain('id="archive-section-discover"');
+    expect(html).toContain('aria-label="Back up archive"');
+    expect(html).toContain('aria-label="Restore archive"');
+    expect(html).toMatch(/<input[^>]*hidden=""[^>]*type="file"/u);
     expect(html).not.toContain("disabled");
     expect(html).not.toContain("coming in a later slice");
   });

@@ -12,6 +12,7 @@ const historicalQuotation = {
   id: "muir-yosemite-temple",
   text: "It is by far the grandest of all the special temples of Nature I was ever permitted to enter.",
   person: "John Muir",
+  personWikipediaUrl: "https://en.wikipedia.org/wiki/John_Muir",
   sourceTitle: "Letters to a Friend, July 26, 1868",
   sourceUrl: "https://www.nps.gov/jomu/learn/historyculture/john-muir-quotes.htm",
 };
@@ -71,6 +72,21 @@ describe("provider results bound to their saying request", () => {
             quotation: {
               ...approvedQuotation.response.quotation,
               sourceTitle: "Altered after selection",
+            },
+          },
+        },
+        yosemiteRequest,
+      ),
+    ).toThrow(/does not exactly match the supplied quotation/u);
+    expect(() =>
+      validateSayingProviderResultForRequest(
+        {
+          ...approvedQuotation,
+          response: {
+            ...approvedQuotation.response,
+            quotation: {
+              ...approvedQuotation.response.quotation,
+              personWikipediaUrl: "https://en.wikipedia.org/wiki/Someone_Else",
             },
           },
         },

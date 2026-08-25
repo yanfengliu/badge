@@ -142,8 +142,10 @@ describe("mounted historical-quotation flow", () => {
     const recordId = `starter:${yosemite.definitionId}`;
 
     await waitFor(() => expect(container.textContent).toContain(original.text));
-    expect(container.textContent).toContain(`— ${original.person}, ${original.sourceTitle}`);
+    expect(container.textContent).toContain(`Historical figure${original.person}Wikipedia`);
+    expect(container.textContent).toContain(`Quote source${original.sourceTitle}View quote source`);
     expect(sourceLink().href).toBe(original.sourceUrl);
+    expect(wikipediaLink().href).toBe(original.personWikipediaUrl);
     expect(buttonWithText("Regenerate quote").disabled).toBe(false);
 
     await clickButton("Regenerate quote");
@@ -154,8 +156,10 @@ describe("mounted historical-quotation flow", () => {
 
     await clickButton("Regenerate with Claude");
     await waitFor(() => expect(container.textContent).toContain(replacement.text));
-    expect(container.textContent).toContain(`— ${replacement.person}, ${replacement.sourceTitle}`);
+    expect(container.textContent).toContain(`Historical figure${replacement.person}Wikipedia`);
+    expect(container.textContent).toContain(`Quote source${replacement.sourceTitle}View quote source`);
     expect(sourceLink().href).toBe(replacement.sourceUrl);
+    expect(wikipediaLink().href).toBe(replacement.personWikipediaUrl);
     expect(container.textContent).toContain(`Quote regenerated. “${replacement.text}”`);
     expect(providerRequests).toEqual(["/api/archive/sayings/disclosure", "/api/archive/sayings"]);
 
@@ -170,6 +174,7 @@ describe("mounted historical-quotation flow", () => {
     expect(container.textContent).not.toContain("Regenerate quote");
     expect(container.textContent).toContain(replacement.text);
     expect(sourceLink().href).toBe(replacement.sourceUrl);
+    expect(wikipediaLink().href).toBe(replacement.personWikipediaUrl);
     await waitFor(() =>
       expect(container.querySelector('.ceremony [data-presentation="interactive"]')).not.toBeNull(),
     );
@@ -249,9 +254,17 @@ describe("mounted historical-quotation flow", () => {
 
   function sourceLink(): HTMLAnchorElement {
     const link = [...container.querySelectorAll<HTMLAnchorElement>("a")].find(
-      (candidate) => candidate.textContent === "View source",
+      (candidate) => candidate.textContent === "View quote source",
     );
     if (!link) throw new Error("Mounted Archive test could not find the quotation source link.");
+    return link;
+  }
+
+  function wikipediaLink(): HTMLAnchorElement {
+    const link = [...container.querySelectorAll<HTMLAnchorElement>("a")].find(
+      (candidate) => candidate.textContent === "Wikipedia",
+    );
+    if (!link) throw new Error("Mounted Archive test could not find the historical figure Wikipedia link.");
     return link;
   }
 

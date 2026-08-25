@@ -1,5 +1,15 @@
 # Defect Register
 
+## 2026-08-24 — Compact Archive controls lost names and badge artwork collapsed
+
+**Symptom:** At a `640px` Archive width, each BadgeRail choice lost its visible title and lifecycle as intended for the compact row, but its artwork collapsed into a narrow dark sliver and assistive technology encountered unnamed badge, Back up, and Restore buttons plus an unnamed restore-file control.
+
+**Investigation:** The responsive rules set `.thumb-copy` and the text spans inside `.quiet-button` to `display: none`, removing the only accessible text from the badge, Back up, and Restore buttons while leaving them interactive. The same breakpoint changed `.badge-thumb` from grid to block layout; the empty inline `.thumb-art` span then stopped honoring its declared width and height, leaving only its vertical border visible. The restore file input was visually clipped, `tabIndex=-1`, and marked `aria-hidden`, but Chromium still exposed its native button role because focusable form controls cannot be repaired by hiding only their accessibility semantics. A compact capture reproduced four slivers and an accessibility snapshot reproduced the unnamed controls; explicit button labels, a truly hidden programmatically clicked file input, and a block formatting context restored the tree and all four shaped thumbnails without changing the compact row.
+
+**Root cause:** Compact buttons depended on visually removable descendant text for their accessible names, the badge artwork depended on CSS Grid to make an otherwise empty inline span dimensional, and the restore input mixed a visually hidden interactive control with `aria-hidden`; responsive and input implementation choices removed or contradicted their accessibility and layout contracts.
+
+**Standing gate:** `BadgeRail.test.tsx` requires every rail button to carry an explicit `aria-label` containing the record title and lifecycle and requires `.thumb-art` to establish a block formatting context; `ArchiveHeader.test.tsx` requires stable labels for Back up and Restore plus a genuinely hidden restore input. Archive verification repeats the complete compact rail and header at `640px`, requires four recognizable shaped thumbnails rather than border slivers, and inspects the accessibility tree for the named controls and absence of the hidden input.
+
 ## 2026-08-24 — Wool badges looked built from tiny triangles at grazing angles
 
 **Symptom:** At certain object or inspection-light angles, the repeated surface detail made a wool badge look as though its artwork and border were constructed from many tiny triangles. The owner-provided _Sapiens_ capture showed the lattice across the whole front, not only along the 3D edge.

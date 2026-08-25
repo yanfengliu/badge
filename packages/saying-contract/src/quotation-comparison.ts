@@ -4,6 +4,7 @@ interface QuotationRecordIdentity {
   readonly id: string;
   readonly text: string;
   readonly person: string;
+  readonly personWikipediaUrl?: string;
   readonly sourceTitle: string;
   readonly sourceUrl: string;
 }
@@ -16,6 +17,7 @@ export function quotationRecordsMatch(
     left.id === right.id &&
     left.text === right.text &&
     left.person === right.person &&
+    left.personWikipediaUrl === right.personWikipediaUrl &&
     left.sourceTitle === right.sourceTitle &&
     left.sourceUrl === right.sourceUrl
   );

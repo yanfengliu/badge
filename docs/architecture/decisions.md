@@ -2,6 +2,16 @@
 
 Append decisions newest first. Never rewrite history; add a superseding entry that links to the decision it replaces.
 
+## 2026-08-24 — D-045: Standardize unearned starter quotations and separate figure biography provenance
+
+**Status:** Owner-confirmed and implemented for the current four starter records, superseding D-041's preservation of every non-null legacy saying while retaining D-042's sealed-memory boundary.
+
+On initialization, restore, and readable-state recovery, an unearned compatible starter record keeps an accepted saying only when its complete formatted value exactly matches one quotation in that record-bound trusted bank. A `null` saying or unmatched legacy prose is standardized locally to that starter's designated curated default, and its opaque quotation revision rotates so stale regeneration or activation work cannot survive the change. This reconciliation makes no provider call and does not relabel arbitrary text as verified provenance. Every earned or activated saying is preserved exactly, including historical legacy prose and the incompatible earned-null evidence governed by D-042.
+
+Quotation contract v3 adds an optional `personWikipediaUrl` field for the historical figure's English-Wikipedia biography. When present it is exact-bound with the selected quotation metadata, accepts only an HTTPS `en.wikipedia.org/wiki/…` article URL on the standard port, and remains distinct from the required quotation `sourceUrl` that supports the quoted wording, attribution, and work or occasion. The contract also requires every bank entry to have a unique normalized persisted saying value, so exact string recovery cannot silently choose different provenance metadata. All twelve current starter quotation entries carry the biography URL, while the field stays optional so a future reviewed historical figure without an applicable English-Wikipedia article is not excluded.
+
+The Archive quotation presentation uses two quiet provenance rows: `Historical figure` names the person and offers `Wikipedia` only when that optional biography URL exists, while `Quote source` names the source title and always offers `View quote source`. The persisted accepted value remains the normalized string `“text” — Person, Source`; the starter bank recovers both links only by an unambiguous exact full-value match, so this change requires no Archive schema or backup-format migration.
+
 ## 2026-08-24 — D-044: Make activation replay one passive badge turn
 
 **Status:** Owner-confirmed and implemented for earned-state Archive replay.

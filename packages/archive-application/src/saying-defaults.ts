@@ -36,11 +36,12 @@ export function hasDurableQuotationRevisions(untrusted: unknown): boolean {
   );
 }
 
-export function applyMissingSayingDefaults(
+export function applyReviewedSayingDefaults(
   currentState: ArchiveState,
   defaultState: ArchiveState,
   createRevision: () => string,
-  assertTargetRecord: (record: ArchiveRecord) => void = () => undefined,
+  assertTargetRecord: (record: ArchiveRecord) => void,
+  hasTrustedAcceptedSaying: (record: ArchiveRecord) => boolean,
 ): ArchiveState {
   const current = archiveStateSchema.parse(currentState);
   const defaults = archiveStateSchema.parse(defaultState);
@@ -53,13 +54,13 @@ export function applyMissingSayingDefaults(
     if (
       record.lifecycle === "earned" ||
       record.activation !== null ||
-      record.acceptedSaying !== null ||
       defaultSaying === null ||
       defaultSaying === undefined
     ) {
       return record;
     }
     assertTargetRecord(record);
+    if (hasTrustedAcceptedSaying(record)) return record;
     changed = true;
     return {
       ...record,

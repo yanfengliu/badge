@@ -26,7 +26,7 @@ import {
   validateRepositorySourceAssets,
 } from "./repository-source-assets.js";
 import {
-  applyMissingSayingDefaults,
+  applyReviewedSayingDefaults,
   assertRestorableEarnedSayings,
   prepareQuotationRevisionsForRestore,
 } from "./saying-defaults.js";
@@ -175,11 +175,12 @@ export class IndexedDbArchiveRepository {
           );
         }
 
-        const initialized = applyMissingSayingDefaults(
+        const initialized = applyReviewedSayingDefaults(
           current,
           defaults,
           () => crypto.randomUUID(),
           (record) => this.quotationAdmission.assertRecordBound(record),
+          (record) => this.quotationAdmission.hasTrustedAcceptedSaying(record),
         );
         if (canonicalJson(initialized) !== canonicalJson(current)) {
           await transaction.store.put(initialized, ARCHIVE_STATE_KEY);
@@ -386,11 +387,12 @@ export class IndexedDbArchiveRepository {
     const parsedIncoming = archiveStateSchema.parse(incomingState);
     if (sayingDefaults) this.quotationAdmission.assertDefaults(sayingDefaults);
     const state = sayingDefaults
-      ? applyMissingSayingDefaults(
+      ? applyReviewedSayingDefaults(
           parsedIncoming,
           archiveStateSchema.parse(sayingDefaults),
           () => crypto.randomUUID(),
           (record) => this.quotationAdmission.assertRecordBound(record),
+          (record) => this.quotationAdmission.hasTrustedAcceptedSaying(record),
         )
       : parsedIncoming;
     assertRestorableEarnedSayings(state);
@@ -443,11 +445,12 @@ export class IndexedDbArchiveRepository {
     if (options.sayingDefaults) this.quotationAdmission.assertDefaults(options.sayingDefaults);
     const defaults = options.sayingDefaults ? archiveStateSchema.parse(options.sayingDefaults) : undefined;
     const state = defaults
-      ? applyMissingSayingDefaults(
+      ? applyReviewedSayingDefaults(
           parsedIncoming,
           defaults,
           () => crypto.randomUUID(),
           (record) => this.quotationAdmission.assertRecordBound(record),
+          (record) => this.quotationAdmission.hasTrustedAcceptedSaying(record),
         )
       : parsedIncoming;
     const backupAssets = await validateRepositorySourceAssets(incomingSourceAssets, state);

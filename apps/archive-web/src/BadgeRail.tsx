@@ -21,6 +21,7 @@ export function BadgeRail({ state, selectedRecordId, earnedSourceUrls, onSelect 
             key={record.recordId}
             className="badge-thumb"
             type="button"
+            aria-label={`${record.title}, ${record.lifecycle}`}
             aria-current={record.recordId === selectedRecordId}
             onClick={() => onSelect(record.recordId)}
           >

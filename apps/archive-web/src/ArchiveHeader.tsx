@@ -22,11 +22,16 @@ export function ArchiveHeader({ activeSection, onSectionChange, onBackup, onRest
       </div>
       <ArchiveSectionNav activeSection={activeSection} onSectionChange={onSectionChange} />
       <div className="header-actions">
-        <button className="quiet-button" type="button" onClick={onBackup}>
+        <button className="quiet-button" type="button" aria-label="Back up archive" onClick={onBackup}>
           <DownloadIcon />
           <span>Back up</span>
         </button>
-        <button className="quiet-button" type="button" onClick={() => restoreInput.current?.click()}>
+        <button
+          className="quiet-button"
+          type="button"
+          aria-label="Restore archive"
+          onClick={() => restoreInput.current?.click()}
+        >
           <UploadIcon />
           <span>Restore</span>
         </button>
@@ -38,11 +43,9 @@ export function ArchiveHeader({ activeSection, onSectionChange, onBackup, onRest
         </span>
         <input
           ref={restoreInput}
-          className="visually-hidden"
+          hidden
           type="file"
           accept=".badgearchive,application/octet-stream,application/json"
-          tabIndex={-1}
-          aria-hidden="true"
           onChange={onRestore}
         />
       </div>
