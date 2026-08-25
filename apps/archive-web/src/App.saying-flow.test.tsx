@@ -52,7 +52,9 @@ vi.mock("./starter-assets", () => ({
 }));
 
 vi.mock("@badge/renderer-web", () => ({
-  BadgeViewer: () => null,
+  BadgeViewer: ({ presentation = "interactive" }: { presentation?: "interactive" | "single-turn" }) => (
+    <div data-testid="badge-viewer" data-presentation={presentation} />
+  ),
 }));
 
 vi.mock("./saying-runtime", async (importOriginal) => {
@@ -168,6 +170,19 @@ describe("mounted historical-quotation flow", () => {
     expect(container.textContent).not.toContain("Regenerate quote");
     expect(container.textContent).toContain(replacement.text);
     expect(sourceLink().href).toBe(replacement.sourceUrl);
+    await waitFor(() =>
+      expect(container.querySelector('.ceremony [data-presentation="interactive"]')).not.toBeNull(),
+    );
+
+    const closeCeremony = container.querySelector<HTMLButtonElement>(
+      'button[aria-label="Close activation ceremony"]',
+    );
+    if (!closeCeremony) throw new Error("Mounted Archive test could not close the activation ceremony.");
+    await act(async () => closeCeremony.click());
+    await clickButton("Replay activation");
+    await waitFor(() =>
+      expect(container.querySelector('.ceremony [data-presentation="single-turn"]')).not.toBeNull(),
+    );
 
     const reader = new IndexedDbArchiveRepository({
       trustedQuotationRequests: createStarterQuotationRequests(),

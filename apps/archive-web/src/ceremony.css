@@ -22,8 +22,34 @@
   animation: seat-in 680ms var(--ease) both;
 }
 
+.ceremony[data-presentation="single-turn"],
+.ceremony[data-presentation="single-turn"] .ceremony-card {
+  animation: none;
+}
+
 .ceremony-viewer {
   height: clamp(250px, 48dvh, 520px);
+}
+
+.ceremony-viewer[data-presentation="single-turn"] > .badge-viewer__viewport,
+.ceremony-viewer[data-presentation="single-turn"] > .badge-fallback {
+  flex: 1;
+  min-block-size: 0;
+  border: 0;
+  border-radius: 0;
+}
+
+.ceremony-viewer[data-presentation="single-turn"] .badge-viewer__viewport canvas {
+  min-block-size: 100%;
+}
+
+.ceremony-viewer[data-presentation="single-turn"] .badge-fallback__stage {
+  min-block-size: 0;
+  overflow: hidden;
+}
+
+.ceremony-viewer[data-presentation="single-turn"] .badge-fallback__object-frame {
+  inline-size: min(70%, clamp(130px, calc(45dvh - 108px), 310px));
 }
 
 .ceremony-copy {

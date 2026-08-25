@@ -40,7 +40,7 @@ The same date adds a Studio-only catalogue-authoring foundation: the sourced NPS
 - Render the published appearance read-only as a live 3D object with genuine thickness and relief, mouse drag rotation, bounded wheel or trackpad zoom, separate inspection-light adjustment, reset controls, keyboard equivalents, reduced-motion behavior, context-loss recovery, and a renderer-independent front, edge, and back fallback that needs no prior GPU cache.
 - Activate a badge with occurrence range, immutable activation timestamp, its accepted source-checked historical quotation, optional note, and local visibility override.
 - Revisit earned badges in a read-only memory timeline ordered by real-world occurrence dates, distinguish occurrence time from the later activation timestamp, render every exact activation-pinned recipe as a material badge preview, permit at most one on-demand live 3D or fallback inspector, and reopen the exact pinned memory without introducing repeat-occurrence authoring.
-- Deliver the sharp activation ceremony plus reduced-motion behavior.
+- Deliver the sharp activation ceremony plus reduced-motion behavior, and make earned-state replay one complete live badge turn and calm hold with no inspection controls plus a static reduced-motion and renderer-fallback form.
 - Reload without state loss and complete an Archive backup and restore round trip with personal state, active or superseded authoring requests, the immutable seen-pack-release ledger, every installed pack including an entirely unplanned collection, and exact pinned published visuals intact.
 
 ### Exit criteria

@@ -78,6 +78,11 @@
   touch-action: none;
 }
 
+.badge-viewer__viewport--passive {
+  cursor: default;
+  touch-action: pan-y;
+}
+
 .badge-viewer__viewport canvas {
   display: block;
   inline-size: 100% !important;

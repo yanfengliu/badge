@@ -131,7 +131,7 @@ The activation moment should feel like a crafted object seating into place.
 
 The earned-state replay action should feel like an intentional coda rather than a generic utility button: a compact replay emblem, clear primary label, quiet explanatory line, precise focus treatment, and restrained directional response invite the ceremony without competing with the badge or memory text.
 
-A recommended sequence is: commit state → brief alignment or pressure beat → crisp material impact or traveling highlight → relief resolves → saying appears → calm final hold that hands control to the same live 3D viewer.
+A recommended first-activation sequence is: commit state → brief alignment or pressure beat → crisp material impact or traveling highlight → relief resolves → saying appears → calm final hold that hands control to the same live 3D viewer. When the earned-state replay is invoked, the badge and saying are present together while the badge makes one complete passive turn and rests; replay exposes only close, while object-versus-light mode, zoom or scale, reset, fallback-view switching, and direct manipulation remain on inspection surfaces and the first activation ceremony.
 
 If one action also completes a composite badge, reveal the individual badge first, close the collection progress state, then present the composite artifact.
 
@@ -141,7 +141,7 @@ Motion is sharp, controlled, and short. It avoids bouncy easing, confetti, parti
 
 Reduced motion replaces spatial travel with an immediate material and typography state change while preserving the emotional beat.
 
-Reduced motion also removes camera inertia, autoplay orbit, and delayed light sweeps; direct object and light manipulation remains responsive and one-to-one.
+Reduced motion also removes camera inertia, autoplay orbit, the replay's single automatic turn, and delayed light sweeps; direct object and light manipulation on inspection surfaces remains responsive and one-to-one.
 
 Sound is not required. If added later, it is restrained, optional, and separately disabled; no activation depends on it.
 

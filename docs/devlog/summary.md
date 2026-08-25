@@ -1,5 +1,6 @@
 # Devlog Summary
 
+- 2026-08-24: Simplified earned-state activation replay to one passive 360-degree badge turn with no inspection, scale, or reset controls and a static reduced-motion or renderer-fallback form, while preserving first-activation inspection.
 - 2026-08-24: Moved each Studio exact compiled prompt into a native disclosure that starts collapsed while preserving keyboard expansion and local copying.
 - 2026-08-24: Added Archive Discover for all 66 unique visualized badge concepts, with exhaustive safe projection tests, truthful published-versus-study status, search and filtering, available-only Collection navigation, and an exact bounded-thumbnail bundle gate.
 - 2026-08-24: Replaced saying authoring with preseeded, source-checked historical quotations and one regeneration action, backed by exact-ID selection, record-bound admission, durable quote revisions, and truthful sealed-memory recovery.

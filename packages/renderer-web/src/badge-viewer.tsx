@@ -33,6 +33,7 @@ import {
 } from "./viewer-state";
 import { viewerRenderKeys, viewerSessionChanged } from "./viewer-lifecycle";
 import { addViewerWheelListener } from "./wheel-listener";
+import { useReducedMotion, useSingleTurn } from "./single-turn";
 import "./badge-viewer.css";
 
 export type RendererCapability = "checking" | "webgl2" | "fallback";
@@ -55,6 +56,7 @@ export interface BadgeViewerProps {
   className?: string;
   readOnly?: boolean;
   forceFallback?: boolean;
+  presentation?: "interactive" | "single-turn";
   onCapabilityChange?: (capability: Exclude<RendererCapability, "checking">) => void;
 }
 
@@ -85,20 +87,6 @@ interface ActivePointer {
   y: number;
 }
 
-function useReducedMotion(): boolean {
-  const [reduced, setReduced] = useState(false);
-
-  useEffect(() => {
-    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const update = () => setReduced(query.matches);
-    update();
-    query.addEventListener("change", update);
-    return () => query.removeEventListener("change", update);
-  }, []);
-
-  return reduced;
-}
-
 export function BadgeViewer({
   sourceUrl,
   recipe,
@@ -106,8 +94,10 @@ export function BadgeViewer({
   className = "",
   readOnly = true,
   forceFallback = false,
+  presentation = "interactive",
   onCapabilityChange,
 }: BadgeViewerProps) {
+  const singleTurn = presentation === "single-turn";
   const [webglSupported, setWebglSupported] = useState<boolean | null>(() =>
     probeWebGL2UnlessForced(forceFallback),
   );
@@ -123,7 +113,8 @@ export function BadgeViewer({
   const [engaged, setEngaged] = useState(false);
   const engagedRef = useRef(false);
   const [readySourceUrl, setReadySourceUrl] = useState<string | null>(null);
-  const reducedMotion = useReducedMotion();
+  const resetSingleTurnPose = useCallback(() => setView(INITIAL_VIEWER_STATE), []);
+  const reducedMotion = useReducedMotion(singleTurn ? resetSingleTurnPose : undefined);
   const viewportRef = useRef<HTMLDivElement>(null);
   const activePointer = useRef<ActivePointer | null>(null);
   const queuedWheelDelta = useRef(0);
@@ -132,8 +123,17 @@ export function BadgeViewer({
   const instructionsId = useId();
   const renderKeys = viewerRenderKeys(sourceUrl, recipe, recoveryGeneration);
   const sessionIdentity = renderKeys.session;
+  const turnIdentity = `${renderKeys.content}\u001f${renderKeys.canvas}`;
   const previousSessionIdentity = useRef(sessionIdentity);
   const fallback = forceFallback || capability === "fallback" || fallbackReason !== null;
+  const singleTurnState = useSingleTurn({
+    enabled: singleTurn,
+    fallback,
+    ready: capability === "webgl2" && readySourceUrl === sourceUrl,
+    reducedMotion,
+    sessionIdentity: turnIdentity,
+    setView,
+  });
 
   const updateEngagement = useCallback((nextEngaged: boolean) => {
     engagedRef.current = nextEngaged;
@@ -174,6 +174,7 @@ export function BadgeViewer({
         automaticRecoveryAttempted.current = true;
         releasePointer();
         updateEngagement(false);
+        if (singleTurn) resetSingleTurnPose();
         setFallbackReason(null);
         setReadySourceUrl(null);
         setRecoveryGeneration((current) => current + 1);
@@ -181,7 +182,7 @@ export function BadgeViewer({
       }
       failToFallback(reason);
     },
-    [failToFallback, releasePointer, updateEngagement],
+    [failToFallback, releasePointer, resetSingleTurnPose, singleTurn, updateEngagement],
   );
 
   useLayoutEffect(() => {
@@ -233,7 +234,7 @@ export function BadgeViewer({
 
   useEffect(() => {
     const viewport = viewportRef.current;
-    if (!viewport || fallback) return;
+    if (!viewport || fallback || singleTurn) return;
 
     return addViewerWheelListener(
       viewport,
@@ -252,7 +253,7 @@ export function BadgeViewer({
         }
       },
     );
-  }, [fallback]);
+  }, [fallback, singleTurn]);
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.code === "Enter" || event.code === "Space") {
@@ -329,6 +330,8 @@ export function BadgeViewer({
       className={`badge-viewer ${className}`.trim()}
       data-appearance-readonly={readOnly}
       data-reduced-motion={reducedMotion}
+      data-presentation={presentation}
+      data-single-turn-state={singleTurn ? singleTurnState : undefined}
     >
       {fallback ? (
         <>
@@ -338,8 +341,9 @@ export function BadgeViewer({
             sourceArtUrl={sourceUrl}
             label={accessibleDescription}
             reason={visibleFallbackReason}
+            interactive={!singleTurn}
           />
-          {!forceFallback && webglSupported === true ? (
+          {!singleTurn && !forceFallback && webglSupported === true ? (
             <button type="button" className="badge-viewer__retry" onClick={retryLiveRenderer}>
               Try live 3D again
             </button>
@@ -349,21 +353,25 @@ export function BadgeViewer({
         <>
           <div
             ref={viewportRef}
-            className={`badge-viewer__viewport${engaged ? " is-engaged" : ""}`}
-            role="application"
-            aria-label={`Interactive 3D badge: ${accessibleDescription}`}
-            aria-describedby={instructionsId}
-            tabIndex={0}
-            onPointerDown={handlePointerDown}
-            onPointerMove={handlePointerMove}
-            onPointerUp={releasePointer}
-            onPointerCancel={releasePointer}
-            onLostPointerCapture={releasePointer}
-            onKeyDown={handleKeyDown}
-            onBlur={() => {
-              releasePointer();
-              updateEngagement(false);
-            }}
+            className={`badge-viewer__viewport${engaged ? " is-engaged" : ""}${singleTurn ? " badge-viewer__viewport--passive" : ""}`}
+            role={singleTurn ? undefined : "application"}
+            aria-label={singleTurn ? undefined : `Interactive 3D badge: ${accessibleDescription}`}
+            aria-describedby={singleTurn ? undefined : instructionsId}
+            tabIndex={singleTurn ? undefined : 0}
+            onPointerDown={singleTurn ? undefined : handlePointerDown}
+            onPointerMove={singleTurn ? undefined : handlePointerMove}
+            onPointerUp={singleTurn ? undefined : releasePointer}
+            onPointerCancel={singleTurn ? undefined : releasePointer}
+            onLostPointerCapture={singleTurn ? undefined : releasePointer}
+            onKeyDown={singleTurn ? undefined : handleKeyDown}
+            onBlur={
+              singleTurn
+                ? undefined
+                : () => {
+                    releasePointer();
+                    updateEngagement(false);
+                  }
+            }
           >
             {capability === "checking" ? (
               <div className="badge-viewer__loading" role="status">
@@ -372,6 +380,8 @@ export function BadgeViewer({
             ) : (
               <ViewerErrorBoundary key={renderKeys.canvas} onError={failToFallback}>
                 <Canvas
+                  role={singleTurn ? "img" : undefined}
+                  aria-label={singleTurn ? `3D badge presentation: ${accessibleDescription}` : undefined}
                   frameloop="demand"
                   dpr={[1, 2]}
                   shadows="basic"
@@ -405,59 +415,65 @@ export function BadgeViewer({
             ) : null}
           </div>
 
-          <p id={instructionsId} className="badge-viewer__instructions">
-            {instructions}
-          </p>
+          {!singleTurn ? (
+            <>
+              <p id={instructionsId} className="badge-viewer__instructions">
+                {instructions}
+              </p>
 
-          <div className="badge-viewer__controls">
-            <div className="badge-viewer__mode" role="group" aria-label="Drag mode">
-              <button
-                type="button"
-                className="badge-viewer__mode-action"
-                aria-pressed={mode === "object"}
-                onClick={() => selectMode("object")}
-              >
-                Inspect object
-              </button>
-              <button
-                type="button"
-                className="badge-viewer__mode-action"
-                aria-pressed={mode === "light"}
-                onClick={() => selectMode("light")}
-              >
-                Adjust light
-              </button>
-            </div>
+              <div className="badge-viewer__controls">
+                <div className="badge-viewer__mode" role="group" aria-label="Drag mode">
+                  <button
+                    type="button"
+                    className="badge-viewer__mode-action"
+                    aria-pressed={mode === "object"}
+                    onClick={() => selectMode("object")}
+                  >
+                    Inspect object
+                  </button>
+                  <button
+                    type="button"
+                    className="badge-viewer__mode-action"
+                    aria-pressed={mode === "light"}
+                    onClick={() => selectMode("light")}
+                  >
+                    Adjust light
+                  </button>
+                </div>
 
-            <div className="badge-viewer__zoom" role="group" aria-label="Zoom">
-              <button
-                type="button"
-                className="badge-viewer__quiet-action"
-                aria-label="Zoom out"
-                onClick={() => setView((current) => applyZoomCommand(current, "out", false))}
-              >
-                −
-              </button>
-              <output aria-live="polite">{Math.round((view.zoom / INITIAL_VIEWER_STATE.zoom) * 100)}%</output>
-              <button
-                type="button"
-                className="badge-viewer__quiet-action"
-                aria-label="Zoom in"
-                onClick={() => setView((current) => applyZoomCommand(current, "in", false))}
-              >
-                +
-              </button>
-            </div>
-          </div>
+                <div className="badge-viewer__zoom" role="group" aria-label="Zoom">
+                  <button
+                    type="button"
+                    className="badge-viewer__quiet-action"
+                    aria-label="Zoom out"
+                    onClick={() => setView((current) => applyZoomCommand(current, "out", false))}
+                  >
+                    −
+                  </button>
+                  <output aria-live="polite">
+                    {Math.round((view.zoom / INITIAL_VIEWER_STATE.zoom) * 100)}%
+                  </output>
+                  <button
+                    type="button"
+                    className="badge-viewer__quiet-action"
+                    aria-label="Zoom in"
+                    onClick={() => setView((current) => applyZoomCommand(current, "in", false))}
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
 
-          <div className="badge-viewer__resets">
-            <button type="button" className="badge-viewer__quiet-action" onClick={resetView}>
-              Reset view
-            </button>
-            <button type="button" className="badge-viewer__quiet-action" onClick={resetLight}>
-              Reset light
-            </button>
-          </div>
+              <div className="badge-viewer__resets">
+                <button type="button" className="badge-viewer__quiet-action" onClick={resetView}>
+                  Reset view
+                </button>
+                <button type="button" className="badge-viewer__quiet-action" onClick={resetLight}>
+                  Reset light
+                </button>
+              </div>
+            </>
+          ) : null}
         </>
       )}
     </section>

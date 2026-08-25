@@ -11,6 +11,7 @@ interface BadgeFallbackProps {
   sourceArtUrl: string;
   label: string;
   reason: string;
+  interactive?: boolean;
 }
 
 interface FallbackStyle extends CSSProperties {
@@ -26,7 +27,13 @@ interface LoadedSourceDimensions {
   height: number;
 }
 
-export function BadgeFallback({ recipe, sourceArtUrl, label, reason }: BadgeFallbackProps) {
+export function BadgeFallback({
+  recipe,
+  sourceArtUrl,
+  label,
+  reason,
+  interactive = true,
+}: BadgeFallbackProps) {
   const [view, setView] = useState<FallbackView>("front");
   const [failedSourceUrl, setFailedSourceUrl] = useState<string | null>(null);
   const [loadedSource, setLoadedSource] = useState<LoadedSourceDimensions | null>(null);
@@ -68,14 +75,16 @@ export function BadgeFallback({ recipe, sourceArtUrl, label, reason }: BadgeFall
           {reason}{" "}
           {sourceFailed
             ? "The source artwork could not be loaded; repair the installed pack."
-            : "Static inspection remains available."}
+            : interactive
+              ? "Static inspection remains available."
+              : "A static badge is shown for this replay."}
         </span>
       </div>
 
       <div
         className={`badge-fallback__stage badge-fallback__stage--${view}`}
         role="img"
-        aria-label={`${label}; ${view} fallback view`}
+        aria-label={`${label}; ${interactive ? `${view} fallback view` : "static fallback view"}`}
       >
         <div className="badge-fallback__object-frame">
           {view === "front" ? (
@@ -109,19 +118,21 @@ export function BadgeFallback({ recipe, sourceArtUrl, label, reason }: BadgeFall
         </div>
       </div>
 
-      <div className="badge-fallback__views" role="group" aria-label="Fallback view">
-        {(["front", "edge", "back"] as const).map((candidate) => (
-          <button
-            key={candidate}
-            type="button"
-            className="badge-viewer__quiet-action"
-            aria-pressed={view === candidate}
-            onClick={() => setView(candidate)}
-          >
-            {candidate[0].toUpperCase() + candidate.slice(1)}
-          </button>
-        ))}
-      </div>
+      {interactive ? (
+        <div className="badge-fallback__views" role="group" aria-label="Fallback view">
+          {(["front", "edge", "back"] as const).map((candidate) => (
+            <button
+              key={candidate}
+              type="button"
+              className="badge-viewer__quiet-action"
+              aria-pressed={view === candidate}
+              onClick={() => setView(candidate)}
+            >
+              {candidate[0].toUpperCase() + candidate.slice(1)}
+            </button>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }

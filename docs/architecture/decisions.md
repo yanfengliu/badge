@@ -2,6 +2,16 @@
 
 Append decisions newest first. Never rewrite history; add a superseding entry that links to the decision it replaces.
 
+## 2026-08-24 — D-044: Make activation replay one passive badge turn
+
+**Status:** Owner-confirmed and implemented for earned-state Archive replay.
+
+Earned-state replay is presentation, not another inspection surface. Once the current live source texture is visibly ready, the badge advances monotonically around its vertical axis by exactly `2π` over one restrained ease, returns visually to its deliberate starting pose, and stops every animation frame. The shared ceremony component selects this presentation only for replay; first activation keeps the existing interactive presentation.
+
+The replay presentation has no object-versus-light toggle, zoom or scale controls, reset controls, interaction instructions, application role or tab stop, pointer capture, wheel ownership, or keyboard manipulation. Close remains its only ordinary action. First activation, Archive detail, Timeline inspection, and Badge Studio keep D-011 and D-012's complete rotation, zoom, responsive-light, reset, keyboard, and fallback inspection controls; this decision narrows only replay.
+
+Motion begins only after WebGL capability and the exact current texture are ready, owns one cancellable request-animation-frame chain, and restarts only when a new replay or renderer session genuinely begins. Closing, fallback, source or session replacement, and a motion-preference change cancel that chain. Reduced motion schedules no automatic turn and shows the stable pose immediately; enabling it mid-turn or while the preference subscription attaches restores that pose. Automatic renderer recovery resets before remount and waits for the replacement texture before restarting. The passive Canvas owns the image name while loading statuses remain outside that image. Forced or failed live rendering shows the badge's static front without front-edge-back switching or a retry utility inside replay, while interactive surfaces retain their truthful fallback.
+
 ## 2026-08-24 — D-043: Make every created visual badge discoverable without manufacturing personal records
 
 **Status:** Owner-confirmed and implemented for the current tracked catalogue projection; full parks publication and discovery of future private Studio work remain separate release work.

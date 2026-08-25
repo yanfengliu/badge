@@ -102,6 +102,8 @@ Gallery grids may use version-addressed cached renders for performance, but sele
 
 Direct manipulation never auto-saves a changed badge appearance, never modifies source art, and never affects activation, notes, sayings, or visibility.
 
+The earned-state activation replay is the deliberate exception to interactive inspection. It presents the already published badge passively, makes one complete vertical-axis turn after the live artwork is ready, and then holds the original resting pose; it exposes no object-versus-light mode, zoom or scale control, reset control, interaction instructions, pointer capture, wheel handling, or keyboard manipulation. Reduced motion skips the automatic turn, and renderer fallback shows one truthful static front presentation without fallback-view controls. Full inspection remains available on Archive detail, Timeline inspection, Badge Studio, and the first activation ceremony.
+
 ## Recommended lifecycle
 
 - `suggested`: an installed-pack definition offered by the catalogue or ranked from installed definitions by a model and not yet accepted; a model idea without an admitted published visual is not an Archive badge state.
@@ -350,7 +352,7 @@ Activate the last required park → commit that activation → update the compos
 - Quotation regeneration keeps the accepted quotation visible while work is pending, exposes the reviewed source for the accepted value, announces progress or failure without moving focus unexpectedly, and updates only after the exact selected source record is validated and persisted.
 - Quotation size or source-contract errors identify the failed input and never discard or replace the accepted quotation.
 - `prefers-reduced-motion` produces a crisp success state without disorienting travel, flashing, or parallax.
-- Reduced motion disables inertia, automatic orbit, and decorative camera travel but preserves immediate user-controlled 3D rotation, zoom, and light adjustment.
+- Reduced motion disables inertia, automatic orbit, decorative camera travel, and the replay's one automatic turn, while preserving immediate user-controlled 3D rotation, zoom, and light adjustment on inspection surfaces.
 - The viewer exposes concise instructions and current interaction mode to assistive technology, and a textual badge description remains available when the canvas is unavailable or not useful.
 
 ## Explicit open decisions

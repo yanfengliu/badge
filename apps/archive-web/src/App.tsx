@@ -72,7 +72,7 @@ export function App() {
   const [selectedRecordId, setSelectedRecordId] = useState(STARTER_RECORD_IDS[0]);
   const [drafts, setDrafts] = useState<Record<string, ActivationDraft>>({});
   const [activating, setActivating] = useState(false);
-  const [ceremonyId, setCeremonyId] = useState<string | null>(null);
+  const [ceremony, setCeremony] = useState<{ id: string; replay: boolean } | null>(null);
   const [notice, setNotice] = useState<ArchiveNoticeState | null>(null);
   const [pendingRestore, setPendingRestore] = useState<PendingArchiveRestore | null>(null);
   const [restoring, setRestoring] = useState(false);
@@ -127,9 +127,8 @@ export function App() {
   });
   const earnedCount = state?.records.filter((record) => record.lifecycle === "earned").length ?? 0;
   const selectedVisual = selectedArchiveVisual(selectedRecord, selectedFixture.sourceUrl, resolvedVisuals);
-  const closeCeremony = useCallback(() => setCeremonyId(null), []);
+  const closeCeremony = useCallback(() => setCeremony(null), []);
   const closeRestore = useCallback(() => setPendingRestore(null), []);
-
   function updateDraft(patch: Partial<ActivationDraft>) {
     setDrafts((current) => ({ ...current, [selectedRecordId]: { ...draft, ...patch } }));
   }
@@ -147,7 +146,7 @@ export function App() {
 
   function replayCeremony(recordId: string) {
     void saying.observe({ type: "ceremony-replayed", recordId });
-    setCeremonyId(recordId);
+    setCeremony({ id: recordId, replay: true });
   }
 
   async function activate(event: FormEvent) {
@@ -180,7 +179,7 @@ export function App() {
         selectedRecord.quotationRevision,
       );
       setState(result.state);
-      setCeremonyId(selectedRecord.recordId);
+      setCeremony({ id: selectedRecord.recordId, replay: false });
     } catch (error) {
       let message = error instanceof Error ? error.message : String(error);
       try {
@@ -324,9 +323,7 @@ export function App() {
     );
   }
 
-  const ceremonyRecord = ceremonyId
-    ? state.records.find((record) => record.recordId === ceremonyId)
-    : undefined;
+  const ceremonyRecord = state.records.find((record) => record.recordId === ceremony?.id);
   const ceremonyVisual = ceremonyRecord ? resolvedVisuals[ceremonyRecord.recordId] : undefined;
   const resolvedSourceUrls = sourceUrlsForResolvedVisuals(resolvedVisuals);
 
@@ -472,7 +469,7 @@ export function App() {
         </main>
       )}
 
-      {ceremonyRecord && ceremonyVisual ? (
+      {ceremony && ceremonyRecord && ceremonyVisual ? (
         <ActivationCeremony
           title={ceremonyRecord.title}
           saying={ceremonyRecord.acceptedSaying ?? ""}
@@ -480,6 +477,7 @@ export function App() {
           recipe={ceremonyVisual.pin.renderRecipe}
           accessibleDescription={ceremonyVisual.pin.accessibleDescription}
           forceFallback={forceFallback}
+          presentation={ceremony.replay ? "single-turn" : "interactive"}
           returnFocus={ceremonyReturnFocus}
           onClose={closeCeremony}
         />

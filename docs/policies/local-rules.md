@@ -90,6 +90,8 @@ The badge itself is a real-time 3D artifact in Badge Studio and archive detail v
 
 Mouse rotation, bounded zoom, responsive lighting, a separate light-adjustment control, keyboard equivalents, reset, reduced-motion behavior, and a clear GPU fallback are product requirements rather than optional polish.
 
+Those examination controls remain available in Archive detail, Timeline inspection, Badge Studio, and the first activation ceremony. The earned-state activation replay is passive: after live artwork is ready the badge makes one complete 360-degree turn and rests, with no object-versus-light toggle, zoom or scale action, reset action, fallback-view switcher, or direct-manipulation input; reduced motion and renderer fallback show the stable badge without autoplay.
+
 Activation data commits before its ceremony begins. The ceremony is replayable or skippable, respects reduced motion, and never substitutes spectacle for persistence correctness.
 
 ## Visual quality
