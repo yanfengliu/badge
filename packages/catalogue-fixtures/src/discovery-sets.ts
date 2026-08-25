@@ -11,6 +11,11 @@ export const discoverySets = [
     description: "Individual parks and the larger journey across the national park catalogue.",
   },
   {
+    setId: "us-states",
+    title: "U.S. States",
+    description: "A visual field record for visiting every one of the fifty states.",
+  },
+  {
     setId: "books-read",
     title: "Books Read",
     description: "Finished books kept as cultural memories.",

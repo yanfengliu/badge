@@ -86,19 +86,22 @@ function latestFirst(left: CollectedArchiveRecord, right: CollectedArchiveRecord
 
 export function buildCollectionShelves(state: ArchiveState): readonly CollectionShelf[] {
   const collected = state.records.filter(isCollected);
-  const canonical = discoverySets.map((set) => {
+  const canonical = discoverySets.flatMap((set) => {
     const records = collected
       .filter((record) => record.collectionRefs.some((ref) => discoverySetForRef(ref)?.setId === set.setId))
       .sort(latestFirst);
-    return {
-      key: `pack:${STARTER_PACK_ID}:${set.setId}`,
-      setId: set.setId,
-      title: set.title,
-      description: set.description,
-      totalCount: discoveryBadges.filter((badge) => badge.setIds.includes(set.setId)).length,
-      collectedCount: records.length,
-      records,
-    } satisfies CollectionShelf;
+    if (records.length === 0) return [];
+    return [
+      {
+        key: `pack:${STARTER_PACK_ID}:${set.setId}`,
+        setId: set.setId,
+        title: set.title,
+        description: set.description,
+        totalCount: discoveryBadges.filter((badge) => badge.setIds.includes(set.setId)).length,
+        collectedCount: records.length,
+        records,
+      } satisfies CollectionShelf,
+    ];
   });
 
   const knownKeys = new Set(canonical.map((shelf) => shelf.key));

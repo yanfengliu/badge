@@ -5,7 +5,7 @@ import { promisify } from "node:util";
 const execFileAsync = promisify(execFile);
 const defaultRepositoryRoot = path.resolve(import.meta.dirname, "..");
 
-export async function regenerateNationalParkThumbnails({
+export async function regenerateCatalogueThumbnails({
   repositoryRoot = defaultRepositoryRoot,
   sourceDirectory,
   outputDirectory,
@@ -36,8 +36,12 @@ export async function regenerateNationalParkThumbnails({
         ? String(error.stderr).trim()
         : String(error);
     throw new Error(
-      `National-park thumbnail derivation could not regenerate deterministic list art from the current source studies; ${detail || "run npm run catalogue:thumbnails and resolve the reported derivation error."}`,
+      `Catalogue thumbnail derivation could not regenerate deterministic list art from the current source studies; ${detail || "run npm run catalogue:thumbnails and resolve the reported derivation error."}`,
       { cause: error },
     );
   }
+}
+
+export function regenerateNationalParkThumbnails(options = {}) {
+  return regenerateCatalogueThumbnails(options);
 }

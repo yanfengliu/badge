@@ -146,4 +146,58 @@ describe("DiscoveryView mounted interactions", () => {
     await act(async () => parksButton?.click());
     expect(requested).toEqual(["us-national-parks"]);
   });
+
+  it("reveals at most 24 more results at a time and resets after the query changes", async () => {
+    const manyBadges = Array.from({ length: 55 }, (_, index) => ({
+      ...sourceStudy,
+      discoveryId: `scale-study-${index}`,
+      title: `Scale study ${index}`,
+    }));
+
+    function ScaleHarness() {
+      const [query, setQuery] = useState("");
+      return (
+        <DiscoveryView
+          badges={manyBadges}
+          collectedRecordIds={new Set()}
+          resolvedSourceUrls={{}}
+          selectedSetId={null}
+          query={query}
+          onSetChange={() => undefined}
+          onQueryChange={setQuery}
+          onOpenAvailableBadge={() => undefined}
+          onOpenCollectedBadge={() => undefined}
+          resolveThumbnail={(fileName) => `/thumbnails/${fileName}`}
+        />
+      );
+    }
+
+    await act(async () => root.render(<ScaleHarness />));
+    expect(container.querySelectorAll(".discovery-card")).toHaveLength(24);
+
+    const showMore = () =>
+      [...container.querySelectorAll<HTMLButtonElement>(".discovery-pagination button")][0];
+    expect(showMore()?.textContent).toContain("Show 24 more");
+    await act(async () => showMore()?.click());
+    expect(container.querySelectorAll(".discovery-card")).toHaveLength(48);
+    expect(showMore()?.textContent).toContain("Show 7 more");
+    await act(async () => showMore()?.click());
+    expect(container.querySelectorAll(".discovery-card")).toHaveLength(55);
+    expect(showMore()).toBeUndefined();
+
+    const input = container.querySelector<HTMLInputElement>('input[type="search"]');
+    if (!input) throw new Error("Discovery search input is missing.");
+    const setInput = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
+    await act(async () => {
+      setInput?.call(input, "Scale study 54");
+      input.dispatchEvent(new InputEvent("input", { bubbles: true }));
+    });
+    expect(container.querySelectorAll(".discovery-card")).toHaveLength(1);
+    await act(async () => {
+      setInput?.call(input, "");
+      input.dispatchEvent(new InputEvent("input", { bubbles: true }));
+    });
+    expect(container.querySelectorAll(".discovery-card")).toHaveLength(24);
+    expect(showMore()?.textContent).toContain("Show 24 more");
+  });
 });

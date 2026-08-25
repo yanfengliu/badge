@@ -5,16 +5,23 @@ export function filterDiscoveryBadges(
   query: string,
   setId: string | null,
 ): readonly DiscoveryBadge[] {
+  const normalizedQuery = normalizeSearch(query);
   const terms = normalizeSearch(query).split(/\s+/u).filter(Boolean);
-  return badges.filter((badge) => {
-    if (setId && !badge.setIds.includes(setId)) return false;
+  const setBadges = badges.filter((badge) => !setId || badge.setIds.includes(setId));
+  const exactAliasMatches = setBadges.filter(
+    (badge) =>
+      badge.availability === "source-study" &&
+      badge.searchAliases?.some((alias) => normalizeSearch(alias) === normalizedQuery),
+  );
+  if (normalizedQuery && exactAliasMatches.length > 0) return exactAliasMatches;
+  return setBadges.filter((badge) => {
     if (terms.length === 0) return true;
     const setTitles = badge.setIds.flatMap((candidate) =>
       discoverySets.filter((set) => set.setId === candidate).map((set) => set.title),
     );
     const searchable =
       badge.availability === "source-study"
-        ? [badge.title, badge.criterion, badge.locationLabel, ...setTitles]
+        ? [badge.title, badge.criterion, badge.locationLabel, ...(badge.searchAliases ?? []), ...setTitles]
         : [badge.title, badge.criterion, badge.description, badge.collectionLabel, ...setTitles];
     const haystack = normalizeSearch(searchable.join(" "));
     return terms.every((term) => haystack.includes(term));

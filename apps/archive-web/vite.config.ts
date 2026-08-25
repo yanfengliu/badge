@@ -11,5 +11,19 @@ export default defineConfig({
   plugins: [react()],
   server: { host: "127.0.0.1", port: 5173, strictPort: true },
   preview: { host: "127.0.0.1", port: 4173, strictPort: true },
-  build: { outDir: path.resolve(root, "../../dist/archive"), emptyOutDir: true },
+  build: {
+    outDir: path.resolve(root, "../../dist/archive"),
+    emptyOutDir: true,
+    rolldownOptions: { output: { assetFileNames: archiveAssetFileName } },
+  },
 });
+
+export function archiveAssetFileName(asset: { readonly originalFileNames: readonly string[] }): string {
+  const catalogueThumbnail = asset.originalFileNames
+    .map((file) => file.replaceAll("\\", "/"))
+    .map((file) => /(?:^|\/)assets\/([a-z0-9]+(?:-[a-z0-9]+)*)\/thumbnails\/[^/]+\.jpg$/u.exec(file))
+    .find((match) => match !== null);
+  return catalogueThumbnail
+    ? `assets/discovery/${catalogueThumbnail[1]}/[name]-[hash][extname]`
+    : "assets/[name]-[hash][extname]";
+}

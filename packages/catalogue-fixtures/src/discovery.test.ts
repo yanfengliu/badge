@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 
-import { commonAchievementIdeas, usNationalParks } from "@badge/catalogue-authoring";
+import { commonAchievementIdeas, selectedUsStateStudies, usNationalParks } from "@badge/catalogue-authoring";
 import { discoveryBadges, discoverySets, type DiscoveryBadge } from "@badge/catalogue-fixtures/discovery";
 import { describe, expect, it } from "vitest";
 
@@ -16,8 +16,9 @@ const allowedFields = new Set([
   "locationLabel",
   "previewUrl",
   "recordId",
+  "searchAliases",
   "setIds",
-  "thumbnailFileName",
+  "thumbnailKey",
   "title",
 ]);
 
@@ -64,6 +65,7 @@ const productionFiles = [
   "discovery-source-studies.ts",
   "discovery-starters.ts",
   "discovery-types.ts",
+  "discovery-us-states.ts",
 ] as const;
 
 const publicProjection: readonly DiscoveryBadge[] = discoveryBadges;
@@ -75,6 +77,11 @@ describe("the Archive-safe discovery catalogue", () => {
         setId: "us-national-parks",
         title: "U.S. National Parks",
         description: "Individual parks and the larger journey across the national park catalogue.",
+      },
+      {
+        setId: "us-states",
+        title: "U.S. States",
+        description: "A visual field record for visiting every one of the fifty states.",
       },
       {
         setId: "books-read",
@@ -115,17 +122,28 @@ describe("the Archive-safe discovery catalogue", () => {
           title: park.shortName,
           criterion: park.criterion,
           locationLabel: park.locationLabel,
-          thumbnailFileName: park.selectedSource.thumbnail.fileName,
+          thumbnailKey: `national-parks/${park.selectedSource.thumbnail.fileName}`,
           accessibleDescription: park.selectedSource.accessibleDescription,
           setIds: ["us-national-parks"],
         })),
+      ...selectedUsStateStudies.map((state) => ({
+        discoveryId: state.definitionId,
+        availability: "source-study" as const,
+        title: state.title,
+        criterion: state.criterion,
+        locationLabel: state.contextLabel,
+        searchAliases: state.aliases,
+        thumbnailKey: `us-states/${state.selectedSource.thumbnail.fileName}`,
+        accessibleDescription: state.selectedSource.accessibleDescription,
+        setIds: ["us-states"],
+      })),
     ];
 
     expect(publicProjection).toEqual(expected);
-    expect(discoveryBadges).toHaveLength(66);
-    expect(new Set(discoveryBadges.map((badge) => badge.discoveryId))).toHaveProperty("size", 66);
+    expect(discoveryBadges).toHaveLength(116);
+    expect(new Set(discoveryBadges.map((badge) => badge.discoveryId))).toHaveProperty("size", 116);
     expect(discoveryBadges.filter((badge) => badge.availability === "available")).toHaveLength(4);
-    expect(discoveryBadges.filter((badge) => badge.availability === "source-study")).toHaveLength(62);
+    expect(discoveryBadges.filter((badge) => badge.availability === "source-study")).toHaveLength(112);
     expect(
       discoveryBadges.some((badge) => commonAchievementIdeas.some((idea) => idea.id === badge.discoveryId)),
     ).toBe(false);
@@ -151,6 +169,7 @@ describe("the Archive-safe discovery catalogue", () => {
       ),
     ).toEqual({
       "us-national-parks": 64,
+      "us-states": 50,
       "books-read": 1,
       "life-milestones": 1,
     });

@@ -54,31 +54,28 @@
 }
 
 .discovery-set-browser {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px;
   width: min(100%, 1480px);
   margin: 0 auto 28px;
-  border: 1px solid #bfb3a2;
-  background: #e9e1d5;
+  padding: 1px;
+  background: #c8bcab;
   box-shadow: 0 12px 24px rgba(43, 38, 31, 0.12);
 }
 
 .discovery-set-button {
   display: grid;
+  flex: 1 1 220px;
   min-height: 84px;
   padding: 16px 18px;
   align-content: center;
   gap: 7px;
   border: 0;
-  border-left: 1px solid #c8bcab;
-  background: transparent;
+  background: #e9e1d5;
   color: var(--ink-soft);
   cursor: pointer;
   text-align: left;
-}
-
-.discovery-set-button:first-child {
-  border-left: 0;
 }
 
 .discovery-set-button[aria-pressed="true"] {
@@ -303,6 +300,38 @@
   text-transform: uppercase;
 }
 
+.discovery-pagination {
+  display: flex;
+  margin-top: 28px;
+  padding: 20px 2px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  border-top: 1px solid var(--rule);
+  color: var(--ink-faint);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.discovery-pagination button {
+  min-height: 42px;
+  padding: 0 15px;
+  border: 1px solid var(--rust);
+  border-radius: 7px;
+  background: transparent;
+  color: var(--rust-dark);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.discovery-pagination button:hover,
+.discovery-pagination button:focus-visible {
+  background: rgba(174, 77, 45, 0.08);
+}
+
 .discovery-empty {
   display: grid;
   min-height: 260px;
@@ -335,18 +364,6 @@
   .discovery-hero {
     grid-template-columns: 1fr;
   }
-
-  .discovery-set-browser {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .discovery-set-button:nth-child(3) {
-    border-left: 0;
-  }
-
-  .discovery-set-button:nth-child(n + 3) {
-    border-top: 1px solid #c8bcab;
-  }
 }
 
 @media (max-width: 640px) {
@@ -355,19 +372,17 @@
     padding: 34px 18px 56px;
   }
 
-  .discovery-set-browser,
   .discovery-grid {
     grid-template-columns: 1fr;
   }
 
-  .discovery-set-button,
-  .discovery-set-button:nth-child(3) {
-    border-top: 1px solid #c8bcab;
-    border-left: 0;
+  .discovery-set-button {
+    flex-basis: 100%;
   }
 
-  .discovery-set-button:first-child {
-    border-top: 0;
+  .discovery-pagination {
+    align-items: stretch;
+    flex-direction: column;
   }
 }
 

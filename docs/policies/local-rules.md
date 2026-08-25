@@ -98,6 +98,8 @@ Activation data commits before its ceremony begins. The ceremony is replayable o
 
 The selected product language is a quiet premium field archive with substantial crafted objects, exact typography, generous space, restrained color, and clean motion.
 
+When an Archive or Studio surface's visual direction is accepted or materially changed, update the canonical implemented-surface record in `docs/design/visual-direction.md` in the same session and promote a bounded fixture-only reference capture that names its route, viewport, state, and date. Devlog prose and disposable task screenshots do not substitute for that record; supersede old references explicitly rather than replacing them silently.
+
 Avoid cartoon rendering, careless generated art, souvenir-shop kitsch, cheap gradients, glassmorphism, confetti, loot effects, excessive glow, fake rarity, cluttered dashboards, and typography embedded in generated images.
 
 Do not fake the required object with CSS perspective on a flat image or bake highlights and shadows into the only authoritative preview. Material response must change as the object or key light moves.

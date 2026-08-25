@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   discoveryBadges,
   discoverySets,
@@ -22,6 +22,12 @@ interface DiscoveryViewProps {
   readonly resolveThumbnail?: (fileName: string) => string | null;
 }
 
+export const DISCOVERY_PAGE_SIZE = 24;
+
+function discoveryPageKey(setId: string | null, query: string, badgeCount: number): string {
+  return `${setId ?? "all"}\u0000${query}\u0000${badgeCount}`;
+}
+
 export function DiscoveryView({
   badges = discoveryBadges,
   collectedRecordIds,
@@ -38,6 +44,10 @@ export function DiscoveryView({
     () => filterDiscoveryBadges(badges, query, selectedSetId),
     [badges, query, selectedSetId],
   );
+  const pageKey = discoveryPageKey(selectedSetId, query, badges.length);
+  const [page, setPage] = useState({ key: pageKey, limit: DISCOVERY_PAGE_SIZE });
+  const visibleLimit = page.key === pageKey ? page.limit : DISCOVERY_PAGE_SIZE;
+  const renderedBadges = visibleBadges.slice(0, visibleLimit);
   const selectedSet = discoverySets.find((set) => set.setId === selectedSetId) ?? null;
   const allProgress = progressForBadges(badges, collectedRecordIds);
 
@@ -69,7 +79,10 @@ export function DiscoveryView({
           className="discovery-set-button"
           type="button"
           aria-pressed={selectedSetId === null}
-          onClick={() => onSetChange(null)}
+          onClick={() => {
+            setPage({ key: discoveryPageKey(null, query, badges.length), limit: DISCOVERY_PAGE_SIZE });
+            onSetChange(null);
+          }}
         >
           <strong>All sets</strong>
           <span>Browse everything</span>
@@ -81,7 +94,13 @@ export function DiscoveryView({
             badges={badges}
             collectedRecordIds={collectedRecordIds}
             active={selectedSetId === set.setId}
-            onSelect={() => onSetChange(set.setId)}
+            onSelect={() => {
+              setPage({
+                key: discoveryPageKey(set.setId, query, badges.length),
+                limit: DISCOVERY_PAGE_SIZE,
+              });
+              onSetChange(set.setId);
+            }}
           />
         ))}
       </nav>
@@ -94,7 +113,14 @@ export function DiscoveryView({
               type="search"
               value={query}
               placeholder="Badge, place, or criterion"
-              onChange={(event) => onQueryChange(event.target.value)}
+              onChange={(event) => {
+                const nextQuery = event.target.value;
+                setPage({
+                  key: discoveryPageKey(selectedSetId, nextQuery, badges.length),
+                  limit: DISCOVERY_PAGE_SIZE,
+                });
+                onQueryChange(nextQuery);
+              }}
             />
           </label>
         </div>
@@ -108,7 +134,7 @@ export function DiscoveryView({
 
         {visibleBadges.length > 0 ? (
           <div className="discovery-grid">
-            {visibleBadges.map((badge) => (
+            {renderedBadges.map((badge) => (
               <DiscoveryCard
                 key={badge.discoveryId}
                 badge={badge}
@@ -129,6 +155,21 @@ export function DiscoveryView({
             <span>Try a park, place, criterion, or another set.</span>
           </div>
         )}
+        {visibleBadges.length > DISCOVERY_PAGE_SIZE ? (
+          <div className="discovery-pagination" aria-live="polite">
+            <span>
+              Showing {renderedBadges.length} of {visibleBadges.length} results
+            </span>
+            {renderedBadges.length < visibleBadges.length ? (
+              <button
+                type="button"
+                onClick={() => setPage({ key: pageKey, limit: renderedBadges.length + DISCOVERY_PAGE_SIZE })}
+              >
+                Show {Math.min(DISCOVERY_PAGE_SIZE, visibleBadges.length - renderedBadges.length)} more
+              </button>
+            ) : null}
+          </div>
+        ) : null}
       </section>
     </main>
   );
@@ -196,7 +237,7 @@ function DiscoveryCard({
   const sourceUrl =
     badge.availability === "available"
       ? (resolvedSourceUrl ?? badge.previewUrl)
-      : resolveThumbnail(badge.thumbnailFileName);
+      : resolveThumbnail(badge.thumbnailKey);
   const displayedSetId =
     selectedSetId && badge.setIds.includes(selectedSetId) ? selectedSetId : badge.setIds[0];
   const setTitle = discoverySets.find((set) => set.setId === displayedSetId)?.title;

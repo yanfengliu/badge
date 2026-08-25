@@ -53,9 +53,10 @@ describe("CollectionView", () => {
 
     expect(html).toContain("Your cabinet is waiting");
     expect(html).toContain("Browse sets in Discover");
-    expect(html).toContain("0 / 64 collected");
-    expect(html).toContain("0 / 1 collected");
-    expect(html).toContain("No memories collected here yet");
+    expect(html).not.toContain("collection-cabinet");
+    expect(html).not.toContain("No collected memories match this search");
+    expect(html).not.toContain(">0 sets<");
+    expect(html).not.toContain("No memories collected here yet");
     expect(html).not.toContain("planned");
     expect(html).not.toContain("suggested");
   });
@@ -74,8 +75,8 @@ describe("CollectionView", () => {
     expect(html).toContain("The Field Archive");
     expect(html).toContain("U.S. National Parks");
     expect(html).toContain("1 / 64 collected");
-    expect(html).toContain("Books Read");
-    expect(html).toContain("Life Milestones");
+    expect(html).not.toContain("Books Read");
+    expect(html).not.toContain("Life Milestones");
     expect(html).toContain('aria-label="Replay Yosemite activation"');
     expect(html).toContain('aria-label="Browse U.S. National Parks set"');
     expect(html).toContain("collection-shelf__browse-surface");

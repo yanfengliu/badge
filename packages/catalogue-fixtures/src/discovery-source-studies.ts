@@ -1,8 +1,6 @@
 import { requireDiscoverySet } from "./discovery-sets.js";
 import type { SourceStudyDiscoveryBadge } from "./discovery-types.js";
 
-const nationalParksSet = requireDiscoverySet("us-national-parks");
-
 export type SourceStudyDiscoveryRow = readonly [
   discoveryId: string,
   title: string,
@@ -10,21 +8,34 @@ export type SourceStudyDiscoveryRow = readonly [
   locationLabel: string,
   thumbnailFileName: string,
   accessibleDescription: string,
+  searchAliases?: readonly string[],
 ];
 
 export function defineSourceStudyBadges(
   rows: readonly SourceStudyDiscoveryRow[],
+  options: { readonly setId?: string; readonly assetDirectory?: string } = {},
 ): readonly SourceStudyDiscoveryBadge[] {
+  const set = requireDiscoverySet(options.setId ?? "us-national-parks");
+  const assetDirectory = options.assetDirectory ?? "national-parks";
   return rows.map(
-    ([discoveryId, title, criterion, locationLabel, thumbnailFileName, accessibleDescription]) => ({
+    ([
       discoveryId,
-      availability: "source-study",
       title,
       criterion,
       locationLabel,
       thumbnailFileName,
       accessibleDescription,
-      setIds: [nationalParksSet.setId],
+      searchAliases,
+    ]) => ({
+      discoveryId,
+      availability: "source-study",
+      title,
+      criterion,
+      locationLabel,
+      ...(searchAliases ? { searchAliases } : {}),
+      thumbnailKey: `${assetDirectory}/${thumbnailFileName}`,
+      accessibleDescription,
+      setIds: [set.setId],
     }),
   );
 }

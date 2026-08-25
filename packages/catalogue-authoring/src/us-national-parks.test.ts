@@ -139,7 +139,7 @@ describe("the sourced U.S. National Parks authoring catalogue", () => {
           mimeType: "image/jpeg",
           width: 128,
           height: 128,
-          derivationRecipe: { id: "national-park-list-thumbnail", revision: 1 },
+          derivationRecipe: { id: "catalogue-list-thumbnail", revision: 1 },
         },
       });
       expect(park.selectedSource.accessibleDescription, park.slug).toContain(park.artBrief.themeCues[0]);
@@ -147,14 +147,14 @@ describe("the sourced U.S. National Parks authoring catalogue", () => {
       const bytes = await readFile(fileURLToPath(assetUrl));
       expect(bytes.byteLength, park.slug).toBeLessThanOrEqual(256 * 1024);
       expect(createHash("sha256").update(bytes).digest("hex"), park.slug).toBe(park.selectedSource.sha256);
-      expect(readJpegSize(bytes), park.slug).toEqual({ width: 896, height: 896 });
+      expect(readJpegHeaderSize(bytes), park.slug).toEqual({ width: 896, height: 896 });
       const thumbnailUrl = new URL(
         `../assets/national-parks/thumbnails/${park.selectedSource.thumbnail.fileName}`,
         import.meta.url,
       );
       const thumbnailBytes = await readFile(fileURLToPath(thumbnailUrl));
       expect(thumbnailBytes.byteLength, `${park.slug} thumbnail`).toBeLessThanOrEqual(16 * 1024);
-      expect(readJpegSize(thumbnailBytes), `${park.slug} thumbnail`).toEqual({
+      expect(readJpegHeaderSize(thumbnailBytes), `${park.slug} thumbnail`).toEqual({
         width: 128,
         height: 128,
       });
@@ -174,7 +174,7 @@ describe("the sourced U.S. National Parks authoring catalogue", () => {
   });
 });
 
-function readJpegSize(bytes: Uint8Array): { width: number; height: number } {
+function readJpegHeaderSize(bytes: Uint8Array): { width: number; height: number } {
   if (bytes[0] !== 0xff || bytes[1] !== 0xd8) throw new Error("Selected source is not a JPEG image.");
   let offset = 2;
   while (offset + 8 < bytes.length) {

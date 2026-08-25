@@ -69,6 +69,58 @@ export interface CatalogueAuthoringProject {
   status: "selected-source-study";
 }
 
+export interface CatalogueEdition {
+  schemaVersion: 1;
+  catalogueId: string;
+  edition: string;
+  declaredCount: number;
+  source: {
+    authority: string;
+    url: string;
+    section: string;
+    pageLastUpdated: string;
+    retrievedAt: string;
+    scope: string;
+  };
+}
+
+export type HistoricQuotationId = `historic-quotation/${string}`;
+
+export interface HistoricQuotationRecord {
+  quotationId: HistoricQuotationId;
+  text: string;
+  personName: string;
+  sourceTitle: string;
+  sourceUrl: string;
+  personWikipediaUrl?: string;
+}
+
+export interface CatalogueStudyRecord {
+  definitionId: string;
+  slug: string;
+  title: string;
+  criterion: string;
+  contextLabel: string;
+  aliases: readonly string[];
+  artBrief: BadgeArtBrief;
+  candidateStyles: readonly [string, string, string];
+  artBriefProvenance: {
+    kind: "curated-editorial";
+    note: string;
+    sourceUrls: readonly string[];
+  };
+  defaultQuotationId?: HistoricQuotationId;
+}
+
+export interface PlannedCatalogueStudyProject {
+  projectId: string;
+  definitionId: string;
+  brief: BadgeArtBrief;
+  candidates: readonly [CandidatePlan, CandidatePlan, CandidatePlan];
+  primaryCandidateKey: string;
+  status: "source-study-planned";
+}
+
 export interface SelectedSourceStudy {
   status: "selected-source-study";
   fileName: string;
@@ -87,7 +139,7 @@ export interface SelectedSourceStudy {
     promptBinding: "recorded-exact-canonical-prompt";
     rightsBasis: "owner-directed-original-generation-for-badge";
     normalization: {
-      recipe: { id: "national-park-study-jpeg"; revision: 1 };
+      recipe: { id: "national-park-study-jpeg" | "catalogue-study-jpeg"; revision: 1 };
       tool: "system-drawing";
       targetWidth: 896;
       targetHeight: 896;
@@ -101,7 +153,7 @@ export interface SelectedSourceStudy {
     width: 128;
     height: 128;
     sha256: string;
-    derivationRecipe: { id: "national-park-list-thumbnail"; revision: 1 };
+    derivationRecipe: { id: "catalogue-list-thumbnail"; revision: 1 };
   };
 }
 
@@ -119,6 +171,17 @@ export interface NationalParkAuthoringRecord {
   candidateStyles: readonly [string, string, string];
   selectedSource: SelectedSourceStudy;
 }
+
+export interface UsStateAuthoringRecord extends CatalogueStudyRecord {
+  defaultQuotationId: HistoricQuotationId;
+  censusStateFips: string;
+  postalCode: string;
+  name: string;
+}
+
+export type SelectedUsStateStudy = UsStateAuthoringRecord & {
+  selectedSource: SelectedSourceStudy;
+};
 
 export interface CommonAchievementIdea {
   id: string;

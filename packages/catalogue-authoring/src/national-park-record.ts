@@ -91,7 +91,7 @@ export function defineNationalPark(seed: NationalParkSeed): NationalParkAuthorin
         width: 128,
         height: 128,
         sha256: selectedSourceThumbnailHashes[seed.slug] ?? `pending:${seed.slug}`,
-        derivationRecipe: { id: "national-park-list-thumbnail", revision: 1 },
+        derivationRecipe: { id: "catalogue-list-thumbnail", revision: 1 },
       },
     },
   };

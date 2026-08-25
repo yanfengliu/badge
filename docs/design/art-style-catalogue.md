@@ -6,7 +6,7 @@ This document explains the curated authoring inputs in `packages/catalogue-autho
 
 The authoring library exists only for Badge Studio and release curation. Archive Discover receives a separate closed projection of deliberately promoted selected-study identity, display copy, and integrity-bound list thumbnails; it does not receive prompts, styles, candidate plans, provenance, full source studies, an installed pack, an art-provider adapter, or permission to generate artwork while browsing, planning, activating, restoring, or replaying a memory.
 
-The 2026-08-23 authoring edition contains `24` immutable creator-neutral style revisions, `63` U.S. national-park projects with three planned candidates and one selected source study per park, and `57` common-achievement ideas for later curation.
+The tracked authoring foundation contains `24` immutable creator-neutral style revisions, `63` U.S. national-park projects and `50` U.S.-state projects with three planned candidates and one selected source study per concept, plus `57` common-achievement ideas for later curation. The state selections deliberately distribute every one of the `24` styles across the fifty-study set.
 
 ## U.S. National Parks authoring edition
 
@@ -27,6 +27,18 @@ All `63` selected studies are normalized `896 × 896` JPEG files, each stays at 
 Those authoring-file measurements do not prove a publish-safe runtime pack. Publication normalizes runtime art to strict PNG, and direct use of all `63` studies at `896 × 896` would charge about `193 MiB` under decoded-image admission before the composite or additional maps, above the current `64 MiB` aggregate cap.
 
 Applying the current decoded-image admission formula to `448 × 448` derivatives leaves a plausible Phase 3 route under the budget alongside the current historical sources rather than requiring lower admission safety. That calculation does not choose the shipped quality tier or make a pack: Phase 3 must build the canonical derivatives and admit the complete closure, and still requires lazy-loading behavior, complete 3D recipes and fallback inputs, an all-parks source and presentation, canonical publication, runtime install and independent admission, starter-lineage migration and reconciliation, Archive backup v3, composite eligibility semantics, and preserved catalogue-update history.
+
+## U.S. States authoring edition
+
+The states list is sourced from the U.S. Census Bureau page [ANSI and FIPS Codes](https://www.census.gov/library/reference/code-lists/ansi/ansi-codes-for-states.html), specifically its state table, under executable edition `2021-10-08.census-ansi`. The edition declares exactly the fifty U.S. states and explicitly excludes the District of Columbia, Puerto Rico, and insular areas; the Census source establishes identity, abbreviation, and state FIPS code, while each art brief's landmarks, ecology, and motifs are separately curated editorial choices rather than Census claims.
+
+Each state project has the same three versioned candidate roles as the parks campaign: recognizable `landmark-witness@1`, original `emblematic-metaphor@1`, and terrain- or route-led `terrain-memory@1`. The campaign therefore records `150` deterministic candidate directions. One primary direction per state is bound to a natively reviewed `896 × 896` JPEG source study and an integrity-bound `128 × 128` list thumbnail, with stable state identity, exact prompt association, accessible description, sanitized provenance, and content hashes.
+
+The fifty selected studies use all `24` style revisions as their primary media, with no single collection-wide rendering look. Diversity is intentional across pixel, fiber, paint, print, ink, cartographic, paper, mosaic, geometric, ceramic, and wood families while the text-free source-art contract and physical badge renderer provide coherence.
+
+Each state authoring record also designates a source-linked default quotation whose complete words and attribution come from a reviewed real historical figure, with a biography URL when applicable. That default is release-authoring input for eventual publication rather than a runtime promise: state studies have no admitted quotation bank, render recipe, pack identity, or activation authority yet.
+
+The state studies cross into Archive only through the same closed safe Discover projection used for park studies. They remain selected source studies, not `PublishedBadgeVisual` values, installed definitions, `.badgepack` bytes, planned personal records, or activatable badges; publication still requires strict normalization, complete renderer and fallback closure, an authenticated quotation bank, canonical pack compilation, independent admission, installation, and backup coverage.
 
 ## Style library
 
@@ -77,7 +89,7 @@ Scene-local light remains valid subject matter. Shape, material, edge, relief, d
 
 The compiler requires visible NFC text, rejects blank values plus control and format characters with exact candidate and field context, and refuses a prompt larger than `16 KiB` of UTF-8 rather than silently normalizing, truncating, or changing the recipe.
 
-Run `npm run catalogue:prompts -- acadia` to print the exact selected Acadia prompt as JSON, pass several park slugs to inspect several selected prompts, or omit slugs to print all `63`. Candidate comparison in Studio may compile any of the three plans through the same function before selection.
+Run `npm run catalogue:prompts -- acadia` to print the exact selected Acadia prompt as JSON, pass several park slugs to inspect several selected prompts, or omit slugs to print all `63`. Run `npm run catalogue:state-prompts -- washington california` for selected state prompts, pass other state selectors for a focused set, or omit selectors to print all `50`. Candidate comparison in Studio may compile any of the three plans through the same function before selection.
 
 ## Common-achievement idea bank
 
@@ -86,6 +98,18 @@ The idea bank is a release-authoring queue rather than an Archive suggestion or 
 Examples include seeing the northern lights, completing a marathon, learning to swim, reading fifty books, earning a degree, shipping an app, making a garment, hosting a family reunion, mentoring someone, changing careers, and sustaining a lifelong friendship.
 
 Each idea carries a stable ID, title, honest criterion, three theme cues, and three suggested style IDs. All `171` idea-and-role combinations resolve to distinct candidate keys and compile through the same deterministic prompt contract. An idea has no selected art, presentation, `PackRef`, lifecycle state, or personal record until a later Studio curation and publication unit supplies them.
+
+## Planning-only expansion briefs
+
+The repository records source-boundary briefs for later catalogue work without representing those plans as authored or created badges. The municipality briefs identify exactly `281` incorporated Washington cities and towns in the April 1, 2026 Office of Financial Management edition and `483` incorporated California cities and towns in the 2026 state roster; both exclude unincorporated places and require stable Census place-FIPS reconciliation before authoring.
+
+The books brief freezes PBS's 2018 _Great American Read_ as one edition of `100` novels or series, preserves PBS's single-work-versus-series scope, and imports no cover art, descriptions, blurbs, or book text. It is a recognition-oriented editorial snapshot, not a universal canon or evidence of what the owner has read.
+
+The Tokyo brief is a non-exhaustive Badge-editorial seed of `34` durable places informed by the official GO TOKYO guide. Its landing-page research is not item-level provenance: every place must bind to its own current GO TOKYO or venue-authority URL before an authoring record or art brief may be created.
+
+Michelin dining remains one generic user-entered milestone template for a restaurant, location, visit date, and rating observed at that visit. The repository includes no scraped U.S. or Japan restaurant directory, current-status lookup, Michelin prose, logos, star pictograms, red trade dress, restaurant branding, or restaurant photography; a distributable enumerated edition requires permission or a licensed source.
+
+The life-milestone brief offers `64` optional reflection prompts across eight broad areas. They are non-normative and personal-honesty-only, with no age deadlines, hierarchy, score, diagnosis, prescribed family structure, required marriage or parenthood, required homeownership, or external verification.
 
 ## Expansion and revision protocol
 

@@ -1,12 +1,20 @@
 param(
-  [string]$OutputPath = "tmp/visual-evidence/national-parks-contact-sheet.png"
+  [string]$OutputPath = "tmp/visual-evidence/national-parks-contact-sheet.png",
+  [string]$CatalogueDirectory = "national-parks",
+  [ValidateRange(1, 1000)]
+  [int]$ExpectedCount = 63
 )
 
 $ErrorActionPreference = "Stop"
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot ".."))
-$assetsDirectory = [IO.Path]::GetFullPath(
-  (Join-Path $repoRoot "packages/catalogue-authoring/assets/national-parks")
-)
+$assetsRoot = [IO.Path]::GetFullPath((Join-Path $repoRoot "packages/catalogue-authoring/assets"))
+if ($CatalogueDirectory -notmatch '^[a-z0-9]+(?:-[a-z0-9]+)*$') {
+  throw "Contact-sheet rendering rejected catalogue directory '$CatalogueDirectory'. Use lowercase ASCII words separated by single hyphens."
+}
+$assetsDirectory = [IO.Path]::GetFullPath((Join-Path $assetsRoot $CatalogueDirectory))
+if (-not $assetsDirectory.StartsWith("$assetsRoot$([IO.Path]::DirectorySeparatorChar)", [StringComparison]::OrdinalIgnoreCase)) {
+  throw "Contact-sheet rendering refused asset path $assetsDirectory because it escapes $assetsRoot."
+}
 $outputFile = [IO.Path]::GetFullPath((Join-Path $repoRoot $OutputPath))
 $evidenceDirectory = [IO.Path]::GetFullPath((Join-Path $repoRoot "tmp/visual-evidence"))
 if (-not $outputFile.StartsWith("$evidenceDirectory$([IO.Path]::DirectorySeparatorChar)", [StringComparison]::OrdinalIgnoreCase)) {
@@ -14,8 +22,8 @@ if (-not $outputFile.StartsWith("$evidenceDirectory$([IO.Path]::DirectorySeparat
 }
 
 $assets = @(Get-ChildItem -LiteralPath $assetsDirectory -Filter "*.jpg" | Sort-Object Name)
-if ($assets.Count -ne 63) {
-  throw "Contact-sheet rendering found $($assets.Count) national-park studies in $assetsDirectory; prepare the exact 63-park edition first."
+if ($assets.Count -ne $ExpectedCount) {
+  throw "Contact-sheet rendering found $($assets.Count) studies in $assetsDirectory; prepare the exact $ExpectedCount-entry edition first."
 }
 
 New-Item -ItemType Directory -Path ([IO.Path]::GetDirectoryName($outputFile)) -Force | Out-Null

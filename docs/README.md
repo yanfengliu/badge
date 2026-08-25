@@ -6,7 +6,7 @@ This index names the current source of truth for each kind of decision.
 
 - [Vision](design/vision.md) owns the emotional goal, pillars, scope stance, and non-goals.
 - [Product specification](design/product-spec.md) owns domain language, user flows, requirements, examples, and unresolved product decisions.
-- [Visual direction](design/visual-direction.md) owns the chosen visual system, archive and Badge Studio surfaces, badge-art grammar, motion, accessibility, and promoted mockups.
+- [Visual direction](design/visual-direction.md) owns the chosen visual system, Archive and Badge Studio surfaces, the dated implemented-surface record, badge-art grammar, motion, accessibility, and promoted references.
 - [Roadmap](design/roadmap.md) owns implementation order and phase acceptance criteria.
 
 ## Architecture and policy

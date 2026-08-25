@@ -6,6 +6,7 @@
   "exports": {
     "./archive": "./src/archive.ts",
     "./discovery": "./src/discovery.ts",
+    "./future-expansion": "./src/future-expansion.ts",
     "./studio": "./src/studio.ts"
   }
 }

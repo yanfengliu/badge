@@ -10,6 +10,10 @@
     "./prompts": "./src/prompt-recipe.ts",
     "./campaign": "./src/national-parks-campaign.ts",
     "./common-campaign": "./src/common-achievement-campaign.ts",
-    "./ideas": "./src/common-achievements.ts"
+    "./ideas": "./src/common-achievements.ts",
+    "./states": "./src/us-states.ts",
+    "./states-campaign": "./src/us-states-campaign.ts",
+    "./state-studies": "./src/selected-us-state-studies.ts",
+    "./state-quotations": "./src/us-state-quotations.ts"
   }
 }

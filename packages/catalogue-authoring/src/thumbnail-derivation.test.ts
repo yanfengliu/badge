@@ -5,7 +5,7 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { regenerateNationalParkThumbnails } from "../../../scripts/national-park-thumbnail-derivation.mjs";
+import { regenerateCatalogueThumbnails } from "../../../scripts/national-park-thumbnail-derivation.mjs";
 
 const repositoryRoot = path.resolve(import.meta.dirname, "../../..");
 const sourceAssets = path.join(repositoryRoot, "packages/catalogue-authoring/assets/national-parks");
@@ -26,7 +26,7 @@ describe("national-park thumbnail derivation", () => {
       await copyFile(path.join(sourceAssets, "thumbnails/arches.jpg"), temporaryThumbnail);
       const staleHash = sha256(await readFile(temporaryThumbnail));
 
-      await regenerateNationalParkThumbnails({
+      await regenerateCatalogueThumbnails({
         repositoryRoot,
         sourceDirectory: temporarySources,
         outputDirectory: temporaryThumbnails,

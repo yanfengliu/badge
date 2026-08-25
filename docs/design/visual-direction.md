@@ -81,7 +81,7 @@ The initial pose is a calm, slightly oblique presentation that makes thickness l
 
 ### Collection gallery
 
-The gallery is a warm archival cabinet for earned memories only. Each collection is one deep framed shelf that starts closed, keeps collected artifacts in full color, and expands to a considered memory grid; empty shelf bays remain quiet rather than filling the cabinet with grey potential art.
+The gallery is a warm archival cabinet for earned memories only. Each represented collection is one deep framed shelf that starts closed, keeps collected artifacts in full color, and expands to a considered memory grid; sets with no earned records do not render as empty furniture, and an empty archive uses one deliberate callout rather than a cabinet of grey potential art.
 
 The surface retains the selected fancy Option 2 character through paper, inset shelf depth, fine rails, rust details, editorial serif hierarchy, and real badge imagery. Search and four derived collection statistics sit above the cabinet, while each set says only `x / y collected`; lifecycle copy, `planned`, and generic `x badges` labels do not appear.
 
@@ -89,7 +89,7 @@ Every picture and presentation is already decided by an installed pack. The gall
 
 ### Discovery catalogue
 
-Discover is the complete set browser rather than another personal gallery. A generous catalogue heading, canonical set rail, `x / y collected` progress, one search field, and a responsive card grid make all created visual concepts findable without turning the surface into a dashboard. The hierarchy borrows the useful category-progress, earned timestamp, and earned-versus-unearned scan cues of mature achievement systems while retaining Badge's quiet archival materials rather than game chrome, points, or rewards.
+Discover is the complete set browser rather than another personal gallery. A generous catalogue heading, wrapping canonical set rail, `x / y collected` progress, one search field, a responsive card grid, and bounded progressive reveal make all created visual concepts findable without turning the surface into a dashboard. The hierarchy borrows the useful category-progress, earned timestamp, and earned-versus-unearned scan cues of mature achievement systems while retaining Badge's quiet archival materials rather than game chrome, points, or rewards.
 
 Earned badges use full color, state `Collected`, and open the exact memory replay. Every potential badge is grey: a published unearned entry says `Ready to collect` and can open preparation in place, while a selected study says `Potential` and `Not yet published` and provides no false activation, quotation, 3D, install, provider, or authoring action. Missing thumbnails retain the complete searchable card with an explicit preview fallback rather than hiding the concept.
 
@@ -134,6 +134,111 @@ The earned-state replay action should feel like an intentional coda rather than 
 A recommended first-activation sequence is: commit state → brief alignment or pressure beat → crisp material impact or traveling highlight → relief resolves → saying appears → calm final hold that hands control to the same live 3D viewer. When the earned-state replay is invoked, the badge and saying are present together while the badge makes one complete passive turn and rests; replay exposes only close, while object-versus-light mode, zoom or scale, reset, fallback-view switching, and direct manipulation remain on inspection surfaces and the first activation ceremony.
 
 If one action also completes a composite badge, reveal the individual badge first, close the collection progress state, then present the composite artifact.
+
+## Implemented Archive surface record — 2026-08-25
+
+### Status and capture contract
+
+This dated record preserves the implemented Collection and Discover visual system so later catalogue work can distinguish accepted interface behavior from a new design proposal; the promoted collection and Atelier mockups remain mood, layout, and finish seeds rather than pixel specifications for these implemented surfaces.
+
+The executable values remain authoritative in Archive CSS, while this section records their semantic roles, component states, interaction hierarchy, and responsive intent so a mechanical restyle cannot silently erase the accepted design.
+
+The following optimized fixture-only captures are current implementation references, not aspirational mockups:
+
+- [Collection reference](assets/archive-collection-2026-08-25.png): route `/#collection`, `1440 × 1000` browser viewport override, one earned Yosemite fixture, one represented U.S. National Parks shelf expanded, inherent shelf browse surface hovered, captured 2026-08-25.
+- [Discover reference](assets/archive-discover-2026-08-25.png): route `/#discover`, `1440 × 1000` browser viewport override, U.S. States selected, `0 / 50 collected`, first bounded page of reviewed potential badges, captured 2026-08-25.
+
+Both states were also inspected at a `900 × 900` browser viewport override. The compact Collection shelf starts closed, the five Discover set segments wrap without an empty pseudo-segment, neither page overflows horizontally, and all 24 initially rendered state thumbnails decode successfully.
+
+### Shared tokens
+
+| Role            | Implemented value                                                                | Use                                                                    |
+| --------------- | -------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| Paper           | `#f3eee4`                                                                        | Primary Archive page field                                             |
+| Bright paper    | `#faf7f0`                                                                        | Inputs, active catalogue set, callouts, and lifted card surfaces       |
+| Deep paper      | `#e7dfd2`                                                                        | Artifact and image wells                                               |
+| Ink             | `#28261f`                                                                        | Primary text and active navigation                                     |
+| Soft ink        | `#5f5a50`                                                                        | Supporting prose and secondary labels                                  |
+| Faint ink       | `#6f685e`                                                                        | Metadata, counts, and quiet empty-state copy                           |
+| Rule            | `#d3cabd`                                                                        | Dividers and restrained control boundaries                             |
+| Rust            | `#ae4d2d`                                                                        | Active navigation, set selection, category labels, and primary accents |
+| Dark rust       | `#913c22`                                                                        | Readable rust action text                                              |
+| Mineral         | `#2f716d`                                                                        | Reserved cool mineral accent                                           |
+| Focus           | `#17656b`                                                                        | Global two-pixel focus outline with a three-pixel offset               |
+| Success         | `#536b58`                                                                        | Collected-state text and framing                                       |
+| Danger          | `#963c32`                                                                        | Actionable failure text                                                |
+| Display type    | `Iowan Old Style`, `Palatino Linotype`, `Book Antiqua`, Palatino, Georgia, serif | Headings, artifact titles, statistics, and reflective copy             |
+| Interface type  | Aptos, `Segoe UI Variable`, `Segoe UI`, system UI, sans serif                    | Controls, labels, status, and utility copy                             |
+| Controlled ease | `cubic-bezier(0.2, 0.72, 0.2, 1)`                                                | Short disclosure and surface-state transitions                         |
+
+The shared desktop content measure is at most `1480px`; the Archive header is `74px` high on wide desktop, becomes a `118px` two-row header at `1180px` and below, and becomes `108px` high at `640px` and below.
+
+### Collection state contract
+
+Collection is the personal earned-memory cabinet: potential and unpublished badge pictures never fill its shelves, and a canonical set appears only after at least one earned record represents it.
+
+| State                                 | Visual contract                                                                                                                                                                                                | Behavior contract                                                                                        |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| Page masthead                         | Rust uppercase eyebrow, very large regular-weight editorial serif title, reflective serif introduction, one search field, and a four-cell ruled statistics strip                                               | Search and statistics remain visually secondary to the archive title                                     |
+| Empty archive                         | One bright-paper ruled callout says that the cabinet is waiting; no result count, search-miss copy, canonical shelf, or empty bay competes with it                                                             | The only invitation leads to Discover and does not create or activate anything by itself                 |
+| Closed canonical shelf                | Inset warm-paper bay, substantial upper and lower rails, restrained shadow depth, set title, description, and only `x / y collected`                                                                           | Shelves begin closed and disclosure state remains ephemeral                                              |
+| Canonical shelf browse hover or focus | The ordinary shelf segment alone receives `rgba(170, 73, 42, 0.07)` tint and a two-pixel inset rust highlight                                                                                                  | It opens the exact set in Discover; replay and disclosure targets never trigger or advertise this action |
+| Collected artifact preview            | Up to three full-color shaped artifacts carry a deep-paper well, substantial border, and shadow; compact circle and square previews are `166 × 166px`, rectangle is `238 × 142px`, and shield is `166 × 178px` | Selecting an artifact opens the exact earned memory replay                                               |
+| Expanded shelf                        | A slightly deeper paper field sits below a fine rule and contains a considered memory grid                                                                                                                     | Every collected record in the set becomes reachable without changing durable state                       |
+| Resolving art                         | The shaped artifact well remains present with explicit quiet resolution copy                                                                                                                                   | Missing asynchronous source resolution does not collapse the shelf geometry                              |
+| Search miss                           | A centered, generous empty field names the failed collected-memory search and suggests valid search dimensions                                                                                                 | Search never opens a shelf or exposes potential catalogue entries                                        |
+
+### Discover state contract
+
+Discover is the complete created-concept browser: a generous editorial hero and one ruled progress summary lead into a canonical set selector, one search field, a result heading, and a responsive card grid.
+
+| State                      | Visual contract                                                                                                                               | Behavior contract                                                                            |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| All sets                   | The `All sets` segment is bright paper with a three-pixel rust underline; the hero reports Archive progress                                   | All created visual concepts participate in search and results                                |
+| Selected set               | The selected segment uses the same bright-paper and rust-underline treatment, and the hero adopts that set's title, description, and progress | `aria-pressed` and explicit `x / y collected` text communicate selection without color alone |
+| Collected badge            | Full-color art, collected-success framing, and explicit `Collected` pill                                                                      | `View memory` opens the exact earned replay                                                  |
+| Published unearned badge   | Quiet grey art with explicit `Ready to collect` pill                                                                                          | `Prepare badge` opens the existing preparation flow in place                                 |
+| Selected source study      | Quiet grey art with explicit `Potential` pill and `Not yet published` copy                                                                    | It exposes no activation, quotation, 3D, install, provider, or authoring action              |
+| Missing reviewed thumbnail | The complete card and copy remain, with an explicit `Preview unavailable` image fallback                                                      | Missing list art never hides the concept or invents an action                                |
+| Progressive reveal         | The first 24 matching cards render with explicit `Showing x of y` copy and one quiet `Show n more` action                                     | Each action adds at most 24 cards; changing the set or query resets the bounded window       |
+| Search miss                | A centered, generous empty field names the failed search and suggests valid catalogue dimensions                                              | Set selection remains intact while the query changes                                         |
+
+Potential art uses `grayscale(1) saturate(0.1) contrast(0.88)` at `0.52` opacity; the explicit state pill and action or non-action copy remain the primary truth rather than the filter alone.
+
+At wide desktop the set selector uses five flexible segments for `All sets` and the four recorded sets, while the result grid uses three columns; each card reserves a `156px` art column containing a `128 × 128px` reviewed list image and keeps status as a compact paper pill over that image.
+
+### Interaction precedence
+
+| Surface                                     | Primary action                        | Independent neighboring action                                |
+| ------------------------------------------- | ------------------------------------- | ------------------------------------------------------------- |
+| Collection ordinary canonical shelf segment | Browse that exact set in Discover     | None                                                          |
+| Collection shaped artifact                  | Replay that exact earned memory       | It must not browse or expand the shelf                        |
+| Collection circular disclosure              | Expand or collapse collected memories | It must not browse or replay                                  |
+| Discover set segment                        | Select one catalogue set              | It must not prepare or replay a badge                         |
+| Discover collected card action              | View exact memory                     | Card art and status remain descriptive                        |
+| Discover published-unearned card action     | Prepare exact badge                   | It does not route through Collection                          |
+| Discover source-study card                  | No action                             | Status and nonpublication copy remain selectable and readable |
+
+Keyboard focus uses the shared focus token, selected states retain text or semantics in addition to color, and overlapping shelf controls preserve the same action boundaries for pointer, keyboard, and assistive-technology users.
+
+### Responsive and reduced-motion record
+
+| Width or preference              | Implemented response                                                                                                                                             |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `1180px` and below               | Archive header becomes two rows; Collection masthead becomes one column; Collection memory grids and Discover badge results become two columns                   |
+| `900px` and below                | Discover hero becomes one column and its five set segments wrap into balanced flexible rows without leaving a false empty segment                                |
+| `820px` and below                | Collection shelf copy and disclosure form the first row while the artifact strip becomes a second, horizontally scrollable row                                   |
+| `640px` and below                | Header becomes `108px`; Collection statistics become a two-by-two matrix; Collection memory grids, Discover set segments, and Discover results become one column |
+| `420px` and below                | Discover cards reserve a `112px` art column with a `96 × 96px` image and compact status and copy spacing                                                         |
+| `prefers-reduced-motion: reduce` | Collection browse and disclosure transitions and Discover art-filter transitions are removed without changing state, focus, or direct control response           |
+
+### Catalogue scaling trigger
+
+This record captures an implementation designed and visually verified with four canonical sets and 116 created concepts; those numbers describe the snapshot rather than a permanent catalogue limit.
+
+The first scaling decision is implemented: Collection renders only sets represented by earned records, while Discover searches the complete catalogue and places no more than 24 matching cards in the DOM before an explicit progressive-reveal action. Further set growth must group or otherwise restructure the wrapping selector before it becomes an unbounded taxonomy rail.
+
+The scale proof must measure DOM and card counts, list-image request counts, decoded dimensions and worst-case pixel bounds, horizontal overflow, keyboard reachability, and empty, mixed-state, filtered, and missing-preview layouts at the required wide and compact desktop viewports; `loading="lazy"` alone is not evidence that the expanded catalogue remains bounded.
 
 ## Motion and sound
 

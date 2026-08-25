@@ -75,30 +75,34 @@ export function CollectionView({
         </div>
       ) : null}
 
-      <div className="collection-result-count" aria-live="polite">
-        {visibleShelves.length} {visibleShelves.length === 1 ? "set" : "sets"}
-      </div>
+      {stats.collectedCount > 0 ? (
+        <>
+          <div className="collection-result-count" aria-live="polite">
+            {visibleShelves.length} {visibleShelves.length === 1 ? "set" : "sets"}
+          </div>
 
-      {visibleShelves.length > 0 ? (
-        <section className="collection-cabinet" aria-label="Collected badge sets">
-          {visibleShelves.map((shelf) => (
-            <CollectionShelfRow
-              key={shelf.key}
-              shelf={shelf}
-              sourceUrls={sourceUrls}
-              open={expanded.has(shelf.key)}
-              onToggle={() => toggleShelf(shelf.key)}
-              onReplay={onReplay}
-              onBrowseSet={onBrowseSet}
-            />
-          ))}
-        </section>
-      ) : (
-        <div className="collection-search-empty" role="status">
-          <strong>No collected memories match this search.</strong>
-          <span>Try a set name, title, criterion, note, or quote.</span>
-        </div>
-      )}
+          {visibleShelves.length > 0 ? (
+            <section className="collection-cabinet" aria-label="Collected badge sets">
+              {visibleShelves.map((shelf) => (
+                <CollectionShelfRow
+                  key={shelf.key}
+                  shelf={shelf}
+                  sourceUrls={sourceUrls}
+                  open={expanded.has(shelf.key)}
+                  onToggle={() => toggleShelf(shelf.key)}
+                  onReplay={onReplay}
+                  onBrowseSet={onBrowseSet}
+                />
+              ))}
+            </section>
+          ) : (
+            <div className="collection-search-empty" role="status">
+              <strong>No collected memories match this search.</strong>
+              <span>Try a set name, title, criterion, note, or quote.</span>
+            </div>
+          )}
+        </>
+      ) : null}
     </main>
   );
 }

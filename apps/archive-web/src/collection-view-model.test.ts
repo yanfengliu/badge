@@ -37,7 +37,7 @@ function earn(
 }
 
 describe("collection view model", () => {
-  it("builds shelves from earned records only and uses complete Discover set totals", () => {
+  it("builds only represented shelves from earned records and uses complete Discover set totals", () => {
     const state = earn(
       createStarterArchiveState(),
       STARTER_RECORD_IDS[0]!,
@@ -48,7 +48,7 @@ describe("collection view model", () => {
 
     const shelves = buildCollectionShelves(state);
 
-    expect(shelves).toHaveLength(3);
+    expect(shelves).toHaveLength(1);
     expect(shelves[0]).toMatchObject({
       setId: "us-national-parks",
       title: "U.S. National Parks",
@@ -57,9 +57,11 @@ describe("collection view model", () => {
     });
     expect(shelves[0]?.records.map((record) => record.recordId)).toEqual([STARTER_RECORD_IDS[0]]);
     expect(shelves[0]?.records.some((record) => record.lifecycle !== "earned")).toBe(false);
-    expect(shelves.slice(1).every((shelf) => shelf.collectedCount === 0 && shelf.records.length === 0)).toBe(
-      true,
-    );
+    expect(shelves.every((shelf) => shelf.collectedCount > 0 && shelf.records.length > 0)).toBe(true);
+  });
+
+  it("does not turn every discoverable set into an empty Collection shelf", () => {
+    expect(buildCollectionShelves(createStarterArchiveState())).toEqual([]);
   });
 
   it("counts records globally while counting every qualified set membership", () => {

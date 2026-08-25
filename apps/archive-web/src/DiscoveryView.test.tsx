@@ -13,6 +13,32 @@ if (!available || !sourceStudy) {
 }
 
 describe("DiscoveryView", () => {
+  it("bounds the initial all-sets result DOM and offers progressive disclosure", () => {
+    const manyBadges = Array.from({ length: 31 }, (_, index) => ({
+      ...sourceStudy,
+      discoveryId: `scale-study-${index}`,
+      title: `Scale study ${index}`,
+    }));
+    const html = renderToStaticMarkup(
+      <DiscoveryView
+        badges={manyBadges}
+        collectedRecordIds={new Set()}
+        resolvedSourceUrls={{}}
+        selectedSetId={null}
+        query=""
+        onSetChange={() => undefined}
+        onQueryChange={() => undefined}
+        onOpenAvailableBadge={() => undefined}
+        onOpenCollectedBadge={() => undefined}
+        resolveThumbnail={(thumbnailKey) => `/thumbnails/${thumbnailKey}`}
+      />,
+    );
+
+    expect(html.match(/<article class="discovery-card/g)).toHaveLength(24);
+    expect(html).toContain("Showing 24 of 31 results");
+    expect(html).toContain("Show 7 more");
+  });
+
   it("introduces one exhaustive catalogue organized into browsable sets", () => {
     const html = renderToStaticMarkup(
       <DiscoveryView
@@ -32,7 +58,9 @@ describe("DiscoveryView", () => {
     expect(html).toContain("Discover sets");
     expect(html).toContain("All sets");
     expect(html).toContain("U.S. National Parks");
+    expect(html).toContain("U.S. States");
     expect(html).toContain("0 / 64 collected");
+    expect(html).toContain("0 / 50 collected");
     expect(html).toContain("0 / 1 collected");
     expect(html).toContain(available.title);
     expect(html).toContain(sourceStudy.title);
@@ -52,6 +80,20 @@ describe("DiscoveryView", () => {
     expect(parks).toHaveLength(64);
     expect(parks.some((badge) => badge.availability === "available")).toBe(true);
     expect(parks.some((badge) => badge.availability === "source-study")).toBe(true);
+  });
+
+  it("discovers the complete state edition by state, USPS code, or set title", () => {
+    const states = filterDiscoveryBadges(discoveryBadges, "", "us-states");
+    expect(states).toHaveLength(50);
+    expect(filterDiscoveryBadges(states, "Washington", "us-states").map((badge) => badge.title)).toEqual([
+      "Washington",
+    ]);
+    expect(filterDiscoveryBadges(states, "WA Census FIPS 53", null).map((badge) => badge.title)).toEqual([
+      "Washington",
+    ]);
+    expect(filterDiscoveryBadges(states, "WA", null).map((badge) => badge.title)).toEqual(["Washington"]);
+    expect(filterDiscoveryBadges(states, "CA", null).map((badge) => badge.title)).toEqual(["California"]);
+    expect(filterDiscoveryBadges(states, "OR", null).map((badge) => badge.title)).toEqual(["Oregon"]);
   });
 
   it("labels a multi-set card with the selected set rather than its primary set", () => {

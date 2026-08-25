@@ -1,5 +1,6 @@
 # Devlog Summary
 
+- 2026-08-25: Added a sourced and visually reviewed fifty-state discovery edition across twenty-four art styles, exact historical-quotation defaults, progressive searchable Discover scaling, represented-only Collection shelves, truthful future catalogue plans, and a durable UI visual record.
 - 2026-08-24: Made each canonical Collection shelf itself the Discover set action with a full-segment hover and keyboard-focus highlight, while keeping badge replay and disclosure controls independent and removing the redundant `Browse set` label.
 - 2026-08-24: Rebuilt Collection as an earned-only fancy field cabinet with closed set shelves, search and derived stats; made Discover the complete color-versus-grey set browser; added exact memory replay and set drill-down; and aligned Archive and Studio on four primary destinations.
 - 2026-08-24: Standardized unearned starter legacy sayings to curated historical quotations, preserved earned memory exactly, added separately bound English-Wikipedia biography provenance to quotation contract v3, and split figure and quotation-source presentation into two rows.
