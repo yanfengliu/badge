@@ -67,7 +67,7 @@ describe("TimelineView", () => {
         sourceUrls={{ [older.recordId]: "blob:older", [newer.recordId]: "blob:newer" }}
         forceFallback={false}
         onOpenMemory={() => undefined}
-        onShowCollection={() => undefined}
+        onShowDiscover={() => undefined}
       />,
     );
     expect(html.indexOf(newer.title)).toBeLessThan(html.indexOf(older.title));
@@ -75,7 +75,7 @@ describe("TimelineView", () => {
     expect(html).toMatch(/May 1, 2022<\/time> – <time[^>]*>May 3, 2022<\/time>/u);
     expect(html).toContain(`Remember ${newer.title}.`);
     expect(html).toContain(`A note for ${older.title}.`);
-    expect(html).toContain(`Open ${newer.title} memory`);
+    expect(html).toContain(`Replay ${newer.title} memory`);
     expect(html).toContain(`Badge artifact: ${newer.activation?.visualPin.accessibleDescription}`);
     expect(html).not.toContain("A later catalogue visual that was not activated.");
     expect(html).toContain("badge-preview timeline-badge-preview");
@@ -123,7 +123,7 @@ describe("TimelineView", () => {
         sourceUrls={sourceUrls}
         forceFallback={false}
         onOpenMemory={() => undefined}
-        onShowCollection={() => undefined}
+        onShowDiscover={() => undefined}
       />,
     );
 
@@ -173,12 +173,12 @@ describe("TimelineView", () => {
         sourceUrls={{}}
         forceFallback
         onOpenMemory={() => undefined}
-        onShowCollection={() => undefined}
+        onShowDiscover={() => undefined}
       />,
     );
 
     expect(html).toContain("No memories sealed yet");
-    expect(html).toContain("Return to collection");
+    expect(html).toContain("Browse Discover");
     expect(html).not.toContain("timeline-entry");
   });
 
@@ -209,7 +209,7 @@ describe("TimelineView", () => {
         sourceUrls={{}}
         forceFallback
         onOpenMemory={() => undefined}
-        onShowCollection={() => undefined}
+        onShowDiscover={() => undefined}
       />,
     );
     expect(html).toContain('aria-label="1 earned memory"');

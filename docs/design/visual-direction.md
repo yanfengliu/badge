@@ -81,17 +81,17 @@ The initial pose is a calm, slightly oblique presentation that makes thickness l
 
 ### Collection gallery
 
-The gallery favors one strong collection or badge focal point and a quiet supporting strip rather than grids of equal-weight cards and metrics.
+The gallery is a warm archival cabinet for earned memories only. Each collection is one deep framed shelf that starts closed, keeps collected artifacts in full color, and expands to a considered memory grid; empty shelf bays remain quiet rather than filling the cabinet with grey potential art.
 
-Collection progress is visible but subordinate to the artifact and memory.
+The surface retains the selected fancy Option 2 character through paper, inset shelf depth, fine rails, rust details, editorial serif hierarchy, and real badge imagery. Search and four derived collection statistics sit above the cabinet, while each set says only `x / y collected`; lifecycle copy, `planned`, and generic `x badges` labels do not appear.
 
 Every picture and presentation is already decided by an installed pack. The gallery never shows prompts, candidates, uploads, processing, appearance construction, provider state, or calls to create missing art.
 
 ### Discovery catalogue
 
-Discover is a broad but quiet editorial index rather than another personal gallery. A generous catalogue heading, compact availability totals, one search field, one availability filter, and a responsive card grid make all created visual concepts findable without turning the surface into a dashboard.
+Discover is the complete set browser rather than another personal gallery. A generous catalogue heading, canonical set rail, `x / y collected` progress, one search field, and a responsive card grid make all created visual concepts findable without turning the surface into a dashboard. The hierarchy borrows the useful category-progress, earned timestamp, and earned-versus-unearned scan cues of mature achievement systems while retaining Badge's quiet archival materials rather than game chrome, points, or rewards.
 
-Available badges use their published preview and one restrained `Open in Collection` action. Selected studies use only the reviewed list thumbnail, state `Selected study` and `Not yet published`, and provide no false badge shape, activation, quotation, 3D, install, provider, or authoring action. Missing thumbnails retain the complete searchable card with an explicit preview fallback rather than hiding the concept.
+Earned badges use full color, state `Collected`, and open the exact memory replay. Every potential badge is grey: a published unearned entry says `Ready to collect` and can open preparation in place, while a selected study says `Potential` and `Not yet published` and provides no false activation, quotation, 3D, install, provider, or authoring action. Missing thumbnails retain the complete searchable card with an explicit preview fallback rather than hiding the concept.
 
 ### Memory timeline
 

@@ -18,6 +18,33 @@ interface FocusTarget {
   focus(): void;
 }
 
+interface ModalFocusRegistration {
+  readonly element: HTMLElement;
+}
+
+const modalFocusStacks = new WeakMap<Document, ModalFocusRegistration[]>();
+
+function registerModalFocus(element: HTMLElement): {
+  isTop: () => boolean;
+  unregister: () => boolean;
+} {
+  const ownerDocument = element.ownerDocument;
+  const stack = modalFocusStacks.get(ownerDocument) ?? [];
+  if (stack.length === 0) modalFocusStacks.set(ownerDocument, stack);
+  const registration = { element };
+  stack.push(registration);
+  return {
+    isTop: () => stack.at(-1) === registration,
+    unregister: () => {
+      const wasTop = stack.at(-1) === registration;
+      const index = stack.indexOf(registration);
+      if (index >= 0) stack.splice(index, 1);
+      if (stack.length === 0) modalFocusStacks.delete(ownerDocument);
+      return wasTop;
+    },
+  };
+}
+
 export function updateModalCloseHandler(handlerRef: { current: () => void }, onClose: () => void): void {
   handlerRef.current = onClose;
 }
@@ -44,11 +71,17 @@ export function useModalFocus(
   const returnFocus = options.returnFocus;
 
   useEffect(() => {
-    const previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const modalElement = dialog.current;
+    if (!modalElement) return;
+    const ownerDocument = modalElement.ownerDocument;
+    const focusRegistration = registerModalFocus(modalElement);
+    const previouslyFocused =
+      ownerDocument.activeElement instanceof HTMLElement ? ownerDocument.activeElement : null;
     const focusOnClose = returnFocus?.current;
     initialFocus.current?.focus();
 
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (!focusRegistration.isTop()) return;
       if (event.key === "Escape") {
         event.preventDefault();
         if (shouldDismissModalForKey(event.key, escapeEnabled)) onCloseRef.current();
@@ -65,7 +98,7 @@ export function useModalFocus(
       }
       const first = focusable[0];
       const last = focusable[focusable.length - 1];
-      const active = document.activeElement;
+      const active = ownerDocument.activeElement;
       if (event.shiftKey && (active === first || !dialog.current.contains(active))) {
         event.preventDefault();
         last.focus();
@@ -75,10 +108,10 @@ export function useModalFocus(
       }
     };
 
-    document.addEventListener("keydown", handleKeyDown);
+    ownerDocument.addEventListener("keydown", handleKeyDown);
     return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      restoreModalFocus(focusOnClose ?? null, previouslyFocused);
+      ownerDocument.removeEventListener("keydown", handleKeyDown);
+      if (focusRegistration.unregister()) restoreModalFocus(focusOnClose ?? null, previouslyFocused);
     };
   }, [dialog, escapeEnabled, initialFocus, returnFocus]);
 }

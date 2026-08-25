@@ -130,12 +130,15 @@ button {
 
 .nav-link {
   position: relative;
+  display: inline-flex;
+  align-items: center;
   border: 0;
   background: transparent;
   color: var(--ink-soft);
   cursor: pointer;
   font-size: 14px;
   letter-spacing: 0.015em;
+  text-decoration: none;
 }
 
 .nav-link[aria-current="page"] {

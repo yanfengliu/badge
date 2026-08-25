@@ -2,6 +2,20 @@
 
 Append decisions newest first. Never rewrite history; add a superseding entry that links to the decision it replaces.
 
+## 2026-08-24 — D-046: Separate earned Collection from set-complete Discover
+
+**Status:** Owner-confirmed and implemented for the current Archive and Studio navigation, superseding D-043's available-entry handoff into the former mixed-lifecycle Collection surface.
+
+Collection is the owner's earned cabinet, not the place where unearned catalogue records are prepared. It derives only activated records from `ArchiveState`, groups each record under every qualified `CollectionRef`, maps the current starter pack's known refs into a closed canonical Discover set registry, and retains qualified fallback keys for unknown future installed or local collections. Each canonical shelf exists even when empty, starts collapsed, shows collected artifacts only, and reports only `x / y collected`; search, expansion state, collected count, represented-set count, occurrence-year span, and latest memory are ephemeral projections and add no persisted collection-layout or statistics state.
+
+Discover owns complete set browsing. Its closed safe projection now gives every created visual concept one or more canonical set IDs and exposes three current sets with exact populations of sixty-four, one, and one. An earned published entry is overlaid from its existing Archive record and appears in full color with an exact-memory action. Every unearned entry is grey with explicit non-color status: published entries remain `Ready to collect` and enter the existing pre-generated-quotation preparation and activation flow inside Discover, while source studies remain non-actionable `Potential` entries labeled `Not yet published`. This changes no source study into a published visual and adds no personal state to catalogue fixtures.
+
+Selecting a collected artifact opens one memory replay overlay rather than the old mixed-lifecycle detail workbench. Replay presents the activation-pinned passive turn, occurrence range, separate sealed time, exact accepted quotation, recoverable historical-figure biography and quotation-source links, note, and every set membership. A set action closes replay and opens Discover with that mapped set selected; primary Discover navigation clears the transient set context. Timeline uses the same exact replay. Legacy accepted text that cannot be recovered from the trusted starter quotation bank remains visible without invented provenance.
+
+The visible primary navigation has exactly four destinations in both route-scoped applications: Collection, Timeline, Discover, and Badge Studio. The first three remain ephemeral Archive sections at `/` with URL hashes for cross-route return; Badge Studio remains the independently built and persisted `/studio/` application. Visual peer placement does not authorize either application to import the other's implementation or database.
+
+This decision borrows category progress, earned color versus potential grey, earned timestamps, and detail-to-category drill-down from mature achievement systems without introducing points, rewards, completion pressure, game chrome, social comparison, or a new durable achievement model. It narrows D-043's presentation and navigation behavior while retaining its safe-projection, privacy, publication, and bundle boundaries.
+
 ## 2026-08-24 — D-045: Standardize unearned starter quotations and separate figure biography provenance
 
 **Status:** Owner-confirmed and implemented for the current four starter records, superseding D-041's preservation of every non-null legacy saying while retaining D-042's sealed-memory boundary.

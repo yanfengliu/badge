@@ -1,0 +1,137 @@
+import type { FormEvent, RefObject } from "react";
+import type { ArchiveRecord } from "@badge/archive-domain";
+import { BadgeViewer } from "@badge/renderer-web";
+
+import type { ActivationDraft, ArchiveVisualDisplay } from "./app-types";
+import { formatDate } from "./browser-utilities";
+import { replaySetLinks } from "./collection-view-model";
+import { MemoryActivationForm } from "./MemoryActivationForm";
+import { ReplayActivationButton } from "./ReplayActivationButton";
+import { SayingComposer } from "./SayingComposer";
+import type { SayingWorkflow } from "./use-saying-workflow";
+
+interface BadgePreparationViewProps {
+  readonly record: ArchiveRecord;
+  readonly visual: ArchiveVisualDisplay | null;
+  readonly draft: ActivationDraft;
+  readonly saying: SayingWorkflow;
+  readonly activating: boolean;
+  readonly forceFallback: boolean;
+  readonly actionButtonRef: RefObject<HTMLButtonElement | null>;
+  readonly headingRef: RefObject<HTMLHeadingElement | null>;
+  readonly sayingFocusRef: RefObject<HTMLDivElement | null>;
+  readonly onBack: () => void;
+  readonly onDraftChange: (patch: Partial<ActivationDraft>) => void;
+  readonly onActivate: (event: FormEvent) => void;
+  readonly onReplay: () => void;
+}
+
+export function BadgePreparationView({
+  record,
+  visual,
+  draft,
+  saying,
+  activating,
+  forceFallback,
+  actionButtonRef,
+  headingRef,
+  sayingFocusRef,
+  onBack,
+  onDraftChange,
+  onActivate,
+  onReplay,
+}: BadgePreparationViewProps) {
+  const sets = replaySetLinks(record);
+  return (
+    <main className="archive-main badge-preparation">
+      <section className="artifact-pane" aria-label={`${record.title} badge preview`}>
+        <div className="collection-heading">
+          <div>
+            <p className="eyebrow">Prepare from Discover</p>
+            <h1 id="badge-preparation-heading" ref={headingRef} tabIndex={-1}>
+              {record.title}
+            </h1>
+          </div>
+          <button className="text-button" type="button" onClick={onBack}>
+            Back to set
+          </button>
+        </div>
+        <div className={`artifact-stage${forceFallback ? " fallback-stage" : ""}`}>
+          {visual ? (
+            <BadgeViewer
+              sourceUrl={visual.sourceUrl}
+              recipe={visual.pin.renderRecipe}
+              accessibleDescription={visual.pin.accessibleDescription}
+              readOnly
+              forceFallback={forceFallback}
+            />
+          ) : (
+            <p className="visual-loading" role="status">
+              Resolving the published visual…
+            </p>
+          )}
+        </div>
+      </section>
+
+      <section className="story-pane" aria-label={`${record.title} preparation details`}>
+        <div className="story-content">
+          <div className="pack-line">
+            <span>{sets.map((set) => set.title).join(" · ")}</span>
+            <span>Published artifact · v1</span>
+          </div>
+          <h2 className="story-title">{record.title}</h2>
+          <p className="criterion">
+            <strong>{record.criterion}.</strong> {record.description}
+          </p>
+
+          <SayingComposer
+            lifecycle={record.lifecycle}
+            acceptedSaying={record.acceptedSaying}
+            acceptedQuotation={saying.acceptedQuotation}
+            proposal={saying.proposal}
+            saving={saying.saving}
+            generationBlocked={saying.disclosure.phase !== "idle"}
+            providerNote={saying.providerNote}
+            successAnnouncement={saying.successAnnouncement}
+            focusTargetRef={sayingFocusRef}
+            onGenerate={saying.request}
+          />
+
+          {record.lifecycle === "earned" && record.activation ? (
+            <div className="earned-memory">
+              <h2>This memory is collected.</h2>
+              <div className="memory-meta">
+                <div>
+                  <span>Happened</span>
+                  <strong>
+                    {formatDate(record.activation.occurredStart)}
+                    {record.activation.occurredEnd !== record.activation.occurredStart
+                      ? ` – ${formatDate(record.activation.occurredEnd)}`
+                      : ""}
+                  </strong>
+                </div>
+                <div>
+                  <span>Visibility</span>
+                  <strong>{record.visibility === "inherit" ? "Archive default" : record.visibility}</strong>
+                </div>
+              </div>
+              {record.note ? <p className="memory-note">{record.note}</p> : null}
+              <ReplayActivationButton buttonRef={actionButtonRef} onReplay={onReplay} />
+            </div>
+          ) : (
+            <MemoryActivationForm
+              draft={draft}
+              acceptedSaying={record.acceptedSaying}
+              sourceChecked={saying.acceptedQuotation !== null}
+              activating={activating}
+              saving={saying.saving}
+              buttonRef={actionButtonRef}
+              onDraftChange={onDraftChange}
+              onSubmit={onActivate}
+            />
+          )}
+        </div>
+      </section>
+    </main>
+  );
+}

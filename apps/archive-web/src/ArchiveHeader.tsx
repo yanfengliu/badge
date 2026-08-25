@@ -2,7 +2,7 @@ import { useRef, type ChangeEvent } from "react";
 
 import { companionAppHref } from "../../local-origins";
 import { ArchiveSectionNav, type ArchiveSection } from "./ArchiveSectionNav";
-import { ArchiveMark, ArrowIcon, DownloadIcon, UploadIcon } from "./icons";
+import { ArchiveMark, DownloadIcon, UploadIcon } from "./icons";
 
 export type { ArchiveSection } from "./ArchiveSectionNav";
 
@@ -20,7 +20,11 @@ export function ArchiveHeader({ activeSection, onSectionChange, onBackup, onRest
       <div className="brand">
         <ArchiveMark /> Badge Archive
       </div>
-      <ArchiveSectionNav activeSection={activeSection} onSectionChange={onSectionChange} />
+      <ArchiveSectionNav
+        activeSection={activeSection}
+        onSectionChange={onSectionChange}
+        studioHref={companionAppHref(window.location.href, "studio")}
+      />
       <div className="header-actions">
         <button className="quiet-button" type="button" aria-label="Back up archive" onClick={onBackup}>
           <DownloadIcon />
@@ -35,9 +39,6 @@ export function ArchiveHeader({ activeSection, onSectionChange, onBackup, onRest
           <UploadIcon />
           <span>Restore</span>
         </button>
-        <a className="quiet-button studio-link" href={companionAppHref(window.location.href, "studio")}>
-          Badge Studio <ArrowIcon />
-        </a>
         <span className="avatar" aria-label="Local private profile">
           YL
         </span>

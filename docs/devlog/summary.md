@@ -1,5 +1,6 @@
 # Devlog Summary
 
+- 2026-08-24: Rebuilt Collection as an earned-only fancy field cabinet with closed set shelves, search and derived stats; made Discover the complete color-versus-grey set browser; added exact memory replay and set drill-down; and aligned Archive and Studio on four primary destinations.
 - 2026-08-24: Standardized unearned starter legacy sayings to curated historical quotations, preserved earned memory exactly, added separately bound English-Wikipedia biography provenance to quotation contract v3, and split figure and quotation-source presentation into two rows.
 - 2026-08-24: Removed the angle-dependent triangle lattice from wool badges with irregular deterministic microfibers, gentler bump response, bounded oblique sampling, and a full short-period material gate.
 - 2026-08-24: Simplified earned-state activation replay to one passive 360-degree badge turn with no inspection, scale, or reset controls and a static reduced-motion or renderer-fallback form, while preserving first-activation inspection.

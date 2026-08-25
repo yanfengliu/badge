@@ -1,7 +1,9 @@
 import type { FixtureCollection, PublishedBadgeFixture } from "./types";
 
+export const STARTER_PACK_ID = "badge.catalogue.starter";
+
 const starterPackRef = {
-  packId: "badge.catalogue.starter",
+  packId: STARTER_PACK_ID,
   version: "1.0.0-alpha.3",
   packDigest: "5b7135a70477130907050a9921da342e927980838ee9b1ae03a4d41809c6ffe3",
 } as const;

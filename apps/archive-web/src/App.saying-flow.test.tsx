@@ -110,6 +110,7 @@ describe("mounted historical-quotation flow", () => {
 
   beforeEach(async () => {
     providerRequests.length = 0;
+    window.history.replaceState(null, "", "/");
     container = document.createElement("div");
     document.body.replaceChildren(container);
     originalCreateObjectUrl = Object.getOwnPropertyDescriptor(URL, "createObjectURL");
@@ -141,6 +142,14 @@ describe("mounted historical-quotation flow", () => {
     const rejectedAfterActivation = yosemite.historicalQuotations[2]!;
     const recordId = `starter:${yosemite.definitionId}`;
 
+    await waitFor(() => expect(container.textContent).toContain("The Field Archive"));
+    await clickButton("Discover");
+    await waitFor(() => expect(container.textContent).toContain("Discover sets"));
+    const prepareYosemite = container.querySelector<HTMLButtonElement>(
+      'button[aria-label="Prepare Yosemite to collect"]',
+    );
+    if (!prepareYosemite) throw new Error("Mounted Archive test could not prepare Yosemite from Discover.");
+    await act(async () => prepareYosemite.click());
     await waitFor(() => expect(container.textContent).toContain(original.text));
     expect(container.textContent).toContain(`Historical figure${original.person}Wikipedia`);
     expect(container.textContent).toContain(`Quote source${original.sourceTitle}View quote source`);
@@ -169,12 +178,6 @@ describe("mounted historical-quotation flow", () => {
 
     await setDate("2026-08-24");
     await clickButton("Activate this badge");
-    await waitFor(() => expect(container.textContent).toContain("This memory is sealed."));
-    expect(container.querySelector(".saying-block button")).toBeNull();
-    expect(container.textContent).not.toContain("Regenerate quote");
-    expect(container.textContent).toContain(replacement.text);
-    expect(sourceLink().href).toBe(replacement.sourceUrl);
-    expect(wikipediaLink().href).toBe(replacement.personWikipediaUrl);
     await waitFor(() =>
       expect(container.querySelector('.ceremony [data-presentation="interactive"]')).not.toBeNull(),
     );
@@ -184,10 +187,30 @@ describe("mounted historical-quotation flow", () => {
     );
     if (!closeCeremony) throw new Error("Mounted Archive test could not close the activation ceremony.");
     await act(async () => closeCeremony.click());
-    await clickButton("Replay activation");
-    await waitFor(() =>
-      expect(container.querySelector('.ceremony [data-presentation="single-turn"]')).not.toBeNull(),
+    await waitFor(() => expect(container.textContent).toContain("1 / 64 collected"));
+    const replayYosemite = container.querySelector<HTMLButtonElement>(
+      'button[aria-label="Replay Yosemite activation"]',
     );
+    if (!replayYosemite) throw new Error("Mounted Archive test could not replay Yosemite from Collection.");
+    await act(async () => replayYosemite.click());
+    await waitFor(() =>
+      expect(container.querySelector('.memory-replay [data-presentation="single-turn"]')).not.toBeNull(),
+    );
+    expect(container.textContent).toContain(replacement.text);
+    expect(container.textContent).toContain("U.S. National Parks");
+    expect(container.querySelector(`a[href="${replacement.sourceUrl}"]`)).not.toBeNull();
+    expect(container.querySelector(`a[href="${replacement.personWikipediaUrl}"]`)).not.toBeNull();
+    const parksSetLink = container.querySelector<HTMLButtonElement>('[data-set-link="true"]');
+    if (!parksSetLink) throw new Error("Mounted Archive test could not open Yosemite's set.");
+    await act(async () => parksSetLink.click());
+    await waitFor(() =>
+      expect(container.querySelector("#discovery-set-heading")?.textContent).toBe("U.S. National Parks"),
+    );
+    expect(container.textContent).toContain("1 / 64 collected");
+    expect(
+      container.querySelector('.discovery-card--collected [aria-label="Replay collected memory Yosemite"]'),
+    ).not.toBeNull();
+    expect(container.querySelector(".discovery-card--potential")).not.toBeNull();
 
     const reader = new IndexedDbArchiveRepository({
       trustedQuotationRequests: createStarterQuotationRequests(),
@@ -217,13 +240,21 @@ describe("mounted historical-quotation flow", () => {
     }
   });
 
-  it("opens an available Discovery entry in Collection and returns focus to its section control", async () => {
+  it("opens an uncollected published badge for preparation inside Discover", async () => {
     await waitFor(() => expect(container.textContent).toContain("The Field Archive"));
 
     await clickButton("Discover");
-    await waitFor(() => expect(container.textContent).toContain("Discover every badge"));
+    await waitFor(() => expect(container.textContent).toContain("Discover sets"));
+    const search = container.querySelector<HTMLInputElement>('input[type="search"]');
+    if (!search) throw new Error("Mounted Archive test could not find Discovery search.");
+    await act(async () => {
+      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
+      setter?.call(search, "Sapiens");
+      search.dispatchEvent(new InputEvent("input", { bubbles: true }));
+    });
+    expect(container.textContent).toContain("1 result");
     const openSapiens = container.querySelector<HTMLButtonElement>(
-      'button[aria-label="Open Read Sapiens in Collection"]',
+      'button[aria-label="Prepare Read Sapiens to collect"]',
     );
     if (!openSapiens) throw new Error("Mounted Archive test could not find Read Sapiens in Discovery.");
 
@@ -233,8 +264,42 @@ describe("mounted historical-quotation flow", () => {
     });
 
     await waitFor(() => expect(container.querySelector(".story-title")?.textContent).toBe("Read Sapiens"));
-    expect(container.textContent).not.toContain("Discover every badge");
-    expect(document.activeElement?.id).toBe("archive-section-collection");
+    expect(container.textContent).not.toContain("Discover sets");
+    expect(container.querySelector('#archive-section-discover[aria-current="page"]')).not.toBeNull();
+    expect(document.activeElement).toBe(container.querySelector("#badge-preparation-heading"));
+    await clickButton("Back to set");
+    await waitFor(() => expect(container.textContent).toContain("Discover sets"));
+    expect(container.querySelector<HTMLInputElement>('input[type="search"]')?.value).toBe("Sapiens");
+    expect(container.textContent).toContain("1 result");
+    expect(document.activeElement).toBe(
+      container.querySelector('button[aria-label="Prepare Read Sapiens to collect"]'),
+    );
+  });
+
+  it("follows live location changes and records internal section navigation without loops", async () => {
+    await waitFor(() => expect(container.textContent).toContain("The Field Archive"));
+    const pushState = vi.spyOn(window.history, "pushState");
+
+    window.history.replaceState(null, "", "/#timeline");
+    await act(async () => window.dispatchEvent(new PopStateEvent("popstate")));
+    await waitFor(() =>
+      expect(container.querySelector('#archive-section-timeline[aria-current="page"]')).not.toBeNull(),
+    );
+    expect(pushState).not.toHaveBeenCalled();
+
+    window.history.replaceState(null, "", "/#discover");
+    await act(async () => window.dispatchEvent(new HashChangeEvent("hashchange")));
+    await waitFor(() =>
+      expect(container.querySelector('#archive-section-discover[aria-current="page"]')).not.toBeNull(),
+    );
+    expect(pushState).not.toHaveBeenCalled();
+
+    await clickButton("Collection");
+    expect(window.location.hash).toBe("");
+    expect(pushState).toHaveBeenCalledTimes(1);
+
+    await clickButton("Collection");
+    expect(pushState).toHaveBeenCalledTimes(1);
   });
 
   function buttonWithText(text: string): HTMLButtonElement {

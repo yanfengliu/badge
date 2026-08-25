@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent } f
 import { studioFixtureCandidates } from "@badge/catalogue-fixtures/studio";
 import { BadgeViewer } from "@badge/renderer-web";
 import { DEFAULT_RENDER_RECIPE, type RenderRecipe } from "@badge/render-recipe";
-import { companionAppHref } from "../../local-origins";
 import { ArtDirectionLibrary } from "./ArtDirectionLibrary";
 import { candidateIdentityKey, uploadedCandidateIdentity } from "./candidate-identity";
 import { assertStudioFixtureIntegrity } from "./fixture-integrity";
@@ -23,7 +22,7 @@ import {
   type Candidate,
   type PublishedRelease,
 } from "./studio-candidates";
-import { StudioMark } from "./StudioMark";
+import { StudioHeader } from "./StudioHeader";
 import { useStudioOperation } from "./studio-operation";
 import { candidateCapabilities, resolveCandidateSelection } from "./studio-selection";
 import { StudioStoreError, openStudioStore, type StudioStore } from "./studio-store";
@@ -273,17 +272,7 @@ export function App() {
 
   return (
     <div className="studio-shell">
-      <header className="studio-header">
-        <div className="brand">
-          <StudioMark />
-          <span>Badge Studio</span>
-          <em>Developer mode</em>
-        </div>
-        <div className="brief-id">Brief 01 · Yosemite</div>
-        <a className="archive-link" href={companionAppHref(window.location.href, "archive")}>
-          Return to Archive →
-        </a>
-      </header>
+      <StudioHeader />
 
       <main className="studio-main">
         <section className="source-workbench">

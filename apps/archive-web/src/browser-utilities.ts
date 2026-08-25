@@ -4,6 +4,12 @@ export function formatDate(value: string): string {
   );
 }
 
+export function formatDateTime(value: string): string {
+  return new Intl.DateTimeFormat(undefined, { dateStyle: "long", timeStyle: "short" }).format(
+    new Date(value),
+  );
+}
+
 export function downloadBytes(bytes: Uint8Array, name: string, type: string): void {
   const blob = new Blob([bytes.slice().buffer], { type });
   const url = URL.createObjectURL(blob);

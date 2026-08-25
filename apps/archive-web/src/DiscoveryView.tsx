@@ -1,52 +1,90 @@
-import { useMemo, useState } from "react";
-import { discoveryBadges, type DiscoveryBadge } from "@badge/catalogue-fixtures/discovery";
+import { useMemo } from "react";
+import {
+  discoveryBadges,
+  discoverySets,
+  type DiscoveryBadge,
+  type DiscoverySet,
+} from "@badge/catalogue-fixtures/discovery";
 
+import { filterDiscoveryBadges } from "./discovery-filter";
 import { resolveDiscoveryThumbnail } from "./discovery-media";
-import { filterDiscoveryBadges, type DiscoveryFilter } from "./discovery-filter";
 
 interface DiscoveryViewProps {
   readonly badges?: readonly DiscoveryBadge[];
-  readonly onOpenAvailableBadge: (recordId: string) => void;
+  readonly collectedRecordIds: ReadonlySet<string>;
+  readonly resolvedSourceUrls: Readonly<Record<string, string>>;
+  readonly selectedSetId: string | null;
+  readonly query: string;
+  readonly onSetChange: (setId: string | null) => void;
+  readonly onQueryChange: (query: string) => void;
+  readonly onOpenAvailableBadge: (recordId: string, trigger: HTMLButtonElement) => void;
+  readonly onOpenCollectedBadge: (recordId: string, trigger: HTMLButtonElement) => void;
   readonly resolveThumbnail?: (fileName: string) => string | null;
 }
 
 export function DiscoveryView({
   badges = discoveryBadges,
+  collectedRecordIds,
+  resolvedSourceUrls,
+  selectedSetId,
+  query,
+  onSetChange,
+  onQueryChange,
   onOpenAvailableBadge,
+  onOpenCollectedBadge,
   resolveThumbnail = resolveDiscoveryThumbnail,
 }: DiscoveryViewProps) {
-  const [query, setQuery] = useState("");
-  const [filter, setFilter] = useState<DiscoveryFilter>("all");
-  const visibleBadges = useMemo(() => filterDiscoveryBadges(badges, query, filter), [badges, filter, query]);
-  const availableCount = badges.filter((badge) => badge.availability === "available").length;
-  const studyCount = badges.length - availableCount;
+  const visibleBadges = useMemo(
+    () => filterDiscoveryBadges(badges, query, selectedSetId),
+    [badges, query, selectedSetId],
+  );
+  const selectedSet = discoverySets.find((set) => set.setId === selectedSetId) ?? null;
+  const allProgress = progressForBadges(badges, collectedRecordIds);
 
   return (
     <main className="discovery-main">
       <header className="discovery-hero">
         <div>
-          <p className="eyebrow">Complete badge catalogue</p>
-          <h1>Discover every badge</h1>
+          <p className="eyebrow">A catalogue of possible memories</p>
+          <h1 id="discovery-set-heading" tabIndex={-1}>
+            {selectedSet?.title ?? "Discover sets"}
+          </h1>
           <p className="discovery-intro">
-            Browse every visualized badge created so far. Published badges open in your Collection; selected
-            Studio studies remain previews until publication.
+            {selectedSet?.description ??
+              "Browse every set and every badge created so far. Collected memories stay in color; potential ones wait in quiet grey."}
           </p>
         </div>
-        <dl className="discovery-totals" aria-label="Discovery catalogue totals">
-          <div>
-            <dt>All</dt>
-            <dd>{badges.length} badges</dd>
-          </div>
-          <div>
-            <dt>Ready</dt>
-            <dd>{availableCount} available</dd>
-          </div>
-          <div>
-            <dt>Not published</dt>
-            <dd>{studyCount} selected studies</dd>
-          </div>
-        </dl>
+        <div className="discovery-overview">
+          <span>{selectedSet ? "Set progress" : "Archive progress"}</span>
+          <strong>
+            {selectedSet
+              ? progressForSet(badges, selectedSet.setId, collectedRecordIds)
+              : `${allProgress.collected} / ${allProgress.total} collected`}
+          </strong>
+        </div>
       </header>
+
+      <nav className="discovery-set-browser" aria-label="Badge sets">
+        <button
+          className="discovery-set-button"
+          type="button"
+          aria-pressed={selectedSetId === null}
+          onClick={() => onSetChange(null)}
+        >
+          <strong>All sets</strong>
+          <span>Browse everything</span>
+        </button>
+        {discoverySets.map((set) => (
+          <DiscoverySetButton
+            key={set.setId}
+            set={set}
+            badges={badges}
+            collectedRecordIds={collectedRecordIds}
+            active={selectedSetId === set.setId}
+            onSelect={() => onSetChange(set.setId)}
+          />
+        ))}
+      </nav>
 
       <section className="discovery-browser" aria-labelledby="discovery-results-title">
         <div className="discovery-controls">
@@ -56,21 +94,13 @@ export function DiscoveryView({
               type="search"
               value={query}
               placeholder="Badge, place, or criterion"
-              onChange={(event) => setQuery(event.target.value)}
+              onChange={(event) => onQueryChange(event.target.value)}
             />
-          </label>
-          <label>
-            <span>Availability</span>
-            <select value={filter} onChange={(event) => setFilter(event.target.value as DiscoveryFilter)}>
-              <option value="all">All created badges</option>
-              <option value="available">Available in Archive</option>
-              <option value="source-study">Selected studies</option>
-            </select>
           </label>
         </div>
 
         <div className="discovery-results-heading">
-          <h2 id="discovery-results-title">Created badges</h2>
+          <h2 id="discovery-results-title">{selectedSet?.title ?? "All created badges"}</h2>
           <p aria-live="polite">
             {visibleBadges.length} {visibleBadges.length === 1 ? "result" : "results"}
           </p>
@@ -82,15 +112,21 @@ export function DiscoveryView({
               <DiscoveryCard
                 key={badge.discoveryId}
                 badge={badge}
+                selectedSetId={selectedSet?.setId ?? null}
+                collected={badge.availability === "available" && collectedRecordIds.has(badge.recordId)}
+                resolvedSourceUrl={
+                  badge.availability === "available" ? resolvedSourceUrls[badge.recordId] : undefined
+                }
                 resolveThumbnail={resolveThumbnail}
                 onOpenAvailableBadge={onOpenAvailableBadge}
+                onOpenCollectedBadge={onOpenCollectedBadge}
               />
             ))}
           </div>
         ) : (
           <div className="discovery-empty" role="status">
             <strong>No badges match this search.</strong>
-            <span>Try a park, place, or broader criterion.</span>
+            <span>Try a park, place, criterion, or another set.</span>
           </div>
         )}
       </section>
@@ -98,51 +134,116 @@ export function DiscoveryView({
   );
 }
 
+function DiscoverySetButton({
+  set,
+  badges,
+  collectedRecordIds,
+  active,
+  onSelect,
+}: {
+  readonly set: DiscoverySet;
+  readonly badges: readonly DiscoveryBadge[];
+  readonly collectedRecordIds: ReadonlySet<string>;
+  readonly active: boolean;
+  readonly onSelect: () => void;
+}) {
+  return (
+    <button className="discovery-set-button" type="button" aria-pressed={active} onClick={onSelect}>
+      <strong>{set.title}</strong>
+      <span>{progressForSet(badges, set.setId, collectedRecordIds)}</span>
+    </button>
+  );
+}
+
+function progressForBadges(badges: readonly DiscoveryBadge[], collectedRecordIds: ReadonlySet<string>) {
+  return {
+    collected: badges.filter(
+      (badge) => badge.availability === "available" && collectedRecordIds.has(badge.recordId),
+    ).length,
+    total: badges.length,
+  };
+}
+
+function progressForSet(
+  badges: readonly DiscoveryBadge[],
+  setId: string,
+  collectedRecordIds: ReadonlySet<string>,
+): string {
+  const setBadges = badges.filter((badge) => badge.setIds.includes(setId));
+  const collected = setBadges.filter(
+    (badge) => badge.availability === "available" && collectedRecordIds.has(badge.recordId),
+  ).length;
+  return `${collected} / ${setBadges.length} collected`;
+}
+
 function DiscoveryCard({
   badge,
+  selectedSetId,
+  collected,
+  resolvedSourceUrl,
   resolveThumbnail,
   onOpenAvailableBadge,
+  onOpenCollectedBadge,
 }: {
   readonly badge: DiscoveryBadge;
+  readonly selectedSetId: string | null;
+  readonly collected: boolean;
+  readonly resolvedSourceUrl: string | undefined;
   readonly resolveThumbnail: (fileName: string) => string | null;
-  readonly onOpenAvailableBadge: (recordId: string) => void;
+  readonly onOpenAvailableBadge: (recordId: string, trigger: HTMLButtonElement) => void;
+  readonly onOpenCollectedBadge: (recordId: string, trigger: HTMLButtonElement) => void;
 }) {
   const sourceUrl =
-    badge.availability === "available" ? badge.previewUrl : resolveThumbnail(badge.thumbnailFileName);
-  const description = badge.accessibleDescription;
+    badge.availability === "available"
+      ? (resolvedSourceUrl ?? badge.previewUrl)
+      : resolveThumbnail(badge.thumbnailFileName);
+  const displayedSetId =
+    selectedSetId && badge.setIds.includes(selectedSetId) ? selectedSetId : badge.setIds[0];
+  const setTitle = discoverySets.find((set) => set.setId === displayedSetId)?.title;
+  const state = collected ? "collected" : "potential";
+  const status = collected
+    ? "Collected"
+    : badge.availability === "available"
+      ? "Ready to collect"
+      : "Potential";
 
   return (
-    <article className={`discovery-card discovery-card--${badge.availability}`}>
+    <article className={`discovery-card discovery-card--${state}`}>
       <div className="discovery-card__art">
         {sourceUrl ? (
-          <img src={sourceUrl} alt={description} loading="lazy" decoding="async" />
+          <img src={sourceUrl} alt={badge.accessibleDescription} loading="lazy" decoding="async" />
         ) : (
           <span role="img" aria-label={`${badge.title}: Preview unavailable`}>
             Preview unavailable
           </span>
         )}
-        <span className="discovery-card__status">
-          {badge.availability === "available" ? (
-            <>
-              Available<span className="visually-hidden"> in Archive</span>
-            </>
-          ) : (
-            "Selected study"
-          )}
-        </span>
+        <span className="discovery-card__status">{status}</span>
       </div>
       <div className="discovery-card__copy">
-        <p>{badge.availability === "available" ? badge.collectionLabel : badge.locationLabel}</p>
+        <p>
+          {setTitle ?? (badge.availability === "source-study" ? badge.locationLabel : badge.collectionLabel)}
+        </p>
         <h3>{badge.title}</h3>
         <span>{badge.criterion}</span>
         {badge.availability === "available" ? (
-          <button
-            type="button"
-            aria-label={`Open ${badge.title} in Collection`}
-            onClick={() => onOpenAvailableBadge(badge.recordId)}
-          >
-            Open in Collection
-          </button>
+          collected ? (
+            <button
+              type="button"
+              aria-label={`Replay collected memory ${badge.title}`}
+              onClick={(event) => onOpenCollectedBadge(badge.recordId, event.currentTarget)}
+            >
+              View memory
+            </button>
+          ) : (
+            <button
+              type="button"
+              aria-label={`Prepare ${badge.title} to collect`}
+              data-prepare-record-id={badge.recordId}
+              onClick={(event) => onOpenAvailableBadge(badge.recordId, event.currentTarget)}
+            >
+              Prepare badge
+            </button>
+          )
         ) : (
           <small>Not yet published</small>
         )}

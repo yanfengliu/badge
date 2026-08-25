@@ -5,7 +5,7 @@ import {
   type Visibility,
 } from "@badge/archive-domain";
 
-interface ArchiveVisualDisplay {
+export interface ArchiveVisualDisplay {
   readonly sourceUrl: string;
   readonly pin: ArchiveRecord["publishedVisual"];
 }

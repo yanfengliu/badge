@@ -1,4 +1,7 @@
+import { requireDiscoverySet } from "./discovery-sets.js";
 import type { SourceStudyDiscoveryBadge } from "./discovery-types.js";
+
+const nationalParksSet = requireDiscoverySet("us-national-parks");
 
 export type SourceStudyDiscoveryRow = readonly [
   discoveryId: string,
@@ -21,6 +24,7 @@ export function defineSourceStudyBadges(
       locationLabel,
       thumbnailFileName,
       accessibleDescription,
+      setIds: [nationalParksSet.setId],
     }),
   );
 }

@@ -1,9 +1,9 @@
 import { useState } from "react";
-import type { ActivationRecord, ArchiveRecord, ArchiveState } from "@badge/archive-domain";
+import type { ActivationRecord, ArchiveState } from "@badge/archive-domain";
 import { BadgePreview, BadgeViewer } from "@badge/renderer-web";
 
-import { focusCollectionThen } from "./archive-section-focus";
 import { formatDate } from "./browser-utilities";
+import { replaySetLinks } from "./collection-view-model";
 import { ArrowIcon, InspectIcon } from "./icons";
 import { orderedTimelineRecords, toggledTimelineInspection } from "./timeline-records";
 
@@ -12,7 +12,7 @@ interface TimelineViewProps {
   readonly sourceUrls: Readonly<Record<string, string>>;
   readonly forceFallback: boolean;
   readonly onOpenMemory: (recordId: string) => void;
-  readonly onShowCollection: () => void;
+  readonly onShowDiscover: () => void;
 }
 
 function OccurrenceRange({ activation }: { readonly activation: ActivationRecord }) {
@@ -35,16 +35,12 @@ function sealedLabel(activatedAt: string): string {
   );
 }
 
-function collectionLabel(record: ArchiveRecord): string {
-  return (record.collectionRefs[0]?.collectionId ?? "personal archive").replaceAll("-", " ");
-}
-
 export function TimelineView({
   state,
   sourceUrls,
   forceFallback,
   onOpenMemory,
-  onShowCollection,
+  onShowDiscover,
 }: TimelineViewProps) {
   const records = orderedTimelineRecords(state);
   const [inspectedRecordId, setInspectedRecordId] = useState<string | null>(null);
@@ -71,13 +67,9 @@ export function TimelineView({
           <div className="timeline-empty">
             <p className="eyebrow">The first marker is waiting</p>
             <h2>No memories sealed yet</h2>
-            <p>Activate a badge from the collection and its real-world date will take its place here.</p>
-            <button
-              className="secondary-button"
-              type="button"
-              onClick={() => focusCollectionThen(onShowCollection)}
-            >
-              Return to collection <ArrowIcon />
+            <p>Activate a potential badge from Discover and its real-world date will take its place here.</p>
+            <button className="secondary-button" type="button" onClick={onShowDiscover}>
+              Browse Discover <ArrowIcon />
             </button>
           </div>
         ) : (
@@ -146,7 +138,10 @@ export function TimelineView({
                     </div>
                     <div className="timeline-copy">
                       <p className="timeline-kicker">
-                        {collectionLabel(record)} · sealed{" "}
+                        {replaySetLinks(record)
+                          .map((set) => set.title)
+                          .join(" · ")}{" "}
+                        · sealed{" "}
                         <time dateTime={record.activation.activatedAt}>
                           {sealedLabel(record.activation.activatedAt)}
                         </time>
@@ -159,9 +154,9 @@ export function TimelineView({
                       <button
                         className="text-button timeline-open"
                         type="button"
-                        onClick={() => focusCollectionThen(() => onOpenMemory(record.recordId))}
+                        onClick={() => onOpenMemory(record.recordId)}
                       >
-                        Open {record.title} memory <ArrowIcon />
+                        Replay {record.title} memory <ArrowIcon />
                       </button>
                     </div>
                   </article>

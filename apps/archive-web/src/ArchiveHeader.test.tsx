@@ -22,6 +22,8 @@ describe("ArchiveHeader", () => {
     expect(html).toMatch(/<button[^>]*>Collection<\/button>/u);
     expect(html).toMatch(/<button[^>]*>Timeline<\/button>/u);
     expect(html).toMatch(/<button[^>]*aria-current="page"[^>]*>Discover<\/button>/u);
+    expect(html).toMatch(/<a[^>]*href="http:\/\/127\.0\.0\.1:4173\/studio\/"[^>]*>Badge Studio<\/a>/u);
+    expect(html.match(/class="nav-link/gu)).toHaveLength(4);
     expect(html).toContain('id="archive-section-collection"');
     expect(html).toContain('id="archive-section-discover"');
     expect(html).toContain('aria-label="Back up archive"');
@@ -29,6 +31,7 @@ describe("ArchiveHeader", () => {
     expect(html).toMatch(/<input[^>]*hidden=""[^>]*type="file"/u);
     expect(html).not.toContain("disabled");
     expect(html).not.toContain("coming in a later slice");
+    expect(html).not.toContain("studio-link");
   });
 
   it("wires the Timeline button to section navigation", () => {
@@ -36,6 +39,7 @@ describe("ArchiveHeader", () => {
     const nav = ArchiveSectionNav({
       activeSection: "collection",
       onSectionChange: (section) => requested.push(section),
+      studioHref: "http://127.0.0.1:4174/studio/",
     }) as ReactElement<{ children: ReactNode }>;
     const timelineButton = Children.toArray(nav.props.children)[1];
 
@@ -49,6 +53,7 @@ describe("ArchiveHeader", () => {
     const nav = ArchiveSectionNav({
       activeSection: "collection",
       onSectionChange: (section) => requested.push(section),
+      studioHref: "http://127.0.0.1:4174/studio/",
     }) as ReactElement<{ children: ReactNode }>;
     const discoverButton = Children.toArray(nav.props.children)[2];
 

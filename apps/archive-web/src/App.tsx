@@ -7,10 +7,10 @@ import {
   type ArchiveSourceAssetInput,
 } from "@badge/archive-application";
 import { toExactVisualPin, type ArchiveState } from "@badge/archive-domain";
-import { starterBadges, starterCollection } from "@badge/catalogue-fixtures/archive";
-import { BadgeViewer } from "@badge/renderer-web";
+import { starterBadges } from "@badge/catalogue-fixtures/archive";
 
 import { ActivationCeremony } from "./ActivationCeremony";
+import { BadgePreparationView } from "./BadgePreparationView";
 import {
   activationInputFor,
   defaultActivationDraft,
@@ -18,7 +18,8 @@ import {
   type ActivationDraft,
 } from "./app-types";
 import { ArchiveHeader, type ArchiveSection } from "./ArchiveHeader";
-import { focusCollectionThen } from "./archive-section-focus";
+import { focusPreparedBadgeTrigger } from "./archive-section-focus";
+import { archiveSectionFromHash, writeArchiveSectionHash } from "./archive-section-location";
 import { ArchiveNotice, type ArchiveNoticeState } from "./ArchiveNotice";
 import {
   initializeReviewedSayingDefaults,
@@ -27,11 +28,12 @@ import {
   validateStarterArchiveForOpen,
 } from "./archive-startup";
 import { ArchiveClosedScreen } from "./ArchiveClosedScreen";
-import { BadgeRail } from "./BadgeRail";
+import { CollectionView } from "./CollectionView";
+import { replaySetLinks, type CollectedArchiveRecord, type ReplaySetLink } from "./collection-view-model";
 import { DiscoveryView } from "./DiscoveryView";
-import { ReplayActivationButton } from "./ReplayActivationButton";
+import { acceptedFixtureQuotation } from "./fixture-quotations";
+import { MemoryReplayDialog } from "./MemoryReplayDialog";
 import { RestoreDialog } from "./RestoreDialog";
-import { SayingComposer } from "./SayingComposer";
 import { SayingDisclosureBoundary } from "./SayingDisclosureBoundary";
 import { TimelineView } from "./TimelineView";
 import {
@@ -40,9 +42,7 @@ import {
   STARTER_OWNER_ID,
   STARTER_RECORD_IDS,
 } from "./archive-state";
-import { downloadBytes, formatDate } from "./browser-utilities";
-import { CheckIcon } from "./icons";
-import { MemoryActivationForm } from "./MemoryActivationForm";
+import { downloadBytes } from "./browser-utilities";
 import { requiresArchiveRecovery } from "./restore-compatibility";
 import {
   archiveRecoveryNotice,
@@ -58,6 +58,7 @@ import {
   type PendingArchiveRestore,
 } from "./restore-flow";
 import { sourceUrlsForResolvedVisuals, useResolvedVisuals } from "./use-resolved-visuals";
+import { useArchiveSectionLocation } from "./use-archive-section-location";
 import { stateAfterStaleArchiveMutation, useSayingWorkflow } from "./use-saying-workflow";
 const repository = new IndexedDbArchiveRepository({
   trustedQuotationRequests: createStarterQuotationRequests(),
@@ -68,16 +69,25 @@ const starterState = createStarterArchiveState();
 
 export function App() {
   const [state, setState] = useState<ArchiveState | null>(null);
-  const [activeSection, setActiveSection] = useState<ArchiveSection>("collection");
+  const [activeSection, setActiveSection] = useState<ArchiveSection>(() =>
+    archiveSectionFromHash(window.location.hash),
+  );
   const [selectedRecordId, setSelectedRecordId] = useState(STARTER_RECORD_IDS[0]);
+  const [preparingRecordId, setPreparingRecordId] = useState<string | null>(null);
+  const [replayRecordId, setReplayRecordId] = useState<string | null>(null);
+  const [selectedDiscoverSetId, setSelectedDiscoverSetId] = useState<string | null>(null);
+  const [discoveryQuery, setDiscoveryQuery] = useState("");
   const [drafts, setDrafts] = useState<Record<string, ActivationDraft>>({});
   const [activating, setActivating] = useState(false);
-  const [ceremony, setCeremony] = useState<{ id: string; replay: boolean } | null>(null);
+  const [ceremonyRecordId, setCeremonyRecordId] = useState<string | null>(null);
   const [notice, setNotice] = useState<ArchiveNoticeState | null>(null);
   const [pendingRestore, setPendingRestore] = useState<PendingArchiveRestore | null>(null);
   const [restoring, setRestoring] = useState(false);
   const [initializationFailed, setInitializationFailed] = useState(false);
   const ceremonyReturnFocus = useRef<HTMLButtonElement>(null);
+  const preparationHeading = useRef<HTMLHeadingElement>(null);
+  const preparationReturnFocus = useRef<HTMLButtonElement | null>(null);
+  const replayReturnFocus = useRef<HTMLButtonElement>(null);
   const sayingDisclosureReturnFocus = useRef<HTMLDivElement>(null);
   const starterAssets = useRef(new Map<string, ArchiveSourceAssetInput>());
   const recoveryMode = useRef<ArchiveRecoveryMode>("repair-corruption");
@@ -113,7 +123,11 @@ export function App() {
       active = false;
     };
   }, []);
-
+  useArchiveSectionLocation((section) => {
+    setPreparingRecordId(null);
+    setReplayRecordId(null);
+    setActiveSection(section);
+  });
   const selectedFixture =
     starterBadges.find((badge) => `starter:${badge.definitionId}` === selectedRecordId) ?? starterBadges[0];
   const selectedRecord = state?.records.find((record) => record.recordId === selectedRecordId);
@@ -127,26 +141,66 @@ export function App() {
   });
   const earnedCount = state?.records.filter((record) => record.lifecycle === "earned").length ?? 0;
   const selectedVisual = selectedArchiveVisual(selectedRecord, selectedFixture.sourceUrl, resolvedVisuals);
-  const closeCeremony = useCallback(() => setCeremony(null), []);
+  const closeCeremony = useCallback(() => setCeremonyRecordId(null), []);
+  const closeReplay = useCallback(() => setReplayRecordId(null), []);
   const closeRestore = useCallback(() => setPendingRestore(null), []);
   function updateDraft(patch: Partial<ActivationDraft>) {
     setDrafts((current) => ({ ...current, [selectedRecordId]: { ...draft, ...patch } }));
   }
 
-  function selectBadge(recordId: string) {
+  function prepareBadge(recordId: string, trigger: HTMLButtonElement) {
     void saying.observe({ type: "badge-selected", recordId });
+    preparationReturnFocus.current = trigger;
     setSelectedRecordId(recordId);
-    setActiveSection("collection");
+    setPreparingRecordId(recordId);
+    setActiveSection("discover");
+    writeArchiveSectionHash("discover");
+    setNotice(null);
+    requestAnimationFrame(() => preparationHeading.current?.focus());
+  }
+
+  function closePreparation() {
+    const returnFocus = preparationReturnFocus.current;
+    setPreparingRecordId(null);
+    requestAnimationFrame(() => focusPreparedBadgeTrigger(returnFocus));
+  }
+
+  function navigateSection(section: ArchiveSection) {
+    setPreparingRecordId(null);
+    if (section === "discover") setSelectedDiscoverSetId(null);
+    setActiveSection(section);
+    writeArchiveSectionHash(section);
     setNotice(null);
   }
 
-  function openDiscoveredBadge(recordId: string) {
-    focusCollectionThen(() => selectBadge(recordId));
+  function replayMemory(recordId: string, trigger?: HTMLButtonElement) {
+    const record = state?.records.find((candidate) => candidate.recordId === recordId);
+    if (!record || record.lifecycle !== "earned" || !record.activation) return;
+    if (!resolvedVisuals[recordId]) {
+      setNotice({
+        kind: "error",
+        text: `The collected visual for ${record.title} is still resolving; try again.`,
+      });
+      return;
+    }
+    replayReturnFocus.current =
+      trigger ?? (document.activeElement instanceof HTMLButtonElement ? document.activeElement : null);
+    void saying.observe({ type: "ceremony-replayed", recordId });
+    setReplayRecordId(recordId);
   }
 
-  function replayCeremony(recordId: string) {
-    void saying.observe({ type: "ceremony-replayed", recordId });
-    setCeremony({ id: recordId, replay: true });
+  function browseSet(setId: string | null) {
+    setReplayRecordId(null);
+    setPreparingRecordId(null);
+    setSelectedDiscoverSetId(setId);
+    setActiveSection("discover");
+    writeArchiveSectionHash("discover");
+    requestAnimationFrame(() => document.getElementById("discovery-set-heading")?.focus());
+  }
+
+  function browseReplaySet(set: ReplaySetLink) {
+    replayReturnFocus.current = null;
+    browseSet(set.setId);
   }
 
   async function activate(event: FormEvent) {
@@ -179,7 +233,10 @@ export function App() {
         selectedRecord.quotationRevision,
       );
       setState(result.state);
-      setCeremony({ id: selectedRecord.recordId, replay: false });
+      setPreparingRecordId(null);
+      setActiveSection("collection");
+      writeArchiveSectionHash("collection");
+      setCeremonyRecordId(selectedRecord.recordId);
     } catch (error) {
       let message = error instanceof Error ? error.message : String(error);
       try {
@@ -323,9 +380,21 @@ export function App() {
     );
   }
 
-  const ceremonyRecord = state.records.find((record) => record.recordId === ceremony?.id);
+  const ceremonyRecord = state.records.find((record) => record.recordId === ceremonyRecordId);
   const ceremonyVisual = ceremonyRecord ? resolvedVisuals[ceremonyRecord.recordId] : undefined;
   const resolvedSourceUrls = sourceUrlsForResolvedVisuals(resolvedVisuals);
+  const collectedRecordIds = new Set(
+    state.records.filter((record) => record.lifecycle === "earned").map((record) => record.recordId),
+  );
+  const replayCandidate = state.records.find((record) => record.recordId === replayRecordId);
+  const replayRecord =
+    replayCandidate?.lifecycle === "earned" && replayCandidate.activation
+      ? (replayCandidate as CollectedArchiveRecord)
+      : null;
+  const replayVisual = replayRecord ? resolvedVisuals[replayRecord.recordId] : undefined;
+  const replayFixture = replayRecord
+    ? starterBadges.find((badge) => `starter:${badge.definitionId}` === replayRecord.recordId)
+    : undefined;
 
   return (
     <SayingDisclosureBoundary
@@ -337,7 +406,7 @@ export function App() {
     >
       <ArchiveHeader
         activeSection={activeSection}
-        onSectionChange={setActiveSection}
+        onSectionChange={navigateSection}
         onBackup={() => void exportBackup()}
         onRestore={restoreBackup}
       />
@@ -347,129 +416,47 @@ export function App() {
           state={state}
           sourceUrls={resolvedSourceUrls}
           forceFallback={forceFallback}
-          onOpenMemory={selectBadge}
-          onShowCollection={() => setActiveSection("collection")}
+          onOpenMemory={(recordId) => replayMemory(recordId)}
+          onShowDiscover={() => navigateSection("discover")}
+        />
+      ) : activeSection === "discover" && preparingRecordId ? (
+        <BadgePreparationView
+          record={selectedRecord}
+          visual={selectedVisual ?? null}
+          draft={draft}
+          saying={saying}
+          activating={activating}
+          forceFallback={forceFallback}
+          actionButtonRef={ceremonyReturnFocus}
+          headingRef={preparationHeading}
+          sayingFocusRef={sayingDisclosureReturnFocus}
+          onBack={closePreparation}
+          onDraftChange={updateDraft}
+          onActivate={activate}
+          onReplay={() => replayMemory(selectedRecord.recordId, ceremonyReturnFocus.current ?? undefined)}
         />
       ) : activeSection === "discover" ? (
-        <DiscoveryView onOpenAvailableBadge={openDiscoveredBadge} />
+        <DiscoveryView
+          collectedRecordIds={collectedRecordIds}
+          resolvedSourceUrls={resolvedSourceUrls}
+          selectedSetId={selectedDiscoverSetId}
+          query={discoveryQuery}
+          onSetChange={setSelectedDiscoverSetId}
+          onQueryChange={setDiscoveryQuery}
+          onOpenAvailableBadge={prepareBadge}
+          onOpenCollectedBadge={replayMemory}
+        />
       ) : (
-        <main className="archive-main">
-          <section className="artifact-pane" aria-label="Badge collection">
-            <div className="collection-heading">
-              <div>
-                <p className="eyebrow">{starterCollection.eyebrow}</p>
-                <h1>{starterCollection.title}</h1>
-              </div>
-              <div className="progress-copy">
-                <strong>
-                  {earnedCount} / {state.records.length}
-                </strong>
-                <span>memories sealed</span>
-              </div>
-            </div>
-
-            <div className={`artifact-stage${forceFallback ? " fallback-stage" : ""}`}>
-              <span className={`artifact-status ${selectedRecord.lifecycle === "earned" ? "earned" : ""}`}>
-                {selectedRecord.lifecycle === "earned" ? <CheckIcon /> : null}
-                {selectedRecord.lifecycle}
-              </span>
-              {selectedVisual ? (
-                <BadgeViewer
-                  sourceUrl={selectedVisual.sourceUrl}
-                  recipe={selectedVisual.pin.renderRecipe}
-                  accessibleDescription={selectedVisual.pin.accessibleDescription}
-                  readOnly
-                  forceFallback={forceFallback}
-                />
-              ) : (
-                <p className="visual-loading" role="status">
-                  Resolving the sealed visual…
-                </p>
-              )}
-            </div>
-
-            <BadgeRail
-              state={state}
-              selectedRecordId={selectedRecordId}
-              earnedSourceUrls={resolvedSourceUrls}
-              onSelect={selectBadge}
-            />
-          </section>
-
-          <section className="story-pane" aria-label={`${selectedRecord.title} memory details`}>
-            <div className="story-content">
-              <div className="pack-line">
-                <span>
-                  {(
-                    selectedRecord.collectionRefs[0]?.collectionId ?? selectedFixture.collectionId
-                  ).replaceAll("-", " ")}
-                </span>
-                <span>Published artifact · v1</span>
-              </div>
-              <h2 className="story-title">{selectedRecord.title}</h2>
-              <p className="criterion">
-                <strong>{selectedRecord.criterion}.</strong> {selectedRecord.description}
-              </p>
-
-              <SayingComposer
-                lifecycle={selectedRecord.lifecycle}
-                acceptedSaying={selectedRecord.acceptedSaying}
-                acceptedQuotation={saying.acceptedQuotation}
-                proposal={saying.proposal}
-                saving={saying.saving}
-                generationBlocked={saying.disclosure.phase !== "idle"}
-                providerNote={saying.providerNote}
-                successAnnouncement={saying.successAnnouncement}
-                focusTargetRef={sayingDisclosureReturnFocus}
-                onGenerate={saying.request}
-              />
-
-              {selectedRecord.lifecycle === "earned" && selectedRecord.activation ? (
-                <div className="earned-memory">
-                  <h2>This memory is sealed.</h2>
-                  <div className="memory-meta">
-                    <div>
-                      <span>Happened</span>
-                      <strong>
-                        {formatDate(selectedRecord.activation.occurredStart)}
-                        {selectedRecord.activation.occurredEnd !== selectedRecord.activation.occurredStart
-                          ? ` – ${formatDate(selectedRecord.activation.occurredEnd)}`
-                          : ""}
-                      </strong>
-                    </div>
-                    <div>
-                      <span>Visibility</span>
-                      <strong>
-                        {selectedRecord.visibility === "inherit"
-                          ? "Archive default"
-                          : selectedRecord.visibility}
-                      </strong>
-                    </div>
-                  </div>
-                  {selectedRecord.note ? <p className="memory-note">{selectedRecord.note}</p> : null}
-                  <ReplayActivationButton
-                    buttonRef={ceremonyReturnFocus}
-                    onReplay={() => replayCeremony(selectedRecord.recordId)}
-                  />
-                </div>
-              ) : (
-                <MemoryActivationForm
-                  draft={draft}
-                  acceptedSaying={selectedRecord.acceptedSaying}
-                  sourceChecked={saying.acceptedQuotation !== null}
-                  activating={activating}
-                  saving={saying.saving}
-                  buttonRef={ceremonyReturnFocus}
-                  onDraftChange={updateDraft}
-                  onSubmit={activate}
-                />
-              )}
-            </div>
-          </section>
-        </main>
+        <CollectionView
+          state={state}
+          sourceUrls={resolvedSourceUrls}
+          onReplay={replayMemory}
+          onBrowseSet={(setId) => browseSet(setId)}
+          onShowDiscover={() => navigateSection("discover")}
+        />
       )}
 
-      {ceremony && ceremonyRecord && ceremonyVisual ? (
+      {ceremonyRecord && ceremonyVisual ? (
         <ActivationCeremony
           title={ceremonyRecord.title}
           saying={ceremonyRecord.acceptedSaying ?? ""}
@@ -477,9 +464,22 @@ export function App() {
           recipe={ceremonyVisual.pin.renderRecipe}
           accessibleDescription={ceremonyVisual.pin.accessibleDescription}
           forceFallback={forceFallback}
-          presentation={ceremony.replay ? "single-turn" : "interactive"}
+          presentation="interactive"
           returnFocus={ceremonyReturnFocus}
           onClose={closeCeremony}
+        />
+      ) : null}
+
+      {replayRecord && replayVisual ? (
+        <MemoryReplayDialog
+          record={replayRecord}
+          sourceUrl={replayVisual.sourceUrl}
+          quotation={acceptedFixtureQuotation(replayFixture, replayRecord.acceptedSaying)}
+          sets={replaySetLinks(replayRecord)}
+          forceFallback={forceFallback}
+          returnFocus={replayReturnFocus}
+          onBrowseSet={browseReplaySet}
+          onClose={closeReplay}
         />
       ) : null}
 

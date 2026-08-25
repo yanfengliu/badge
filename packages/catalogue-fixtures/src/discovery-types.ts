@@ -2,6 +2,7 @@ interface DiscoveryBadgeBase {
   readonly discoveryId: string;
   readonly title: string;
   readonly criterion: string;
+  readonly setIds: readonly string[];
 }
 
 export interface AvailableDiscoveryBadge extends DiscoveryBadgeBase {

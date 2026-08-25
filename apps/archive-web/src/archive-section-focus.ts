@@ -12,3 +12,12 @@ export function focusCollectionThen(action: () => void): void {
   focusArchiveSection("collection");
   action();
 }
+
+export function focusPreparedBadgeTrigger(trigger: HTMLButtonElement | null): void {
+  const recordId = trigger?.dataset.prepareRecordId;
+  if (!recordId) return;
+  const currentTrigger = [...document.querySelectorAll<HTMLButtonElement>("[data-prepare-record-id]")].find(
+    (candidate) => candidate.dataset.prepareRecordId === recordId,
+  );
+  currentTrigger?.focus();
+}
