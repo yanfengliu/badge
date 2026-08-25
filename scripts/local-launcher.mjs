@@ -3,10 +3,15 @@ import { link, mkdir, open, readFile, rm } from "node:fs/promises";
 import { createServer as createTcpServer } from "node:net";
 import path from "node:path";
 import process from "node:process";
+import { URL } from "node:url";
 
 export const LOOPBACK_HOST = "127.0.0.1";
 export const DEFAULT_SITE_PORT = 4173;
+export const BADGE_ROOT_ENTRY_PATH = "/@badge-host/main.tsx";
+export const BADGE_ROOT_ENTRY_SCRIPT = `<script type="module" src="${BADGE_ROOT_ENTRY_PATH}"></script>`;
 export const APP_MARKERS = Object.freeze({
+  badge: '<meta name="badge-application" content="badge-single-root-v1" />',
+  legacyBadge: '<meta name="badge-application" content="badge" />',
   archive: '<meta name="badge-application" content="archive" />',
   studio: '<meta name="badge-application" content="studio" />',
 });
@@ -15,6 +20,8 @@ const CONFIG_VERSION = 2;
 const FIRST_FALLBACK_PORT = 4180;
 const LAST_PORT = 65_535;
 const RESERVED_PORTS = new Set([4175, 4176, 5173, 5174]);
+const SCRIPT_ELEMENT_PATTERN = /<script\b([^>]*)>([\s\S]*?)<\/script\s*>/giu;
+const ROOT_MOUNT_PATTERN = /<div\b(?=[^>]*\sid\s*=\s*(["'])root\1)[^>]*>\s*<\/div\s*>/giu;
 
 function origin(port) {
   return `http://${LOOPBACK_HOST}:${port}`;
@@ -115,12 +122,62 @@ async function canBindPort(port) {
   });
 }
 
-async function readIdentityRoute(port, route, options) {
+async function readIdentityRoute(port, route, accept, options) {
   const response = await options.fetchImpl(`${origin(port)}${route}`, {
+    headers: { accept },
     redirect: "manual",
     signal: globalThis.AbortSignal.timeout(options.timeoutMs),
   });
-  return { ok: response.ok, body: await response.text() };
+  return {
+    body: await response.text(),
+    contentType: response.headers.get("content-type") ?? "",
+    location: response.headers.get("location"),
+    ok: response.ok,
+    status: response.status,
+  };
+}
+
+function classifyRootScriptSource(source) {
+  if (!source.startsWith("/") || source.startsWith("//")) return "invalid";
+  let parsed;
+  try {
+    parsed = new URL(source, "http://badge.local");
+  } catch {
+    return "invalid";
+  }
+  if (parsed.origin !== "http://badge.local" || parsed.hash) return "invalid";
+  const hasSupportedDevQuery = parsed.search === "" || /^\?t=\d+$/u.test(parsed.search);
+  if (parsed.pathname === BADGE_ROOT_ENTRY_PATH && hasSupportedDevQuery) return "app";
+  if (parsed.pathname === "/@vite/client" && hasSupportedDevQuery) return "infrastructure";
+  if (/^\/assets\/index-[A-Za-z0-9_-]+\.js$/u.test(parsed.pathname) && parsed.search === "") {
+    return "app";
+  }
+  return "invalid";
+}
+
+function currentRootEntryPath(html) {
+  const scriptElements = [...html.matchAll(SCRIPT_ELEMENT_PATTERN)];
+  if ((html.match(/<script\b/giu) ?? []).length !== scriptElements.length) return null;
+  const appEntries = [];
+  for (const [, attributes] of scriptElements) {
+    const typeAttributes = [...attributes.matchAll(/(?:^|\s)type\s*=\s*(["'])([^"']+)\1/giu)];
+    if (typeAttributes.length !== 1 || typeAttributes[0][2].toLowerCase() !== "module") return null;
+    const sourceAttributes = [...attributes.matchAll(/(?:^|\s)src\s*=\s*(["'])([^"']+)\1/giu)];
+    if (sourceAttributes.length === 0) {
+      if (/(?:^|\s)src\s*=/iu.test(attributes)) return null;
+      continue;
+    }
+    if (sourceAttributes.length !== 1) return null;
+    const source = sourceAttributes[0][2];
+    const kind = classifyRootScriptSource(source);
+    if (kind === "invalid") return null;
+    if (kind === "app") appEntries.push(source);
+  }
+  return appEntries.length === 1 ? appEntries[0] : null;
+}
+
+function hasCurrentRootMount(html) {
+  return [...html.matchAll(ROOT_MOUNT_PATTERN)].length === 1;
 }
 
 export async function inspectLocalSite(port, options = {}) {
@@ -129,24 +186,44 @@ export async function inspectLocalSite(port, options = {}) {
     timeoutMs: options.timeoutMs ?? 2_000,
     fetchImpl: options.fetchImpl ?? globalThis.fetch,
   };
+  let root;
   try {
-    const [archive, studio] = await Promise.all([
-      readIdentityRoute(port, "/", requestOptions),
-      readIdentityRoute(port, "/studio/", requestOptions),
-    ]);
-    const archiveIsExclusive =
-      archive.ok && archive.body.includes(APP_MARKERS.archive) && !archive.body.includes(APP_MARKERS.studio);
-    const studioIsExclusive =
-      studio.ok && studio.body.includes(APP_MARKERS.studio) && !studio.body.includes(APP_MARKERS.archive);
-    if (archiveIsExclusive && studioIsExclusive) {
-      return "badge";
-    }
-    const hasBadgeMarker = [archive, studio].some(
-      (result) => result.ok && Object.values(APP_MARKERS).some((marker) => result.body.includes(marker)),
-    );
-    return hasBadgeMarker ? "incomplete-badge" : "occupied";
+    root = await readIdentityRoute(port, "/", "text/html", requestOptions);
   } catch {
     return (await canBindPort(port)) ? "free" : "unidentified";
+  }
+
+  const hasCurrentMarker = root.ok && root.body.includes(APP_MARKERS.badge);
+  const rootEntryPath = root.ok ? currentRootEntryPath(root.body) : null;
+  const hasExpectedEntry = rootEntryPath !== null;
+  const hasLegacyMarker =
+    root.ok &&
+    [APP_MARKERS.legacyBadge, APP_MARKERS.archive, APP_MARKERS.studio].some((marker) =>
+      root.body.includes(marker),
+    );
+  const hasBadgeEvidence = hasCurrentMarker || hasLegacyMarker;
+  const hasCurrentRoot =
+    root.ok &&
+    /^text\/html\b/iu.test(root.contentType) &&
+    hasCurrentMarker &&
+    hasExpectedEntry &&
+    hasCurrentRootMount(root.body) &&
+    !hasLegacyMarker;
+  if (!hasCurrentRoot) return hasBadgeEvidence ? "incomplete-badge" : "occupied";
+
+  try {
+    const [entry, legacyStudio] = await Promise.all([
+      readIdentityRoute(port, rootEntryPath, "text/javascript", requestOptions),
+      readIdentityRoute(port, "/studio", "text/html", requestOptions),
+    ]);
+    const hasUsableEntry =
+      entry.ok &&
+      /^(?:text|application)\/(?:javascript|ecmascript)\b/iu.test(entry.contentType) &&
+      entry.body.trim().length > 0;
+    const hasCanonicalLegacyRedirect = legacyStudio.status === 308 && legacyStudio.location === "/#studio";
+    return hasUsableEntry && hasCanonicalLegacyRedirect ? "badge" : "incomplete-badge";
+  } catch {
+    return "incomplete-badge";
   }
 }
 
@@ -185,7 +262,7 @@ export async function chooseLaunchPlan(options = {}) {
   }
   if (state === "incomplete-badge") {
     throw new Error(
-      `${origin(port)} identifies as Badge but does not serve both Archive at / and Studio at /studio/. Stop that incomplete or older Badge server, then start this version again without changing the remembered browser-data origin.`,
+      `${origin(port)} identifies as an outdated or incomplete Badge site at /. Stop that site, then start this version again without changing the remembered browser-data origin.`,
     );
   }
   if (state !== "occupied") {
@@ -235,8 +312,15 @@ export function listenForTerminalStop(input, onStop) {
 
 export function localAppUrls(port) {
   const sitePort = validateSitePort(port);
+  const app = `${origin(sitePort)}/`;
   return {
-    archive: `${origin(sitePort)}/`,
-    studio: `${origin(sitePort)}/studio/`,
+    app,
+    archive: app,
+    studio: app,
   };
+}
+
+export function formatLocalSiteAnnouncement(port, message) {
+  const { app } = localAppUrls(port);
+  return `\n${message}\n  Badge  ${app}\n`;
 }

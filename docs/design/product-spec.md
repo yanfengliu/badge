@@ -128,7 +128,7 @@ The opening experience uses a warm field-cabinet treatment with one collapsed sh
 
 The selected gallery direction uses a warm editorial field archive with a large crafted badge, concise metadata, restrained topographic detail, and generous space.
 
-The primary navigation presents exactly four destinations in both applications: Collection, Timeline, Discover, and Badge Studio. The first three are ephemeral Archive sections at `/`; Badge Studio is the separate `/studio/` application and is visually a peer destination without sharing its runtime or persistence boundary.
+The one root document presents exactly four peer primary destinations: Collection, Timeline, Discover, and Badge Studio. Collection is the default `/` state, while the other destinations use `#timeline`, `#discover`, and `#studio`; these hashes are ephemeral view state and do not merge the Archive and Studio persistence or publication boundaries.
 
 At phone widths those four destinations form an always-visible four-column navigation row beneath the product identity and utilities. Dense desktop rows become explicit touch-scroll rails only where the ordered content remains understandable—Collection artifacts, Discover sets, and Studio candidates—while Timeline headings, forms, dialogs, inspectors, and publication controls reflow vertically. Internal rails may scroll horizontally; the document itself may not.
 
@@ -144,9 +144,9 @@ The archive has no art-generation, upload, reprocessing, candidate, prompt, crop
 
 ## Badge Studio developer mode
 
-Badge Studio is a dedicated developer and curator application mounted at `/studio/` on the same remembered local site as Archive at `/`; it is not a drawer, advanced panel, or hidden control inside the everyday Archive application.
+Badge Studio is a dedicated developer and curator surface selected by `#studio` in the one root Badge document; it is a peer primary destination rather than a drawer, advanced panel, or hidden control inside the everyday Archive surface. Legacy Studio document URLs under `/studio` redirect to `/#studio`.
 
-The two routes retain separately built entry points, navigation, versioned IndexedDB database names, repositories, and backup formats. A link may move between `/` and `/studio/` without changing origin, but Archive does not import Studio or catalogue-authoring code or open the Studio database, and Studio does not open the Archive database. Archive Discover instead consumes one closed Git-tracked projection of deliberately promoted catalogue metadata and bounded list thumbnails; private Studio projects never appear automatically.
+The host composer alone imports both presentation surfaces and changes between them through root-document view state. Archive and Studio retain separate versioned IndexedDB database names, repositories, standalone isolation builds, and backup formats; Archive does not import Studio or catalogue-authoring code or open the Studio database, and Studio does not import Archive or open the Archive database. The one document owns one content-security policy and claims no route-specific service-worker scope. Archive Discover instead consumes one closed Git-tracked projection of deliberately promoted catalogue metadata and bounded list thumbnails; private Studio projects never appear automatically.
 
 A Studio project starts from a theme, packaged catalogue definition, explicitly imported minimal Archive authoring request, or blank developer draft. The request is previewed before export and validated as untrusted on import; Studio never opens the Archive database. A project contains visual direction and publishing metadata, never owner identity, personal activation, dates, occurrences, notes, sayings, visibility choices, or collection settings.
 
@@ -387,6 +387,6 @@ Future agents must resolve or deliberately defer the open items below rather tha
 14. Select the 3D renderer after the Phase 0 capability and performance spike; keep persisted recipes independent of that choice.
 15. Choose the distribution channel and update policy for published packs whose required assets are too large for ordinary Git.
 16. Decide whether several local definitions may intentionally reuse one published presentation or whether every custom definition must receive a unique Studio-published design.
-17. **Resolved by the owner:** Badge is one local website with Archive at `/` and Badge Studio at `/studio/`; navigation links between them on the same remembered origin, while their builds, private databases, repositories, and backup formats remain separate.
+17. **Resolved by the owner:** Badge is one local website and one document at `/`, with Collection, Timeline, Discover, and Badge Studio as peer root-document destinations and Studio selected by `#studio`; the host composer alone imports both surfaces, while their private databases, repositories, backup formats, and standalone isolation builds remain separate.
 18. **Resolved by the owner:** live quotation regeneration uses the owner's signed-in local Claude Code subscription through a bounded capability-scoped adapter on the existing Badge listener, with an explicit session-local disclosure review, no API key or second port, and no fixture HTTP surface; D-041 later removed manual writing and original prose from the saying contract.
 19. Confirm where a completely custom achievement begins: the current recommendation creates its semantic draft in Archive and exports a privacy-scrubbed `.badgebrief` to Studio, while the alternative begins the entire definition and visual project in Studio before publication.

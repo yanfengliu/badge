@@ -1,6 +1,5 @@
 import { useRef, type ChangeEvent } from "react";
 
-import { companionAppHref } from "../../local-origins";
 import { ArchiveSectionNav, type ArchiveSection } from "./ArchiveSectionNav";
 import { ArchiveMark, DownloadIcon, UploadIcon } from "./icons";
 
@@ -9,11 +8,18 @@ export type { ArchiveSection } from "./ArchiveSectionNav";
 interface ArchiveHeaderProps {
   activeSection: ArchiveSection;
   onSectionChange: (section: ArchiveSection) => void;
+  onShowStudio: () => void;
   onBackup: () => void;
   onRestore: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
-export function ArchiveHeader({ activeSection, onSectionChange, onBackup, onRestore }: ArchiveHeaderProps) {
+export function ArchiveHeader({
+  activeSection,
+  onSectionChange,
+  onShowStudio,
+  onBackup,
+  onRestore,
+}: ArchiveHeaderProps) {
   const restoreInput = useRef<HTMLInputElement>(null);
   return (
     <header className="archive-header">
@@ -23,7 +29,7 @@ export function ArchiveHeader({ activeSection, onSectionChange, onBackup, onRest
       <ArchiveSectionNav
         activeSection={activeSection}
         onSectionChange={onSectionChange}
-        studioHref={companionAppHref(window.location.href, "studio")}
+        onShowStudio={onShowStudio}
       />
       <div className="header-actions">
         <button className="quiet-button" type="button" aria-label="Back up archive" onClick={onBackup}>

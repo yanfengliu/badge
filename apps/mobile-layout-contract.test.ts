@@ -22,12 +22,11 @@ function mediaCss(relativePath: string, condition: string): string {
 }
 
 describe("phone layout contract", () => {
-  it("declares edge-to-edge safe-area support for both independently built apps", () => {
+  it("declares edge-to-edge safe-area support for both independent builds and the root host", () => {
     for (const htmlPath of [
       "apps/archive-web/index.html",
       "apps/studio-web/index.html",
       "apps/host-web/index.html",
-      "apps/host-web/studio/index.html",
     ]) {
       expect(read(htmlPath), htmlPath).toContain(
         'content="width=device-width, initial-scale=1.0, viewport-fit=cover"',
@@ -35,9 +34,21 @@ describe("phone layout contract", () => {
     }
   });
 
+  it("composes both responsive application surfaces from the single root host", () => {
+    const html = read("apps/host-web/index.html");
+    const host = read("apps/host-web/src/App.tsx");
+
+    expect(html).toContain('src="/@badge-host/main.tsx"');
+    expect(host).toContain('import { ArchiveSurface } from "../../archive-web/src/ArchiveSurface"');
+    expect(host).toContain('import { StudioSurface } from "../../studio-web/src/StudioSurface"');
+    expect(host).toContain("<ArchiveSurface");
+    expect(host).toContain("<StudioSurface");
+  });
+
   it("keeps the Archive shell, navigation, fields, rails, and overlays usable at phone widths", () => {
     const base = read("apps/archive-web/src/mobile.css");
-    const entry = read("apps/archive-web/src/main.tsx");
+    const global = read("apps/archive-web/src/styles.css");
+    const entry = read("apps/archive-web/src/ArchiveSurface.tsx");
     const phone = [
       mediaCss("apps/archive-web/src/mobile.css", "(max-width: 640px)"),
       mediaCss("apps/archive-web/src/mobile.css", "(max-width: 480px)"),
@@ -56,6 +67,7 @@ describe("phone layout contract", () => {
       entry.lastIndexOf('import "./saying-disclosure.css"'),
     );
     expect(base).toMatch(/html,\s*body,\s*#root\s*\{[^}]*min-width:\s*0/su);
+    expect(global).toMatch(/html\[data-badge-mode="archive"\]\s*\{[^}]*min-width:\s*0/su);
     expect(base).toMatch(/html,\s*body\s*\{[^}]*overflow-x:\s*clip/su);
     expect(base).toContain("env(safe-area-inset-top");
     expect(base).toContain("env(safe-area-inset-bottom");
@@ -112,7 +124,7 @@ describe("phone layout contract", () => {
 
   it("keeps Studio navigation, inputs, candidate browsing, and construction controls touch-safe", () => {
     const base = read("apps/studio-web/src/mobile.css");
-    const entry = read("apps/studio-web/src/main.tsx");
+    const entry = read("apps/studio-web/src/StudioSurface.tsx");
     const phone = mediaCss("apps/studio-web/src/mobile.css", "(max-width: 480px)");
     const shortLandscape = mediaCss(
       "apps/studio-web/src/mobile.css",
@@ -122,8 +134,10 @@ describe("phone layout contract", () => {
     expect(entry.lastIndexOf('import "./mobile.css"')).toBeGreaterThan(
       entry.lastIndexOf('import "./studio-header.css"'),
     );
-    expect(base).toMatch(/html,\s*body,\s*#root\s*\{[^}]*min-width:\s*0/su);
-    expect(base).toMatch(/html,\s*body\s*\{[^}]*overflow-x:\s*clip/su);
+    expect(base).toMatch(
+      /body\[data-badge-mode="studio"\],\s*body\[data-badge-mode="studio"\] #root\s*\{[^}]*min-width:\s*0/su,
+    );
+    expect(base).toMatch(/body\[data-badge-mode="studio"\]\s*\{[^}]*overflow-x:\s*clip/su);
     expect(base).toContain("env(safe-area-inset-top");
     expect(base).toContain("env(safe-area-inset-bottom");
     expect(base).toContain("100dvh");

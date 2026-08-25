@@ -368,9 +368,15 @@ describe("launcher verification state isolation", () => {
     expect(interactive).not.toContain("createVerificationRuntimeTarget");
     expect(interactive).toContain("Badge could not complete this local run.");
     expect(interactive).not.toContain("Badge did not start.");
+    expect(interactive).toContain("formatLocalSiteAnnouncement(instance.port");
+    expect(interactive).not.toMatch(/instance\.urls\.(?:archive|studio)/);
+    expect(interactive).not.toContain("/studio/");
     expect(verification).toContain("createVerificationRuntimeTarget");
     expect(verification).not.toContain("createCanonicalRuntimeTarget");
     expect(verification).not.toContain(".badge-local");
+    expect(verification).toContain("first.urls.app");
+    expect(verification).not.toMatch(/first\.urls\.(?:archive|studio)/);
+    expect(verification).not.toContain("/studio/");
   });
 
   it("offers only unified local-site start, dev, and preview commands", async () => {

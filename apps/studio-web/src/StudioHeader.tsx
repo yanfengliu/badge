@@ -1,9 +1,14 @@
-import { companionAppHref } from "../../local-origins";
 import { StudioMark } from "./StudioMark";
 
-export function StudioHeader() {
-  const archiveHref = companionAppHref(window.location.href, "archive");
-  const studioHref = companionAppHref(window.location.href, "studio");
+export type StudioPrimarySection = "collection" | "timeline" | "discover";
+
+export function StudioHeader({
+  onSectionChange,
+  disabled = false,
+}: {
+  readonly onSectionChange: (section: StudioPrimarySection) => void;
+  readonly disabled?: boolean;
+}) {
   return (
     <header className="studio-header">
       <div className="brand">
@@ -12,18 +17,42 @@ export function StudioHeader() {
         <em>Developer mode</em>
       </div>
       <nav className="studio-nav" aria-label="Primary sections">
-        <a className="studio-nav__link" href={archiveHref}>
+        <button
+          id="studio-section-collection"
+          className="studio-nav__link"
+          type="button"
+          disabled={disabled}
+          onClick={() => onSectionChange("collection")}
+        >
           Collection
-        </a>
-        <a className="studio-nav__link" href={`${archiveHref}#timeline`}>
+        </button>
+        <button
+          id="studio-section-timeline"
+          className="studio-nav__link"
+          type="button"
+          disabled={disabled}
+          onClick={() => onSectionChange("timeline")}
+        >
           Timeline
-        </a>
-        <a className="studio-nav__link" href={`${archiveHref}#discover`}>
+        </button>
+        <button
+          id="studio-section-discover"
+          className="studio-nav__link"
+          type="button"
+          disabled={disabled}
+          onClick={() => onSectionChange("discover")}
+        >
           Discover
-        </a>
-        <a className="studio-nav__link" href={studioHref} aria-current="page">
+        </button>
+        <button
+          id="studio-section-studio"
+          className="studio-nav__link"
+          type="button"
+          disabled={disabled}
+          aria-current="page"
+        >
           Badge Studio
-        </a>
+        </button>
       </nav>
       <div className="brief-id">Brief 01 · Yosemite</div>
     </header>

@@ -25,8 +25,8 @@
   box-sizing: border-box;
 }
 
-html {
-  min-width: 320px;
+html[data-badge-mode="archive"] {
+  min-width: 0;
   background: var(--paper);
 }
 

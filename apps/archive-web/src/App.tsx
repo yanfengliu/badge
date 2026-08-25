@@ -68,7 +68,7 @@ const archive = new ArchiveApplication(repository);
 const forceFallback = new URLSearchParams(window.location.search).has("fallback");
 const starterState = createStarterArchiveState();
 
-export function App() {
+export function App({ onShowStudio }: { readonly onShowStudio: () => void }) {
   const [state, setState] = useState<ArchiveState | null>(null);
   const [activeSection, setActiveSection] = useState<ArchiveSection>(() =>
     archiveSectionFromHash(window.location.hash),
@@ -166,7 +166,7 @@ export function App() {
     requestAnimationFrame(() => focusPreparedBadgeTrigger(returnFocus));
   }
 
-  function navigateSection(section: ArchiveSection) {
+  function onSectionChange(section: ArchiveSection) {
     setPreparingRecordId(null);
     if (section === "discover") discovery.enterDiscover();
     setActiveSection(section);
@@ -252,7 +252,7 @@ export function App() {
     }
   }
 
-  async function exportBackup() {
+  async function onBackup() {
     try {
       downloadBytes(
         await archive.exportBackup(),
@@ -268,7 +268,7 @@ export function App() {
     }
   }
 
-  async function restoreBackup(event: ChangeEvent<HTMLInputElement>) {
+  async function onRestore(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     event.target.value = "";
     if (!file) return;
@@ -368,16 +368,22 @@ export function App() {
     }
   }
 
+  const headerProps = { activeSection, onSectionChange, onShowStudio, onBackup, onRestore };
+  const header = <ArchiveHeader {...headerProps} />;
+
   if (!state || !selectedRecord) {
     return (
-      <ArchiveClosedScreen
-        notice={visibleNotice}
-        pendingRestore={pendingRestore}
-        restoring={restoring}
-        onRestoreChange={restoreBackup}
-        onCancelRestore={closeRestore}
-        onConfirmRestore={() => void confirmRestore()}
-      />
+      <>
+        {header}
+        <ArchiveClosedScreen
+          notice={visibleNotice}
+          pendingRestore={pendingRestore}
+          restoring={restoring}
+          onRestoreChange={onRestore}
+          onCancelRestore={closeRestore}
+          onConfirmRestore={() => void confirmRestore()}
+        />
+      </>
     );
   }
 
@@ -405,12 +411,7 @@ export function App() {
       onApprove={saying.approveDisclosure}
       onRetry={saying.retryDisclosure}
     >
-      <ArchiveHeader
-        activeSection={activeSection}
-        onSectionChange={navigateSection}
-        onBackup={() => void exportBackup()}
-        onRestore={restoreBackup}
-      />
+      {header}
 
       {activeSection === "timeline" ? (
         <TimelineView
@@ -418,7 +419,7 @@ export function App() {
           sourceUrls={resolvedSourceUrls}
           forceFallback={forceFallback}
           onOpenMemory={(recordId) => replayMemory(recordId)}
-          onShowDiscover={() => navigateSection("discover")}
+          onShowDiscover={() => onSectionChange("discover")}
         />
       ) : activeSection === "discover" && preparingRecordId ? (
         <BadgePreparationView
@@ -450,7 +451,7 @@ export function App() {
           sourceUrls={resolvedSourceUrls}
           onReplay={replayMemory}
           onBrowseSet={(setId) => browseSet(setId)}
-          onShowDiscover={() => navigateSection("discover")}
+          onShowDiscover={() => onSectionChange("discover")}
         />
       )}
 

@@ -1,13 +1,11 @@
 import process from "node:process";
 
-import { listenForTerminalStop } from "./local-launcher.mjs";
+import { formatLocalSiteAnnouncement, listenForTerminalStop } from "./local-launcher.mjs";
 import { createCanonicalRuntimeTarget } from "./local-runtime-target.mjs";
 import { startLocalSite } from "./local-site-runner.mjs";
 
-function printUrls(instance, message) {
-  console.log(`\n${message}`);
-  console.log(`  Archive  ${instance.urls.archive}`);
-  console.log(`  Studio   ${instance.urls.studio}\n`);
+function printUrl(instance, message) {
+  console.log(formatLocalSiteAnnouncement(instance.port, message));
 }
 
 async function run() {
@@ -36,7 +34,7 @@ async function run() {
   try {
     instance = await startLocalSite({ runtimeTarget });
     if (instance.action === "reuse") {
-      printUrls(instance, "Badge is already running. Reusing its stable local site:");
+      printUrl(instance, "Badge is already running. Reusing its stable local site:");
       return;
     }
     if (instance.reason === "fallback") {
@@ -44,7 +42,7 @@ async function run() {
         `\nPreferred port 4173 is occupied by other software. Badge selected ${instance.port} and will remember it. Existing browser data at an older Badge origin remains there; restore a backup before treating a new origin as authoritative.`,
       );
     }
-    printUrls(instance, "Badge is ready on one stable local site:");
+    printUrl(instance, "Badge is ready on one stable local site:");
     if (!stopping) await stopRequested;
   } finally {
     disposeTerminal();

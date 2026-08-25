@@ -2,6 +2,16 @@
 
 Append decisions newest first. Never rewrite history; add a superseding entry that links to the decision it replaces.
 
+## 2026-08-25 — D-050: Make Badge Studio a root-document primary section
+
+**Status:** Owner-confirmed and implemented for the current root host, superseding D-033's route, entry-document, runtime-marker, CSP, and service-worker-scope topology plus the route-specific portions of D-046 and D-048 while preserving their product, visual, persistence, and independent-build boundaries.
+
+Badge has one canonical HTML document at `/`. Collection is the default primary section, while Timeline, Discover, and Badge Studio use `/#timeline`, `/#discover`, and `/#studio`; direct hashes, back and forward navigation, focus transfer, and document theme are host-owned location behavior. Legacy HTML requests beneath `/studio` redirect to `/#studio` instead of mounting a second application document.
+
+The root host composer is the only production module allowed to import both Archive and Studio surfaces. Each surface retains its own application composition, IndexedDB name, repository interfaces and adapters, Blob ownership, backup format, CSS ownership, and standalone isolation build; neither imports the other surface nor opens the other's database. The composed document has one CSP, and Badge makes no route-specific service-worker claim.
+
+Leaving Studio is blocked while a Studio operation is busy and otherwise flushes the exact current draft before the host changes section. The launcher requires the versioned unified marker, root mount, and exactly one supported same-origin live or built host module at `/`, requires `/studio` to remain only the canonical `308` redirect, refuses marker-only, missing-root, broken-entry, external-entry, hybrid, Archive-only, and Studio-only listeners, and reuses one remembered origin. The existing `.badge-local/site.json` origin remains valid because IndexedDB is origin-scoped rather than path-scoped; this composition change requires no data migration.
+
 ## 2026-08-25 — D-049: Make every Discover badge card its own action
 
 **Status:** Owner-confirmed and implemented for the current safe Discover projection; it supersedes only the non-actionable-card presentation in D-043, D-046, and D-047 without granting source studies runtime badge authority.

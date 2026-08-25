@@ -1,44 +1,45 @@
-import { readFile } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 import path from "node:path";
 
+import { APP_MARKERS } from "./local-launcher.mjs";
+
 const outputDirectory = path.resolve("dist/local");
-const archivePath = path.join(outputDirectory, "index.html");
-const studioPath = path.join(outputDirectory, "studio", "index.html");
-const [archiveHtml, studioHtml] = await Promise.all([
-  readFile(archivePath, "utf8"),
-  readFile(studioPath, "utf8"),
+const htmlPath = path.join(outputDirectory, "index.html");
+const studioDocumentPath = path.join(outputDirectory, "studio", "index.html");
+const manifestPath = path.join(outputDirectory, ".vite", "manifest.json");
+const [html, manifestSource] = await Promise.all([
+  readFile(htmlPath, "utf8"),
+  readFile(manifestPath, "utf8"),
 ]);
 
-const markers = {
-  archive: '<meta name="badge-application" content="archive" />',
-  studio: '<meta name="badge-application" content="studio" />',
-};
+if (
+  !html.includes(APP_MARKERS.badge) ||
+  !html.includes('<div id="root"></div>') ||
+  html.includes('content="archive"') ||
+  html.includes('content="studio"')
+) {
+  throw new Error("The built root document must identify the complete single-root Badge application.");
+}
 
-if (!archiveHtml.includes(markers.archive) || archiveHtml.includes(markers.studio)) {
+try {
+  await access(studioDocumentPath);
   throw new Error(
-    "The built root document must identify only Badge Archive; rebuild the one-site host from its separate Archive entry.",
+    "The built site still contains studio/index.html; Badge Studio must be a root-page section.",
   );
-}
-if (!studioHtml.includes(markers.studio) || studioHtml.includes(markers.archive)) {
-  throw new Error(
-    "The built /studio/ document must identify only Badge Studio; rebuild the one-site host from its separate Studio entry.",
-  );
+} catch (error) {
+  if (!(error && typeof error === "object" && error.code === "ENOENT")) throw error;
 }
 
-function entryScript(html, label) {
-  const match = html.match(/<script\b[^>]*\bsrc="([^"]+)"[^>]*><\/script>/u);
-  if (!match) throw new Error(`The built ${label} document has no module entry script.`);
-  return match[1];
+const manifest = JSON.parse(manifestSource);
+const entry = manifest["index.html"];
+if (!entry?.isEntry || typeof entry.file !== "string") {
+  throw new Error("The built root document has no manifest-bound host entry chunk.");
+}
+const entrySource = await readFile(path.join(outputDirectory, entry.file), "utf8");
+for (const surface of ["Badge Archive", "Badge Studio"]) {
+  if (!entrySource.includes(surface)) {
+    throw new Error(`The single root host entry does not compose the ${surface} surface.`);
+  }
 }
 
-const archiveEntry = entryScript(archiveHtml, "Archive");
-const studioEntry = entryScript(studioHtml, "Studio");
-if (archiveEntry === studioEntry) {
-  throw new Error(
-    `Archive and Studio both load ${archiveEntry}; keep their application entry chunks distinct on the shared origin.`,
-  );
-}
-
-console.log(
-  `Single-site build passed: / loads ${archiveEntry} and /studio/ loads the distinct ${studioEntry}.`,
-);
+console.log(`Single-root site build passed: / loads ${entry.file} with Archive and Studio sections.`);

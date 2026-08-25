@@ -5,10 +5,10 @@ export type ArchiveSection = "collection" | "timeline" | "discover";
 interface ArchiveSectionNavProps {
   readonly activeSection: ArchiveSection;
   readonly onSectionChange: (section: ArchiveSection) => void;
-  readonly studioHref: string;
+  readonly onShowStudio: () => void;
 }
 
-export function ArchiveSectionNav({ activeSection, onSectionChange, studioHref }: ArchiveSectionNavProps) {
+export function ArchiveSectionNav({ activeSection, onSectionChange, onShowStudio }: ArchiveSectionNavProps) {
   return (
     <nav className="archive-nav" aria-label="Archive sections">
       <button
@@ -38,9 +38,9 @@ export function ArchiveSectionNav({ activeSection, onSectionChange, studioHref }
       >
         Discover
       </button>
-      <a className="nav-link" href={studioHref}>
+      <button id="archive-section-studio" className="nav-link" type="button" onClick={onShowStudio}>
         Badge Studio
-      </a>
+      </button>
     </nav>
   );
 }

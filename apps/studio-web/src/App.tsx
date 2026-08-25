@@ -23,12 +23,12 @@ import {
   type PublishedRelease,
 } from "./studio-candidates";
 import { StudioHeader } from "./StudioHeader";
+import { type StudioAppProps, useStudioLeaveGuard } from "./studio-leave-guard";
 import { useStudioOperation } from "./studio-operation";
 import { candidateCapabilities, resolveCandidateSelection } from "./studio-selection";
 import { StudioStoreError, openStudioStore, type StudioStore } from "./studio-store";
-const forceFallback = new URLSearchParams(window.location.search).has("fallback");
 const TREATMENT_OPERATION = "warm-mineral-treatment-v1";
-export function App() {
+export function App({ onSectionChange, onLeaveGuardChange }: StudioAppProps) {
   const [candidates, setCandidates] = useState(initialCandidates);
   const [selectedKey, setSelectedKey] = useState<string | null>(candidateKey(initialCandidates[0]));
   const [recipe, setRecipe] = useState<RenderRecipe>({
@@ -55,6 +55,18 @@ export function App() {
     }
     setStatus(error instanceof Error ? error.message : String(error));
   }, []);
+  const leaving = useStudioLeaveGuard({
+    autosave: capabilities.autosave,
+    busy,
+    onBlocked: setStatus,
+    onGuardChange: onLeaveGuardChange,
+    onSaveError: handleStorageFailure,
+    recipe,
+    selected,
+    store,
+    storeReady,
+  });
+  const editingDisabled = !storeReady || busy !== null || leaving || publishedRelease !== null;
 
   useEffect(() => {
     let cancelled = false;
@@ -119,29 +131,13 @@ export function App() {
     };
   }, [handleStorageFailure]);
 
-  useEffect(() => {
-    if (!capabilities.autosave || !selected || !storeReady || !store.current) return;
-    const timeout = window.setTimeout(() => {
-      store.current
-        ?.saveDraft({
-          selectedAssetHash: selected.hash,
-          selectedCandidateIdentity: selected.identity,
-          renderRecipe: recipe,
-        })
-        .catch((error: unknown) => {
-          handleStorageFailure(error);
-        });
-    }, 180);
-    return () => window.clearTimeout(timeout);
-  }, [capabilities.autosave, handleStorageFailure, recipe, selected, storeReady]);
-
   function updateRecipe(patch: Partial<RenderRecipe>) {
-    if (!storeReady || isBusy() || publishedRelease) return;
+    if (editingDisabled || isBusy()) return;
     setRecipe((current) => ({ ...current, ...patch }) as RenderRecipe);
   }
 
   function selectCandidate(key: string) {
-    if (!storeReady || isBusy() || publishedRelease) return;
+    if (editingDisabled || isBusy()) return;
     setSelectedKey(key);
   }
 
@@ -149,7 +145,7 @@ export function App() {
     const file = event.target.files?.[0];
     event.target.value = "";
     const activeStore = store.current;
-    if (!file || !storeReady || !activeStore || publishedRelease || !tryBegin("uploading")) return;
+    if (!file || editingDisabled || !activeStore || !tryBegin("uploading")) return;
     try {
       const asset = await readImageAsset(file);
       const identity = uploadedCandidateIdentity(asset.hash);
@@ -187,14 +183,7 @@ export function App() {
 
   async function reprocess() {
     const activeStore = store.current;
-    if (
-      !capabilities.process ||
-      !selected ||
-      !storeReady ||
-      !activeStore ||
-      publishedRelease ||
-      !tryBegin("processing")
-    )
+    if (!capabilities.process || !selected || editingDisabled || !activeStore || !tryBegin("processing"))
       return;
     try {
       const asset = await createStudioTreatment(requireCandidateSnapshot(selected));
@@ -236,6 +225,7 @@ export function App() {
       !selected ||
       !storeReady ||
       !activeStore ||
+      leaving ||
       publishedRelease ||
       !tryBegin("publishing")
     )
@@ -271,10 +261,10 @@ export function App() {
   }
 
   return (
-    <div className="studio-shell">
-      <StudioHeader />
+    <div className="studio-shell" aria-busy={leaving || undefined}>
+      <StudioHeader onSectionChange={onSectionChange} disabled={leaving} />
 
-      <main className="studio-main">
+      <main className="studio-main" inert={leaving ? true : undefined}>
         <section className="source-workbench">
           <div className="workbench-heading">
             <p className="eyebrow">Source art · candidate selection</p>
@@ -291,7 +281,7 @@ export function App() {
                 type="button"
                 className="candidate"
                 aria-pressed={candidateKey(candidate) === selectedKey}
-                disabled={!storeReady || busy !== null || publishedRelease !== null}
+                disabled={editingDisabled}
                 onClick={() => selectCandidate(candidateKey(candidate))}
               >
                 <span className="candidate-index">{String(index + 1).padStart(2, "0")}</span>
@@ -314,7 +304,7 @@ export function App() {
               type="button"
               className="button secondary"
               onClick={() => uploadInput.current?.click()}
-              disabled={!storeReady || busy !== null || publishedRelease !== null}
+              disabled={editingDisabled}
             >
               {busy === "uploading" ? "Uploading…" : "Upload my own image"}
             </button>
@@ -322,7 +312,7 @@ export function App() {
               type="button"
               className="button secondary"
               onClick={reprocess}
-              disabled={!capabilities.process || !storeReady || busy !== null || publishedRelease !== null}
+              disabled={!capabilities.process || editingDisabled}
             >
               {busy === "processing" ? "Processing…" : "Process selected again"}
             </button>
@@ -331,7 +321,7 @@ export function App() {
               className="visually-hidden"
               type="file"
               accept="image/png,image/jpeg,image/webp"
-              disabled={!storeReady || busy !== null || publishedRelease !== null}
+              disabled={editingDisabled}
               tabIndex={-1}
               aria-hidden="true"
               onChange={upload}
@@ -355,11 +345,11 @@ export function App() {
             recipe={recipe}
             accessibleDescription="Yosemite badge under construction"
             readOnly={false}
-            forceFallback={forceFallback}
+            forceFallback={new URLSearchParams(window.location.search).has("fallback")}
           />
 
           <div className="appearance-controls">
-            <fieldset disabled={!storeReady || busy !== null || publishedRelease !== null}>
+            <fieldset disabled={editingDisabled}>
               <legend>Shape</legend>
               <div className="segment">
                 {(["circle", "square", "rectangle", "shield"] as const).map((shape) => (
@@ -374,7 +364,7 @@ export function App() {
                 ))}
               </div>
             </fieldset>
-            <fieldset disabled={!storeReady || busy !== null || publishedRelease !== null}>
+            <fieldset disabled={editingDisabled}>
               <legend>Material</legend>
               <div className="segment">
                 {(["metal", "wool", "enamel"] as const).map((material) => (
@@ -395,7 +385,7 @@ export function App() {
                 <span className="color-control">
                   <input
                     type="color"
-                    disabled={!storeReady || busy !== null || publishedRelease !== null}
+                    disabled={editingDisabled}
                     value={recipe.borderColor}
                     onChange={(event) => updateRecipe({ borderColor: event.target.value })}
                   />
@@ -408,7 +398,7 @@ export function App() {
                 </span>
                 <input
                   type="range"
-                  disabled={!storeReady || busy !== null || publishedRelease !== null}
+                  disabled={editingDisabled}
                   min="0"
                   max="0.2"
                   step="0.005"
@@ -426,7 +416,7 @@ export function App() {
                   </span>
                   <input
                     type="range"
-                    disabled={!storeReady || busy !== null || publishedRelease !== null}
+                    disabled={editingDisabled}
                     min="0.02"
                     max="0.18"
                     step="0.005"
@@ -440,7 +430,7 @@ export function App() {
                   </span>
                   <input
                     type="range"
-                    disabled={!storeReady || busy !== null || publishedRelease !== null}
+                    disabled={editingDisabled}
                     min="0"
                     max="0.05"
                     step="0.001"
@@ -471,7 +461,7 @@ export function App() {
                   ? offerPackClosureDownload(publishedRelease.bytes, publishedRelease.themeBytes)
                   : void publish()
               }
-              disabled={!capabilities.publish || !storeReady || busy !== null}
+              disabled={!capabilities.publish || !storeReady || busy !== null || leaving}
             >
               {busy === "publishing"
                 ? "Validating pack…"

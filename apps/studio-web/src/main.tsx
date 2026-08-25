@@ -1,10 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
-import { App } from "./App";
-import "./styles.css";
-import "./studio-header.css";
-import "./mobile.css";
+import { StudioSurface } from "./StudioSurface";
 
 const root = document.getElementById("root");
 
@@ -14,6 +11,6 @@ if (!root) {
 
 createRoot(root).render(
   <StrictMode>
-    <App />
+    <StudioSurface onSectionChange={() => undefined} onLeaveGuardChange={() => undefined} />
   </StrictMode>,
 );

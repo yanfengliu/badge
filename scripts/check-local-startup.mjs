@@ -45,16 +45,14 @@ try {
     throw new Error("Local-startup verification did not create its isolated task-owned server.");
   }
   if ((await inspectLocalSite(first.port)) !== "badge") {
-    throw new Error(
-      `Local-startup verification could not identify Archive and Studio on ${first.urls.archive}.`,
-    );
+    throw new Error(`Local-startup verification could not identify Badge on ${first.urls.app}.`);
   }
 
   second = await startLocalSite({ runtimeTarget });
   if (second.ownsServer || second.action !== "reuse" || second.port !== first.port) {
     throw new Error("A repeated local startup did not reuse the exact isolated Badge site.");
   }
-  successMessage = `Local startup passed on one task-owned listener: Archive ${first.urls.archive} and Studio ${first.urls.studio}.`;
+  successMessage = `Local startup passed on one task-owned listener: Badge ${first.urls.app}.`;
 } catch (error) {
   verificationError = error;
 }

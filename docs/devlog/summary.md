@@ -1,5 +1,6 @@
 # Devlog Summary
 
+- 2026-08-25: Moved Badge Studio from its own `/studio` document into the `#studio` fourth primary section of the root host while retaining separate private stores, repositories, backups, and standalone isolation builds and requiring versioned root, usable-entry, and canonical-redirect proof before launcher reuse.
 - 2026-08-25: Made every Discover badge a full-card pointer and keyboard action, routing collected cards to exact memory, published potentials to preparation, and unpublished studies to a bounded read-only preview with truthful capability limits.
 - 2026-08-25: Made Archive and Badge Studio complete at a 320-pixel phone floor with safe-area and dynamic-height layouts, always-visible four-destination navigation, deliberate touch rails, bounded portrait and landscape surfaces, touch-versus-page-scroll arbitration in the live viewer, responsive contracts, and canonical phone references.
 - 2026-08-25: Added a sourced and visually reviewed fifty-state discovery edition across twenty-four art styles, exact historical-quotation defaults, progressive searchable Discover scaling, represented-only Collection shelves, truthful future catalogue plans, and a durable UI visual record.

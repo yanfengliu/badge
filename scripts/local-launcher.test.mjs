@@ -9,9 +9,12 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import {
   APP_MARKERS,
+  BADGE_ROOT_ENTRY_PATH,
+  BADGE_ROOT_ENTRY_SCRIPT,
   DEFAULT_SITE_PORT,
   chooseLaunchPlan,
   findAvailablePort,
+  formatLocalSiteAnnouncement,
   inspectLocalSite,
   listenForTerminalStop,
   localAppUrls,
@@ -80,25 +83,45 @@ describe("local Badge launch planning", () => {
     ).rejects.toThrow("did not identify itself as Badge");
   });
 
-  it("does not reuse a partial Badge site with a missing Studio route", async () => {
-    await expect(
-      chooseLaunchPlan({
-        configuredPort: null,
-        inspectSite: async () => "incomplete-badge",
-        findFreePort: async () => {
-          throw new Error("fallback must not hide an incomplete Badge site");
-        },
-      }),
-    ).rejects.toThrow("does not serve both Archive at / and Studio at /studio/");
+  it("does not reuse an outdated or incomplete Badge site", async () => {
+    const result = await chooseLaunchPlan({
+      configuredPort: null,
+      inspectSite: async () => "incomplete-badge",
+      findFreePort: async () => {
+        throw new Error("fallback must not hide an incomplete Badge site");
+      },
+    }).catch((error) => error);
+
+    expect(result).toBeInstanceOf(Error);
+    expect(result.message).toContain("identifies as an outdated or incomplete Badge site at /");
+    expect(result.message).not.toContain("/studio/");
+  });
+
+  it("reports the remembered root once when an outdated site owns that origin", async () => {
+    const result = await chooseLaunchPlan({
+      configuredPort: 4180,
+      inspectSite: async () => "incomplete-badge",
+      findFreePort: async () => {
+        throw new Error("fallback must not replace the remembered origin");
+      },
+    }).catch((error) => error);
+
+    expect(result).toBeInstanceOf(Error);
+    expect(result.message.match(/http:\/\/127\.0\.0\.1:4180/g)).toHaveLength(1);
+    expect(result.message).not.toContain("/studio/");
   });
 });
 
 describe("local Badge site inspection", () => {
   async function listen(respond) {
     const server = createServer((request, response) => {
-      const body = respond(request.url ?? "/");
-      response.writeHead(200, { "content-type": "text/html" });
-      response.end(body);
+      const result = respond(request.url ?? "/");
+      const descriptor =
+        typeof result === "string"
+          ? { body: result, headers: { "content-type": "text/html" }, status: 200 }
+          : result;
+      response.writeHead(descriptor.status ?? 200, descriptor.headers ?? {});
+      response.end(descriptor.body ?? "");
     });
     openedServers.push(server);
     await new Promise((resolve, reject) => {
@@ -110,31 +133,151 @@ describe("local Badge site inspection", () => {
     return address.port;
   }
 
-  it("requires the Archive and Studio markers at their routes on one listener", async () => {
-    const badgePort = await listen((url) =>
-      url.startsWith("/studio/")
-        ? `<html><head>${APP_MARKERS.studio}</head></html>`
-        : `<html><head>${APP_MARKERS.archive}</head></html>`,
-    );
+  function currentBadgeResponse(url, entryPath = BADGE_ROOT_ENTRY_PATH) {
+    if (url === "/") {
+      const entryScript = `<script type="module" src="${entryPath}"></script>`;
+      return `<html><head>${APP_MARKERS.badge}</head><body><div id="root"></div>${entryScript}</body></html>`;
+    }
+    if (url === entryPath) {
+      return {
+        body: "export {};",
+        headers: { "content-type": "text/javascript" },
+        status: 200,
+      };
+    }
+    if (url === "/studio") {
+      return { headers: { location: "/#studio" }, status: 308 };
+    }
+    return { body: "not found", headers: { "content-type": "text/plain" }, status: 404 };
+  }
+
+  it("requires the current root marker, usable host entry, and legacy-route redirect", async () => {
+    const requestedRoutes = [];
+    const badgePort = await listen((url) => {
+      requestedRoutes.push(url);
+      return currentBadgeResponse(url);
+    });
     const foreignPort = await listen(() => "<html><head><title>Something else</title></head></html>");
 
     expect(await inspectLocalSite(badgePort)).toBe("badge");
+    expect(requestedRoutes).toEqual(["/", BADGE_ROOT_ENTRY_PATH, "/studio"]);
     expect(await inspectLocalSite(foreignPort)).toBe("occupied");
   });
 
-  it("classifies a one-route Badge listener as incomplete instead of reusable", async () => {
-    const partialPort = await listen((url) =>
-      url.startsWith("/studio/")
-        ? "<html><head><title>Missing Studio</title></head></html>"
-        : `<html><head>${APP_MARKERS.archive}</head></html>`,
-    );
+  it("treats an unrelated production Vite entry without a Badge marker as occupied", async () => {
+    const requestedRoutes = [];
+    const unrelatedVitePort = await listen((url) => {
+      requestedRoutes.push(url);
+      return '<html><body><div id="root"></div><script type="module" src="/assets/index-BbfosaDH.js"></script></body></html>';
+    });
 
-    expect(await inspectLocalSite(partialPort)).toBe("incomplete-badge");
+    expect(await inspectLocalSite(unrelatedVitePort)).toBe("occupied");
+    expect(requestedRoutes).toEqual(["/"]);
   });
 
-  it("refuses a listener that puts both application markers on both routes", async () => {
+  it("refuses a marker-only root as incomplete", async () => {
+    const markerOnlyPort = await listen(() => `<html><head>${APP_MARKERS.badge}</head></html>`);
+
+    expect(await inspectLocalSite(markerOnlyPort)).toBe("incomplete-badge");
+  });
+
+  it("accepts the single same-origin module emitted by a current Vite preview build", async () => {
+    const previewEntry = "/assets/index-B7xYz_19.js";
+    const requestedRoutes = [];
+    const previewPort = await listen((url) => {
+      requestedRoutes.push(url);
+      return currentBadgeResponse(url, previewEntry);
+    });
+
+    expect(await inspectLocalSite(previewPort)).toBe("badge");
+    expect(requestedRoutes).toEqual(["/", previewEntry, "/studio"]);
+  });
+
+  it("selects one cache-busted app entry from current Vite development infrastructure", async () => {
+    const liveEntry = `${BADGE_ROOT_ENTRY_PATH}?t=1787690953330`;
+    const requestedRoutes = [];
+    const livePort = await listen((url) => {
+      requestedRoutes.push(url);
+      if (url === "/") {
+        return `<html><head>${APP_MARKERS.badge}<script type="module" src="/@vite/client"></script><script type="module">import RefreshRuntime from "/@react-refresh";</script></head><body><div id="root"></div><script type="module" src="${liveEntry}"></script></body></html>`;
+      }
+      return currentBadgeResponse(url, liveEntry);
+    });
+
+    expect(await inspectLocalSite(livePort)).toBe("badge");
+    expect(requestedRoutes).toEqual(["/", liveEntry, "/studio"]);
+  });
+
+  it("refuses a current marker and app entry without the root mount", async () => {
+    const missingRootPort = await listen((url) => {
+      if (url === "/") {
+        return `<html><head>${APP_MARKERS.badge}</head><body>${BADGE_ROOT_ENTRY_SCRIPT}</body></html>`;
+      }
+      return currentBadgeResponse(url);
+    });
+
+    expect(await inspectLocalSite(missingRootPort)).toBe("incomplete-badge");
+  });
+
+  it.each([
+    ["missing module", { body: "not found", headers: { "content-type": "text/plain" }, status: 404 }],
+    ["HTML fallback", "<html><body>not JavaScript</body></html>"],
+  ])("refuses a current root whose expected entry is a broken %s response", async (_label, entryResponse) => {
+    const brokenEntryPort = await listen((url) =>
+      url === BADGE_ROOT_ENTRY_PATH ? entryResponse : currentBadgeResponse(url),
+    );
+
+    expect(await inspectLocalSite(brokenEntryPort)).toBe("incomplete-badge");
+  });
+
+  it.each([
+    ["path drift", "/@badge-host/old-main.tsx"],
+    ["unsupported query", `${BADGE_ROOT_ENTRY_PATH}?version=1`],
+    ["fragment", `${BADGE_ROOT_ENTRY_PATH}?t=1787690953330#stale`],
+  ])("refuses a current marker with root entry %s", async (_label, source) => {
+    const wrongEntryPort = await listen(
+      () =>
+        `<html><head>${APP_MARKERS.badge}</head><body><div id="root"></div><script type="module" src="${source}"></script></body></html>`,
+    );
+
+    expect(await inspectLocalSite(wrongEntryPort)).toBe("incomplete-badge");
+  });
+
+  it.each([
+    ["external", '<script type="module" src="https://example.com/index-current.js"></script>'],
+    ["malformed", '<script type="module" src="//[invalid"></script>'],
+    ["multiple", `${BADGE_ROOT_ENTRY_SCRIPT}<script type="module" src="/assets/index-extra.js"></script>`],
+  ])("refuses a current marker with %s module scripts", async (_label, scripts) => {
+    const invalidScriptsPort = await listen(
+      () => `<html><head>${APP_MARKERS.badge}</head><body><div id="root"></div>${scripts}</body></html>`,
+    );
+
+    expect(await inspectLocalSite(invalidScriptsPort)).toBe("incomplete-badge");
+  });
+
+  it("refuses a hybrid site that still serves a Studio document", async () => {
+    const hybridPort = await listen((url) =>
+      url === "/studio"
+        ? "<html><head><title>Legacy Studio</title></head></html>"
+        : currentBadgeResponse(url),
+    );
+
+    expect(await inspectLocalSite(hybridPort)).toBe("incomplete-badge");
+  });
+
+  it.each([APP_MARKERS.legacyBadge, APP_MARKERS.archive, APP_MARKERS.studio])(
+    "classifies a listener with legacy marker %s as incomplete instead of reusable",
+    async (legacyMarker) => {
+      const partialPort = await listen(() => `<html><head>${legacyMarker}</head></html>`);
+
+      expect(await inspectLocalSite(partialPort)).toBe("incomplete-badge");
+    },
+  );
+
+  it("refuses a listener that mixes the complete and legacy application markers", async () => {
     const ambiguousPort = await listen(
-      () => `<html><head>${APP_MARKERS.archive}${APP_MARKERS.studio}</head></html>`,
+      () =>
+        `<html><head>${APP_MARKERS.badge}${APP_MARKERS.archive}</head><body><div id="root"></div>${BADGE_ROOT_ENTRY_SCRIPT}</body></html>`,
     );
 
     expect(await inspectLocalSite(ambiguousPort)).toBe("incomplete-badge");
@@ -163,16 +306,19 @@ describe("local Badge site inspection", () => {
     expect(await inspectLocalSite(silentPort, { timeoutMs: 25 })).toBe("unidentified");
   });
 
-  it("waits long enough for a starting Badge site to return both markers", async () => {
+  it("waits long enough for a starting Badge site to return its root marker", async () => {
     const server = createServer((request, response) => {
-      setTimeout(() => {
-        response.writeHead(200, { "content-type": "text/html" });
-        response.end(
-          request.url?.startsWith("/studio/")
-            ? `<html><head>${APP_MARKERS.studio}</head></html>`
-            : `<html><head>${APP_MARKERS.archive}</head></html>`,
-        );
-      }, 1_000);
+      const send = () => {
+        const result = currentBadgeResponse(request.url ?? "/");
+        const descriptor =
+          typeof result === "string"
+            ? { body: result, headers: { "content-type": "text/html" }, status: 200 }
+            : result;
+        response.writeHead(descriptor.status ?? 200, descriptor.headers ?? {});
+        response.end(descriptor.body ?? "");
+      };
+      if (request.url === "/") setTimeout(send, 1_000);
+      else send();
     });
     openedServers.push(server);
     await new Promise((resolve, reject) => {
@@ -185,16 +331,14 @@ describe("local Badge site inspection", () => {
     expect(await inspectLocalSite(address.port)).toBe("badge");
   });
 
-  it("binds identity checks to the markers shipped by both host entry points", async () => {
-    const [archiveEntry, studioEntry] = await Promise.all([
-      readFile(path.join(repositoryRoot, "apps/host-web/index.html"), "utf8"),
-      readFile(path.join(repositoryRoot, "apps/host-web/studio/index.html"), "utf8"),
-    ]);
+  it("binds identity checks to the marker shipped by the root host entry point", async () => {
+    const rootEntry = await readFile(path.join(repositoryRoot, "apps/host-web/index.html"), "utf8");
 
-    expect(archiveEntry).toContain(APP_MARKERS.archive);
-    expect(archiveEntry).not.toContain(APP_MARKERS.studio);
-    expect(studioEntry).toContain(APP_MARKERS.studio);
-    expect(studioEntry).not.toContain(APP_MARKERS.archive);
+    expect(rootEntry).toContain(APP_MARKERS.badge);
+    expect(rootEntry).toContain(BADGE_ROOT_ENTRY_SCRIPT);
+    expect(rootEntry).not.toContain(APP_MARKERS.legacyBadge);
+    expect(rootEntry).not.toContain(APP_MARKERS.archive);
+    expect(rootEntry).not.toContain(APP_MARKERS.studio);
   });
 });
 
@@ -371,11 +515,21 @@ describe("remembered local site origin", () => {
   });
 });
 
-describe("same-origin application URLs", () => {
-  it("keeps Archive and Studio on one origin", () => {
+describe("single-root application URLs", () => {
+  it("keeps every compatibility URL at the Badge root", () => {
     expect(localAppUrls(4180)).toEqual({
+      app: "http://127.0.0.1:4180/",
       archive: "http://127.0.0.1:4180/",
-      studio: "http://127.0.0.1:4180/studio/",
+      studio: "http://127.0.0.1:4180/",
     });
+  });
+
+  it("formats exactly one labeled Badge root URL for terminal announcements", () => {
+    const announcement = formatLocalSiteAnnouncement(4180, "Badge is ready:");
+
+    expect(announcement).toBe("\nBadge is ready:\n  Badge  http://127.0.0.1:4180/\n");
+    expect(announcement.match(/http:\/\/127\.0\.0\.1:4180\//g)).toHaveLength(1);
+    expect(announcement).not.toContain("Studio");
+    expect(announcement).not.toContain("/studio/");
   });
 });

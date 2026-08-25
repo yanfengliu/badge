@@ -124,7 +124,7 @@ describe("mounted historical-quotation flow", () => {
       value: vi.fn(),
     });
     root = createRoot(container);
-    await act(async () => root.render(<App />));
+    await act(async () => root.render(<App onShowStudio={() => undefined} />));
   });
 
   afterEach(async () => {
