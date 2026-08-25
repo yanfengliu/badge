@@ -42,9 +42,29 @@ describe("ArtDirectionLibrary mounted interactions", () => {
       configurable: true,
       value: { writeText: vi.fn(async (text: string) => void (copied = text)) },
     });
+    await expandPrompt();
     await clickButton("Copy prompt");
     expect(copied).toBe(promptText());
     expect(container.textContent).toContain("Exact compiled prompt copied.");
+  });
+
+  it("keeps the exact prompt collapsed by default and reveals it from a native disclosure", async () => {
+    const disclosure = promptDisclosure();
+    const summary = disclosure.querySelector("summary");
+
+    expect(disclosure.open).toBe(false);
+    expect(summary?.textContent).toContain("Exact compiled prompt");
+    expect(summary?.textContent).toContain("acadia:landmark-witness");
+
+    await expandPrompt();
+
+    expect(disclosure.open).toBe(true);
+    expect(promptText()).toContain("Title: Acadia");
+    expect(buttonWithText("Copy prompt")).toBeTruthy();
+
+    await expandPrompt();
+
+    expect(disclosure.open).toBe(false);
   });
 
   it("resets candidate direction across tabs and aligns filtered ideas and styles", async () => {
@@ -130,6 +150,13 @@ describe("ArtDirectionLibrary mounted interactions", () => {
     await act(async () => buttonWithText(text).click());
   }
 
+  async function expandPrompt(): Promise<void> {
+    const disclosure = promptDisclosure();
+    const summary = disclosure.querySelector<HTMLElement>("summary");
+    if (!summary) throw new Error("Mounted test could not find the exact prompt disclosure summary.");
+    await act(async () => summary.click());
+  }
+
   function buttonWithText(text: string): HTMLButtonElement {
     const button = [...container.querySelectorAll<HTMLButtonElement>("button")].find((entry) =>
       entry.textContent?.includes(text),
@@ -156,5 +183,13 @@ describe("ArtDirectionLibrary mounted interactions", () => {
 
   function promptText(): string {
     return container.querySelector(".art-direction-library__prompt")?.textContent ?? "";
+  }
+
+  function promptDisclosure(): HTMLDetailsElement {
+    const disclosure = container.querySelector<HTMLDetailsElement>(
+      ".art-direction-library__prompt-disclosure",
+    );
+    if (!disclosure) throw new Error("Mounted test could not find the exact prompt disclosure.");
+    return disclosure;
   }
 });

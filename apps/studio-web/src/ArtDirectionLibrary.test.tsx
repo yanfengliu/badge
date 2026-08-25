@@ -83,6 +83,9 @@ describe("ArtDirectionLibrary", () => {
     expect(html).toContain("63 national parks");
     expect(html).toContain("Source studies are not published Archive badges");
     expect(html).toContain("Browsing and changing art direction makes zero provider or model calls");
+    expect(html).toContain('<details class="art-direction-library__prompt-disclosure">');
+    expect(html).toContain("<summary");
+    expect(html).not.toMatch(/<details[^>]*\sopen(?:=|\s|>)/u);
     expect(html).toContain("Copy prompt");
     expect(html).toContain("pixel cluster landscape source study showing dawn over Cadillac Mountain");
     expect(html).toContain("<legend>Candidate role</legend>");

@@ -379,21 +379,91 @@
   line-height: 1.5;
 }
 
-.art-direction-library__prompt-heading {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  align-items: end;
+.art-direction-library__prompt-disclosure {
   margin-top: 30px;
+  border-top: 1px solid #c9bdae;
+  border-bottom: 1px solid #c9bdae;
 }
 
-.art-direction-library__prompt-heading span {
+.art-direction-library__prompt-disclosure > summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: center;
+  min-height: 72px;
+  padding: 14px 2px;
+  list-style: none;
+  cursor: pointer;
+}
+
+.art-direction-library__prompt-disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+
+.art-direction-library__prompt-summary-copy {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.art-direction-library__prompt-key {
   color: var(--library-muted);
   font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
   font-size: 10px;
+  overflow-wrap: anywhere;
 }
 
-.art-direction-library__prompt-heading button {
+.art-direction-library__prompt-toggle {
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 10px;
+  align-items: center;
+  color: var(--library-rust);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.art-direction-library__prompt-toggle::after {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  border: 1px solid #b8aa9a;
+  border-radius: 50%;
+  content: "+";
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1;
+  place-items: center;
+}
+
+.art-direction-library__prompt-when-open {
+  display: none;
+}
+
+.art-direction-library__prompt-disclosure[open] .art-direction-library__prompt-when-closed {
+  display: none;
+}
+
+.art-direction-library__prompt-disclosure[open] .art-direction-library__prompt-when-open {
+  display: inline;
+}
+
+.art-direction-library__prompt-disclosure[open] .art-direction-library__prompt-toggle::after {
+  content: "−";
+}
+
+.art-direction-library__prompt-body {
+  padding: 2px 0 20px;
+}
+
+.art-direction-library__prompt-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.art-direction-library__prompt-actions button {
   min-height: 42px;
   padding: 0 18px;
   border: 1px solid var(--library-rust);

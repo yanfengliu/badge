@@ -423,21 +423,31 @@ function PromptDetail({
         <p>{preview.style.summary}</p>
       </div>
 
-      <div className="art-direction-library__prompt-heading">
-        <div>
-          <p className="art-direction-library__eyebrow">Exact compiled prompt</p>
-          <span>{preview.compiled.candidateKey}</span>
+      <details className="art-direction-library__prompt-disclosure">
+        <summary>
+          <span className="art-direction-library__prompt-summary-copy">
+            <span className="art-direction-library__eyebrow">Exact compiled prompt</span>
+            <span className="art-direction-library__prompt-key">{preview.compiled.candidateKey}</span>
+          </span>
+          <span className="art-direction-library__prompt-toggle" aria-hidden="true">
+            <span className="art-direction-library__prompt-when-closed">Show prompt</span>
+            <span className="art-direction-library__prompt-when-open">Hide prompt</span>
+          </span>
+        </summary>
+        <div className="art-direction-library__prompt-body">
+          <div className="art-direction-library__prompt-actions">
+            <button type="button" onClick={onCopy}>
+              Copy prompt
+            </button>
+          </div>
+          <pre className="art-direction-library__prompt" tabIndex={0} aria-label="Exact compiled art prompt">
+            {preview.compiled.prompt}
+          </pre>
+          <p className="art-direction-library__copy-status" aria-live="polite">
+            {copyStatus ?? "Copying uses the local clipboard only; it does not submit the prompt."}
+          </p>
         </div>
-        <button type="button" onClick={onCopy}>
-          Copy prompt
-        </button>
-      </div>
-      <pre className="art-direction-library__prompt" tabIndex={0} aria-label="Exact compiled art prompt">
-        {preview.compiled.prompt}
-      </pre>
-      <p className="art-direction-library__copy-status" aria-live="polite">
-        {copyStatus ?? "Copying uses the local clipboard only; it does not submit the prompt."}
-      </p>
+      </details>
     </>
   );
 }
