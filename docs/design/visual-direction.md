@@ -87,6 +87,12 @@ Collection progress is visible but subordinate to the artifact and memory.
 
 Every picture and presentation is already decided by an installed pack. The gallery never shows prompts, candidates, uploads, processing, appearance construction, provider state, or calls to create missing art.
 
+### Discovery catalogue
+
+Discover is a broad but quiet editorial index rather than another personal gallery. A generous catalogue heading, compact availability totals, one search field, one availability filter, and a responsive card grid make all created visual concepts findable without turning the surface into a dashboard.
+
+Available badges use their published preview and one restrained `Open in Collection` action. Selected studies use only the reviewed list thumbnail, state `Selected study` and `Not yet published`, and provide no false badge shape, activation, quotation, 3D, install, provider, or authoring action. Missing thumbnails retain the complete searchable card with an explicit preview fallback rather than hiding the concept.
+
 ### Memory timeline
 
 The Timeline uses the same warm editorial archive language as Collection: generous margins, one quiet chronological rule, restrained date markers, and substantial memory cards rather than a dense activity feed. Real-world occurrence dates lead; the later sealed timestamp remains secondary. Each card shows the frozen badge artifact through its pinned shape, material, border, crop, and source rather than presenting the source picture as a rectangular illustration. A restrained persistent inspection control swaps only the chosen preview into the live 3D or fallback viewer, so a long memory history never becomes a wall of canvases or repeated viewer controls.

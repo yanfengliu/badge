@@ -18,6 +18,7 @@ import {
   type ActivationDraft,
 } from "./app-types";
 import { ArchiveHeader, type ArchiveSection } from "./ArchiveHeader";
+import { focusCollectionThen } from "./archive-section-focus";
 import { ArchiveNotice, type ArchiveNoticeState } from "./ArchiveNotice";
 import {
   initializeReviewedSayingDefaults,
@@ -27,6 +28,7 @@ import {
 } from "./archive-startup";
 import { ArchiveClosedScreen } from "./ArchiveClosedScreen";
 import { BadgeRail } from "./BadgeRail";
+import { DiscoveryView } from "./DiscoveryView";
 import { ReplayActivationButton } from "./ReplayActivationButton";
 import { RestoreDialog } from "./RestoreDialog";
 import { SayingComposer } from "./SayingComposer";
@@ -137,6 +139,10 @@ export function App() {
     setSelectedRecordId(recordId);
     setActiveSection("collection");
     setNotice(null);
+  }
+
+  function openDiscoveredBadge(recordId: string) {
+    focusCollectionThen(() => selectBadge(recordId));
   }
 
   function replayCeremony(recordId: string) {
@@ -347,6 +353,8 @@ export function App() {
           onOpenMemory={selectBadge}
           onShowCollection={() => setActiveSection("collection")}
         />
+      ) : activeSection === "discover" ? (
+        <DiscoveryView onOpenAvailableBadge={openDiscoveredBadge} />
       ) : (
         <main className="archive-main">
           <section className="artifact-pane" aria-label="Badge collection">

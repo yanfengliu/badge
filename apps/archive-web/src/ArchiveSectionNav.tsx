@@ -1,6 +1,6 @@
 import { archiveSectionButtonId } from "./archive-section-focus";
 
-export type ArchiveSection = "collection" | "timeline";
+export type ArchiveSection = "collection" | "timeline" | "discover";
 
 interface ArchiveSectionNavProps {
   readonly activeSection: ArchiveSection;
@@ -27,6 +27,15 @@ export function ArchiveSectionNav({ activeSection, onSectionChange }: ArchiveSec
         onClick={() => onSectionChange("timeline")}
       >
         Timeline
+      </button>
+      <button
+        id={archiveSectionButtonId("discover")}
+        className="nav-link"
+        type="button"
+        aria-current={activeSection === "discover" ? "page" : undefined}
+        onClick={() => onSectionChange("discover")}
+      >
+        Discover
       </button>
     </nav>
   );

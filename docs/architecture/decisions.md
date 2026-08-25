@@ -2,6 +2,18 @@
 
 Append decisions newest first. Never rewrite history; add a superseding entry that links to the decision it replaces.
 
+## 2026-08-24 — D-043: Make every created visual badge discoverable without manufacturing personal records
+
+**Status:** Owner-confirmed and implemented for the current tracked catalogue projection; full parks publication and discovery of future private Studio work remain separate release work.
+
+Archive has a third read-only `Discover` section that exposes every unique visualized badge concept currently created in tracked product inputs: the four published starter badges plus the other sixty-two national-park source studies, with Yosemite represented once by its usable Archive entry. The fifty-seven text-only common-achievement ideas, unselected Yosemite candidates, and private browser-local Studio assets are not called created badges and remain outside this catalogue until a selected visual or an explicit privacy-scrubbed handoff makes them eligible.
+
+Discovery is not installation. Published starter entries may reopen their existing Collection records; source-study entries are labeled `Selected study` and `Not yet published` and expose no plan, activation, quotation, 3D, install, provider, or authoring action. The projection is ephemeral presentation data and adds no `ArchiveState` records, IndexedDB schema, migration, backup content, quotation bank, or pack identity.
+
+Archive still imports no Studio or `catalogue-authoring` implementation. A closed Git-tracked `catalogue-fixtures/discovery` projection contains only stable identity, title, criterion, availability, accessible preview copy, place or collection label, and either an existing Archive record target or one reviewed thumbnail filename. An exact drift test compares all sixty-six entries with the authoring and starter authorities, forbids personal and authoring fields, and deduplicates Yosemite. The Archive bundle carries only the sixty-three integrity-bound `128 × 128` list thumbnails, exactly `373,657` bytes with an `8,004`-byte per-file ceiling; a production gate rejects a missing, changed, additional, or full-size Studio JPEG.
+
+This narrows D-040's Studio-only browsing statement without treating selected studies as `PublishedBadgeVisual` values or weakening D-013's prohibition on visual authoring in Archive. Future private Studio creations still require an explicit scrubbed export or ordinary publish-and-install flow; sharing one browser origin never authorizes Archive to inspect Studio persistence.
+
 ## 2026-08-24 — D-042: Preserve unquotable earned evidence and reclassify recovery from fresh state
 
 **Status:** Implemented for the starter Archive compatibility, restore, and readable-state replacement boundaries; this supersedes D-030's source-failure-only state-rescue eligibility paragraph and applies D-041's quotation requirement without rewriting already sealed history.

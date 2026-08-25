@@ -1,0 +1,347 @@
+.discovery-main {
+  min-height: calc(100vh - 74px);
+  padding: clamp(42px, 5vw, 76px) clamp(24px, 5vw, 76px) 80px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent 360px), var(--paper);
+}
+
+.discovery-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(360px, 0.75fr);
+  gap: clamp(34px, 6vw, 92px);
+  width: min(100%, 1480px);
+  margin: 0 auto clamp(38px, 5vw, 64px);
+  align-items: end;
+}
+
+.discovery-hero h1 {
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(42px, 6vw, 76px);
+  font-weight: 400;
+  letter-spacing: -0.04em;
+  line-height: 0.98;
+}
+
+.discovery-intro {
+  max-width: 720px;
+  margin: 22px 0 0;
+  color: var(--ink-soft);
+  font-family: var(--display);
+  font-size: clamp(18px, 1.7vw, 23px);
+  line-height: 1.5;
+}
+
+.discovery-totals {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+
+.discovery-totals div {
+  min-width: 0;
+  padding: 18px 14px;
+  border-left: 1px solid var(--rule);
+}
+
+.discovery-totals div:first-child {
+  border-left: 0;
+}
+
+.discovery-totals dt {
+  color: var(--ink-faint);
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.discovery-totals dd {
+  margin: 7px 0 0;
+  font-family: var(--display);
+  font-size: 17px;
+}
+
+.discovery-browser {
+  width: min(100%, 1480px);
+  margin: 0 auto;
+}
+
+.discovery-controls {
+  display: grid;
+  grid-template-columns: minmax(280px, 1fr) minmax(210px, 0.32fr);
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  background: rgba(250, 247, 240, 0.64);
+}
+
+.discovery-controls label {
+  display: grid;
+  gap: 7px;
+  color: var(--ink-soft);
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.discovery-controls input,
+.discovery-controls select {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid #bdb3a5;
+  border-radius: 7px;
+  background: var(--paper-bright);
+  color: var(--ink);
+  font-size: 15px;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.discovery-results-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 32px 2px 18px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.discovery-results-heading h2 {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 27px;
+  font-weight: 400;
+}
+
+.discovery-results-heading p {
+  margin: 0;
+  color: var(--ink-faint);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.discovery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  padding-top: 22px;
+}
+
+.discovery-card {
+  display: grid;
+  grid-template-columns: 156px minmax(0, 1fr);
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--paper-bright) 78%, transparent);
+}
+
+.discovery-card__art {
+  position: relative;
+  display: grid;
+  width: 128px;
+  height: 128px;
+  margin: 18px 10px 18px 18px;
+  overflow: hidden;
+  place-items: center;
+  border-radius: 7px;
+  background: var(--paper-deep);
+}
+
+.discovery-card__art::after {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(41, 39, 32, 0.08);
+  content: "";
+  pointer-events: none;
+}
+
+.discovery-card__art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.discovery-card--source-study .discovery-card__art img {
+  image-rendering: auto;
+}
+
+.discovery-card__art > span[role="img"] {
+  color: var(--ink-faint);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+.discovery-card__status {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1;
+  padding: 7px 9px;
+  border: 1px solid rgba(41, 39, 32, 0.18);
+  border-radius: 999px;
+  background: rgba(250, 247, 240, 0.88);
+  color: var(--ink-soft);
+  backdrop-filter: blur(7px);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+.discovery-card--available .discovery-card__status {
+  color: var(--success);
+}
+
+.discovery-card__copy {
+  display: grid;
+  min-height: 164px;
+  padding: 18px 18px 18px 8px;
+  align-content: start;
+}
+
+.discovery-card__copy p {
+  margin: 0 0 8px;
+  color: var(--rust);
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.discovery-card__copy h3 {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 21px;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+}
+
+.discovery-card__copy > span {
+  margin-top: 9px;
+  color: var(--ink-soft);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.discovery-card__copy button {
+  width: max-content;
+  min-height: 40px;
+  margin-top: 18px;
+  padding: 0 13px;
+  border: 1px solid var(--rust);
+  border-radius: 7px;
+  background: transparent;
+  color: var(--rust-dark);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.discovery-card__copy button:hover {
+  background: rgba(174, 77, 45, 0.08);
+}
+
+.discovery-card__copy small {
+  margin-top: 18px;
+  color: var(--ink-faint);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.discovery-empty {
+  display: grid;
+  min-height: 260px;
+  place-content: center;
+  text-align: center;
+}
+
+.discovery-empty strong {
+  font-family: var(--display);
+  font-size: 24px;
+  font-weight: 400;
+}
+
+.discovery-empty span {
+  margin-top: 8px;
+  color: var(--ink-soft);
+}
+
+@media (max-width: 1180px) {
+  .discovery-main {
+    min-height: calc(100vh - 118px);
+  }
+
+  .discovery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .discovery-hero {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .discovery-main {
+    min-height: calc(100vh - 108px);
+    padding: 34px 18px 56px;
+  }
+
+  .discovery-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .discovery-totals {
+    grid-template-columns: 1fr;
+  }
+
+  .discovery-totals div,
+  .discovery-totals div:first-child {
+    padding: 12px 4px;
+    border-top: 1px solid var(--rule);
+    border-left: 0;
+  }
+
+  .discovery-totals div:first-child {
+    border-top: 0;
+  }
+
+  .discovery-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 420px) {
+  .discovery-card {
+    grid-template-columns: 112px minmax(0, 1fr);
+  }
+
+  .discovery-card__art {
+    width: 96px;
+    height: 96px;
+    margin: 14px 8px 14px 14px;
+  }
+
+  .discovery-card__status {
+    top: 7px;
+    left: 7px;
+    padding: 6px;
+    font-size: 7px;
+  }
+
+  .discovery-card__copy {
+    min-height: 124px;
+    padding: 14px 12px 14px 4px;
+  }
+}

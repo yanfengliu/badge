@@ -270,11 +270,13 @@
   line-height: 1.55;
 }
 
-@media (max-width: 960px) {
+@media (max-width: 1180px) {
   .timeline-main {
     min-height: calc(100vh - 118px);
   }
+}
 
+@media (max-width: 960px) {
   .timeline-list {
     padding-left: 78px;
   }
@@ -289,6 +291,12 @@
 
   .timeline-card {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .timeline-main {
+    min-height: calc(100vh - 108px);
   }
 }
 

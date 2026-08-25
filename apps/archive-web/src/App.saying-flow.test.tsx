@@ -197,6 +197,26 @@ describe("mounted historical-quotation flow", () => {
     }
   });
 
+  it("opens an available Discovery entry in Collection and returns focus to its section control", async () => {
+    await waitFor(() => expect(container.textContent).toContain("The Field Archive"));
+
+    await clickButton("Discover");
+    await waitFor(() => expect(container.textContent).toContain("Discover every badge"));
+    const openSapiens = container.querySelector<HTMLButtonElement>(
+      'button[aria-label="Open Read Sapiens in Collection"]',
+    );
+    if (!openSapiens) throw new Error("Mounted Archive test could not find Read Sapiens in Discovery.");
+
+    await act(async () => {
+      openSapiens.click();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    await waitFor(() => expect(container.querySelector(".story-title")?.textContent).toBe("Read Sapiens"));
+    expect(container.textContent).not.toContain("Discover every badge");
+    expect(document.activeElement?.id).toBe("archive-section-collection");
+  });
+
   function buttonWithText(text: string): HTMLButtonElement {
     const button = [...container.querySelectorAll<HTMLButtonElement>("button")].find((candidate) =>
       candidate.textContent?.includes(text),

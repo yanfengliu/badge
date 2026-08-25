@@ -40,15 +40,17 @@ Every generated catalogue candidate remains text-free, full-bleed source art. Ph
 
 A collection contact sheet proves coverage and broad cohesion, not candidate conformance. Before promotion, inspect every selected source at native resolution: examine all four edges for inset paper, rough work boundaries, frames, or presentation backgrounds; verify the depicted landmark, geology, ecology, and architecture against its brief; and reject typography, logos, signatures, physical badge construction, and generation artifacts that thumbnails can hide.
 
-A selected Studio source study is not a published or installed Archive badge. It becomes runtime-visible only after complete construction, fallback readiness, immutable pack compilation, independent admission, explicit installation, and every applicable capacity and catalogue-semantic gate pass.
+A selected Studio source study is not a published or installed Archive badge. A closed, privacy-scrubbed discovery projection may expose its stable concept metadata, accessible description, and integrity-bound `128 × 128` list thumbnail as a non-actionable `Selected study` card; it becomes a browseable, plannable, or activatable Archive artifact only after complete construction, quotation-bank review, fallback readiness, immutable pack compilation, independent admission, explicit installation, and every applicable capacity and catalogue-semantic gate pass.
 
 ## Archive and Studio boundary
 
 The everyday archive at `/` and developer-only Badge Studio at `/studio/` are separate application entry points and builds served by one local site. They retain separate navigation trees, versioned IndexedDB database names, repositories, persistence namespaces, service-worker scopes, content-security policy surfaces, and backup formats; sharing an origin never authorizes either build to import or open the other's private implementation or database.
 
-The archive never exposes art generation, upload, reprocessing, prompt, candidate, provider, crop, shape, material, border, or publish controls. Every runtime-visible badge resolves to exactly one validated published source image and 3D presentation recipe before the pack can be installed.
+The archive never exposes art generation, upload, reprocessing, prompt, candidate, provider, crop, shape, material, border, or publish controls. Every Collection, detail, planning, activation, Timeline, or 3D badge resolves to exactly one validated published source image and presentation recipe before the pack can be installed. Discover may show a clearly labeled non-actionable selected-study thumbnail without granting any of those runtime capabilities.
 
 Badge Studio owns visual creation and publishes versioned immutable badge packs through an explicit validated export. Drafts, rejected candidates, provider metadata beyond sanitized provenance, and credentials never cross into the archive pack.
+
+Archive Discover consumes only the Git-tracked safe projection of deliberately promoted catalogue studies and their bounded list thumbnails. It never imports Studio or catalogue-authoring code, opens Studio persistence, exposes prompts or provenance, copies full source studies, or discovers private browser-local projects automatically. Future private Studio work crosses only through an explicit privacy-scrubbed handoff or the ordinary validated publish-and-install path.
 
 ## Persistence and recovery
 

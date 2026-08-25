@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     "./archive": "./src/archive.ts",
+    "./discovery": "./src/discovery.ts",
     "./studio": "./src/studio.ts"
   }
 }

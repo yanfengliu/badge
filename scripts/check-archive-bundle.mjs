@@ -12,6 +12,11 @@ const forbiddenText = [
   { label: "the Studio-only catalogue prompt compiler", pattern: /ACHIEVEMENT REFERENCE DATA/i },
   { label: "the Studio-only art-style registry", pattern: /pixel-cluster-landscape/i },
 ];
+const discoveryThumbnailContract = {
+  count: 63,
+  maximumBytes: 8004,
+  totalBytes: 373657,
+};
 
 const files = await listFiles(archiveOutputDirectory);
 const forbiddenFile = files.find((file) => forbiddenFileExtensions.has(path.extname(file).toLowerCase()));
@@ -31,6 +36,28 @@ if (leakedStudioCandidate) {
   );
 }
 
+const discoveryThumbnails = files.filter((file) => path.extname(file).toLowerCase() === ".jpg");
+if (discoveryThumbnails.length !== discoveryThumbnailContract.count) {
+  throw new Error(
+    `Archive build contains ${discoveryThumbnails.length} JPEG files; Discover requires exactly ${discoveryThumbnailContract.count} reviewed list thumbnails and no full Studio source studies. Rebuild the integrity-bound thumbnail tier before shipping.`,
+  );
+}
+let discoveryThumbnailBytes = 0;
+for (const file of discoveryThumbnails) {
+  const bytes = await readFile(file);
+  discoveryThumbnailBytes += bytes.byteLength;
+  if (bytes.byteLength > discoveryThumbnailContract.maximumBytes) {
+    throw new Error(
+      `Archive discovery asset ${path.relative(archiveOutputDirectory, file)} is ${bytes.byteLength} bytes; only reviewed list thumbnails at or below ${discoveryThumbnailContract.maximumBytes} bytes may cross the Studio boundary.`,
+    );
+  }
+}
+if (discoveryThumbnailBytes !== discoveryThumbnailContract.totalBytes) {
+  throw new Error(
+    `Archive discovery JPEGs total ${discoveryThumbnailBytes} bytes, not the reviewed ${discoveryThumbnailContract.totalBytes}; refresh catalogue thumbnails and their integrity bindings before shipping.`,
+  );
+}
+
 for (const file of files) {
   if (!textExtensions.has(path.extname(file).toLowerCase())) continue;
   const contents = await readFile(file, "utf8");
@@ -44,7 +71,7 @@ for (const file of files) {
 }
 
 console.log(
-  `Archive bundle boundary passed for ${files.length} files: no decoder WASM or WebP runtime markers.`,
+  `Archive bundle boundary passed for ${files.length} files: ${discoveryThumbnails.length} bounded discovery thumbnails (${discoveryThumbnailBytes} bytes), with no full Studio studies, decoder WASM, or WebP runtime markers.`,
 );
 
 async function listFiles(directory) {

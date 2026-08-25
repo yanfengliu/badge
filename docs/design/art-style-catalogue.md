@@ -4,7 +4,7 @@
 
 This document explains the curated authoring inputs in `packages/catalogue-authoring`; the executable style records, achievement briefs, candidate plans, selected-source manifests, and prompt compiler remain the source of truth.
 
-The library exists only for Badge Studio and release curation. It is not an Archive catalogue, installed pack, art-provider adapter, or permission to generate artwork while browsing, planning, activating, restoring, or replaying a memory.
+The authoring library exists only for Badge Studio and release curation. Archive Discover receives a separate closed projection of deliberately promoted selected-study identity, display copy, and integrity-bound list thumbnails; it does not receive prompts, styles, candidate plans, provenance, full source studies, an installed pack, an art-provider adapter, or permission to generate artwork while browsing, planning, activating, restoring, or replaying a memory.
 
 The 2026-08-23 authoring edition contains `24` immutable creator-neutral style revisions, `63` U.S. national-park projects with three planned candidates and one selected source study per park, and `57` common-achievement ideas for later curation.
 
@@ -20,9 +20,9 @@ Each park project carries three deliberately different candidate plans: `landmar
 
 The campaign therefore records `189` planned candidate directions and `63` selected source studies. A selection freezes the chosen candidate key, exact prompt-recipe revision, recorded prompt digest, asset digest, dimensions, accessible description, declared campaign date, sanitized generation and rights provenance, normalization recipe, and thumbnail derivative so later curation can distinguish a deliberate selection from an untraceable image. Digests prove the frozen association, not historical model-call causation.
 
-These selected files are compact, deliberately promoted Studio source studies. They are not `PublishedBadgeVisual` values, installed Archive definitions, immutable `.badgepack` bytes, or proof that the Phase 3 national-parks release is complete.
+These selected files are compact, deliberately promoted Studio source studies. Their safe metadata and list thumbnails may appear as non-actionable Archive Discover cards, but they are not `PublishedBadgeVisual` values, installed Archive definitions, immutable `.badgepack` bytes, or proof that the Phase 3 national-parks release is complete.
 
-All `63` selected studies are normalized `896 × 896` JPEG files, each stays at or below the ordinary `256 KiB` binary threshold, and together they occupy exactly `15,211,909` bytes, about `14.51 MiB`, as deliberately promoted authoring inputs. Their deterministic `128 × 128` list thumbnails occupy `373,657` bytes in total, no thumbnail exceeds `8,004` bytes, and Studio uses the full source only for the selected detail. Integrity refresh regenerates the full derivative set from the current sources before binding hashes, so a stale or unrelated thumbnail cannot be blessed alongside changed source bytes.
+All `63` selected studies are normalized `896 × 896` JPEG files, each stays at or below the ordinary `256 KiB` binary threshold, and together they occupy exactly `15,211,909` bytes, about `14.51 MiB`, as deliberately promoted authoring inputs. Their deterministic `128 × 128` list thumbnails occupy `373,657` bytes in total, no thumbnail exceeds `8,004` bytes, Studio uses the full source only for the selected detail, and Archive Discover ships exactly the thumbnail tier without any full study. Integrity refresh regenerates the full derivative set from the current sources before binding hashes, so a stale or unrelated thumbnail cannot be blessed alongside changed source bytes.
 
 Those authoring-file measurements do not prove a publish-safe runtime pack. Publication normalizes runtime art to strict PNG, and direct use of all `63` studies at `896 × 896` would charge about `193 MiB` under decoded-image admission before the composite or additional maps, above the current `64 MiB` aggregate cap.
 
@@ -81,7 +81,7 @@ Run `npm run catalogue:prompts -- acadia` to print the exact selected Acadia pro
 
 ## Common-achievement idea bank
 
-The idea bank is a release-authoring queue rather than an Archive suggestion feed. Its `57` entries span adventure `10`, community `7`, craft `5`, creative `8`, learning `7`, life `9`, nature `5`, and wellbeing `6`.
+The idea bank is a release-authoring queue rather than an Archive suggestion or discovery feed. Its `57` entries span adventure `10`, community `7`, craft `5`, creative `8`, learning `7`, life `9`, nature `5`, and wellbeing `6`.
 
 Examples include seeing the northern lights, completing a marathon, learning to swim, reading fifty books, earning a degree, shipping an app, making a garment, hosting a family reunion, mentoring someone, changing careers, and sustaining a lifelong friendship.
 

@@ -1,5 +1,6 @@
 # Devlog Summary
 
+- 2026-08-24: Added Archive Discover for all 66 unique visualized badge concepts, with exhaustive safe projection tests, truthful published-versus-study status, search and filtering, available-only Collection navigation, and an exact bounded-thumbnail bundle gate.
 - 2026-08-24: Replaced saying authoring with preseeded, source-checked historical quotations and one regeneration action, backed by exact-ID selection, record-bound admission, durable quote revisions, and truthful sealed-memory recovery.
 - 2026-08-23: Established a sourced Studio-only authoring campaign for all 63 national parks with natively reviewed source studies, deterministic parent-derived thumbnails, contained media-repair states, three candidate directions each, 24 immutable diverse art styles, exact prompts, and 57 common-achievement ideas without claiming pack publication.
 - 2026-08-23: Recast Timeline pictures as exact recipe-rendered badge artifacts with one bounded live inspector, and polished Replay activation into a dedicated focus-stable earned-memory coda.
