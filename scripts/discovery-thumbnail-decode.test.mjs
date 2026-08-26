@@ -20,7 +20,7 @@ describe("discovery thumbnail full-decode gate", () => {
     );
 
     expect(result.status, result.stderr).toBe(0);
-    expect(result.stdout).toContain("Fully decoded and key-bound 113 discovery thumbnails.");
+    expect(result.stdout).toContain("Fully decoded and key-bound 297 discovery thumbnails.");
   });
 
   windowsIt("rejects a JPEG that only declares dimensions in a truncated header", async () => {

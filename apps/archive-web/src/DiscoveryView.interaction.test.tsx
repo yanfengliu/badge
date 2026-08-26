@@ -3,7 +3,7 @@
 import { act, useRef, useState } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { discoveryBadges } from "@badge/catalogue-fixtures/discovery";
+import { discoveryBadges, type SourceStudyDiscoveryBadge } from "@badge/catalogue-fixtures/discovery";
 
 import { focusPreparedBadgeTrigger } from "./archive-section-focus.js";
 import { DiscoveryView } from "./DiscoveryView.js";
@@ -12,8 +12,20 @@ import { DiscoveryView } from "./DiscoveryView.js";
 
 const available = discoveryBadges.find((badge) => badge.availability === "available");
 const sourceStudy = discoveryBadges.find((badge) => badge.availability === "source-study");
+const restaurantStudy = discoveryBadges.find(
+  (badge): badge is SourceStudyDiscoveryBadge =>
+    badge.availability === "source-study" && badge.setIds.includes("michelin-dining"),
+);
+const restaurantEvidenceStudy = discoveryBadges.find(
+  (badge): badge is SourceStudyDiscoveryBadge =>
+    badge.availability === "source-study" &&
+    badge.setIds.includes("michelin-dining") &&
+    Boolean(badge.visualEvidenceUrl),
+);
 
-if (!available || !sourceStudy) throw new Error("Discovery interaction fixtures are incomplete.");
+if (!available || !sourceStudy || !restaurantStudy?.referenceUrl || !restaurantEvidenceStudy?.referenceUrl) {
+  throw new Error("Discovery interaction fixtures are incomplete.");
+}
 const searchableBadges = [available, sourceStudy] as const;
 
 describe("DiscoveryView mounted interactions", () => {
@@ -68,6 +80,9 @@ describe("DiscoveryView mounted interactions", () => {
     studyAction?.focus();
     await act(async () => studyAction?.click());
     expect(container.querySelector('[role="dialog"]')?.textContent).toContain(sourceStudy.criterion);
+    expect(container.querySelector('[role="dialog"]')?.textContent).toContain(
+      sourceStudy.accessibleDescription,
+    );
     expect(document.activeElement).toBe(
       container.querySelector<HTMLButtonElement>('[aria-label="Close potential badge preview"]'),
     );
@@ -149,6 +164,130 @@ describe("DiscoveryView mounted interactions", () => {
     expect(container.textContent).toContain(sourceStudy.title);
     expect(container.textContent).toContain(available.title);
     expect(container.textContent).toContain("2 results");
+  });
+
+  it("separates a named dining study's official Michelin listing from reviewed visual evidence", async () => {
+    await act(async () =>
+      root.render(
+        <DiscoveryView
+          badges={[restaurantEvidenceStudy]}
+          collectedRecordIds={new Set()}
+          resolvedSourceUrls={{}}
+          selectedSetId="michelin-dining"
+          query=""
+          onSetChange={() => undefined}
+          onQueryChange={() => undefined}
+          onOpenAvailableBadge={() => undefined}
+          onOpenCollectedBadge={() => undefined}
+          resolveThumbnail={(fileName) => `/thumbnails/${fileName}`}
+          resolveDetail={async (fileName) => `/details/${fileName}`}
+        />,
+      ),
+    );
+
+    await act(async () =>
+      container
+        .querySelector<HTMLButtonElement>(
+          `[aria-label="Inspect potential badge ${restaurantEvidenceStudy.title}"]`,
+        )
+        ?.click(),
+    );
+    const guideLink = container.querySelector<HTMLAnchorElement>(
+      '[role="dialog"] a[href^="https://guide.michelin.com/"]',
+    );
+    expect(guideLink?.href).toBe(restaurantEvidenceStudy.referenceUrl);
+    expect(guideLink?.textContent).toContain("Michelin Guide");
+    expect(container.querySelector('[role="dialog"]')?.textContent).toContain("Official Michelin listing");
+    const visualEvidenceLink = container.querySelector<HTMLAnchorElement>(
+      '[role="dialog"] a[href]:not([href^="https://guide.michelin.com/"])',
+    );
+    expect(visualEvidenceLink?.href).toBe(restaurantEvidenceStudy.visualEvidenceUrl);
+    expect(visualEvidenceLink?.textContent).toContain("visual cue");
+    expect(container.querySelector('[role="dialog"]')?.textContent).toContain("Reviewed visual evidence");
+    expect(container.querySelector('[role="dialog"]')?.textContent).toContain(
+      restaurantEvidenceStudy.locationLabel,
+    );
+    expect(container.querySelector<HTMLImageElement>('[role="dialog"] img')?.src).toContain(
+      `/details/${restaurantEvidenceStudy.thumbnailKey}`,
+    );
+  });
+
+  it("browses the large dining set with accessible region filters", async () => {
+    const regionBadges = [
+      { ...restaurantStudy, discoveryId: "bay-study", title: "Bay study", regionId: "bay-area" },
+      { ...restaurantStudy, discoveryId: "nyc-study", title: "NYC study", regionId: "new-york-city" },
+      { ...restaurantStudy, discoveryId: "dc-study", title: "DC study", regionId: "washington-dc" },
+    ] as const;
+    await act(async () =>
+      root.render(
+        <DiscoveryView
+          badges={regionBadges}
+          collectedRecordIds={new Set()}
+          resolvedSourceUrls={{}}
+          selectedSetId="michelin-dining"
+          query=""
+          onSetChange={() => undefined}
+          onQueryChange={() => undefined}
+          onOpenAvailableBadge={() => undefined}
+          onOpenCollectedBadge={() => undefined}
+          resolveThumbnail={(fileName) => `/thumbnails/${fileName}`}
+        />,
+      ),
+    );
+
+    const regionGroup = container.querySelector('[role="group"][aria-label="Michelin dining regions"]');
+    const bayButton = [...(regionGroup?.querySelectorAll<HTMLButtonElement>("button") ?? [])].find(
+      (button) => button.textContent === "Bay Area",
+    );
+    await act(async () => bayButton?.click());
+    expect(container.textContent).toContain("Bay study");
+    expect(container.textContent).not.toContain("NYC study");
+    expect(container.textContent).not.toContain("DC study");
+    expect(bayButton?.getAttribute("aria-pressed")).toBe("true");
+  });
+
+  it("filters the complete production dining census across all three regions", async () => {
+    const restaurantStudies = discoveryBadges.filter(
+      (badge): badge is SourceStudyDiscoveryBadge =>
+        badge.availability === "source-study" && badge.setIds.includes("michelin-dining"),
+    );
+    await act(async () =>
+      root.render(
+        <DiscoveryView
+          badges={restaurantStudies}
+          collectedRecordIds={new Set()}
+          resolvedSourceUrls={{}}
+          selectedSetId="michelin-dining"
+          query=""
+          onSetChange={() => undefined}
+          onQueryChange={() => undefined}
+          onOpenAvailableBadge={() => undefined}
+          onOpenCollectedBadge={() => undefined}
+          resolveThumbnail={(fileName) => `/thumbnails/${fileName}`}
+        />,
+      ),
+    );
+
+    for (const [label, regionId, expectedCount] of [
+      ["Bay Area", "bay-area", 41],
+      ["New York City", "new-york-city", 69],
+      ["Washington, DC & surroundings", "washington-dc", 22],
+    ] as const) {
+      const button = [
+        ...container.querySelectorAll<HTMLButtonElement>(".discovery-region-filter button"),
+      ].find((candidate) => candidate.textContent === label);
+      await act(async () => button?.click());
+      expect(container.textContent).toContain(`${expectedCount} results`);
+      const visibleTitles = [...container.querySelectorAll<HTMLElement>(".discovery-card h3")].map(
+        ({ textContent }) => textContent,
+      );
+      expect(visibleTitles.length).toBeGreaterThan(0);
+      expect(
+        visibleTitles.every((title) =>
+          restaurantStudies.some((badge) => badge.title === title && badge.regionId === regionId),
+        ),
+      ).toBe(true);
+    }
   });
 
   it("requests a controlled set change from the set browser", async () => {

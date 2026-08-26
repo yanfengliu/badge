@@ -9,7 +9,7 @@ const assetsRoot = path.resolve(repositoryRoot, "packages/catalogue-authoring/as
 const outputFile = path.join(assetsRoot, "discovery-thumbnails.manifest.json");
 const temporaryOutputFile = `${outputFile}.${process.pid}.tmp`;
 const decodeGate = path.resolve(repositoryRoot, "scripts/check-discovery-thumbnail-decode.ps1");
-const maximumEntries = 256;
+const maximumEntries = 320;
 const maximumFileBytes = 16 * 1024;
 const maximumTotalBytes = 2 * 1024 * 1024;
 
@@ -81,7 +81,9 @@ const manifest = {
   entries,
 };
 try {
-  await writeFile(temporaryOutputFile, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+  // This is a generated machine-readable asset. Keep it compact so catalogue growth cannot
+  // quietly violate the repository's hard 1,000-line boundary.
+  await writeFile(temporaryOutputFile, `${JSON.stringify(manifest)}\n`, "utf8");
   execFileSync(
     "powershell",
     [

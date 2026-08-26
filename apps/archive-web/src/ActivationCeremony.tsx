@@ -5,8 +5,6 @@ import type { RenderRecipe } from "@badge/render-recipe";
 import { CloseIcon } from "./icons";
 import { useModalFocus } from "./use-modal-focus";
 
-export type ActivationCeremonyPresentation = "interactive" | "single-turn";
-
 interface ActivationCeremonyProps {
   title: string;
   saying: string;
@@ -14,7 +12,6 @@ interface ActivationCeremonyProps {
   recipe: RenderRecipe;
   accessibleDescription: string;
   forceFallback: boolean;
-  presentation: ActivationCeremonyPresentation;
   returnFocus: RefObject<HTMLButtonElement | null>;
   onClose: () => void;
 }
@@ -26,7 +23,6 @@ export function ActivationCeremony({
   recipe,
   accessibleDescription,
   forceFallback,
-  presentation,
   returnFocus,
   onClose,
 }: ActivationCeremonyProps) {
@@ -42,7 +38,7 @@ export function ActivationCeremony({
       role="dialog"
       aria-modal="true"
       aria-labelledby="ceremony-title"
-      data-presentation={presentation}
+      data-presentation="interactive"
       tabIndex={-1}
     >
       <div className="ceremony-card">
@@ -62,7 +58,7 @@ export function ActivationCeremony({
           accessibleDescription={accessibleDescription}
           readOnly
           forceFallback={forceFallback}
-          presentation={presentation}
+          presentation="interactive"
         />
         <div className="ceremony-copy">
           <span className="eyebrow">Achievement activated</span>

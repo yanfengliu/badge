@@ -4,10 +4,13 @@ export function filterDiscoveryBadges(
   badges: readonly DiscoveryBadge[],
   query: string,
   setId: string | null,
+  regionId: string | null = null,
 ): readonly DiscoveryBadge[] {
   const normalizedQuery = normalizeSearch(query);
   const terms = normalizeSearch(query).split(/\s+/u).filter(Boolean);
-  const setBadges = badges.filter((badge) => !setId || badge.setIds.includes(setId));
+  const setBadges = badges.filter(
+    (badge) => (!setId || badge.setIds.includes(setId)) && (!regionId || badge.regionId === regionId),
+  );
   const exactAliasMatches = setBadges.filter(
     (badge) =>
       badge.availability === "source-study" &&

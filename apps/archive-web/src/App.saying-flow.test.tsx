@@ -145,6 +145,14 @@ describe("mounted historical-quotation flow", () => {
     await waitFor(() => expect(container.textContent).toContain("The Field Archive"));
     await clickButton("Discover");
     await waitFor(() => expect(container.textContent).toContain("Discover sets"));
+    const discoverySearch = container.querySelector<HTMLInputElement>('input[type="search"]');
+    if (!discoverySearch) throw new Error("Mounted Archive test could not find Discover search.");
+    await act(async () => {
+      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
+      setter?.call(discoverySearch, "Yosemite");
+      discoverySearch.dispatchEvent(new InputEvent("input", { bubbles: true }));
+    });
+    await waitFor(() => expect(container.textContent).toContain("1 result"));
     const prepareYosemite = container.querySelector<HTMLButtonElement>(
       'button[aria-label="Prepare Yosemite to collect"]',
     );
@@ -206,6 +214,7 @@ describe("mounted historical-quotation flow", () => {
     await waitFor(() =>
       expect(container.querySelector("#discovery-set-heading")?.textContent).toBe("U.S. National Parks"),
     );
+    expect(container.querySelector<HTMLInputElement>('input[type="search"]')?.value).toBe("");
     expect(container.textContent).toContain("1 / 64 collected");
     const discoverReplay = container.querySelector<HTMLButtonElement>(
       '.discovery-card--collected [aria-label="Replay collected memory Yosemite"]',

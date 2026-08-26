@@ -13,15 +13,28 @@ const assetsRoot = path.join(repositoryRoot, "packages/catalogue-authoring/asset
 const windowsIt = process.platform === "win32" ? it : it.skip;
 
 describe("catalogue source full-decode gate", () => {
-  windowsIt("fully decodes both reviewed 896-pixel source-study editions", () => {
-    const states = runGate(path.join(assetsRoot, "us-states"), 50, "U.S. state source study");
-    const parks = runGate(path.join(assetsRoot, "national-parks"), 63, "national-park source study");
+  windowsIt(
+    "fully decodes every reviewed 896-pixel source-study edition",
+    () => {
+      const states = runGate(path.join(assetsRoot, "us-states"), 50, "U.S. state source study");
+      const parks = runGate(path.join(assetsRoot, "national-parks"), 63, "national-park source study");
+      const books = runGate(path.join(assetsRoot, "books-read"), 50, "book source study");
+      const education = runGate(path.join(assetsRoot, "life-milestones"), 2, "education source study");
+      const dining = runGate(path.join(assetsRoot, "michelin-dining"), 132, "dining source study");
 
-    expect(states.status, states.stderr).toBe(0);
-    expect(states.stdout).toContain("Fully decoded 50 U.S. state source study JPEGs");
-    expect(parks.status, parks.stderr).toBe(0);
-    expect(parks.stdout).toContain("Fully decoded 63 national-park source study JPEGs");
-  });
+      expect(states.status, states.stderr).toBe(0);
+      expect(states.stdout).toContain("Fully decoded 50 U.S. state source study JPEGs");
+      expect(parks.status, parks.stderr).toBe(0);
+      expect(parks.stdout).toContain("Fully decoded 63 national-park source study JPEGs");
+      expect(books.status, books.stderr).toBe(0);
+      expect(books.stdout).toContain("Fully decoded 50 book source study JPEGs");
+      expect(education.status, education.stderr).toBe(0);
+      expect(education.stdout).toContain("Fully decoded 2 education source study JPEGs");
+      expect(dining.status, dining.stderr).toBe(0);
+      expect(dining.stdout).toContain("Fully decoded 132 dining source study JPEGs");
+    },
+    20_000,
+  );
 
   windowsIt("rejects an 896-pixel SOF header with no decodable image payload", async () => {
     const temporaryRoot = await mkdtemp(path.join(tmpdir(), "badge-source-decode-"));

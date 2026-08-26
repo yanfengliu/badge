@@ -18,6 +18,7 @@ export function useDiscoveryViewState() {
 
   function browseSet(setId: string | null) {
     setSelectedSetId(setId);
+    setQuery("");
     resetPage();
   }
 

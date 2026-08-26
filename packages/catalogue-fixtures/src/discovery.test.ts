@@ -1,6 +1,13 @@
 import { readFile } from "node:fs/promises";
 
-import { commonAchievementIdeas, selectedUsStateStudies, usNationalParks } from "@badge/catalogue-authoring";
+import {
+  commonAchievementIdeas,
+  selectedBookStudies,
+  selectedEducationMilestoneStudies,
+  selectedMichelinDiningStudies,
+  selectedUsStateStudies,
+  usNationalParks,
+} from "@badge/catalogue-authoring";
 import { discoveryBadges, discoverySets, type DiscoveryBadge } from "@badge/catalogue-fixtures/discovery";
 import { describe, expect, it } from "vitest";
 
@@ -16,10 +23,13 @@ const allowedFields = new Set([
   "locationLabel",
   "previewUrl",
   "recordId",
+  "referenceUrl",
+  "regionId",
   "searchAliases",
   "setIds",
   "thumbnailKey",
   "title",
+  "visualEvidenceUrl",
 ]);
 
 const forbiddenFields = new Set([
@@ -61,6 +71,16 @@ const productionFiles = [
   "discovery-parks-a-g.ts",
   "discovery-parks-h-m.ts",
   "discovery-parks-n-z.ts",
+  "discovery-books.ts",
+  "discovery-education-milestones.ts",
+  "discovery-michelin-dining-bay-area-01.ts",
+  "discovery-michelin-dining-bay-area-02.ts",
+  "discovery-michelin-dining-bay-area.ts",
+  "discovery-michelin-dining-dc.ts",
+  "discovery-michelin-dining-nyc.ts",
+  "discovery-michelin-dining-nyc-01.ts",
+  "discovery-michelin-dining-nyc-02.ts",
+  "discovery-michelin-dining.ts",
   "discovery-sets.ts",
   "discovery-source-studies.ts",
   "discovery-starters.ts",
@@ -92,6 +112,11 @@ describe("the Archive-safe discovery catalogue", () => {
         setId: "life-milestones",
         title: "Life Milestones",
         description: "Education and life chapters worth remembering.",
+      },
+      {
+        setId: "michelin-dining",
+        title: "Michelin Dining",
+        description: "Named restaurant memories grounded in the live Michelin Guide.",
       },
     ]);
     for (const set of discoverySets) {
@@ -137,16 +162,63 @@ describe("the Archive-safe discovery catalogue", () => {
         accessibleDescription: state.selectedSource.accessibleDescription,
         setIds: ["us-states"],
       })),
+      ...selectedBookStudies.map((book) => ({
+        discoveryId: book.definitionId,
+        availability: "source-study" as const,
+        title: book.title,
+        criterion: book.criterion,
+        locationLabel: book.contextLabel,
+        searchAliases: book.aliases,
+        thumbnailKey: `books-read/${book.selectedSource.thumbnail.fileName}`,
+        accessibleDescription: book.selectedSource.accessibleDescription,
+        setIds: ["books-read"],
+      })),
+      ...selectedEducationMilestoneStudies.map((milestone) => ({
+        discoveryId: milestone.definitionId,
+        availability: "source-study" as const,
+        title: milestone.title,
+        criterion: milestone.criterion,
+        locationLabel: milestone.contextLabel,
+        searchAliases: milestone.aliases,
+        thumbnailKey: `life-milestones/${milestone.selectedSource.thumbnail.fileName}`,
+        accessibleDescription: milestone.selectedSource.accessibleDescription,
+        setIds: ["life-milestones"],
+      })),
+      ...selectedMichelinDiningStudies.map((milestone) => ({
+        discoveryId: milestone.definitionId,
+        availability: "source-study" as const,
+        title: milestone.title,
+        criterion: milestone.criterion,
+        locationLabel: milestone.contextLabel,
+        regionId: milestone.restaurant.regionId,
+        searchAliases: milestone.aliases,
+        referenceUrl: milestone.restaurant.guideUrl,
+        ...visualEvidenceProjection(milestone.restaurant),
+        thumbnailKey: `michelin-dining/${milestone.selectedSource.thumbnail.fileName}`,
+        accessibleDescription: milestone.selectedSource.accessibleDescription,
+        setIds: ["michelin-dining"],
+      })),
     ];
 
     expect(publicProjection).toEqual(expected);
-    expect(discoveryBadges).toHaveLength(116);
-    expect(new Set(discoveryBadges.map((badge) => badge.discoveryId))).toHaveProperty("size", 116);
+    expect(discoveryBadges).toHaveLength(300);
+    expect(new Set(discoveryBadges.map((badge) => badge.discoveryId))).toHaveProperty("size", 300);
     expect(discoveryBadges.filter((badge) => badge.availability === "available")).toHaveLength(4);
-    expect(discoveryBadges.filter((badge) => badge.availability === "source-study")).toHaveLength(112);
+    expect(discoveryBadges.filter((badge) => badge.availability === "source-study")).toHaveLength(296);
     expect(
       discoveryBadges.some((badge) => commonAchievementIdeas.some((idea) => idea.id === badge.discoveryId)),
     ).toBe(false);
+  });
+
+  it("keeps official listings separate from distinct reviewed visual-evidence sources", () => {
+    const cafeBoulud = discoveryBadges.find((badge) => badge.discoveryId === "michelin-dining-cafe-boulud");
+    expect(cafeBoulud?.availability).toBe("source-study");
+    if (cafeBoulud?.availability !== "source-study") return;
+    expect(cafeBoulud.referenceUrl).toBe(
+      "https://guide.michelin.com/en/new-york-state/new-york/restaurant/cafe-boulud",
+    );
+    expect(cafeBoulud.visualEvidenceUrl).toBe("https://www.cafeboulud.com/nyc/our-menu/dinner/");
+    expect(cafeBoulud.visualEvidenceUrl).not.toBe(cafeBoulud.referenceUrl);
   });
 
   it("assigns every entry to known sets with exact catalogue cardinalities", () => {
@@ -170,9 +242,24 @@ describe("the Archive-safe discovery catalogue", () => {
     ).toEqual({
       "us-national-parks": 64,
       "us-states": 50,
-      "books-read": 1,
-      "life-milestones": 1,
+      "books-read": 51,
+      "life-milestones": 3,
+      "michelin-dining": 132,
     });
+
+    expect(
+      Object.fromEntries(
+        ["bay-area", "new-york-city", "washington-dc"].map((regionId) => [
+          regionId,
+          discoveryBadges.filter(
+            (badge) =>
+              badge.availability === "source-study" &&
+              badge.setIds.includes("michelin-dining") &&
+              badge.regionId === regionId,
+          ).length,
+        ]),
+      ),
+    ).toEqual({ "bay-area": 41, "new-york-city": 69, "washington-dc": 22 });
   });
 
   it("deduplicates Yosemite in favor of the available Archive record", () => {
@@ -213,3 +300,13 @@ describe("the Archive-safe discovery catalogue", () => {
     }
   });
 });
+
+function visualEvidenceProjection(restaurant: {
+  readonly guideUrl: string;
+  readonly evidenceSourceUrls: readonly string[];
+}): { readonly visualEvidenceUrl: string } | Record<string, never> {
+  const visualEvidenceUrl = restaurant.evidenceSourceUrls.find(
+    (url) => new URL(url).hostname !== "guide.michelin.com",
+  );
+  return visualEvidenceUrl ? { visualEvidenceUrl } : {};
+}

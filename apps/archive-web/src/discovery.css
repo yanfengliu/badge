@@ -54,19 +54,27 @@
 }
 
 .discovery-set-browser {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(180px, 1fr);
+  grid-template-columns: none;
   gap: 1px;
   width: min(100%, 1480px);
   margin: 0 auto 28px;
+  overflow-x: auto;
+  overflow-y: hidden;
   padding: 1px;
+  overscroll-behavior-inline: contain;
   background: #c8bcab;
+  scrollbar-color: rgba(174, 77, 45, 0.58) transparent;
+  scrollbar-width: thin;
+  scroll-snap-type: x proximity;
   box-shadow: 0 12px 24px rgba(43, 38, 31, 0.12);
 }
 
 .discovery-set-button {
   display: grid;
-  flex: 1 1 220px;
+  min-width: 0;
   min-height: 84px;
   padding: 16px 18px;
   align-content: center;
@@ -75,7 +83,30 @@
   background: #e9e1d5;
   color: var(--ink-soft);
   cursor: pointer;
+  scroll-snap-align: start;
   text-align: left;
+  transition:
+    background 140ms ease,
+    box-shadow 140ms ease,
+    color 140ms ease;
+}
+
+.discovery-set-button:hover {
+  background: #f3ece1;
+  color: var(--ink);
+}
+
+.discovery-set-button:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: 3px solid var(--rust);
+  outline-offset: -4px;
+  background: var(--paper-bright);
+  color: var(--ink);
+}
+
+.discovery-set-button:active {
+  background: #dfd4c5;
 }
 
 .discovery-set-button[aria-pressed="true"] {
@@ -101,37 +132,6 @@
 .discovery-browser {
   width: min(100%, 1480px);
   margin: 0 auto;
-}
-
-.discovery-controls {
-  padding: 18px;
-  border: 1px solid var(--rule);
-  border-radius: 8px;
-  background: rgba(250, 247, 240, 0.64);
-}
-
-.discovery-controls label {
-  display: grid;
-  gap: 7px;
-  color: var(--ink-soft);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.discovery-controls input {
-  width: 100%;
-  min-height: 48px;
-  padding: 0 14px;
-  border: 1px solid #bdb3a5;
-  border-radius: 7px;
-  background: var(--paper-bright);
-  color: var(--ink);
-  font-family: var(--display);
-  font-size: 16px;
-  letter-spacing: normal;
-  text-transform: none;
 }
 
 .discovery-results-heading {
@@ -292,6 +292,13 @@
   line-height: 1.45;
 }
 
+.discovery-card__copy > .discovery-card__metadata {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
 .discovery-card__action-copy {
   width: max-content;
   margin-top: 18px;
@@ -414,10 +421,6 @@
     grid-template-columns: 1fr;
   }
 
-  .discovery-set-button {
-    flex-basis: 100%;
-  }
-
   .discovery-pagination {
     align-items: stretch;
     flex-direction: column;
@@ -426,7 +429,7 @@
 
 @media (max-width: 420px) {
   .discovery-card {
-    grid-template-columns: 112px minmax(0, 1fr);
+    grid-template-columns: 118px minmax(0, 1fr);
   }
 
   .discovery-card__art {
@@ -449,6 +452,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .discovery-set-button,
   .discovery-card {
     transition: none;
   }

@@ -8,7 +8,7 @@ import {
 } from "@badge/catalogue-fixtures/discovery";
 
 import { filterDiscoveryBadges } from "./discovery-filter";
-import { resolveDiscoveryThumbnail } from "./discovery-media";
+import { resolveDiscoveryDetail, resolveDiscoveryThumbnail } from "./discovery-media";
 import { DiscoveryStudyDialog } from "./DiscoveryStudyDialog";
 
 interface DiscoveryViewProps {
@@ -24,12 +24,24 @@ interface DiscoveryViewProps {
   readonly onOpenAvailableBadge: (recordId: string, trigger: HTMLButtonElement) => void;
   readonly onOpenCollectedBadge: (recordId: string, trigger: HTMLButtonElement) => void;
   readonly resolveThumbnail?: (fileName: string) => string | null;
+  readonly resolveDetail?: (fileName: string) => Promise<string | null>;
 }
 
 export const DISCOVERY_PAGE_SIZE = 24;
+const MICHELIN_SET_ID = "michelin-dining";
+const MICHELIN_REGIONS = [
+  { regionId: "bay-area", label: "Bay Area" },
+  { regionId: "new-york-city", label: "New York City" },
+  { regionId: "washington-dc", label: "Washington, DC & surroundings" },
+] as const;
 
-function discoveryPageKey(setId: string | null, query: string, badgeCount: number): string {
-  return `${setId ?? "all"}\u0000${query}\u0000${badgeCount}`;
+function discoveryPageKey(
+  setId: string | null,
+  query: string,
+  regionId: string | null,
+  badgeCount: number,
+): string {
+  return `${setId ?? "all"}\u0000${query}\u0000${regionId ?? "all-regions"}\u0000${badgeCount}`;
 }
 
 export function DiscoveryView({
@@ -45,12 +57,15 @@ export function DiscoveryView({
   onOpenAvailableBadge,
   onOpenCollectedBadge,
   resolveThumbnail = resolveDiscoveryThumbnail,
+  resolveDetail = resolveDiscoveryDetail,
 }: DiscoveryViewProps) {
+  const [selectedRegionId, setSelectedRegionId] = useState<string | null>(null);
+  const activeRegionId = selectedSetId === MICHELIN_SET_ID ? selectedRegionId : null;
   const visibleBadges = useMemo(
-    () => filterDiscoveryBadges(badges, query, selectedSetId),
-    [badges, query, selectedSetId],
+    () => filterDiscoveryBadges(badges, query, selectedSetId, activeRegionId),
+    [activeRegionId, badges, query, selectedSetId],
   );
-  const pageKey = discoveryPageKey(selectedSetId, query, badges.length);
+  const pageKey = discoveryPageKey(selectedSetId, query, activeRegionId, badges.length);
   const [page, setPage] = useState({ key: pageKey, limit: DISCOVERY_PAGE_SIZE });
   const [selectedStudy, setSelectedStudy] = useState<SourceStudyDiscoveryBadge | null>(null);
   const studyReturnFocus = useRef<HTMLButtonElement>(null);
@@ -98,7 +113,8 @@ export function DiscoveryView({
           type="button"
           aria-pressed={selectedSetId === null}
           onClick={() => {
-            updateVisibleLimit(discoveryPageKey(null, query, badges.length), DISCOVERY_PAGE_SIZE);
+            setSelectedRegionId(null);
+            updateVisibleLimit(discoveryPageKey(null, query, null, badges.length), DISCOVERY_PAGE_SIZE);
             onSetChange(null);
           }}
         >
@@ -113,7 +129,11 @@ export function DiscoveryView({
             collectedRecordIds={collectedRecordIds}
             active={selectedSetId === set.setId}
             onSelect={() => {
-              updateVisibleLimit(discoveryPageKey(set.setId, query, badges.length), DISCOVERY_PAGE_SIZE);
+              setSelectedRegionId(null);
+              updateVisibleLimit(
+                discoveryPageKey(set.setId, query, null, badges.length),
+                DISCOVERY_PAGE_SIZE,
+              );
               onSetChange(set.setId);
             }}
           />
@@ -131,13 +151,49 @@ export function DiscoveryView({
               onChange={(event) => {
                 const nextQuery = event.target.value;
                 updateVisibleLimit(
-                  discoveryPageKey(selectedSetId, nextQuery, badges.length),
+                  discoveryPageKey(selectedSetId, nextQuery, activeRegionId, badges.length),
                   DISCOVERY_PAGE_SIZE,
                 );
                 onQueryChange(nextQuery);
               }}
             />
           </label>
+          {selectedSetId === MICHELIN_SET_ID ? (
+            <fieldset className="discovery-region-filter">
+              <legend>Region</legend>
+              <div role="group" aria-label="Michelin dining regions">
+                <button
+                  type="button"
+                  aria-pressed={activeRegionId === null}
+                  onClick={() => {
+                    setSelectedRegionId(null);
+                    updateVisibleLimit(
+                      discoveryPageKey(selectedSetId, query, null, badges.length),
+                      DISCOVERY_PAGE_SIZE,
+                    );
+                  }}
+                >
+                  All regions
+                </button>
+                {MICHELIN_REGIONS.map(({ regionId, label }) => (
+                  <button
+                    key={regionId}
+                    type="button"
+                    aria-pressed={activeRegionId === regionId}
+                    onClick={() => {
+                      setSelectedRegionId(regionId);
+                      updateVisibleLimit(
+                        discoveryPageKey(selectedSetId, query, regionId, badges.length),
+                        DISCOVERY_PAGE_SIZE,
+                      );
+                    }}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+          ) : null}
         </div>
 
         <div className="discovery-results-heading">
@@ -192,8 +248,10 @@ export function DiscoveryView({
       </section>
       {selectedStudy ? (
         <DiscoveryStudyDialog
+          key={selectedStudy.thumbnailKey}
           badge={selectedStudy}
-          sourceUrl={resolveThumbnail(selectedStudy.thumbnailKey)}
+          thumbnailUrl={resolveThumbnail(selectedStudy.thumbnailKey)}
+          resolveDetail={resolveDetail}
           returnFocus={studyReturnFocus}
           onClose={() => setSelectedStudy(null)}
         />
@@ -313,7 +371,9 @@ function DiscoveryCard({
           {setTitle ?? (badge.availability === "source-study" ? badge.locationLabel : badge.collectionLabel)}
         </p>
         <h3>{badge.title}</h3>
-        <span>{badge.criterion}</span>
+        <span className={badge.availability === "source-study" ? "discovery-card__metadata" : undefined}>
+          {badge.availability === "source-study" ? badge.locationLabel : badge.criterion}
+        </span>
         {badge.availability === "source-study" ? <small>Not yet published</small> : null}
         <span className="discovery-card__action-copy" aria-hidden="true">
           {actionCopy}

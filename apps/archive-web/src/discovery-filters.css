@@ -1,0 +1,80 @@
+.discovery-controls {
+  display: grid;
+  padding: 18px;
+  gap: 16px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: rgba(250, 247, 240, 0.64);
+}
+
+.discovery-region-filter {
+  display: grid;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  gap: 7px;
+}
+
+.discovery-region-filter legend {
+  padding: 0;
+  color: var(--ink-soft);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.discovery-region-filter > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.discovery-region-filter button {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid #bdb3a5;
+  border-radius: 999px;
+  background: var(--paper-bright);
+  color: var(--ink-soft);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.discovery-region-filter button:hover,
+.discovery-region-filter button:focus-visible {
+  border-color: var(--rust);
+  color: var(--rust-dark);
+}
+
+.discovery-region-filter button[aria-pressed="true"] {
+  border-color: var(--rust);
+  background: var(--rust);
+  color: #fffaf2;
+}
+
+.discovery-controls label {
+  display: grid;
+  gap: 7px;
+  color: var(--ink-soft);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.discovery-controls input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid #bdb3a5;
+  border-radius: 7px;
+  background: var(--paper-bright);
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: 16px;
+  letter-spacing: normal;
+  text-transform: none;
+}

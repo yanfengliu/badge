@@ -1,3 +1,6 @@
+import { discoveryBooks } from "./discovery-books.js";
+import { discoveryEducationMilestones } from "./discovery-education-milestones.js";
+import { discoveryMichelinDining } from "./discovery-michelin-dining.js";
 import { discoveryParksAThroughG } from "./discovery-parks-a-g.js";
 import { discoveryParksHThroughM } from "./discovery-parks-h-m.js";
 import { discoveryParksNThroughZ } from "./discovery-parks-n-z.js";
@@ -14,6 +17,9 @@ export const discoveryBadges: readonly DiscoveryBadge[] = [
   ...discoveryParksHThroughM,
   ...discoveryParksNThroughZ,
   ...discoveryUsStates,
+  ...discoveryBooks,
+  ...discoveryEducationMilestones,
+  ...discoveryMichelinDining,
 ];
 
 export type {

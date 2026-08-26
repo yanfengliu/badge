@@ -7,6 +7,7 @@ import process from "node:process";
 const archiveOutputDirectory = path.resolve(process.argv[2] ?? "dist/archive");
 const discoveryAssetsRoot = path.resolve("packages/catalogue-authoring/assets");
 const discoveryThumbnailManifestPath = path.join(discoveryAssetsRoot, "discovery-thumbnails.manifest.json");
+const discoveryDetailManifestPath = path.join(discoveryAssetsRoot, "discovery-details.manifest.json");
 const forbiddenFileExtensions = new Set([".wasm", ".webp"]);
 const studioOnlyCandidateName = /(?:^|[/\\])yosemite-(?:symbolic|topographic)(?:\.|$)/i;
 const textExtensions = new Set([".css", ".html", ".js", ".json", ".map", ".svg", ".txt"]);
@@ -18,6 +19,7 @@ const forbiddenText = [
   { label: "the Studio-only art-style registry", pattern: /pixel-cluster-landscape/i },
 ];
 const discoveryThumbnailManifest = JSON.parse(await readFile(discoveryThumbnailManifestPath, "utf8"));
+const discoveryDetailManifest = JSON.parse(await readFile(discoveryDetailManifestPath, "utf8"));
 if (discoveryThumbnailManifest.schemaVersion !== 1) {
   throw new Error(
     `Discovery thumbnail manifest schema ${discoveryThumbnailManifest.schemaVersion} is unsupported; regenerate schemaVersion 1 before building Archive.`,
@@ -36,6 +38,17 @@ if (
 const manifestEntries = discoveryThumbnailManifest.entries;
 if (!Array.isArray(manifestEntries) || manifestEntries.length === 0) {
   throw new Error("Discovery thumbnail manifest has no entries; regenerate the reviewed derivative tier.");
+}
+if (
+  discoveryThumbnailManifest.limits?.maximumEntries !== 320 ||
+  discoveryThumbnailManifest.limits?.maximumFileBytes !== 16 * 1024 ||
+  discoveryThumbnailManifest.limits?.maximumTotalBytes !== 2 * 1024 * 1024 ||
+  manifestEntries.length > discoveryThumbnailManifest.limits.maximumEntries ||
+  discoveryThumbnailManifest.totalBytes > discoveryThumbnailManifest.limits.maximumTotalBytes
+) {
+  throw new Error(
+    "Discovery thumbnail manifest exceeds the reviewed 320-entry, 16-KiB-per-file, or 2-MiB-total tier; shard the catalogue before shipping more media.",
+  );
 }
 const manifestKeys = new Set();
 const manifestHashes = new Set();
@@ -64,6 +77,59 @@ for (const entry of manifestEntries) {
   manifestHashes.add(entry.sha256);
 }
 const manifestEntriesByKey = new Map(manifestEntries.map((entry) => [entry.key, entry]));
+if (
+  discoveryDetailManifest.schemaVersion !== 1 ||
+  discoveryDetailManifest.recipe?.id !== "catalogue-detail-preview" ||
+  discoveryDetailManifest.recipe?.revision !== 1 ||
+  discoveryDetailManifest.width !== 384 ||
+  discoveryDetailManifest.height !== 384 ||
+  discoveryDetailManifest.loading !== "on-demand"
+) {
+  throw new Error(
+    "Discovery detail manifest must declare on-demand catalogue-detail-preview@1 at exactly 384 by 384 pixels; regenerate the reviewed tier.",
+  );
+}
+const detailManifestEntries = discoveryDetailManifest.entries;
+if (!Array.isArray(detailManifestEntries) || detailManifestEntries.length !== manifestEntries.length) {
+  throw new Error(
+    `Discovery detail manifest contains ${Array.isArray(detailManifestEntries) ? detailManifestEntries.length : "invalid"} entries; keep exactly one detail preview for each of the ${manifestEntries.length} list studies.`,
+  );
+}
+if (
+  discoveryDetailManifest.limits?.maximumEntries !== 320 ||
+  discoveryDetailManifest.limits?.maximumFileBytes !== 64 * 1024 ||
+  discoveryDetailManifest.limits?.maximumTotalBytes !== 16 * 1024 * 1024 ||
+  discoveryDetailManifest.totalBytes > discoveryDetailManifest.limits.maximumTotalBytes
+) {
+  throw new Error(
+    "Discovery detail manifest exceeds the reviewed 320-entry, 64-KiB-per-file, or 16-MiB-total tier; shard the catalogue before shipping more media.",
+  );
+}
+const detailManifestKeys = new Set();
+const detailManifestHashes = new Set();
+for (const entry of detailManifestEntries) {
+  if (
+    !/^[a-z0-9]+(?:-[a-z0-9]+)*\/[a-z0-9]+(?:-[a-z0-9]+)*\.jpg$/u.test(entry.key) ||
+    !/^[a-f0-9]{64}$/u.test(entry.sha256) ||
+    entry.width !== discoveryDetailManifest.width ||
+    entry.height !== discoveryDetailManifest.height ||
+    !Number.isInteger(entry.bytes) ||
+    entry.bytes <= 0 ||
+    entry.bytes > discoveryDetailManifest.limits.maximumFileBytes ||
+    detailManifestKeys.has(entry.key) ||
+    detailManifestHashes.has(entry.sha256)
+  ) {
+    throw new Error(
+      `Discovery detail manifest entry ${String(entry.key)} has invalid integrity, dimensions, bounds, or uniqueness; refresh it from decoded detail derivatives.`,
+    );
+  }
+  detailManifestKeys.add(entry.key);
+  detailManifestHashes.add(entry.sha256);
+}
+if ([...manifestKeys].some((key) => !detailManifestKeys.has(key))) {
+  throw new Error("Discovery detail manifest keys no longer match the complete list-thumbnail tier.");
+}
+const detailManifestEntriesByKey = new Map(detailManifestEntries.map((entry) => [entry.key, entry]));
 execFileSync(
   "powershell",
   [
@@ -74,6 +140,21 @@ execFileSync(
     path.resolve("scripts/check-discovery-thumbnail-decode.ps1"),
     "-ManifestPath",
     discoveryThumbnailManifestPath,
+    "-AssetsRoot",
+    discoveryAssetsRoot,
+  ],
+  { cwd: path.resolve("."), encoding: "utf8", windowsHide: true },
+);
+execFileSync(
+  "powershell",
+  [
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    path.resolve("scripts/check-discovery-detail-decode.ps1"),
+    "-ManifestPath",
+    discoveryDetailManifestPath,
     "-AssetsRoot",
     discoveryAssetsRoot,
   ],
@@ -98,51 +179,37 @@ if (leakedStudioCandidate) {
   );
 }
 
-const discoveryThumbnails = files.filter((file) => path.extname(file).toLowerCase() === ".jpg");
-if (discoveryThumbnails.length !== manifestEntries.length) {
+const archiveJpegs = files.filter((file) => path.extname(file).toLowerCase() === ".jpg");
+const discoveryThumbnails = archiveJpegs.filter((file) =>
+  path.relative(archiveOutputDirectory, file).replaceAll(path.sep, "/").startsWith("assets/discovery/"),
+);
+const discoveryDetails = archiveJpegs.filter((file) =>
+  path
+    .relative(archiveOutputDirectory, file)
+    .replaceAll(path.sep, "/")
+    .startsWith("assets/discovery-details/"),
+);
+if (archiveJpegs.length !== discoveryThumbnails.length + discoveryDetails.length) {
   throw new Error(
-    `Archive build contains ${discoveryThumbnails.length} JPEG files; the reviewed manifest requires exactly ${manifestEntries.length} list thumbnails and no full Studio source studies. Rebuild the integrity-bound thumbnail tier before shipping.`,
+    `Archive build contains ${archiveJpegs.length - discoveryThumbnails.length - discoveryDetails.length} unqualified JPEG assets; keep catalogue media in its integrity-bound list or detail tier.`,
   );
 }
-let discoveryThumbnailBytes = 0;
-const seenKeys = new Set();
-for (const file of discoveryThumbnails) {
-  const bytes = await readFile(file);
-  const relativeOutputPath = path.relative(archiveOutputDirectory, file).replaceAll(path.sep, "/");
-  const thumbnailKey = discoveryKeyFromOutputPath(relativeOutputPath);
-  const entry = manifestEntriesByKey.get(thumbnailKey);
-  discoveryThumbnailBytes += bytes.byteLength;
-  if (bytes.byteLength > discoveryThumbnailManifest.limits.maximumFileBytes) {
-    throw new Error(
-      `Archive discovery asset ${path.relative(archiveOutputDirectory, file)} is ${bytes.byteLength} bytes; only reviewed list thumbnails at or below ${discoveryThumbnailManifest.limits.maximumFileBytes} bytes may cross the Studio boundary.`,
-    );
-  }
-  const hash = createHash("sha256").update(bytes).digest("hex");
-  const dimensions = readJpegHeaderSize(bytes);
-  if (
-    dimensions.width !== discoveryThumbnailManifest.width ||
-    dimensions.height !== discoveryThumbnailManifest.height
-  ) {
-    throw new Error(
-      `Archive discovery asset ${path.relative(archiveOutputDirectory, file)} declares ${dimensions.width} by ${dimensions.height} in its JPEG header, not the reviewed ${discoveryThumbnailManifest.width} by ${discoveryThumbnailManifest.height} boundary.`,
-    );
-  }
-  if (!entry || entry.sha256 !== hash || entry.bytes !== bytes.byteLength || seenKeys.has(thumbnailKey)) {
-    throw new Error(
-      `Archive discovery asset ${relativeOutputPath} does not contain the exact bytes bound to ${thumbnailKey}; keep the catalogue-qualified output path and refresh assets with their manifest.`,
-    );
-  }
-  seenKeys.add(thumbnailKey);
-}
-if (
-  discoveryThumbnailBytes !== discoveryThumbnailManifest.totalBytes ||
-  seenKeys.size !== manifestEntries.length ||
-  [...manifestKeys].some((key) => !seenKeys.has(key))
-) {
-  throw new Error(
-    `Archive discovery JPEGs total ${discoveryThumbnailBytes} bytes across ${seenKeys.size} exact key bindings, not the reviewed ${discoveryThumbnailManifest.totalBytes} bytes across ${manifestEntries.length}; refresh catalogue thumbnails and their manifest together.`,
-  );
-}
+const discoveryThumbnailBytes = await validateArchiveMediaTier({
+  files: discoveryThumbnails,
+  manifest: discoveryThumbnailManifest,
+  entriesByKey: manifestEntriesByKey,
+  keys: manifestKeys,
+  outputTier: "discovery",
+  label: "list thumbnail",
+});
+const discoveryDetailBytes = await validateArchiveMediaTier({
+  files: discoveryDetails,
+  manifest: discoveryDetailManifest,
+  entriesByKey: detailManifestEntriesByKey,
+  keys: detailManifestKeys,
+  outputTier: "discovery-details",
+  label: "on-demand detail preview",
+});
 
 for (const file of files) {
   if (!textExtensions.has(path.extname(file).toLowerCase())) continue;
@@ -157,8 +224,51 @@ for (const file of files) {
 }
 
 console.log(
-  `Archive bundle boundary passed for ${files.length} files: ${discoveryThumbnails.length} bounded discovery thumbnails (${discoveryThumbnailBytes} bytes), with no full Studio studies, decoder WASM, or WebP runtime markers.`,
+  `Archive bundle boundary passed for ${files.length} files: ${discoveryThumbnails.length} bounded list thumbnails (${discoveryThumbnailBytes} bytes) and ${discoveryDetails.length} on-demand detail previews (${discoveryDetailBytes} bytes), with no full Studio studies, decoder WASM, or WebP runtime markers.`,
 );
+
+async function validateArchiveMediaTier({ files, manifest, entriesByKey, keys, outputTier, label }) {
+  if (files.length !== manifest.entries.length) {
+    throw new Error(
+      `Archive build contains ${files.length} ${label} files; the reviewed manifest requires exactly ${manifest.entries.length}. Rebuild the complete integrity-bound tier.`,
+    );
+  }
+  let totalBytes = 0;
+  const seenKeys = new Set();
+  for (const file of files) {
+    const bytes = await readFile(file);
+    const relativeOutputPath = path.relative(archiveOutputDirectory, file).replaceAll(path.sep, "/");
+    const key = discoveryKeyFromOutputPath(relativeOutputPath, outputTier);
+    const entry = entriesByKey.get(key);
+    totalBytes += bytes.byteLength;
+    const hash = createHash("sha256").update(bytes).digest("hex");
+    const dimensions = readJpegHeaderSize(bytes);
+    if (
+      bytes.byteLength > manifest.limits.maximumFileBytes ||
+      dimensions.width !== manifest.width ||
+      dimensions.height !== manifest.height ||
+      !entry ||
+      entry.sha256 !== hash ||
+      entry.bytes !== bytes.byteLength ||
+      seenKeys.has(key)
+    ) {
+      throw new Error(
+        `Archive ${label} ${relativeOutputPath} does not match the exact manifest-bound bytes, dimensions, or qualified key ${key}; refresh the asset and manifest together.`,
+      );
+    }
+    seenKeys.add(key);
+  }
+  if (
+    totalBytes !== manifest.totalBytes ||
+    seenKeys.size !== manifest.entries.length ||
+    [...keys].some((key) => !seenKeys.has(key))
+  ) {
+    throw new Error(
+      `Archive ${label} tier totals ${totalBytes} bytes across ${seenKeys.size} keys, not the reviewed ${manifest.totalBytes} bytes across ${manifest.entries.length}; refresh the complete tier.`,
+    );
+  }
+  return totalBytes;
+}
 
 async function listFiles(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -171,14 +281,14 @@ async function listFiles(directory) {
   return nested.flat().sort();
 }
 
-function discoveryKeyFromOutputPath(outputPath) {
-  const match =
-    /^assets\/discovery\/(?<catalogue>[a-z0-9]+(?:-[a-z0-9]+)*)\/(?<slug>[a-z0-9]+(?:-[a-z0-9]+)*)-[A-Za-z0-9_-]{8}\.jpg$/u.exec(
-      outputPath,
-    );
+function discoveryKeyFromOutputPath(outputPath, outputTier) {
+  const match = new RegExp(
+    `^assets/${outputTier}/(?<catalogue>[a-z0-9]+(?:-[a-z0-9]+)*)/(?<slug>[a-z0-9]+(?:-[a-z0-9]+)*)-[A-Za-z0-9_-]{8}\\.jpg$`,
+    "u",
+  ).exec(outputPath);
   if (!match?.groups) {
     throw new Error(
-      `Archive discovery asset ${outputPath} lost its assets/discovery/<catalogue>/<slug>-<hash>.jpg identity; preserve qualified output paths so payload swaps remain detectable.`,
+      `Archive discovery asset ${outputPath} lost its assets/${outputTier}/<catalogue>/<slug>-<hash>.jpg identity; preserve qualified output paths so payload swaps remain detectable.`,
     );
   }
   return `${match.groups.catalogue}/${match.groups.slug}.jpg`;

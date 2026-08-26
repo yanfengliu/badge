@@ -463,7 +463,6 @@ export function App({ onShowStudio }: { readonly onShowStudio: () => void }) {
           recipe={ceremonyVisual.pin.renderRecipe}
           accessibleDescription={ceremonyVisual.pin.accessibleDescription}
           forceFallback={forceFallback}
-          presentation="interactive"
           returnFocus={ceremonyReturnFocus}
           onClose={closeCeremony}
         />

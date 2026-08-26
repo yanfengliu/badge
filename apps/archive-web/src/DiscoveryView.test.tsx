@@ -1,15 +1,24 @@
 import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { discoveryBadges, type DiscoveryBadge } from "@badge/catalogue-fixtures/discovery";
+import {
+  discoveryBadges,
+  discoverySets,
+  type DiscoveryBadge,
+  type SourceStudyDiscoveryBadge,
+} from "@badge/catalogue-fixtures/discovery";
 
 import { filterDiscoveryBadges } from "./discovery-filter.js";
 import { DiscoveryView } from "./DiscoveryView.js";
 
 const available = discoveryBadges.find((badge) => badge.availability === "available");
 const sourceStudy = discoveryBadges.find((badge) => badge.availability === "source-study");
+const restaurantStudy = discoveryBadges.find(
+  (badge): badge is SourceStudyDiscoveryBadge =>
+    badge.availability === "source-study" && badge.setIds.includes("michelin-dining"),
+);
 
-if (!available || !sourceStudy) {
+if (!available || !sourceStudy || !restaurantStudy) {
   throw new Error("Discovery fixtures must cover available and source-study states.");
 }
 
@@ -62,10 +71,41 @@ describe("DiscoveryView", () => {
     expect(html).toContain("U.S. States");
     expect(html).toContain("0 / 64 collected");
     expect(html).toContain("0 / 50 collected");
-    expect(html).toContain("0 / 1 collected");
+    expect(html).toContain("<strong>Books Read</strong><span>0 / 51 collected</span>");
+    expect(html).toContain("<strong>Life Milestones</strong><span>0 / 3 collected</span>");
+    expect(html).toContain("<strong>Michelin Dining</strong><span>0 / 132 collected</span>");
     expect(html).toContain(available.title);
     expect(html).toContain(sourceStudy.title);
     expect(html).not.toContain("66 badges");
+  });
+
+  it("keeps every set in one bounded native-button rail with explicit interaction states", () => {
+    const html = renderToStaticMarkup(
+      <DiscoveryView
+        badges={discoveryBadges}
+        collectedRecordIds={new Set()}
+        resolvedSourceUrls={{}}
+        selectedSetId={null}
+        query=""
+        onSetChange={() => undefined}
+        onQueryChange={() => undefined}
+        onOpenAvailableBadge={() => undefined}
+        onOpenCollectedBadge={() => undefined}
+        resolveThumbnail={(fileName) => `/thumbnails/${fileName}`}
+      />,
+    );
+    const css = readFileSync(new URL("./discovery.css", import.meta.url), "utf8");
+
+    expect(html.match(/<button class="discovery-set-button" type="button"/gu)).toHaveLength(
+      discoverySets.length + 1,
+    );
+    expect(html).toContain('<nav class="discovery-set-browser" aria-label="Badge sets">');
+    expect(css).toMatch(
+      /\.discovery-set-browser\s*\{[^}]*display:\s*grid[^}]*grid-auto-flow:\s*column[^}]*overflow-x:\s*auto/su,
+    );
+    expect(css).toMatch(/\.discovery-set-button:hover/);
+    expect(css).toMatch(/\.discovery-set-button:focus-visible/);
+    expect(css).toMatch(/\.discovery-set-button\[aria-pressed="true"\]/);
   });
 
   it("searches across titles, criteria, and places without locale-sensitive casing", () => {
@@ -74,6 +114,65 @@ describe("DiscoveryView", () => {
     ]);
     expect(filterDiscoveryBadges(discoveryBadges, sourceStudy.locationLabel, null)).toContain(sourceStudy);
     expect(filterDiscoveryBadges(discoveryBadges, "no badge has this phrase", null)).toEqual([]);
+  });
+
+  it("filters the named dining edition by its structured region instead of search-copy inference", () => {
+    const publishedBayBadge = {
+      ...available,
+      discoveryId: "published-bay",
+      setIds: ["michelin-dining"],
+      regionId: "bay-area",
+    } as const;
+    const regionBadges = [
+      publishedBayBadge,
+      { ...restaurantStudy, discoveryId: "bay", regionId: "bay-area" },
+      { ...restaurantStudy, discoveryId: "nyc", regionId: "new-york-city" },
+      { ...restaurantStudy, discoveryId: "dc", regionId: "washington-dc" },
+    ] as const;
+
+    expect(
+      filterDiscoveryBadges(regionBadges, "", "michelin-dining", "bay-area").map(
+        ({ discoveryId }) => discoveryId,
+      ),
+    ).toEqual(["published-bay", "bay"]);
+    expect(
+      filterDiscoveryBadges(regionBadges, "", "michelin-dining", "bay-area").map(
+        ({ availability }) => availability,
+      ),
+    ).toEqual(["available", "source-study"]);
+    expect(
+      filterDiscoveryBadges(regionBadges, "", "michelin-dining", "washington-dc").map(
+        ({ discoveryId }) => discoveryId,
+      ),
+    ).toEqual(["dc"]);
+  });
+
+  it("shows dining location context and reserves a larger bounded tier for selected detail", () => {
+    const html = renderToStaticMarkup(
+      <DiscoveryView
+        badges={[restaurantStudy]}
+        collectedRecordIds={new Set()}
+        resolvedSourceUrls={{}}
+        selectedSetId="michelin-dining"
+        query=""
+        onSetChange={() => undefined}
+        onQueryChange={() => undefined}
+        onOpenAvailableBadge={() => undefined}
+        onOpenCollectedBadge={() => undefined}
+        resolveThumbnail={(fileName) => `/thumbnails/${fileName}`}
+      />,
+    );
+    const studyCss = readFileSync(new URL("./discovery-study.css", import.meta.url), "utf8");
+
+    expect(html).toContain(restaurantStudy.locationLabel);
+    expect(html).toContain('aria-label="Michelin dining regions"');
+    expect(html).toContain("Bay Area");
+    expect(html).toContain("New York City");
+    expect(html).toContain("Washington, DC &amp; surroundings");
+    expect(studyCss).toMatch(/\.discovery-study__art img\s*\{[^}]*width:\s*384px[^}]*height:\s*384px/su);
+    expect(studyCss).toMatch(
+      /\.discovery-study__art img\.discovery-study__fallback-art\s*\{[^}]*width:\s*128px[^}]*height:\s*128px/su,
+    );
   });
 
   it("filters one set without losing published or study entries", () => {

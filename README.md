@@ -4,7 +4,7 @@ Badge is a private, local-first achievement archive for remembering meaningful t
 
 It combines the collectibility of national-park stamps and physical badges with the memory value of a personal journal, without points, competition, external verification, or noisy game mechanics.
 
-The repository now contains a runnable first vertical slice in which one root-document host composes the Badge Archive and Badge Studio surfaces while standalone isolation builds preserve their source boundary, alongside shared strict contracts, separate browser-local persistence, a searchable Archive Discover catalogue for all `116` unique visualized badge concepts, preselected historical quotations with explicit live Claude Code regeneration, deterministic fixture art, pack compilation and admission, and an interactive 3D renderer with a static fallback.
+The repository now contains a runnable first vertical slice in which one root-document host composes the Badge Archive and Badge Studio surfaces while standalone isolation builds preserve their source boundary, alongside shared strict contracts, separate browser-local persistence, a searchable Archive Discover catalogue for all `300` unique visualized badge concepts across five sets, preselected historical quotations with explicit live Claude Code regeneration, deterministic fixture art, pack compilation and admission, and an interactive 3D renderer with a static fallback.
 
 ## Run locally
 
@@ -37,7 +37,7 @@ This is a foundation slice rather than the complete roadmap: live Studio art-pro
 - Planned and earned badges, prebuilt collections, custom achievements, and automatically completed collection-level goals.
 - An earned-memory timeline ordered by when achievements happened, with a recipe-rendered preview of each exact pinned badge, one on-demand live 3D inspector, and direct reopening of the exact Archive memory; repeat occurrences remain a later product decision.
 - An everyday archive that shows only published badge designs whose picture, shape, material, border, and 3D recipe are already decided.
-- A read-only Discover catalogue for every tracked visualized badge concept: published entries reopen Collection, while selected park studies remain clearly non-actionable until publication.
+- A read-only Discover catalogue for every tracked visualized badge concept: published entries reopen Collection, while selected park, state, book, education, and named Michelin-restaurant studies open only a bounded preview and remain clearly non-activatable until publication.
 - A separate developer-only Badge Studio for multi-candidate art generation, uploads, non-destructive reprocessing, 3D construction, selection, validation, and pack publishing.
 - A real-time 3D badge viewer with dynamic material lighting, mouse rotation, bounded zoom, and direct light adjustment so each artifact can be examined like a physical object.
 - Source-checked badge quotations: each of the four current starter badges starts with an attributed historical quote, and before activation one `Regenerate quote` action can select a different exact reviewed quotation without changing the badge art; the general installed-pack quotation bank remains roadmap work.

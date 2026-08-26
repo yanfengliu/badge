@@ -25,6 +25,11 @@ export const discoverySets = [
     title: "Life Milestones",
     description: "Education and life chapters worth remembering.",
   },
+  {
+    setId: "michelin-dining",
+    title: "Michelin Dining",
+    description: "Named restaurant memories grounded in the live Michelin Guide.",
+  },
 ] as const satisfies readonly DiscoverySet[];
 
 export function requireDiscoverySet(setId: string): DiscoverySet {

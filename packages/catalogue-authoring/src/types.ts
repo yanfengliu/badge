@@ -128,15 +128,21 @@ export interface SelectedSourceStudy {
   width: 896;
   height: 896;
   sha256: string;
+  /** The canonical source-art prompt remains associated with every selected study, including a later code-native replacement. */
   promptSha256: string;
   generatedOn: string;
-  promptRecipe: { id: "badge-source-art"; revision: 1 };
+  promptRecipe: { id: "badge-source-art"; revision: 1 | 2 };
+  sourceHistory?: SelectedSourceHistory;
   selectedCandidateKey: string;
   accessibleDescription: string;
   provenance: {
-    generationWorkflow: "openai-image-generation-via-codex-imagegen";
-    contentOrigin: "trained-algorithm";
-    promptBinding: "recorded-exact-canonical-prompt";
+    generationWorkflow:
+      "openai-image-generation-via-codex-imagegen" | "deterministic-code-native-enamel-geometry";
+    contentOrigin: "trained-algorithm" | "code-authored-geometry";
+    promptBinding:
+      | "recorded-exact-canonical-prompt"
+      | "recorded-canonical-generation-and-code-native-design"
+      | "recorded-canonical-prompt-association-and-code-native-design";
     rightsBasis: "owner-directed-original-generation-for-badge";
     normalization: {
       recipe: { id: "national-park-study-jpeg" | "catalogue-study-jpeg"; revision: 1 };
@@ -156,6 +162,34 @@ export interface SelectedSourceStudy {
     derivationRecipe: { id: "catalogue-list-thumbnail"; revision: 1 };
   };
 }
+
+export interface SelectedSourceInitialGenerationPromptStep {
+  readonly kind: "initial-generation";
+  readonly promptRecipe: { id: "badge-source-art"; revision: 1 | 2 };
+  readonly promptSha256: string;
+  readonly outputSourceSha256: string;
+}
+
+interface SelectedSourceCodeNativeRenderBinding {
+  readonly renderRecipe: { id: "code-native-enamel-geometry"; revision: 1 };
+  readonly designBriefSha256: string;
+  readonly rendererImplementationSha256: string;
+}
+
+export interface SelectedSourceCodeNativeReplacementRenderStep extends SelectedSourceCodeNativeRenderBinding {
+  readonly kind: "code-native-replacement";
+  /** This digest identifies the exploratory imagegen source that the code-native source replaces; it is not a pixel input claim. */
+  readonly supersededCanonicalSourceSha256: string;
+}
+
+export interface SelectedSourceDirectCodeNativeRenderStep extends SelectedSourceCodeNativeRenderBinding {
+  readonly kind: "direct-code-native-render";
+}
+
+export type SelectedSourceHistory =
+  | readonly [SelectedSourceInitialGenerationPromptStep]
+  | readonly [SelectedSourceInitialGenerationPromptStep, SelectedSourceCodeNativeReplacementRenderStep]
+  | readonly [SelectedSourceDirectCodeNativeRenderStep];
 
 export interface NationalParkAuthoringRecord {
   definitionId: string;

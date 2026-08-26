@@ -9,7 +9,7 @@ const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url))
 const references = [
   "docs/design/assets/archive-discover-mobile-2026-08-25.png",
   "docs/design/assets/archive-discover-study-mobile-2026-08-25.png",
-  "docs/design/assets/studio-mobile-2026-08-25.png",
+  "docs/design/assets/studio-mobile-root-2026-08-26.png",
 ];
 const pngSignature = [137, 80, 78, 71, 13, 10, 26, 10];
 

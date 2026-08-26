@@ -60,8 +60,9 @@ describe("phone layout contract", () => {
     const studyPhone = mediaCss("apps/archive-web/src/discovery-study.css", "(max-width: 700px)");
     const studyShortLandscape = mediaCss(
       "apps/archive-web/src/discovery-study.css",
-      "(max-height: 430px) and (orientation: landscape)",
+      "(min-width: 701px) and (max-height: 430px) and (orientation: landscape)",
     );
+    const discoveryPhone = mediaCss("apps/archive-web/src/discovery.css", "(max-width: 420px)");
 
     expect(entry.lastIndexOf('import "./mobile.css"')).toBeGreaterThan(
       entry.lastIndexOf('import "./saying-disclosure.css"'),
@@ -74,7 +75,12 @@ describe("phone layout contract", () => {
     expect(base).toContain("100dvh");
     expect(phone).toMatch(/\.archive-nav\s*\{[^}]*grid-template-columns:\s*repeat\(4, minmax\(0, 1fr\)\)/su);
     expect(phone).toMatch(/\.nav-link\s*\{[^}]*min-height:\s*48px/su);
-    expect(phone).toMatch(/\.discovery-set-browser\s*\{[^}]*overflow-x:\s*auto/su);
+    expect(read("apps/archive-web/src/discovery.css")).toMatch(
+      /\.discovery-set-browser\s*\{[^}]*grid-auto-flow:\s*column[^}]*overflow-x:\s*auto[^}]*scroll-snap-type:\s*x proximity/su,
+    );
+    expect(phone).toMatch(
+      /\.discovery-set-browser\s*\{[^}]*grid-auto-columns:\s*minmax\(158px, 72vw\)[^}]*scroll-snap-type:\s*x mandatory/su,
+    );
     expect(phone).toMatch(/\.collection-shelf__art\s*\{[^}]*pointer-events:\s*auto/su);
     expect(phone).toMatch(/\.collection-shelf__art\s*\{[^}]*touch-action:\s*auto/su);
     expect(phone).toMatch(/\.restore-actions\s*\{[^}]*flex-direction:\s*column-reverse/su);
@@ -87,6 +93,9 @@ describe("phone layout contract", () => {
     );
     expect(studyShortLandscape).toMatch(
       /\.discovery-study__card\s*\{[^}]*max-height:\s*calc\(100dvh - 20px - var\(--safe-top\) - var\(--safe-bottom\)\)/su,
+    );
+    expect(discoveryPhone).toMatch(
+      /\.discovery-card\s*\{[^}]*grid-template-columns:\s*118px minmax\(0, 1fr\)/su,
     );
     expect(phone).toMatch(/\.ceremony-viewer\s*\{[^}]*height:\s*auto/su);
     expect(phone).toMatch(

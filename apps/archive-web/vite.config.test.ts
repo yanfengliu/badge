@@ -18,6 +18,13 @@ describe("Archive catalogue asset naming", () => {
         ],
       }),
     ).toBe("assets/discovery/national-parks/[name]-[hash][extname]");
+    expect(
+      archiveAssetFileName({
+        originalFileNames: [
+          "/repo/packages/catalogue-authoring/assets/michelin-dining/details/singlethread.jpg",
+        ],
+      }),
+    ).toBe("assets/discovery-details/michelin-dining/[name]-[hash][extname]");
   });
 
   it("keeps unrelated Archive assets on the ordinary bounded asset path", () => {

@@ -3,6 +3,7 @@ interface DiscoveryBadgeBase {
   readonly title: string;
   readonly criterion: string;
   readonly setIds: readonly string[];
+  readonly regionId?: string;
 }
 
 export interface AvailableDiscoveryBadge extends DiscoveryBadgeBase {
@@ -18,6 +19,8 @@ export interface SourceStudyDiscoveryBadge extends DiscoveryBadgeBase {
   readonly availability: "source-study";
   readonly locationLabel: string;
   readonly searchAliases?: readonly string[];
+  readonly referenceUrl?: string;
+  readonly visualEvidenceUrl?: string;
   readonly thumbnailKey: string;
   readonly accessibleDescription: string;
 }

@@ -19,11 +19,13 @@ export default defineConfig({
 });
 
 export function archiveAssetFileName(asset: { readonly originalFileNames: readonly string[] }): string {
-  const catalogueThumbnail = asset.originalFileNames
+  const catalogueMedia = asset.originalFileNames
     .map((file) => file.replaceAll("\\", "/"))
-    .map((file) => /(?:^|\/)assets\/([a-z0-9]+(?:-[a-z0-9]+)*)\/thumbnails\/[^/]+\.jpg$/u.exec(file))
+    .map((file) =>
+      /(?:^|\/)assets\/([a-z0-9]+(?:-[a-z0-9]+)*)\/(thumbnails|details)\/[^/]+\.jpg$/u.exec(file),
+    )
     .find((match) => match !== null);
-  return catalogueThumbnail
-    ? `assets/discovery/${catalogueThumbnail[1]}/[name]-[hash][extname]`
-    : "assets/[name]-[hash][extname]";
+  if (!catalogueMedia) return "assets/[name]-[hash][extname]";
+  const tier = catalogueMedia[2] === "details" ? "discovery-details" : "discovery";
+  return `assets/${tier}/${catalogueMedia[1]}/[name]-[hash][extname]`;
 }
