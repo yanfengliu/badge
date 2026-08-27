@@ -6,8 +6,9 @@ import {
   type DiscoverySet,
 } from "@badge/catalogue-fixtures/discovery";
 
-import { filterDiscoveryBadges } from "./discovery-filter";
+import { effectiveDiscoveryRegionId, filterDiscoveryBadges, MICHELIN_SET_ID } from "./discovery-filter";
 import { resolveDiscoveryThumbnail } from "./discovery-media";
+import { ArrowLeftIcon } from "./icons";
 
 interface DiscoveryViewProps {
   readonly badges?: readonly DiscoveryBadge[];
@@ -17,6 +18,8 @@ interface DiscoveryViewProps {
   readonly selectedRegionId?: string | null;
   readonly query: string;
   readonly visibleLimit?: number;
+  readonly returnSection?: "collection" | "timeline" | null;
+  readonly onReturnToOrigin?: () => void;
   readonly onVisibleLimitChange?: (visibleLimit: number) => void;
   readonly onSetChange: (setId: string | null) => void;
   readonly onRegionChange?: (regionId: string | null) => void;
@@ -27,7 +30,6 @@ interface DiscoveryViewProps {
 }
 
 export const DISCOVERY_PAGE_SIZE = 24;
-const MICHELIN_SET_ID = "michelin-dining";
 const MICHELIN_REGIONS = [
   { regionId: "bay-area", label: "Bay Area" },
   { regionId: "new-york-city", label: "New York City" },
@@ -51,6 +53,8 @@ export function DiscoveryView({
   selectedRegionId: controlledRegionId,
   query,
   visibleLimit: controlledVisibleLimit,
+  returnSection = null,
+  onReturnToOrigin,
   onVisibleLimitChange,
   onSetChange,
   onRegionChange,
@@ -63,7 +67,7 @@ export function DiscoveryView({
   const regionIsControlled = controlledRegionId !== undefined && onRegionChange !== undefined;
   const selectedRegionId = regionIsControlled ? controlledRegionId : localRegionId;
   const setSelectedRegionId = regionIsControlled ? onRegionChange : setLocalRegionId;
-  const activeRegionId = selectedSetId === MICHELIN_SET_ID ? selectedRegionId : null;
+  const activeRegionId = effectiveDiscoveryRegionId(selectedSetId, selectedRegionId);
   const visibleBadges = useMemo(
     () => filterDiscoveryBadges(badges, query, selectedSetId, activeRegionId),
     [activeRegionId, badges, query, selectedSetId],
@@ -87,6 +91,13 @@ export function DiscoveryView({
 
   return (
     <main className="discovery-main">
+      {returnSection && onReturnToOrigin ? (
+        <div className="discovery-return">
+          <button className="text-button" type="button" onClick={onReturnToOrigin}>
+            <ArrowLeftIcon /> Back to {returnSection === "collection" ? "Collection" : "Timeline"}
+          </button>
+        </div>
+      ) : null}
       <header className="discovery-hero">
         <div>
           <p className="eyebrow">A catalogue of possible memories</p>
@@ -343,7 +354,7 @@ function DiscoveryCard({
         className="discovery-card__action"
         type="button"
         aria-label={actionLabel}
-        {...(collected ? {} : { "data-prepare-record-id": badge.recordId })}
+        data-discovery-record-id={badge.recordId}
         onClick={(event) => openBadge(event.currentTarget)}
       >
         <span className="visually-hidden">{actionLabel}</span>

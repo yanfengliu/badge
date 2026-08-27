@@ -422,6 +422,10 @@
     padding: 28px 18px 22px;
   }
 
+  .badge-preparation--paged .artifact-pane {
+    grid-template-rows: auto auto minmax(360px, 1fr);
+  }
+
   .collection-heading {
     align-items: flex-start;
   }

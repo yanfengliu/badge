@@ -67,7 +67,7 @@ describe("DiscoveryView mounted interactions", () => {
       `.discovery-card [aria-label="Open ${sourceStudy.title} to collect it"]`,
     );
     expect(studyButton?.classList.contains("discovery-card__action")).toBe(true);
-    expect(studyButton?.dataset.prepareRecordId).toBe(sourceStudy.recordId);
+    expect(studyButton?.dataset.discoveryRecordId).toBe(sourceStudy.recordId);
     await act(async () => studyButton?.click());
     expect(prepared).toEqual([
       { recordId: available.recordId, trigger: starterButton },
@@ -228,6 +228,57 @@ describe("DiscoveryView mounted interactions", () => {
     }
   });
 
+  it("offers a way back to the section that handed the user into Discover", async () => {
+    const returns: string[] = [];
+    await act(async () =>
+      root.render(
+        <DiscoveryView
+          badges={searchableBadges}
+          collectedRecordIds={new Set()}
+          resolvedSourceUrls={{}}
+          selectedSetId={null}
+          query=""
+          returnSection="collection"
+          onReturnToOrigin={() => returns.push("returned")}
+          onSetChange={() => undefined}
+          onQueryChange={() => undefined}
+          onOpenAvailableBadge={() => undefined}
+          onOpenCollectedBadge={() => undefined}
+          resolveThumbnail={(fileName) => `/thumbnails/${fileName}`}
+        />,
+      ),
+    );
+
+    const backButton = [...container.querySelectorAll<HTMLButtonElement>(".discovery-return button")].find(
+      (button) => button.textContent?.includes("Back to Collection"),
+    );
+    expect(backButton).toBeDefined();
+    await act(async () => backButton?.click());
+    expect(returns).toEqual(["returned"]);
+  });
+
+  it("shows no back control when Discover was opened directly", async () => {
+    await act(async () =>
+      root.render(
+        <DiscoveryView
+          badges={searchableBadges}
+          collectedRecordIds={new Set()}
+          resolvedSourceUrls={{}}
+          selectedSetId={null}
+          query=""
+          returnSection={null}
+          onReturnToOrigin={() => undefined}
+          onSetChange={() => undefined}
+          onQueryChange={() => undefined}
+          onOpenAvailableBadge={() => undefined}
+          onOpenCollectedBadge={() => undefined}
+          resolveThumbnail={(fileName) => `/thumbnails/${fileName}`}
+        />,
+      ),
+    );
+    expect(container.querySelector(".discovery-return")).toBeNull();
+  });
+
   it("requests a controlled set change from the set browser", async () => {
     const requested: Array<string | null> = [];
     await act(async () =>
@@ -329,14 +380,14 @@ describe("DiscoveryView mounted interactions", () => {
     function PreparationHarness() {
       const [visibleLimit, setVisibleLimit] = useState(24);
       const [preparing, setPreparing] = useState(false);
-      const returnFocus = useRef<HTMLButtonElement | null>(null);
+      const returnRecordId = useRef<string | null>(null);
       if (preparing) {
         return (
           <button
             type="button"
             onClick={() => {
               setPreparing(false);
-              requestAnimationFrame(() => focusPreparedBadgeTrigger(returnFocus.current));
+              requestAnimationFrame(() => focusPreparedBadgeTrigger(returnRecordId.current));
             }}
           >
             Back to Discover
@@ -354,8 +405,8 @@ describe("DiscoveryView mounted interactions", () => {
           onVisibleLimitChange={setVisibleLimit}
           onSetChange={() => undefined}
           onQueryChange={() => undefined}
-          onOpenAvailableBadge={(_recordId, trigger) => {
-            returnFocus.current = trigger;
+          onOpenAvailableBadge={(recordId) => {
+            returnRecordId.current = recordId;
             setPreparing(true);
           }}
           onOpenCollectedBadge={() => undefined}

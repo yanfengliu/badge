@@ -218,6 +218,62 @@ button {
   font-size: 15px;
 }
 
+.discovery-pager {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.discovery-pager__step {
+  display: grid;
+  width: 44px;
+  flex-shrink: 0;
+  padding: 0;
+  place-items: center;
+  background: transparent;
+  color: var(--rust-dark);
+}
+
+.discovery-pager__step:hover:not([aria-disabled="true"]),
+.discovery-pager__step:focus-visible {
+  border-color: #a99f91;
+  background: rgba(255, 255, 255, 0.38);
+}
+
+.discovery-pager__step[aria-disabled="true"] {
+  border-color: transparent;
+  color: var(--ink-faint);
+  cursor: default;
+  opacity: 0.45;
+}
+
+.discovery-pager__position {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+  margin: 0;
+  text-align: center;
+}
+
+.discovery-pager__index {
+  color: var(--ink-soft);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.discovery-pager__position small {
+  color: var(--ink-faint);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .archive-main {
   display: grid;
   grid-template-columns: minmax(570px, 7fr) minmax(410px, 5fr);

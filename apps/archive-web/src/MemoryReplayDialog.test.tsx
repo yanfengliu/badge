@@ -72,6 +72,50 @@ describe("MemoryReplayDialog", () => {
     expect(html).toContain("This set is not available in Discover");
   });
 
+  it("pages between the collected memories of the same set", () => {
+    const state = createStarterArchiveState();
+    const base = state.records.find((record) => record.recordId === STARTER_RECORD_IDS[0]);
+    if (!base) throw new Error("Expected Yosemite fixture record.");
+    const record = {
+      ...base,
+      lifecycle: "earned" as const,
+      activation: {
+        occurredStart: "2024-05-14",
+        occurredEnd: "2024-05-14",
+        recordedAt: "2024-05-15T18:30:00.000Z",
+        activatedAt: "2024-05-15T18:30:00.000Z",
+        visualPin: toExactVisualPin(base.publishedVisual),
+      },
+    };
+
+    const html = renderToStaticMarkup(
+      <MemoryReplayDialog
+        record={record}
+        sourceUrl="blob:earned-yosemite"
+        quotation={null}
+        sets={[]}
+        forceFallback={false}
+        pager={{
+          contextTitle: "Collected in U.S. National Parks",
+          currentTitle: record.title,
+          index: 2,
+          total: 3,
+          previous: { recordId: "catalogue:visited-acadia", title: "Acadia" },
+          next: { recordId: "catalogue:visited-arches", title: "Arches" },
+        }}
+        returnFocus={createRef<HTMLButtonElement>()}
+        onBrowseSet={() => undefined}
+        onPagerStep={() => undefined}
+        onClose={() => undefined}
+      />,
+    );
+
+    expect(html).toContain("2 of 3");
+    expect(html).toContain("Collected in U.S. National Parks");
+    expect(html).toContain('aria-label="Previous badge: Acadia"');
+    expect(html).toContain('aria-label="Next badge: Arches"');
+  });
+
   it("keeps an unhydrated legacy quote visible without inventing provenance", () => {
     const state = createStarterArchiveState();
     const base = state.records[0]!;

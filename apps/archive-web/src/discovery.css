@@ -4,6 +4,12 @@
   background: var(--paper);
 }
 
+.discovery-return {
+  display: flex;
+  width: min(100%, 1480px);
+  margin: 0 auto 14px;
+}
+
 .discovery-hero {
   display: grid;
   grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.55fr);

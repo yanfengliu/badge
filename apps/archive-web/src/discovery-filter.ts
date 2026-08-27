@@ -1,5 +1,14 @@
 import { discoverySets, type DiscoveryBadge } from "@badge/catalogue-fixtures/discovery";
 
+export const MICHELIN_SET_ID = "michelin-dining";
+
+export function effectiveDiscoveryRegionId(
+  setId: string | null,
+  regionId: string | null | undefined,
+): string | null {
+  return setId === MICHELIN_SET_ID ? (regionId ?? null) : null;
+}
+
 export function filterDiscoveryBadges(
   badges: readonly DiscoveryBadge[],
   query: string,

@@ -14,6 +14,12 @@
   background: #eee8dc;
 }
 
+/* With set paging, the pager sits between the heading and the stage so it stays
+   above the fold however tall the story pane grows. */
+.badge-preparation--paged .artifact-pane {
+  grid-template-rows: auto auto minmax(430px, 1fr);
+}
+
 .artifact-pane::before {
   position: absolute;
   inset: 0;

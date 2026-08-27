@@ -1,5 +1,25 @@
 # Defect Register
 
+## 2026-08-27 — Collection handed the user into Discover with no way back
+
+**Symptom:** The owner said that clicking a badge shelf in the Collection tab takes them to the Discover tab, and that when Discover was reached that way there should be a UI that takes them back.
+
+**Investigation:** Every cross-section handoff into Discover — a Collection shelf's full-segment browse surface, the empty-collection and empty-timeline browse actions, and a replay dialog's set links — called the same section-change path as the header navigation, so the app discarded where the visit started. Once in Discover the only returns were the global header tabs and browser Back, neither of which acknowledged the handoff; the surface presented an origin-blind dead end even though the design already treated the shelf itself as the set action.
+
+**Root cause:** Discover entry was modeled as a destination change only. No state distinguished "the user chose Discover" from "another section handed the user into Discover," so no surface could offer the inverse action.
+
+**Standing gate:** `use-discovery-view-state.test.tsx` requires the view state to remember which section handed the user into Discover, to keep that origin while the user keeps browsing inside Discover, and to forget it on direct entry, on leaving Discover, or after activation lands in Collection. `DiscoveryView.interaction.test.tsx` requires the `Back to Collection` action to render and fire only when an origin exists and to stay absent on direct entry. Browser verification covers the shelf, empty-state, and replay-set-link handoffs, the `Back to Collection` and `Back to Timeline` returns with focus landing on the returned section's heading, chip absence after direct header entry, and hash back/forward clearing the pending return.
+
+## 2026-08-27 — Arrow keys could not move between badges of the same set
+
+**Symptom:** The owner said left and right arrow keys still do not work when trying to navigate between badges of the same set, no matter where they are.
+
+**Investigation:** Neither single-badge surface offered any sibling traversal: the preparation view and the memory replay dialog each showed exactly one badge with no previous or next affordance, so flipping through a set meant closing the surface, finding the neighboring card in the grid, and opening it again. The only arrow-key handling in the Archive was the 3D viewer's engaged-state orbit, which owns arrows only while explicitly engaged, leaving plain arrows unused. A pager also had to respect the surfaces' truth boundaries: replay can only present earned records, and preparation must never offer a second activation for a collected badge.
+
+**Root cause:** Discover's sequence — the ordered, filtered badge list the grid renders — existed only inside the grid component, so the single-badge surfaces it opened had no notion of "the neighboring badge," and no page-level keyboard path was reserved for moving between badges.
+
+**Standing gate:** `discovery-pager.test.ts` binds the preparation pager to the exact filtered grid sequence (set, region, and search included) and the replay pager to the collected memories of the browsed or primary set, with truthful ends and null off-sequence results. `DiscoveryPagerControls.test.tsx` requires named previous/next steps, `aria-keyshortcuts`, focusable-but-inert ends, hiding below two badges, and document-level arrow stepping that yields to text fields, the engaged viewer, modified keys, and already-handled events. `MemoryReplayDialog.test.tsx` requires the collected-set pager inside replay. Browser verification repeats arrow and button stepping across the set in live and forced-fallback rendering, the earned panel for a collected badge reached by paging, input-field arrow immunity, pager-driven page-limit growth so `Back to set` still lands on the stepped-to card, and the `44px` step targets at the `320px` floor.
+
 ## 2026-08-25 — Badge faces were too intricate to look manufactured at their real size
 
 **Symptom:** The owner said the badge graphics were crowded with more detail than a tiny manufactured badge could physically carry and asked for cleaner art that could plausibly be made in media such as stained glass or embroidery.

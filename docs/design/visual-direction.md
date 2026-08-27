@@ -101,6 +101,10 @@ Discover is the complete set browser rather than another personal gallery. A gen
 
 Every badge card is one coherent click and keyboard target rather than a passive card with a small CTA. Since the owner's 2026-08-26 direction there are exactly two wordless card states: a collected badge keeps its full-color art and opens the exact memory replay, and every not-yet-collected badge — starter or catalogue-pack — waits in quiet grey and opens preparation and activation in place. No card carries a status pill, action copy, or publication caveat; the set label, title, and criterion or location line are the only words, and the card's accessible action name distinguishes replay from preparation for assistive technology. Missing thumbnails retain the complete searchable card with an explicit preview fallback rather than hiding the concept.
 
+Since the owner's 2026-08-27 direction, a Discover visit that another section started is never a dead end: when Collection or Timeline hands the user into Discover — a shelf's browse surface, an empty-state browse action, or a replay dialog's set link — one quiet `Back to Collection` or `Back to Timeline` text action with a leading arrow sits above the hero and returns focus to that section's heading. Direct header entry never shows the action, and leaving Discover by any route clears it.
+
+The same direction makes single-badge surfaces traversable: preparation shows a centered `‹ x of y · context ›` pager between its heading and the artifact stage that steps through the exact ordered sequence the Discover grid is showing — set, region, and search filters included — and the memory replay dialog carries the same pager through the collected memories of the badge's set. Plain `ArrowLeft` and `ArrowRight` are keyboard equivalents on both surfaces; they yield to text fields and to the engaged 3D viewer, end-of-sequence steps stay focusable but inert instead of dropping focus, and a badge reached by paging renders its truthful state — an already-collected badge shows its earned panel, never a second activation form.
+
 ### Memory timeline
 
 The Timeline uses the same warm editorial archive language as Collection: generous margins, one quiet chronological rule, restrained date markers, and substantial memory cards rather than a dense activity feed. Real-world occurrence dates lead; the later sealed timestamp remains secondary. Each card shows the frozen badge artifact through its pinned shape, material, border, crop, and source rather than presenting the source picture as a rectangular illustration. A restrained persistent inspection control swaps only the chosen preview into the live 3D or fallback viewer, so a long memory history never becomes a wall of canvases or repeated viewer controls.
@@ -153,6 +157,9 @@ The executable values remain authoritative in Archive CSS, while this section re
 
 The following optimized fixture-only captures are current implementation references, not aspirational mockups:
 
+- [Discover return reference](assets/archive-discover-return-2026-08-27.png): route `/#discover`, `1440 × 1000` browser viewport, U.S. National Parks set opened from a Collection shelf with the `Back to Collection` text action above the hero, two fixture-collected parks in color, captured 2026-08-27.
+- [Preparation pager reference](assets/archive-preparation-pager-2026-08-27.png): route `/#discover`, `1440 × 1000` browser viewport, fixture-only Badlands preparation showing the `5 of 64 · U.S. National Parks` pager between the heading and the live artifact stage with both step actions enabled, captured 2026-08-27.
+- [Replay pager reference](assets/archive-replay-pager-2026-08-27.png): route `/`, `1440 × 1000` browser viewport, fixture-collected Yosemite memory replay showing the `1 of 2 · Collected in U.S. National Parks` pager under the set membership with the previous step inert, captured 2026-08-27.
 - [Two-state Discover reference](assets/archive-discover-two-state-2026-08-26.png): route `/#discover`, `1440 × 900` browser viewport scrolled to the card grid, one fixture-collected Acadia in full color among grey not-yet-collected cards, no per-card status wording, captured 2026-08-26. This supersedes the potential-versus-published presentation shown in the 2026-08-25 Discover reference and the retired study-preview overlay in the Michelin study and study phone references below, which remain historical capture evidence.
 - [Catalogue preparation reference](assets/archive-catalogue-preparation-2026-08-26.png): route `/#discover`, `1440 × 900` browser viewport, fixture-only Acadia catalogue-pack badge opened for preparation with its live enamel render, designated Thoreau quotation, regeneration action, and activation form, captured 2026-08-26.
 - [Catalogue preparation floor reference](assets/archive-catalogue-preparation-320-2026-08-26.png): route `/#discover`, exact `320 × 700` CSS viewport at the phone floor, fixture-only Arches catalogue-pack badge opened for preparation with all four destinations visible and the bounded live viewer, captured 2026-08-26.
@@ -232,15 +239,18 @@ At wide desktop the set selector presents six substantial segments for `All sets
 
 ### Interaction precedence
 
-| Surface                                     | Primary action                        | Independent neighboring action                       |
-| ------------------------------------------- | ------------------------------------- | ---------------------------------------------------- |
-| Collection ordinary canonical shelf segment | Browse that exact set in Discover     | None                                                 |
-| Collection shaped artifact                  | Replay that exact earned memory       | It must not browse or expand the shelf               |
-| Collection circular disclosure              | Expand or collapse collected memories | It must not browse or replay                         |
-| Discover set segment                        | Select one catalogue set              | It must not prepare or replay a badge                |
-| Discover collected badge card               | View exact memory                     | One stretched native button covers the complete card |
-| Discover published-unearned badge card      | Prepare exact badge                   | One stretched native button covers the complete card |
-| Discover not-yet-collected badge card       | Open preparation and activation       | It never exposes Studio authoring controls           |
+| Surface                                     | Primary action                                          | Independent neighboring action                       |
+| ------------------------------------------- | ------------------------------------------------------- | ---------------------------------------------------- |
+| Collection ordinary canonical shelf segment | Browse that exact set in Discover                       | None                                                 |
+| Collection shaped artifact                  | Replay that exact earned memory                         | It must not browse or expand the shelf               |
+| Collection circular disclosure              | Expand or collapse collected memories                   | It must not browse or replay                         |
+| Discover set segment                        | Select one catalogue set                                | It must not prepare or replay a badge                |
+| Discover collected badge card               | View exact memory                                       | One stretched native button covers the complete card |
+| Discover published-unearned badge card      | Prepare exact badge                                     | One stretched native button covers the complete card |
+| Discover not-yet-collected badge card       | Open preparation and activation                         | It never exposes Studio authoring controls           |
+| Discover handed-off return action           | Return to the exact section that opened Discover        | It must not change set, query, or badge state        |
+| Preparation set pager step                  | Open the previous or next badge of the visible sequence | It must not activate, replay, or leave preparation   |
+| Replay memory pager step                    | Show the previous or next collected memory of the set   | It must not close the dialog or alter any record     |
 
 Keyboard focus uses the shared focus token, selected states retain text or semantics in addition to color, and overlapping shelf controls preserve the same action boundaries for pointer, keyboard, and assistive-technology users.
 

@@ -4,6 +4,8 @@ import { BadgeViewer } from "@badge/renderer-web";
 
 import { formatDate, formatDateTime } from "./browser-utilities";
 import { type CollectedArchiveRecord, type ReplaySetLink } from "./collection-view-model";
+import type { DiscoveryPager, DiscoveryPagerStep } from "./discovery-pager";
+import { DiscoveryPagerControls } from "./DiscoveryPagerControls";
 import { CloseIcon } from "./icons";
 import { useModalEnvironment } from "./modal-environment";
 import { useModalFocus } from "./use-modal-focus";
@@ -14,8 +16,10 @@ interface MemoryReplayDialogProps {
   readonly quotation: HistoricalQuotation | null;
   readonly sets: readonly ReplaySetLink[];
   readonly forceFallback: boolean;
+  readonly pager?: DiscoveryPager | null;
   readonly returnFocus: RefObject<HTMLButtonElement | null>;
   readonly onBrowseSet: (set: ReplaySetLink) => void;
+  readonly onPagerStep?: (step: DiscoveryPagerStep) => void;
   readonly onClose: () => void;
 }
 
@@ -25,8 +29,10 @@ export function MemoryReplayDialog({
   quotation,
   sets,
   forceFallback,
+  pager = null,
   returnFocus,
   onBrowseSet,
+  onPagerStep,
   onClose,
 }: MemoryReplayDialogProps) {
   const dialog = useRef<HTMLDivElement>(null);
@@ -128,6 +134,7 @@ export function MemoryReplayDialog({
               )}
             </div>
           </div>
+          {pager && onPagerStep ? <DiscoveryPagerControls pager={pager} onStep={onPagerStep} /> : null}
         </div>
       </article>
     </div>

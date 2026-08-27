@@ -13,11 +13,10 @@ export function focusCollectionThen(action: () => void): void {
   action();
 }
 
-export function focusPreparedBadgeTrigger(trigger: HTMLButtonElement | null): void {
-  const recordId = trigger?.dataset.prepareRecordId;
+export function focusPreparedBadgeTrigger(recordId: string | null): void {
   if (!recordId) return;
-  const currentTrigger = [...document.querySelectorAll<HTMLButtonElement>("[data-prepare-record-id]")].find(
-    (candidate) => candidate.dataset.prepareRecordId === recordId,
+  const currentTrigger = [...document.querySelectorAll<HTMLButtonElement>("[data-discovery-record-id]")].find(
+    (candidate) => candidate.dataset.discoveryRecordId === recordId,
   );
   if (currentTrigger) {
     currentTrigger.focus();

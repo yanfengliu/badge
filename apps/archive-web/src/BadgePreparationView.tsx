@@ -5,6 +5,8 @@ import { BadgeViewer } from "@badge/renderer-web";
 import type { ActivationDraft, ArchiveVisualDisplay } from "./app-types";
 import { formatDate } from "./browser-utilities";
 import { replaySetLinks } from "./collection-view-model";
+import type { DiscoveryPager, DiscoveryPagerStep } from "./discovery-pager";
+import { DiscoveryPagerControls } from "./DiscoveryPagerControls";
 import { MemoryActivationForm } from "./MemoryActivationForm";
 import { ReplayActivationButton } from "./ReplayActivationButton";
 import { SayingComposer } from "./SayingComposer";
@@ -18,10 +20,12 @@ interface BadgePreparationViewProps {
   readonly saying: SayingWorkflow;
   readonly activating: boolean;
   readonly forceFallback: boolean;
+  readonly pager: DiscoveryPager | null;
   readonly actionButtonRef: RefObject<HTMLButtonElement | null>;
   readonly headingRef: RefObject<HTMLHeadingElement | null>;
   readonly sayingFocusRef: RefObject<HTMLDivElement | null>;
   readonly onBack: () => void;
+  readonly onPagerStep: (step: DiscoveryPagerStep) => void;
   readonly onDraftChange: (patch: Partial<ActivationDraft>) => void;
   readonly onActivate: (event: FormEvent) => void;
   readonly onReplay: () => void;
@@ -39,17 +43,20 @@ export function BadgePreparationView({
   saying,
   activating,
   forceFallback,
+  pager,
   actionButtonRef,
   headingRef,
   sayingFocusRef,
   onBack,
+  onPagerStep,
   onDraftChange,
   onActivate,
   onReplay,
 }: BadgePreparationViewProps) {
   const sets = replaySetLinks(record);
+  const paged = pager !== null && pager.total > 1;
   return (
-    <main className="archive-main badge-preparation">
+    <main className={`archive-main badge-preparation${paged ? " badge-preparation--paged" : ""}`}>
       <section className="artifact-pane" aria-label={`${record.title} badge preview`}>
         <div className="collection-heading">
           <div>
@@ -62,6 +69,7 @@ export function BadgePreparationView({
             Back to set
           </button>
         </div>
+        {paged && pager ? <DiscoveryPagerControls pager={pager} onStep={onPagerStep} /> : null}
         <div className={`artifact-stage${forceFallback ? " fallback-stage" : ""}`}>
           {visual ? (
             <BadgeViewer

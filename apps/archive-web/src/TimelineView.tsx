@@ -51,7 +51,9 @@ export function TimelineView({
         <header className="timeline-heading">
           <div>
             <p className="eyebrow">Chronicle</p>
-            <h1 id="timeline-title">Memory timeline</h1>
+            <h1 id="timeline-title" tabIndex={-1}>
+              Memory timeline
+            </h1>
             <p>The moments you chose to seal, ordered by when they happened.</p>
           </div>
           <div

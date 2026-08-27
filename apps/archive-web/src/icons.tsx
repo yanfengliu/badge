@@ -65,6 +65,30 @@ export function ArrowIcon(props: IconProps) {
   );
 }
 
+export function ArrowLeftIcon(props: IconProps) {
+  return (
+    <svg {...shared} {...props}>
+      <path d="M19 12H5m5 5-5-5 5-5" />
+    </svg>
+  );
+}
+
+export function ChevronLeftIcon(props: IconProps) {
+  return (
+    <svg {...shared} {...props}>
+      <path d="M14.5 5.5 8 12l6.5 6.5" />
+    </svg>
+  );
+}
+
+export function ChevronRightIcon(props: IconProps) {
+  return (
+    <svg {...shared} {...props}>
+      <path d="m9.5 5.5 6.5 6.5-6.5 6.5" />
+    </svg>
+  );
+}
+
 export function ReplayIcon(props: IconProps) {
   return (
     <svg {...shared} {...props}>

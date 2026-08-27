@@ -46,7 +46,9 @@ export function CollectionView({
       <header className="collection-masthead">
         <div className="collection-introduction">
           <p className="eyebrow">A private collection of places, pages, and passages</p>
-          <h1>The Field Archive</h1>
+          <h1 id="collection-heading" tabIndex={-1}>
+            The Field Archive
+          </h1>
           <p>Every badge here marks a memory you activated and chose to keep.</p>
         </div>
         <div className="collection-tools">

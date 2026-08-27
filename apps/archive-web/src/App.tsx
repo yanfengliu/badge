@@ -35,7 +35,8 @@ import {
 } from "./catalogue-source-assets";
 import { CollectionView } from "./CollectionView";
 import { replaySetLinks, type CollectedArchiveRecord, type ReplaySetLink } from "./collection-view-model";
-import { DiscoveryView } from "./DiscoveryView";
+import { preparationDiscoveryPager, replayDiscoveryPager, type DiscoveryPagerStep } from "./discovery-pager";
+import { DISCOVERY_PAGE_SIZE, DiscoveryView } from "./DiscoveryView";
 import { acceptedFixtureQuotation } from "./fixture-quotations";
 import { MemoryReplayDialog } from "./MemoryReplayDialog";
 import { publishedFixtureForRecordId } from "./published-fixtures";
@@ -65,8 +66,9 @@ import {
 } from "./restore-flow";
 import { sourceUrlsForResolvedVisuals, useResolvedVisuals } from "./use-resolved-visuals";
 import { useArchiveSectionLocation } from "./use-archive-section-location";
+import { useDiscoveryPagerKeys } from "./use-discovery-pager-keys";
 import { stateAfterStaleArchiveMutation, useSayingWorkflow } from "./use-saying-workflow";
-import { useDiscoveryViewState } from "./use-discovery-view-state";
+import { useDiscoveryViewState, type DiscoveryReturnSection } from "./use-discovery-view-state";
 const repository = new IndexedDbArchiveRepository({
   trustedQuotationRequests: createStarterQuotationRequests(),
 });
@@ -92,7 +94,7 @@ export function App({ onShowStudio }: { readonly onShowStudio: () => void }) {
   const [initializationFailed, setInitializationFailed] = useState(false);
   const ceremonyReturnFocus = useRef<HTMLButtonElement>(null);
   const preparationHeading = useRef<HTMLHeadingElement>(null);
-  const preparationReturnFocus = useRef<HTMLButtonElement | null>(null);
+  const preparationReturnRecordId = useRef<string | null>(null);
   const replayReturnFocus = useRef<HTMLButtonElement>(null);
   const sayingDisclosureReturnFocus = useRef<HTMLDivElement>(null);
   const starterAssets = useRef(new Map<string, ArchiveSourceAssetInput>());
@@ -133,6 +135,7 @@ export function App({ onShowStudio }: { readonly onShowStudio: () => void }) {
     setPreparingRecordId(null);
     setReplayRecordId(null);
     if (section === "discover") discovery.resetPage();
+    else discovery.clearReturn();
     setActiveSection(section);
   });
   const selectedFixture = publishedFixtureForRecordId(selectedRecordId);
@@ -151,6 +154,52 @@ export function App({ onShowStudio }: { readonly onShowStudio: () => void }) {
     selectedFixture?.sourceUrl ?? null,
     resolvedVisuals,
   );
+  const collectedRecordIds = new Set(
+    (state?.records ?? []).filter((record) => record.lifecycle === "earned").map((record) => record.recordId),
+  );
+  const replayCandidate = state?.records.find((record) => record.recordId === replayRecordId);
+  const replayRecord =
+    replayCandidate?.lifecycle === "earned" && replayCandidate.activation
+      ? (replayCandidate as CollectedArchiveRecord)
+      : null;
+  const preparationPager =
+    preparingRecordId && activeSection === "discover"
+      ? preparationDiscoveryPager(preparingRecordId, {
+          selectedSetId: discovery.viewProps.selectedSetId,
+          query: discovery.viewProps.query,
+          regionId: discovery.viewProps.selectedRegionId,
+        })
+      : null;
+  const replayPager = replayRecord
+    ? replayDiscoveryPager(
+        replayRecord.recordId,
+        collectedRecordIds,
+        activeSection === "discover" ? discovery.viewProps.selectedSetId : null,
+      )
+    : null;
+  const modalOverPreparation =
+    replayRecordId !== null ||
+    ceremonyRecordId !== null ||
+    pendingRestore !== null ||
+    saying.disclosure.phase !== "idle";
+  useDiscoveryPagerKeys(modalOverPreparation ? null : preparationPager, openPagerStep);
+  useDiscoveryPagerKeys(
+    ceremonyRecordId === null && pendingRestore === null && saying.disclosure.phase === "idle"
+      ? replayPager
+      : null,
+    openReplayStep,
+  );
+  const { visibleLimit, onVisibleLimitChange } = discovery.viewProps;
+  useEffect(() => {
+    // Keep the rendered Discover page deep enough that "Back to set" can land on the
+    // badge card the pager stepped to.
+    if (!preparationPager) return;
+    const coveringLimit = Math.min(
+      Math.ceil(preparationPager.index / DISCOVERY_PAGE_SIZE) * DISCOVERY_PAGE_SIZE,
+      preparationPager.total,
+    );
+    if (visibleLimit < coveringLimit) onVisibleLimitChange(coveringLimit);
+  }, [onVisibleLimitChange, preparationPager, visibleLimit]);
   const closeCeremony = useCallback(() => setCeremonyRecordId(null), []);
   const closeReplay = useCallback(() => setReplayRecordId(null), []);
   const closeRestore = useCallback(() => setPendingRestore(null), []);
@@ -158,7 +207,7 @@ export function App({ onShowStudio }: { readonly onShowStudio: () => void }) {
     setDrafts((current) => ({ ...current, [selectedRecordId]: { ...draft, ...patch } }));
   }
 
-  function prepareBadge(recordId: string, trigger: HTMLButtonElement) {
+  function prepareBadge(recordId: string, trigger?: HTMLButtonElement) {
     if (!state?.records.some((record) => record.recordId === recordId)) {
       setNotice({
         kind: "error",
@@ -167,27 +216,53 @@ export function App({ onShowStudio }: { readonly onShowStudio: () => void }) {
       return;
     }
     void saying.observe({ type: "badge-selected", recordId });
-    preparationReturnFocus.current = trigger;
+    preparationReturnRecordId.current = recordId;
     setSelectedRecordId(recordId);
     setPreparingRecordId(recordId);
     setActiveSection("discover");
     writeArchiveSectionHash("discover");
     setNotice(null);
-    requestAnimationFrame(() => preparationHeading.current?.focus());
+    if (trigger) requestAnimationFrame(() => preparationHeading.current?.focus());
+  }
+
+  function openPagerStep(step: DiscoveryPagerStep) {
+    prepareBadge(step.recordId);
+  }
+
+  function openReplayStep(step: DiscoveryPagerStep) {
+    replayMemory(step.recordId);
   }
 
   function closePreparation() {
-    const returnFocus = preparationReturnFocus.current;
+    const returnRecordId = preparationReturnRecordId.current;
     setPreparingRecordId(null);
-    requestAnimationFrame(() => focusPreparedBadgeTrigger(returnFocus));
+    requestAnimationFrame(() => focusPreparedBadgeTrigger(returnRecordId));
   }
 
   function onSectionChange(section: ArchiveSection) {
     setPreparingRecordId(null);
     if (section === "discover") discovery.enterDiscover();
+    else discovery.clearReturn();
     setActiveSection(section);
     writeArchiveSectionHash(section);
     setNotice(null);
+  }
+
+  function showDiscoverFrom(origin: DiscoveryReturnSection) {
+    setPreparingRecordId(null);
+    discovery.enterDiscover(origin);
+    setActiveSection("discover");
+    writeArchiveSectionHash("discover");
+    setNotice(null);
+  }
+
+  function returnFromDiscover() {
+    const target = discovery.returnSection;
+    if (!target) return;
+    onSectionChange(target);
+    requestAnimationFrame(() =>
+      document.getElementById(target === "collection" ? "collection-heading" : "timeline-title")?.focus(),
+    );
   }
 
   function replayMemory(recordId: string, trigger?: HTMLButtonElement) {
@@ -200,8 +275,11 @@ export function App({ onShowStudio }: { readonly onShowStudio: () => void }) {
       });
       return;
     }
-    replayReturnFocus.current =
-      trigger ?? (document.activeElement instanceof HTMLButtonElement ? document.activeElement : null);
+    // Stepping between memories keeps the focus target of the trigger that opened the dialog.
+    if (replayRecordId === null) {
+      replayReturnFocus.current =
+        trigger ?? (document.activeElement instanceof HTMLButtonElement ? document.activeElement : null);
+    }
     void saying.observe({ type: "ceremony-replayed", recordId });
     setReplayRecordId(recordId);
   }
@@ -209,7 +287,7 @@ export function App({ onShowStudio }: { readonly onShowStudio: () => void }) {
   function browseSet(setId: string | null) {
     setReplayRecordId(null);
     setPreparingRecordId(null);
-    discovery.browseSet(setId);
+    discovery.browseSet(setId, activeSection);
     setActiveSection("discover");
     writeArchiveSectionHash("discover");
     requestAnimationFrame(() => document.getElementById("discovery-set-heading")?.focus());
@@ -255,6 +333,7 @@ export function App({ onShowStudio }: { readonly onShowStudio: () => void }) {
       );
       setState(result.state);
       setPreparingRecordId(null);
+      discovery.clearReturn();
       setActiveSection("collection");
       writeArchiveSectionHash("collection");
       setCeremonyRecordId(selectedRecord.recordId);
@@ -418,14 +497,6 @@ export function App({ onShowStudio }: { readonly onShowStudio: () => void }) {
   const ceremonyRecord = state.records.find((record) => record.recordId === ceremonyRecordId);
   const ceremonyVisual = ceremonyRecord ? resolvedVisuals[ceremonyRecord.recordId] : undefined;
   const resolvedSourceUrls = sourceUrlsForResolvedVisuals(resolvedVisuals);
-  const collectedRecordIds = new Set(
-    state.records.filter((record) => record.lifecycle === "earned").map((record) => record.recordId),
-  );
-  const replayCandidate = state.records.find((record) => record.recordId === replayRecordId);
-  const replayRecord =
-    replayCandidate?.lifecycle === "earned" && replayCandidate.activation
-      ? (replayCandidate as CollectedArchiveRecord)
-      : null;
   const replayVisual = replayRecord ? resolvedVisuals[replayRecord.recordId] : undefined;
   const replayFixture = replayRecord ? publishedFixtureForRecordId(replayRecord.recordId) : undefined;
 
@@ -445,7 +516,7 @@ export function App({ onShowStudio }: { readonly onShowStudio: () => void }) {
           sourceUrls={resolvedSourceUrls}
           forceFallback={forceFallback}
           onOpenMemory={(recordId) => replayMemory(recordId)}
-          onShowDiscover={() => onSectionChange("discover")}
+          onShowDiscover={() => showDiscoverFrom("timeline")}
         />
       ) : activeSection === "discover" && preparingRecordId ? (
         <BadgePreparationView
@@ -456,10 +527,12 @@ export function App({ onShowStudio }: { readonly onShowStudio: () => void }) {
           saying={saying}
           activating={activating}
           forceFallback={forceFallback}
+          pager={preparationPager}
           actionButtonRef={ceremonyReturnFocus}
           headingRef={preparationHeading}
           sayingFocusRef={sayingDisclosureReturnFocus}
           onBack={closePreparation}
+          onPagerStep={openPagerStep}
           onDraftChange={updateDraft}
           onActivate={activate}
           onReplay={() => replayMemory(selectedRecord.recordId, ceremonyReturnFocus.current ?? undefined)}
@@ -469,6 +542,8 @@ export function App({ onShowStudio }: { readonly onShowStudio: () => void }) {
           collectedRecordIds={collectedRecordIds}
           resolvedSourceUrls={resolvedSourceUrls}
           {...discovery.viewProps}
+          returnSection={discovery.returnSection}
+          onReturnToOrigin={returnFromDiscover}
           onOpenAvailableBadge={prepareBadge}
           onOpenCollectedBadge={replayMemory}
         />
@@ -478,7 +553,7 @@ export function App({ onShowStudio }: { readonly onShowStudio: () => void }) {
           sourceUrls={resolvedSourceUrls}
           onReplay={replayMemory}
           onBrowseSet={(setId) => browseSet(setId)}
-          onShowDiscover={() => onSectionChange("discover")}
+          onShowDiscover={() => showDiscoverFrom("collection")}
         />
       )}
 
@@ -502,8 +577,10 @@ export function App({ onShowStudio }: { readonly onShowStudio: () => void }) {
           quotation={acceptedFixtureQuotation(replayFixture, replayRecord.acceptedSaying)}
           sets={replaySetLinks(replayRecord)}
           forceFallback={forceFallback}
+          pager={replayPager}
           returnFocus={replayReturnFocus}
           onBrowseSet={browseReplaySet}
+          onPagerStep={openReplayStep}
           onClose={closeReplay}
         />
       ) : null}

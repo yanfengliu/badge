@@ -254,11 +254,11 @@ describe("DiscoveryView", () => {
     expect(css).not.toContain("discovery-card__status");
   });
 
-  it("marks every not-yet-collected card as a preparation trigger, studies included", () => {
+  it("marks every card action with its record for focus return, studies included", () => {
     const html = renderToStaticMarkup(
       <DiscoveryView
         badges={[available, sourceStudy]}
-        collectedRecordIds={new Set()}
+        collectedRecordIds={new Set([available.recordId])}
         resolvedSourceUrls={{}}
         selectedSetId={null}
         query=""
@@ -270,8 +270,8 @@ describe("DiscoveryView", () => {
       />,
     );
 
-    expect(html).toContain(`data-prepare-record-id="${available.recordId}"`);
-    expect(html).toContain(`data-prepare-record-id="${sourceStudy.recordId}"`);
+    expect(html).toContain(`data-discovery-record-id="${available.recordId}"`);
+    expect(html).toContain(`data-discovery-record-id="${sourceStudy.recordId}"`);
     expect(html).not.toContain("Open in Collection");
   });
 
