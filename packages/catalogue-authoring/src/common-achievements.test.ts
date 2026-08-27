@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { frequentArtStylePreferences, recommendedFrequentArtStyleUsage } from "./art-styles.js";
 import { commonAchievementIdeas } from "./common-achievements.js";
 import {
   buildCommonAchievementProject,
@@ -39,6 +40,31 @@ describe("the common-achievement ideabank", () => {
         ]),
       );
     }
+  });
+
+  it("meets the owner-preferred frequent-style cadence in this future-authoring queue", () => {
+    for (const preference of frequentArtStylePreferences) {
+      const recommended = recommendedFrequentArtStyleUsage(preference.styleId, commonAchievementIdeas.length);
+      if (!recommended) throw new Error(`Missing frequent-style policy for ${preference.styleId}.`);
+      expect(
+        commonAchievementIdeas.filter((idea) => idea.suggestedStyleIds.includes(preference.styleId)),
+        `${preference.styleId} candidate appearances`,
+      ).toHaveLength(recommended.candidateAppearances);
+      expect(
+        commonAchievementIdeas.filter((idea) => idea.suggestedStyleIds[0] === preference.styleId),
+        `${preference.styleId} primary selections`,
+      ).toHaveLength(recommended.primarySelections);
+    }
+  });
+
+  it("keeps frequent directions inside a diverse primary-style mix", () => {
+    const primaryCounts = new Map<string, number>();
+    for (const idea of commonAchievementIdeas) {
+      const primaryStyleId = idea.suggestedStyleIds[0];
+      primaryCounts.set(primaryStyleId, (primaryCounts.get(primaryStyleId) ?? 0) + 1);
+    }
+    expect(primaryCounts.size).toBeGreaterThanOrEqual(18);
+    expect(Math.max(...primaryCounts.values()) / commonAchievementIdeas.length).toBeLessThanOrEqual(0.15);
   });
 
   it("resolves and compiles three distinct deterministic directions for every idea", () => {

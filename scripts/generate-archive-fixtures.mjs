@@ -12,6 +12,11 @@ import {
   expectedArchiveFixtures,
   sha256Hex,
 } from "./archive-fixture-contract.mjs";
+import {
+  isTransientWindowsRenameError,
+  publishFreshFixtureDirectory,
+  TRANSIENT_WINDOWS_RENAME_ATTEMPTS,
+} from "./archive-fixture-fresh-publish.mjs";
 import { expectedLegacyArchiveRepairFixtures } from "./archive-legacy-repair-contract.mjs";
 
 export { expectedArchiveFixtures } from "./archive-fixture-contract.mjs";
@@ -34,13 +39,10 @@ export const archiveFixtureTestRootDirectory = path.join(
 );
 const LOCK_OWNER_FILE = "owner.json";
 const LOCK_WAIT_TIMEOUT_MS = 120_000;
-const LOCK_RELEASE_RENAME_ATTEMPTS = 8;
 const fixtureTargetBrand = Symbol("archive-fixture-target");
 
 let decoderReady;
-
 const canonicalTarget = createFixtureTarget(canonicalGeneratedRoot);
-
 export function createArchiveFixtureTestTarget(testRootDirectory, testHooks = {}) {
   const resolved = path.resolve(testRootDirectory);
   if (path.dirname(resolved) !== path.resolve(archiveFixtureTestRootDirectory)) {
@@ -50,7 +52,6 @@ export function createArchiveFixtureTestTarget(testRootDirectory, testHooks = {}
   }
   return createFixtureTarget(resolved, testHooks);
 }
-
 export async function generateArchiveFixtures(target = canonicalTarget) {
   const fixtureTarget = requireFixtureTarget(target);
   await prepareGeneratedRoot(fixtureTarget);
@@ -91,7 +92,20 @@ export async function generateArchiveFixtures(target = canonicalTarget) {
       await publishGeneratedFixtures(fixtureTarget, stagingDirectory, owner.token);
       return generated;
     } catch (error) {
-      await removeOwnedDirectory(fixtureTarget, stagingDirectory, "staging", owner.token);
+      try {
+        await fixtureTarget.testHooks.beforeFailedStagingCleanup?.({
+          ...fixtureTarget,
+          stagingDirectory,
+          error,
+        });
+        await removeOwnedDirectory(fixtureTarget, stagingDirectory, "staging", owner.token);
+      } catch (cleanupError) {
+        throw new AggregateError(
+          [error, cleanupError],
+          `Archive fixture generation failed for ${fixtureTarget.outputDirectory}, and cleanup could not remove task-owned staging directory ${stagingDirectory}; release the filesystem hold and inspect that retained directory before retrying.`,
+          { cause: cleanupError },
+        );
+      }
       throw error;
     }
   });
@@ -126,11 +140,24 @@ async function prepareGeneratedRoot(target) {
 
 async function withFixtureGenerationLock(target, action) {
   const owner = await acquireFixtureGenerationLock(target);
+  const outcome = await action(owner).then(
+    (result) => ({ result }),
+    (error) => ({ error }),
+  );
   try {
-    return await action(owner);
-  } finally {
     await releaseFixtureGenerationLock(target, owner);
+  } catch (releaseError) {
+    if ("error" in outcome) {
+      throw new AggregateError(
+        [outcome.error, releaseError],
+        `Archive fixture generation failed for ${target.outputDirectory}, and its generation lock ${target.lockDirectory} could not be released; preserve both errors, release the filesystem hold, and retry.`,
+        { cause: releaseError },
+      );
+    }
+    throw releaseError;
   }
+  if ("error" in outcome) throw outcome.error;
+  return outcome.result;
 }
 
 async function acquireFixtureGenerationLock(target) {
@@ -196,22 +223,18 @@ async function releaseFixtureGenerationLock(target, owner) {
 }
 
 async function renameLockForRelease(target, releasePath) {
-  for (let attempt = 1; attempt <= LOCK_RELEASE_RENAME_ATTEMPTS; attempt += 1) {
+  for (let attempt = 1; attempt <= TRANSIENT_WINDOWS_RENAME_ATTEMPTS; attempt += 1) {
     try {
       await target.testHooks.beforeLockRenameAttempt?.({ ...target, attempt });
       await rename(target.lockDirectory, releasePath);
       return;
     } catch (error) {
-      if (!isTransientWindowsRenameError(error) || attempt === LOCK_RELEASE_RENAME_ATTEMPTS) {
+      if (!isTransientWindowsRenameError(error) || attempt === TRANSIENT_WINDOWS_RENAME_ATTEMPTS) {
         throw error;
       }
       await new Promise((resolve) => setTimeout(resolve, Math.min(10 * 2 ** (attempt - 1), 100)));
     }
   }
-}
-
-function isTransientWindowsRenameError(error) {
-  return hasCode(error, "EPERM") || hasCode(error, "EACCES") || hasCode(error, "EBUSY");
 }
 
 async function restoreTransitionedLock(target, transitionedPath) {
@@ -282,8 +305,11 @@ async function publishGeneratedFixtures(target, stagingDirectory, token) {
   const outputStatus = await lstatOrUndefined(target.outputDirectory);
   if (!outputStatus) {
     await assertNoLinksInTree(stagingDirectory);
-    await rename(stagingDirectory, target.outputDirectory);
-    return;
+    return publishFreshFixtureDirectory({
+      target,
+      stagingDirectory,
+      validateExactTree: (cause) => assertExactPublishedFixtureTree(target, cause),
+    });
   }
   assertRealDirectory(outputStatus, target.outputDirectory, "output");
   await assertNoLinksInTree(target.outputDirectory);
@@ -302,6 +328,15 @@ async function publishGeneratedFixtures(target, stagingDirectory, token) {
     ),
   );
   await removeOwnedDirectory(target, stagingDirectory, "staging", token);
+}
+
+async function assertExactPublishedFixtureTree(target, cause) {
+  const published = await readExistingFixtures(target);
+  if (published && published.unexpectedNames.length === 0) return;
+  throw new Error(
+    `Archive fixture publish to ${target.outputDirectory} did not produce the complete exact fixture tree; preserve and inspect that published output, then regenerate before starting Archive or Studio.`,
+    { cause },
+  );
 }
 
 async function removeUnexpectedOutputEntries(target, names) {

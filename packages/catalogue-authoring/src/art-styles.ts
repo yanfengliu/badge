@@ -337,6 +337,52 @@ export const artStyleLibrary: readonly ArtStyleDefinition[] = [
 
 const stylesById = new Map(artStyleLibrary.map((style) => [style.id, style]));
 
+export interface FrequentArtStylePreference {
+  readonly styleId: string;
+  readonly minimumCampaignSize: number;
+  readonly candidateShare: number;
+  readonly primaryShare: number;
+}
+
+export interface FrequentArtStyleUsage {
+  readonly candidateAppearances: number;
+  readonly primarySelections: number;
+}
+
+/** Applies to new campaign planning only; recorded candidate sets and selected-source provenance stay immutable. */
+export const frequentArtStylePreferences: readonly FrequentArtStylePreference[] = Object.freeze([
+  Object.freeze({
+    styleId: "luminous-ligne-claire",
+    minimumCampaignSize: 8,
+    candidateShare: 0.25,
+    primaryShare: 0.1,
+  }),
+]);
+
+const frequentPreferencesByStyleId = new Map(
+  frequentArtStylePreferences.map((preference) => [preference.styleId, preference]),
+);
+
 export function findArtStyle(styleId: string): ArtStyleDefinition | undefined {
   return stylesById.get(styleId);
+}
+
+export function recommendedFrequentArtStyleUsage(
+  styleId: string,
+  campaignConceptCount: number,
+): FrequentArtStyleUsage | undefined {
+  if (!Number.isSafeInteger(campaignConceptCount) || campaignConceptCount < 0) {
+    throw new Error(
+      `Art-style campaign concept count ${JSON.stringify(campaignConceptCount)} must be a non-negative safe integer before preferred-style usage is calculated.`,
+    );
+  }
+  const preference = frequentPreferencesByStyleId.get(styleId);
+  if (!preference) return undefined;
+  if (campaignConceptCount < preference.minimumCampaignSize) {
+    return { candidateAppearances: 0, primarySelections: 0 };
+  }
+  return {
+    candidateAppearances: Math.max(1, Math.round(campaignConceptCount * preference.candidateShare)),
+    primarySelections: Math.max(1, Math.round(campaignConceptCount * preference.primaryShare)),
+  };
 }

@@ -97,6 +97,16 @@ The library intentionally ranges across pixel art, embroidery, painterly and imp
 
 Collection coherence comes from exact briefs, meaningful subject recognition, text-free source composition, and the shared physical renderer, not from making every picture look alike.
 
+## Owner cadence preference
+
+The owner's love of Moebius maps to the registered creator-neutral `luminous-ligne-claire@1` direction: clean contour, vast airy space, quiet science-fantasy scale, luminous restrained color, and an original journey-like composition rather than copied characters, vehicles, worlds, or panels.
+
+For each new curated campaign with at least eight concepts, authoring plans target this direction in roughly `25%` of candidate trios and roughly `10%` of primary selections when the subject supports it. This makes the language recurrent without turning it into a collection-wide default; each use still needs subject-specific motifs and a miniature-ready treatment, the campaign must retain a broad primary-style mix, and immutable existing studies are not relabeled or regenerated merely to satisfy the cadence.
+
+The machine-readable policy lives in `frequentArtStylePreferences`, and `recommendedFrequentArtStyleUsage` converts a future campaign's exact concept count into reviewable candidate and primary targets. The first consuming queue is the unselected common-achievement idea bank, where the direction now appears in `14 / 57` candidate trios and `6 / 57` primary suggestions; that queue also keeps at least `18` primary styles in play and caps any one primary style at `15%`. Production prompts continue to use the registered creator-neutral style name and directives rather than naming or asking a model to imitate an artist.
+
+A future deterministic code-native badge counts as a luminous-ligne-claire primary only when its rendered recipe visibly implements clear contour, generous negative space, restrained luminous fields, and subject-specific speculative scale; assigning the style ID to generic geometry is not evidence that the preference reached the pixels.
+
 ## Deterministic prompt recipe
 
 `badge-source-art@1` compiles a prompt deterministically from one normalized `BadgeArtBrief`, one `CandidatePlan`, one immutable style revision, and the fixed candidate-role direction.

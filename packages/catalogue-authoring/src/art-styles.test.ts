@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { artStyleLibrary, findArtStyle } from "./art-styles.js";
+import {
+  artStyleLibrary,
+  findArtStyle,
+  frequentArtStylePreferences,
+  recommendedFrequentArtStyleUsage,
+} from "./art-styles.js";
 import { nationalParkCampaign } from "./national-parks-campaign.js";
 
 const creatorImitationPatterns = [
@@ -74,6 +79,30 @@ describe("the versioned Studio art-style library", () => {
         expect(value.trim(), `${path} must contain visible text`).not.toBe("");
       }
     }
+  });
+
+  it("makes luminous ligne claire a frequent future-campaign direction without changing old studies", () => {
+    expect(frequentArtStylePreferences).toEqual([
+      {
+        styleId: "luminous-ligne-claire",
+        minimumCampaignSize: 8,
+        candidateShare: 0.25,
+        primaryShare: 0.1,
+      },
+    ]);
+    expect(findArtStyle(frequentArtStylePreferences[0].styleId)?.label).toBe("Luminous ligne claire");
+    expect(recommendedFrequentArtStyleUsage("luminous-ligne-claire", 7)).toEqual({
+      candidateAppearances: 0,
+      primarySelections: 0,
+    });
+    expect(recommendedFrequentArtStyleUsage("luminous-ligne-claire", 24)).toEqual({
+      candidateAppearances: 6,
+      primarySelections: 2,
+    });
+    expect(recommendedFrequentArtStyleUsage("missing-style", 24)).toBeUndefined();
+    expect(() => recommendedFrequentArtStyleUsage("luminous-ligne-claire", -1)).toThrow(
+      "must be a non-negative safe integer",
+    );
   });
 
   it("resolves every campaign style and distributes the selected studies broadly", () => {

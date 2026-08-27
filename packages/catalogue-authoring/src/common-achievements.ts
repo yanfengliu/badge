@@ -24,7 +24,7 @@ export const commonAchievementIdeas: readonly CommonAchievementIdea[] = [
     "Saw a total eclipse",
     "Experience totality during a solar eclipse",
     ["black sun", "silver corona", "hushed horizon"],
-    ["aquatint-atmosphere", "prismatic-geometric-symbolism", "scratchboard-nocturne"],
+    ["aquatint-atmosphere", "prismatic-geometric-symbolism", "luminous-ligne-claire"],
   ),
   idea(
     "saw-bioluminescence",
@@ -72,7 +72,7 @@ export const commonAchievementIdeas: readonly CommonAchievementIdea[] = [
     "Crossed the country by road",
     "Complete a coast-to-coast road trip",
     ["changing horizons", "ribbon road", "weathered map"],
-    ["risograph-overprint", "contour-atlas-ink", "luminous-ligne-claire"],
+    ["luminous-ligne-claire", "contour-atlas-ink", "risograph-overprint"],
   ),
   idea(
     "visited-all-50-states",
@@ -296,7 +296,7 @@ export const commonAchievementIdeas: readonly CommonAchievementIdea[] = [
     "Shipped an app",
     "Release a software application for real people to use",
     ["assembled system", "launch glow", "first signal"],
-    ["pixel-cluster-landscape", "prismatic-geometric-symbolism", "risograph-overprint"],
+    ["pixel-cluster-landscape", "prismatic-geometric-symbolism", "luminous-ligne-claire"],
   ),
   idea(
     "exhibited-art",
