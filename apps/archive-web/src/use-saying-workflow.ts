@@ -6,11 +6,11 @@ import {
   type SayingProposalSnapshot,
 } from "@badge/archive-application";
 import type { ArchiveRecord, ArchiveState } from "@badge/archive-domain";
-import { starterBadges } from "@badge/catalogue-fixtures/archive";
 import type { HistoricalQuotation } from "@badge/saying-contract";
 
 import { acceptedFixtureQuotation, alternativeFixtureQuotations } from "./fixture-quotations";
 import { isDisclosureRequiredClientMessage } from "./live-saying-client";
+import { publishedFixtureForRecordId, publishedFixtureSayingSources } from "./published-fixtures";
 import type { SayingDisclosureGateSnapshot } from "./saying-disclosure-gate";
 import { createSayingRuntime } from "./saying-runtime";
 
@@ -28,6 +28,7 @@ export interface SayingWorkflow {
   readonly proposal: SayingProposalSnapshot;
   readonly saving: boolean;
   readonly acceptedQuotation: HistoricalQuotation | null;
+  readonly hasAlternatives: boolean;
   readonly disclosure: SayingDisclosureGateSnapshot;
   readonly providerNote: string;
   readonly successAnnouncement: string | null;
@@ -122,7 +123,9 @@ export function useSayingWorkflow({
   const navigationEpoch = useRef(0);
   const selectedRecordIdRef = useRef(selectedRecordId);
   const callbacks = useRef({ onArchiveState, onError });
-  const [runtime] = useState(() => createSayingRuntime(import.meta.env.MODE, starterBadges));
+  const [runtime] = useState(() =>
+    createSayingRuntime(import.meta.env.MODE, publishedFixtureSayingSources()),
+  );
   const [disclosure, setDisclosure] = useState<SayingDisclosureGateSnapshot>(
     () => runtime.disclosureGate?.snapshot() ?? { phase: "idle", review: null, error: null },
   );
@@ -219,8 +222,11 @@ export function useSayingWorkflow({
   const proposal = localError ? { ...rawProposal, status: "error" as const, error: localError } : rawProposal;
   const saving = savingRecords[selectedRecordId] ?? false;
   const successAnnouncement = successAnnouncements[selectedRecordId] ?? null;
-  const fixture = starterBadges.find((badge) => selectedRecord?.recordId === `starter:${badge.definitionId}`);
+  const fixture = selectedRecord ? publishedFixtureForRecordId(selectedRecord.recordId) : undefined;
   const acceptedQuotation = acceptedFixtureQuotation(fixture, selectedRecord?.acceptedSaying);
+  const hasAlternatives = fixture
+    ? alternativeFixtureQuotations(fixture, selectedRecord?.acceptedSaying).length > 0
+    : false;
 
   function request() {
     if (!selectedRecord || !fixture) return;
@@ -296,6 +302,7 @@ export function useSayingWorkflow({
     proposal,
     saving,
     acceptedQuotation,
+    hasAlternatives,
     disclosure,
     providerNote: runtime.providerNote,
     successAnnouncement,

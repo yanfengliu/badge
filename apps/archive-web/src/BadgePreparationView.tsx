@@ -12,6 +12,7 @@ import type { SayingWorkflow } from "./use-saying-workflow";
 
 interface BadgePreparationViewProps {
   readonly record: ArchiveRecord;
+  readonly referenceUrl?: string;
   readonly visual: ArchiveVisualDisplay | null;
   readonly draft: ActivationDraft;
   readonly saying: SayingWorkflow;
@@ -26,8 +27,13 @@ interface BadgePreparationViewProps {
   readonly onReplay: () => void;
 }
 
+function formatCriterionSentence(criterion: string): string {
+  return /[.!?]$/u.test(criterion) ? criterion : `${criterion}.`;
+}
+
 export function BadgePreparationView({
   record,
+  referenceUrl,
   visual,
   draft,
   saying,
@@ -81,8 +87,15 @@ export function BadgePreparationView({
           </div>
           <h2 className="story-title">{record.title}</h2>
           <p className="criterion">
-            <strong>{record.criterion}.</strong> {record.description}
+            <strong>{formatCriterionSentence(record.criterion)}</strong> {record.description}
           </p>
+          {referenceUrl ? (
+            <p className="preparation-reference">
+              <a href={referenceUrl} target="_blank" rel="noreferrer">
+                View the official listing for this badge
+              </a>
+            </p>
+          ) : null}
 
           <SayingComposer
             lifecycle={record.lifecycle}
@@ -93,6 +106,7 @@ export function BadgePreparationView({
             generationBlocked={saying.disclosure.phase !== "idle"}
             providerNote={saying.providerNote}
             successAnnouncement={saying.successAnnouncement}
+            hasAlternatives={saying.hasAlternatives}
             focusTargetRef={sayingFocusRef}
             onGenerate={saying.request}
           />

@@ -37,13 +37,12 @@ export function canActivateWithSaying(saying: SayingActivationState): boolean {
 
 export function selectedArchiveVisual(
   record: ArchiveRecord | undefined,
-  fixtureSourceUrl: string,
+  fixtureSourceUrl: string | null,
   earnedVisuals: Readonly<Record<string, ArchiveVisualDisplay>>,
 ): ArchiveVisualDisplay | undefined {
   if (!record) return undefined;
-  return record.lifecycle === "earned"
-    ? earnedVisuals[record.recordId]
-    : { sourceUrl: fixtureSourceUrl, pin: record.publishedVisual };
+  if (record.lifecycle === "earned") return earnedVisuals[record.recordId];
+  return fixtureSourceUrl ? { sourceUrl: fixtureSourceUrl, pin: record.publishedVisual } : undefined;
 }
 
 export function activationInputFor(

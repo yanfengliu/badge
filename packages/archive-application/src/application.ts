@@ -58,6 +58,10 @@ export class ArchiveApplication {
     return this.repository.initializeSayingDefaults(defaultState, expectedCurrentState);
   }
 
+  reconcileCatalogue(defaultState: ArchiveState, expectedCurrentState: ArchiveState): Promise<ArchiveState> {
+    return this.repository.reconcileCatalogueRecords(defaultState, expectedCurrentState);
+  }
+
   upgradeCatalogueVisuals(
     upgradePlan: ArchiveCatalogueVisualUpgradePlan,
     sourceAssets: readonly ArchiveSourceAssetInput[],

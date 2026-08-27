@@ -57,11 +57,6 @@ describe("phone layout contract", () => {
       "apps/archive-web/src/mobile.css",
       "(max-height: 430px) and (orientation: landscape)",
     );
-    const studyPhone = mediaCss("apps/archive-web/src/discovery-study.css", "(max-width: 700px)");
-    const studyShortLandscape = mediaCss(
-      "apps/archive-web/src/discovery-study.css",
-      "(min-width: 701px) and (max-height: 430px) and (orientation: landscape)",
-    );
     const discoveryPhone = mediaCss("apps/archive-web/src/discovery.css", "(max-width: 420px)");
 
     expect(entry.lastIndexOf('import "./mobile.css"')).toBeGreaterThan(
@@ -87,12 +82,6 @@ describe("phone layout contract", () => {
     expect(phone).toMatch(/\.field\s+:is\(input, textarea, select\)\s*\{[^}]*font-size:\s*16px/su);
     expect(read("apps/archive-web/src/discovery.css")).toMatch(
       /\.discovery-card__action\s*\{[^}]*position:\s*absolute[^}]*inset:\s*0/su,
-    );
-    expect(studyPhone).toMatch(
-      /\.discovery-study__card\s*\{[^}]*max-height:\s*calc\(100dvh - 24px - var\(--safe-top\) - var\(--safe-bottom\)\)/su,
-    );
-    expect(studyShortLandscape).toMatch(
-      /\.discovery-study__card\s*\{[^}]*max-height:\s*calc\(100dvh - 20px - var\(--safe-top\) - var\(--safe-bottom\)\)/su,
     );
     expect(discoveryPhone).toMatch(
       /\.discovery-card\s*\{[^}]*grid-template-columns:\s*118px minmax\(0, 1fr\)/su,

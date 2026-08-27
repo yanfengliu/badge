@@ -1,6 +1,9 @@
 import type { ActivationRecord, ArchiveRecord, ArchiveState, CollectionRef } from "@badge/archive-domain";
 import { STARTER_PACK_ID } from "@badge/catalogue-fixtures/archive";
+import { CATALOGUE_PACK_ID } from "@badge/catalogue-fixtures/catalogue-pack";
 import { discoveryBadges, discoverySets, type DiscoverySet } from "@badge/catalogue-fixtures/discovery";
+
+const canonicalSetPackIds = new Set([STARTER_PACK_ID, CATALOGUE_PACK_ID]);
 
 export type CollectedArchiveRecord = ArchiveRecord & {
   readonly lifecycle: "earned";
@@ -51,7 +54,7 @@ function humanizeIdentifier(value: string): string {
 }
 
 function discoverySetForRef(ref: CollectionRef): DiscoverySet | undefined {
-  if (ref.namespace !== "pack" || ref.packId !== STARTER_PACK_ID) return undefined;
+  if (ref.namespace !== "pack" || !canonicalSetPackIds.has(ref.packId)) return undefined;
   return discoverySets.find((set) => set.setId === ref.collectionId);
 }
 
@@ -104,12 +107,11 @@ export function buildCollectionShelves(state: ArchiveState): readonly Collection
     ];
   });
 
-  const knownKeys = new Set(canonical.map((shelf) => shelf.key));
   const unknownRefs = new Map<string, CollectionRef>();
   collected.forEach((record) =>
     record.collectionRefs.forEach((ref) => {
-      const key = collectionRefKey(ref);
-      if (!knownKeys.has(key)) unknownRefs.set(key, ref);
+      if (discoverySetForRef(ref)) return;
+      unknownRefs.set(collectionRefKey(ref), ref);
     }),
   );
   const unknown = [...unknownRefs.entries()].map(([key, ref]) => {

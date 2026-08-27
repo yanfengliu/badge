@@ -7,7 +7,6 @@ import {
   type ArchiveSourceAssetInput,
 } from "@badge/archive-application";
 import { toExactVisualPin, type ArchiveState } from "@badge/archive-domain";
-import { starterBadges } from "@badge/catalogue-fixtures/archive";
 
 import { ActivationCeremony } from "./ActivationCeremony";
 import { BadgePreparationView } from "./BadgePreparationView";
@@ -22,17 +21,24 @@ import { focusPreparedBadgeTrigger } from "./archive-section-focus";
 import { archiveSectionFromHash, writeArchiveSectionHash } from "./archive-section-location";
 import { ArchiveNotice, type ArchiveNoticeState } from "./ArchiveNotice";
 import {
+  initializeCatalogueExpansion,
   initializeReviewedSayingDefaults,
   initializeStarterArchive,
   StarterArchiveCompatibilityError,
   validateStarterArchiveForOpen,
 } from "./archive-startup";
 import { ArchiveClosedScreen } from "./ArchiveClosedScreen";
+import {
+  fetchCatalogueSourceAsset,
+  isCatalogueSourceHash,
+  loadCatalogueRepairAssets,
+} from "./catalogue-source-assets";
 import { CollectionView } from "./CollectionView";
 import { replaySetLinks, type CollectedArchiveRecord, type ReplaySetLink } from "./collection-view-model";
 import { DiscoveryView } from "./DiscoveryView";
 import { acceptedFixtureQuotation } from "./fixture-quotations";
 import { MemoryReplayDialog } from "./MemoryReplayDialog";
+import { publishedFixtureForRecordId } from "./published-fixtures";
 import { RestoreDialog } from "./RestoreDialog";
 import { SayingDisclosureBoundary } from "./SayingDisclosureBoundary";
 import { TimelineView } from "./TimelineView";
@@ -129,8 +135,7 @@ export function App({ onShowStudio }: { readonly onShowStudio: () => void }) {
     if (section === "discover") discovery.resetPage();
     setActiveSection(section);
   });
-  const selectedFixture =
-    starterBadges.find((badge) => `starter:${badge.definitionId}` === selectedRecordId) ?? starterBadges[0];
+  const selectedFixture = publishedFixtureForRecordId(selectedRecordId);
   const selectedRecord = state?.records.find((record) => record.recordId === selectedRecordId);
   const draft = drafts[selectedRecordId] ?? defaultActivationDraft();
   const saying = useSayingWorkflow({
@@ -141,7 +146,11 @@ export function App({ onShowStudio }: { readonly onShowStudio: () => void }) {
     onError: (text) => setNotice({ kind: "error", text }),
   });
   const earnedCount = state?.records.filter((record) => record.lifecycle === "earned").length ?? 0;
-  const selectedVisual = selectedArchiveVisual(selectedRecord, selectedFixture.sourceUrl, resolvedVisuals);
+  const selectedVisual = selectedArchiveVisual(
+    selectedRecord,
+    selectedFixture?.sourceUrl ?? null,
+    resolvedVisuals,
+  );
   const closeCeremony = useCallback(() => setCeremonyRecordId(null), []);
   const closeReplay = useCallback(() => setReplayRecordId(null), []);
   const closeRestore = useCallback(() => setPendingRestore(null), []);
@@ -150,6 +159,13 @@ export function App({ onShowStudio }: { readonly onShowStudio: () => void }) {
   }
 
   function prepareBadge(recordId: string, trigger: HTMLButtonElement) {
+    if (!state?.records.some((record) => record.recordId === recordId)) {
+      setNotice({
+        kind: "error",
+        text: "This badge is not in the open Archive yet; reload Badge so the newest catalogue records finish installing, then try again.",
+      });
+      return;
+    }
     void saying.observe({ type: "badge-selected", recordId });
     preparationReturnFocus.current = trigger;
     setSelectedRecordId(recordId);
@@ -217,10 +233,14 @@ export function App({ onShowStudio }: { readonly onShowStudio: () => void }) {
         );
       }
       const visualPin = toExactVisualPin(selectedRecord.publishedVisual);
-      const sourceAsset = starterAssets.current.get(visualPin.sourceAssetHash);
+      const sourceAsset =
+        starterAssets.current.get(visualPin.sourceAssetHash) ??
+        (isCatalogueSourceHash(visualPin.sourceAssetHash)
+          ? await fetchCatalogueSourceAsset(visualPin.sourceAssetHash)
+          : undefined);
       if (!sourceAsset) {
         throw new Error(
-          `Archive source ${visualPin.sourceAssetHash} is not loaded; reload the app before activating this badge.`,
+          `The published source art for ${selectedRecord.title} (${visualPin.sourceAssetHash}) is not in this build; reload Badge so the newest catalogue finishes installing, then reopen the badge from Discover.`,
         );
       }
       const result = await archive.activate(
@@ -295,15 +315,23 @@ export function App({ onShowStudio }: { readonly onShowStudio: () => void }) {
       const action = nextArchiveRestoreAction(pendingRestore);
       if (action === "recover") {
         await saying.observe({ type: "archive-restored" });
+        const storedState = state ?? (await archive.state().catch(() => null));
         const recovered = await recoverPendingArchive(
           archive,
           pendingRestore,
           STARTER_OWNER_ID,
-          [...starterAssets.current.values()],
+          [
+            ...starterAssets.current.values(),
+            ...(await loadCatalogueRepairAssets([
+              pendingRestore.incomingState,
+              ...(storedState ? [storedState] : []),
+            ])),
+          ],
           starterState,
         );
-        await validateStarterArchiveForOpen(archive, starterState, recovered.state, true);
-        const initialized = await initializeReviewedSayingDefaults(archive, starterState, recovered.state);
+        const reconciled = await initializeCatalogueExpansion(archive, starterState, recovered.state);
+        await validateStarterArchiveForOpen(archive, starterState, reconciled, true);
+        const initialized = await initializeReviewedSayingDefaults(archive, starterState, reconciled);
         setState(initialized);
         setInitializationFailed(false);
         recoveryMode.current = "repair-corruption";
@@ -399,9 +427,7 @@ export function App({ onShowStudio }: { readonly onShowStudio: () => void }) {
       ? (replayCandidate as CollectedArchiveRecord)
       : null;
   const replayVisual = replayRecord ? resolvedVisuals[replayRecord.recordId] : undefined;
-  const replayFixture = replayRecord
-    ? starterBadges.find((badge) => `starter:${badge.definitionId}` === replayRecord.recordId)
-    : undefined;
+  const replayFixture = replayRecord ? publishedFixtureForRecordId(replayRecord.recordId) : undefined;
 
   return (
     <SayingDisclosureBoundary
@@ -424,6 +450,7 @@ export function App({ onShowStudio }: { readonly onShowStudio: () => void }) {
       ) : activeSection === "discover" && preparingRecordId ? (
         <BadgePreparationView
           record={selectedRecord}
+          referenceUrl={selectedFixture?.referenceUrl}
           visual={selectedVisual ?? null}
           draft={draft}
           saying={saying}

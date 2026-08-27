@@ -13,8 +13,8 @@ export const MAX_ARCHIVE_SOURCE_ASSET_BYTES = 16 * 1024 * 1024;
 export const MAX_ARCHIVE_SOURCE_ASSET_COUNT = 1_024;
 export const MAX_ARCHIVE_SOURCE_ASSET_TOTAL_BYTES = 64 * 1024 * 1024;
 
-export const archiveSourceMimeTypeSchema = z.literal("image/png", {
-  error: "Durable Archive sources must use image/png.",
+export const archiveSourceMimeTypeSchema = z.enum(["image/png", "image/jpeg"], {
+  error: "Durable Archive sources must use image/png or image/jpeg.",
 });
 export type ArchiveSourceMimeType = z.infer<typeof archiveSourceMimeTypeSchema>;
 

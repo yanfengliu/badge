@@ -4,12 +4,16 @@ import { describe, expect, it } from "vitest";
 
 import {
   MAX_ARCHIVE_BACKUP_STATE_BYTES,
+  MAX_ARCHIVE_BACKUP_TOTAL_DECODED_IMAGE_BYTES,
   MAX_ARCHIVE_SOURCE_ASSET_BYTES,
   MAX_ARCHIVE_SOURCE_ASSET_COUNT,
+  MAX_ARCHIVE_SOURCE_ASSET_TOTAL_BYTES,
   createArchiveBackup,
   parseArchiveBackup,
+  validateSourceAssetWithImageBudget,
   type ArchiveSourceAssetInput,
 } from "../src/index.js";
+import { sha256Hex } from "@badge/pack-contract";
 import { makeSourceBackup } from "./backup-test-mutators.js";
 import { validPngBytes, validPngHash } from "./image-fixtures.js";
 
@@ -122,22 +126,34 @@ describe("Archive backup source preflight bounds", () => {
     });
   });
 
-  it("caps required sources at a conservative 64 MiB decoded-image aggregate before inflation", async () => {
+  it("keeps the decoded-image aggregate cap above one fully collected catalogue while bounding amplification", () => {
+    const fullCatalogueDecodedBytes = 300 * 896 * 896 * 4;
+    expect(MAX_ARCHIVE_BACKUP_TOTAL_DECODED_IMAGE_BYTES).toBe(2 * 1024 * 1024 * 1024);
+    expect(fullCatalogueDecodedBytes).toBeLessThan(MAX_ARCHIVE_BACKUP_TOTAL_DECODED_IMAGE_BYTES);
+    expect(MAX_ARCHIVE_BACKUP_TOTAL_DECODED_IMAGE_BYTES).toBeLessThanOrEqual(
+      32 * MAX_ARCHIVE_SOURCE_ASSET_TOTAL_BYTES,
+    );
+  });
+
+  it("rejects a source whose declared decode overruns the remaining aggregate budget before inflation", async () => {
     const declared64MiBSource = pngWithDimensionsAndImageData(
       4_096,
       4_096,
       zlibSync(Uint8Array.from([0, 0])),
     );
-    const backup = await makeSourceBackup(
-      (hashes) => earnedStateForSources(hashes),
-      [validPngBytes, declared64MiBSource],
-      exportedAt,
-    );
-
-    await expect(parseArchiveBackup(backup)).rejects.toMatchObject({
-      code: "BACKUP_INVALID",
+    await expect(
+      validateSourceAssetWithImageBudget(
+        {
+          hash: await sha256Hex(declared64MiBSource),
+          mimeType: "image/png",
+          bytes: declared64MiBSource,
+        },
+        { maxDecodedBytes: 16 * 1024 * 1024, aggregateLimit: MAX_ARCHIVE_BACKUP_TOTAL_DECODED_IMAGE_BYTES },
+      ),
+    ).rejects.toMatchObject({
+      code: "VISUAL_SOURCE_INVALID",
       message: expect.stringMatching(
-        /decoded image data.*aggregate 67108864-byte limit.*before inflation.*No Archive data was changed/i,
+        /decoded image data would exceed the pack aggregate 2147483648-byte limit.*before inflation/i,
       ),
     });
   });

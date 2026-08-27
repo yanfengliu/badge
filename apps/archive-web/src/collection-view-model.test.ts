@@ -64,6 +64,38 @@ describe("collection view model", () => {
     expect(buildCollectionShelves(createStarterArchiveState())).toEqual([]);
   });
 
+  it("shelves every collected catalogue-pack record on its canonical Discover set, never a fallback", () => {
+    let state = createStarterArchiveState();
+    for (const recordId of ["catalogue:visited-acadia", "catalogue:read-dune", STARTER_RECORD_IDS[0]!]) {
+      const record = state.records.find((candidate) => candidate.recordId === recordId);
+      if (!record) throw new Error(`Expected seeded record ${recordId}.`);
+      state = earn(state, recordId, "2026-07-04", "2026-07-04", "2026-07-05T12:00:00.000Z");
+    }
+
+    const shelves = buildCollectionShelves(state);
+
+    expect(shelves.map((shelf) => [shelf.setId, shelf.title, shelf.collectedCount])).toEqual([
+      ["us-national-parks", "U.S. National Parks", 2],
+      ["books-read", "Books Read", 1],
+    ]);
+    expect(shelves.every((shelf) => shelf.setId !== null)).toBe(true);
+    const parks = shelves.find((shelf) => shelf.setId === "us-national-parks");
+    expect(parks?.totalCount).toBe(64);
+    expect(parks?.records.map((record) => record.recordId).sort()).toEqual([
+      "catalogue:visited-acadia",
+      STARTER_RECORD_IDS[0],
+    ]);
+
+    const acadia = state.records.find((record) => record.recordId === "catalogue:visited-acadia");
+    expect(replaySetLinks(acadia!)).toEqual([
+      {
+        key: "pack:badge.catalogue.discovery:us-national-parks",
+        setId: "us-national-parks",
+        title: "U.S. National Parks",
+      },
+    ]);
+  });
+
   it("counts records globally while counting every qualified set membership", () => {
     let state = earn(
       createStarterArchiveState(),

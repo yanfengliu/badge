@@ -27,6 +27,7 @@ describe("DiscoveryView", () => {
     const manyBadges = Array.from({ length: 31 }, (_, index) => ({
       ...sourceStudy,
       discoveryId: `scale-study-${index}`,
+      recordId: `catalogue:scale-study-${index}`,
       title: `Scale study ${index}`,
     }));
     const html = renderToStaticMarkup(
@@ -147,7 +148,7 @@ describe("DiscoveryView", () => {
     ).toEqual(["dc"]);
   });
 
-  it("shows dining location context and reserves a larger bounded tier for selected detail", () => {
+  it("shows dining location context with accessible region controls", () => {
     const html = renderToStaticMarkup(
       <DiscoveryView
         badges={[restaurantStudy]}
@@ -162,17 +163,12 @@ describe("DiscoveryView", () => {
         resolveThumbnail={(fileName) => `/thumbnails/${fileName}`}
       />,
     );
-    const studyCss = readFileSync(new URL("./discovery-study.css", import.meta.url), "utf8");
 
     expect(html).toContain(restaurantStudy.locationLabel);
     expect(html).toContain('aria-label="Michelin dining regions"');
     expect(html).toContain("Bay Area");
     expect(html).toContain("New York City");
     expect(html).toContain("Washington, DC &amp; surroundings");
-    expect(studyCss).toMatch(/\.discovery-study__art img\s*\{[^}]*width:\s*384px[^}]*height:\s*384px/su);
-    expect(studyCss).toMatch(
-      /\.discovery-study__art img\.discovery-study__fallback-art\s*\{[^}]*width:\s*128px[^}]*height:\s*128px/su,
-    );
   });
 
   it("filters one set without losing published or study entries", () => {
@@ -224,7 +220,7 @@ describe("DiscoveryView", () => {
     );
   });
 
-  it("distinguishes collected, ready-to-collect, and unpublished potential badges without color alone", () => {
+  it("shows exactly two card states — colorized collected and greyed not-yet-collected — with no status words", () => {
     const badges: readonly DiscoveryBadge[] = [available, sourceStudy];
     const html = renderToStaticMarkup(
       <DiscoveryView
@@ -240,21 +236,28 @@ describe("DiscoveryView", () => {
         resolveThumbnail={(fileName) => `/thumbnails/${fileName}`}
       />,
     );
+    const css = readFileSync(new URL("./discovery.css", import.meta.url), "utf8");
 
-    expect(html).toContain(`aria-label="Replay collected memory ${available.title}"`);
-    expect(html).toContain(`aria-label="Inspect potential badge ${sourceStudy.title}"`);
-    expect(html).toContain("Collected");
-    expect(html).toContain("Potential");
-    expect(html).toContain("Not yet published");
-    expect(html).toContain("View study");
+    expect(html.match(/discovery-card--collected/g)).toHaveLength(1);
+    expect(html.match(/discovery-card--uncollected/g)).toHaveLength(1);
+    expect(html).toContain(`aria-label="Open collected memory ${available.title}"`);
+    expect(html).toContain(`aria-label="Open ${sourceStudy.title} to collect it"`);
     expect(html).toContain("blob:earned-art");
-    expect(html).not.toContain("Regenerate quote");
+    expect(html).not.toContain("discovery-card__status");
+    expect(html).not.toContain("Ready to collect");
+    expect(html).not.toContain(">Potential<");
+    expect(html).not.toContain("Not yet published");
+    expect(html).not.toContain("View study");
+    expect(html).not.toContain("View memory");
+    expect(html).not.toContain("Prepare badge");
+    expect(css).toMatch(/\.discovery-card--uncollected \.discovery-card__art img\s*\{[^}]*grayscale/su);
+    expect(css).not.toContain("discovery-card__status");
   });
 
-  it("offers preparation for an uncollected published badge without routing it into Collection", () => {
+  it("marks every not-yet-collected card as a preparation trigger, studies included", () => {
     const html = renderToStaticMarkup(
       <DiscoveryView
-        badges={[available]}
+        badges={[available, sourceStudy]}
         collectedRecordIds={new Set()}
         resolvedSourceUrls={{}}
         selectedSetId={null}
@@ -267,8 +270,8 @@ describe("DiscoveryView", () => {
       />,
     );
 
-    expect(html).toContain(`aria-label="Prepare ${available.title} to collect"`);
-    expect(html).toContain("Ready to collect");
+    expect(html).toContain(`data-prepare-record-id="${available.recordId}"`);
+    expect(html).toContain(`data-prepare-record-id="${sourceStudy.recordId}"`);
     expect(html).not.toContain("Open in Collection");
   });
 

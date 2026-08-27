@@ -1,5 +1,6 @@
 import { validatePublishedPackPng } from "@badge/pack-contract";
 
+import { isJpegSignature, SourceJpegValidationError, validateArchiveSourceJpeg } from "./jpeg-structure.js";
 import type { ArchiveSourceMimeType } from "./source-assets.js";
 
 const PNG_SIGNATURE = Uint8Array.from([137, 80, 78, 71, 13, 10, 26, 10]);
@@ -30,10 +31,18 @@ export function assertStructurallyValidImage(
 ): SourceImageDimensions {
   const detected = detectImageMimeType(bytes);
   if (detected === undefined) {
-    throw invalid("its bytes are unrecognized non-PNG data");
+    throw invalid("its bytes are unrecognized non-PNG, non-JPEG data");
   }
   if (detected !== mimeType) {
     throw invalid(`its signature is ${detected}`);
+  }
+  if (detected === "image/jpeg") {
+    try {
+      return validateArchiveSourceJpeg(hash, bytes, limits);
+    } catch (error) {
+      if (!(error instanceof SourceJpegValidationError)) throw error;
+      throw invalid(error.message, error);
+    }
   }
   try {
     return validatePublishedPackPng({ hash }, bytes, limits);
@@ -44,6 +53,7 @@ export function assertStructurallyValidImage(
 
 function detectImageMimeType(bytes: Uint8Array): ArchiveSourceMimeType | undefined {
   if (samePrefix(bytes, PNG_SIGNATURE)) return "image/png";
+  if (isJpegSignature(bytes)) return "image/jpeg";
   return undefined;
 }
 

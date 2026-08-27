@@ -26,7 +26,7 @@ describe("durable Archive source-image validation", () => {
     });
   });
 
-  it.each(["image/jpeg", "image/webp"])(
+  it.each(["image/webp", "image/gif"])(
     "rejects %s as an unsupported durable Archive source format",
     async (mimeType) => {
       const unsupported = {
@@ -37,10 +37,19 @@ describe("durable Archive source-image validation", () => {
 
       await expect(validateSourceAsset(unsupported)).rejects.toMatchObject({
         code: "VISUAL_SOURCE_INVALID",
-        message: expect.stringMatching(/mimeType.*image\/png/i),
+        message: expect.stringMatching(/mimeType.*image\/png or image\/jpeg/i),
       });
     },
   );
+
+  it("rejects PNG bytes mislabeled as the admitted image/jpeg format", async () => {
+    await expect(
+      validateSourceAsset({ hash: validPngHash, mimeType: "image/jpeg", bytes: validPngBytes }),
+    ).rejects.toMatchObject({
+      code: "VISUAL_SOURCE_INVALID",
+      message: expect.stringMatching(/declares image\/jpeg.*signature is image\/png/i),
+    });
+  });
 
   it("rejects a PNG with corrupt Adler bytes even when its chunk CRC and hash agree", async () => {
     const corrupt = corruptPngAdlerKeepingChunkCrc(validPngBytes);

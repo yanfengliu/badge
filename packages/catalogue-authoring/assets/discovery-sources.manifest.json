@@ -1,0 +1,2083 @@
+{
+  "schemaVersion": 1,
+  "recipe": { "id": "catalogue-source-study", "revision": 1 },
+  "width": 896,
+  "height": 896,
+  "loading": "on-demand",
+  "limits": { "maximumEntries": 320, "maximumFileBytes": 262144, "maximumTotalBytes": 50331648 },
+  "totalBytes": 34319645,
+  "entries": [
+    {
+      "key": "books-read/a-brief-history-of-time.jpg",
+      "bytes": 54372,
+      "sha256": "9b03c0a464a487dfdbc4e2172c9ba0801b102c20f8370ff29675d4d60b1d0c6c",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/a-gentleman-in-moscow.jpg",
+      "bytes": 26988,
+      "sha256": "5cf457d1975ff183a7dafcc611f88574020031f633c3dfcd09f161706ecf830c",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/algorithms-to-live-by.jpg",
+      "bytes": 49092,
+      "sha256": "185f5d990387a199cc515d78ec93b53e7c90fdcb8c98616fec1b9f5855dd4d4d",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/atomic-habits.jpg",
+      "bytes": 23018,
+      "sha256": "36f35843fdc48a94557c3434889a4a6cce17c3bfadcc8012f1d8d4ffa14fe5ec",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/beloved.jpg",
+      "bytes": 36373,
+      "sha256": "c9bf3c8814bc97bfb406a4091699842b8f0f6b868bb1a42c06a7e87af1fb79ff",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/chip-war.jpg",
+      "bytes": 25439,
+      "sha256": "f296c7f19419aeb4f37c2d443a001bdb9cb41ce48ce15ee8f4fd5ea60eb1664f",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/code.jpg",
+      "bytes": 22314,
+      "sha256": "5729b09325f566c28dfd8fa6e9df7feeb4586b9fe3af3efee330af07d4fa29dc",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/cosmos.jpg",
+      "bytes": 38759,
+      "sha256": "e94659a00dd9b356d33abb7a6449600619d9c3aaa339c60f1ee6bd835ff8195a",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/dune.jpg",
+      "bytes": 136346,
+      "sha256": "dfe3a54f947e4e125f05b1c65a5c5ab0b947b03bc158e1808441bd41a764d495",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/educated.jpg",
+      "bytes": 154955,
+      "sha256": "05521630564e35e78e5fab1e47b63b8c717806759714a07e61d414018f9b44b5",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/foundation.jpg",
+      "bytes": 28402,
+      "sha256": "8390d9498b32e1d19063628628bb7c54a8a2f4be89fc7d04a10399bf18e88b83",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/guns-germs-and-steel.jpg",
+      "bytes": 123743,
+      "sha256": "9ce5fb9a37ddf24ce8c06a492e0a59f79a6f341986ec34a413d0528951ba3383",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/justice.jpg",
+      "bytes": 37714,
+      "sha256": "acd40012b3109805e6783697efae0c8acbb90167991a959706aae1a45b0acfe0",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/kitchen-confidential.jpg",
+      "bytes": 31335,
+      "sha256": "59f3aa712c0a9fd128751e3d06876271120a156aa05c6f7449712c3d3e321e73",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/mans-search-for-meaning.jpg",
+      "bytes": 22122,
+      "sha256": "46433b94b39aef841918f1d1b4110e45ceca7c064eddd1ffcce34cb0b4851490",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/meditations.jpg",
+      "bytes": 35865,
+      "sha256": "92dd35fc0f147378ec136194dc8ed8092297d1d5da7e5935d24c6d9de915da5b",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/neuromancer.jpg",
+      "bytes": 30975,
+      "sha256": "7347492031f1e23bc35e9326b658121a93aa5e1862cd7ea75571ca9f0c258c0a",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/nicomachean-ethics.jpg",
+      "bytes": 31326,
+      "sha256": "0b52f52f99e21e0fc390e27ececa449148be8db8ca456dee6ce5b9973066bac4",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/nineteen-eighty-four.jpg",
+      "bytes": 30033,
+      "sha256": "aa36c78c6789b08edd20a619141dbaf6a8ded3ab9c2f839ed88e964db2332dfe",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/pachinko.jpg",
+      "bytes": 35787,
+      "sha256": "d362fb4721919a3f8cad01c312ff62b1c1717bc9bf8efc570a1fc3d8b99a8fa6",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/pride-and-prejudice.jpg",
+      "bytes": 161926,
+      "sha256": "8c3667a0a4281072a4c21e0ad5279e5812ffa5977ca6899fb9c359e502bef290",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/project-hail-mary.jpg",
+      "bytes": 43961,
+      "sha256": "aeddb86a0620a398410921c8e1e8b6fd2695656b1414e46bf3515aeaf21f5171",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/spqr.jpg",
+      "bytes": 36871,
+      "sha256": "e2da8a6e166e29338385b55383e4ad3a1a47b5e2f859c11cee7fa98170773356",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/team-of-rivals.jpg",
+      "bytes": 30051,
+      "sha256": "63bf77f74f20076562ca3f9f8323cff52e63f1d09ea36f22ea51218bb72920fa",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/the-anthropocene-reviewed.jpg",
+      "bytes": 31283,
+      "sha256": "e90f14e729ee5ec7118d46f1cbda93ed8b7766dc73f7aea3cc328a7e4f99bbb6",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/the-brothers-karamazov.jpg",
+      "bytes": 36933,
+      "sha256": "6feeb78af7655bce76a3ced3fb78b1920142e9802221745572af239a1597302b",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/the-count-of-monte-cristo.jpg",
+      "bytes": 37298,
+      "sha256": "78a8fda6124eb7d9eecb3b4ca8b78e958863a4ba652dc64b914076c326d6774c",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/the-dawn-of-everything.jpg",
+      "bytes": 26913,
+      "sha256": "01b17fa95ecd8f9847c038a40bf958dd3f3c76af9fdbc1e562df720635777b61",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/the-design-of-everyday-things.jpg",
+      "bytes": 106598,
+      "sha256": "c13818f8cca190410c6124b74ee1430ac260f605f93c2410a7b624fdcabb7753",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/the-emperor-of-all-maladies.jpg",
+      "bytes": 36808,
+      "sha256": "a4c27e07e99ad505d90cde618d6ed1de3669d248bb35874ec2e79508ea68388c",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/the-gene.jpg",
+      "bytes": 33476,
+      "sha256": "fa95d4f788410e13c912944d85699b379d0ba7352102213fda8d49f59c47c9b6",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/the-great-gatsby.jpg",
+      "bytes": 22386,
+      "sha256": "c17298a75e4f920baa488d4ad1edfffe006c9cbcec6a507251f2cb19c6126ecf",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/the-innovators.jpg",
+      "bytes": 24974,
+      "sha256": "a12bdf322d372dabbd242232322971f462e8910ec3d295875e05046d143294f9",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/the-kite-runner.jpg",
+      "bytes": 25235,
+      "sha256": "14cc9dcb06ee92141d6fe0590b12451cbcf0b675a02e2fd93b564390ecef22cb",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/the-left-hand-of-darkness.jpg",
+      "bytes": 25132,
+      "sha256": "4822f4e897fee63950de0302a106a6c2861e52b986e9b125fc77ff175ec03abb",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/the-myth-of-sisyphus.jpg",
+      "bytes": 24999,
+      "sha256": "9b89537905894feb2fbdc4ce453d0614726702f5a1de81c9c80076b8e61b6312",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/the-odyssey.jpg",
+      "bytes": 36092,
+      "sha256": "26b7714538901f3c8295da4695602285cddd22fae434fafc665c45cae85376a7",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/the-phoenix-project.jpg",
+      "bytes": 35384,
+      "sha256": "01c4e3183f5114677ee85a4d1c9e314369065e7efc34f30878631b94bfaf4450",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/the-pragmatic-programmer.jpg",
+      "bytes": 20678,
+      "sha256": "1f0a3a7032e04dfbff3d9aa64dfa585cab412abe9983da1370d3b517836f49fa",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/the-remains-of-the-day.jpg",
+      "bytes": 161031,
+      "sha256": "65e53ef0195ad151e0a7cb0876f7c59af1fe301c19f972681a01a0d24ecb9a60",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/the-republic.jpg",
+      "bytes": 29096,
+      "sha256": "9cb59108da662a6c75097cb0e647f1424e724fb1a9d8ae6a8012d146db80b699",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/the-road.jpg",
+      "bytes": 27970,
+      "sha256": "387420e193a93259859e07c8516be943ef53d7b2d09b5bde44826c543f91bf7f",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/the-selfish-gene.jpg",
+      "bytes": 40201,
+      "sha256": "4f6c8b253aa571ff59ee94881d609e822cd4d0a1c3230bf53c2ce8bdff777ab2",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/the-silk-roads.jpg",
+      "bytes": 34171,
+      "sha256": "589f6e113cdb20cd4dce2f3c8c397b0bfcf2ee2afa62f5208b5da6c91b3b67db",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/the-sixth-extinction.jpg",
+      "bytes": 178448,
+      "sha256": "d6c92d1a59c7163ebeaf202ed085a8e1901be4bc8193f5d0bd4930edf216901b",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/the-three-body-problem.jpg",
+      "bytes": 50431,
+      "sha256": "42d60892a58799cc0e0dabb8709c8d9b3dda8a6e709ca84827cec1d7c38d311d",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/the-wager.jpg",
+      "bytes": 34994,
+      "sha256": "743c420a78128e775a24126bfa5c297a700a8858c4501058c96e98a1cb8450ea",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/the-warmth-of-other-suns.jpg",
+      "bytes": 40424,
+      "sha256": "9076feea1a7d8f2e1ebae42e691ff2be5083fce20355e71dbd3950ddf5c7ec5a",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/thinking-fast-and-slow.jpg",
+      "bytes": 35781,
+      "sha256": "65cbfc1b5e267adcffd6870f45b3cab7f15eb1867bc435ef641e44a8b07e5339",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "books-read/to-kill-a-mockingbird.jpg",
+      "bytes": 25282,
+      "sha256": "54cd3cd59305fc55d96725eb813d2e8cd781691cf1ce249e1dc07cd5ab2ce51f",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "life-milestones/masters-degree.jpg",
+      "bytes": 27496,
+      "sha256": "4cb08d32e32de42443a099ee6e18fcc6826c58b78a74dd1d3129ee0f1234c131",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "life-milestones/university-nebraska-lincoln-degree.jpg",
+      "bytes": 27021,
+      "sha256": "674fb3f45405860199335afe8c293c70348f88955b28b213d7cd52cb02c6b0cc",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/7-adams.jpg",
+      "bytes": 28041,
+      "sha256": "6affe8bd8bd2ef92756b132c0677550bd2af7125d5b0decdf056797f16c0d2e9",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/acquerello.jpg",
+      "bytes": 39913,
+      "sha256": "8ffc2a9d93a52fbab0900e57d4d9ac871aa9e927205791f74b03d101414f9541",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/albi.jpg",
+      "bytes": 32842,
+      "sha256": "f380777744263217bb28cc57117e5c4726b94f21036757d32703da87ccbcad1c",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/angler-sf.jpg",
+      "bytes": 34557,
+      "sha256": "6a606e0a030e8a06e88a6d9ff0112747f025e5e01e2541af371b0e4e1ed6d1a9",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/aquavit.jpg",
+      "bytes": 31604,
+      "sha256": "1950c319855c0a6834519b7b55cd20a07ac0c62b383076928675faecc91c5da9",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/aska.jpg",
+      "bytes": 32802,
+      "sha256": "20a899ec5b5a7122fdb6394eafe7c2d88d3a7795e6aa95115f8a2d401980350f",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/atelier-crenn.jpg",
+      "bytes": 36959,
+      "sha256": "f27b706eba149f5e3ee3fbf84bef2d74f3d7e0fe154f99e77f203c68c61ac2c4",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/atera.jpg",
+      "bytes": 32921,
+      "sha256": "c500e0a32584a5374c2569f79e03db9e886ed377f4bf07640cdd0ff92da0b64f",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/atomix.jpg",
+      "bytes": 33691,
+      "sha256": "cc8aef1cf49c487f48cb08fa8e41e6520200e3229ceef2795a671e4b714006be",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/auberge-du-soleil.jpg",
+      "bytes": 31311,
+      "sha256": "01f766315c7488567a7ac45cf5292f33fbc61c4b20c9bb2eef4a79deb21f0779",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/auro.jpg",
+      "bytes": 29592,
+      "sha256": "210e1f13c0e564efd57d22eb1e8999bb71bc7e1c7252fb9218d9d7b923356b5e",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/bar-miller.jpg",
+      "bytes": 33328,
+      "sha256": "a2cc57c1a3921ba018ad5ff008dddf2faa1957bc29d634b7f22e93c89f82c65d",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/benu.jpg",
+      "bytes": 45338,
+      "sha256": "a03ff05794afef7c014ee8fdd054f6cb6b286ffe22936d412fa775b5e766fd90",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/birdsong.jpg",
+      "bytes": 42896,
+      "sha256": "003ea5fe51383ce59c6aea4facdee0bb6424bf9a9126930d31c6c34ca6ee15d2",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/bom.jpg",
+      "bytes": 36773,
+      "sha256": "ee04055a7686a1fc9fdbbf00fa8c8b96d869eeda9f733dd04a4ab73b18a8a4f0",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/bresca.jpg",
+      "bytes": 30356,
+      "sha256": "cd20fc216444aee15f05d9150d6caaa355e2af59b46b8bb6740e918bea73d55e",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/bridges.jpg",
+      "bytes": 31957,
+      "sha256": "462554ee7d353ddaf18e91235e6deac970dbeec0ed87c4ecd7df5de8989de3a2",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/cafe-boulud.jpg",
+      "bytes": 39084,
+      "sha256": "5892655b71480fb8da0bf4791733c5fce13e0462d6d52a38caf11269cd1202e5",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/californios.jpg",
+      "bytes": 35736,
+      "sha256": "2ea7d891f4cd705b8aa0c61ab8bc96bac7047f0ef286bfd0139f70298097c451",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/casa-mono.jpg",
+      "bytes": 29526,
+      "sha256": "7dc2923857d0919eb846f112c29110b5765fd2119e66d611f923dc9957e14f39",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/causa.jpg",
+      "bytes": 36220,
+      "sha256": "fd679147b4138c615430ffe3a2096bfa342763065cdbeba56fd1495898659765",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/cesar.jpg",
+      "bytes": 36355,
+      "sha256": "8d000ac3c8ed0a6dddc201f3ae58fa4e0fc55b6d9f59d622b8168e26d3ca9d36",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/chefs-table-at-brooklyn-fare.jpg",
+      "bytes": 33205,
+      "sha256": "ae1dd8a3e2db94a1b49f2b2f02efbb3706600f61104cc67f12baaafa647248bf",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/commis.jpg",
+      "bytes": 36996,
+      "sha256": "bb9c26e9e171b85f60aa3f09e8e063d0564de5ecc65496a7ecfc4212a3e54af5",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/corima.jpg",
+      "bytes": 32899,
+      "sha256": "fc49165799ea108b72fa72f00428a728c292e8688a8d401ccd0de2ea4c1637d1",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/cote.jpg",
+      "bytes": 33177,
+      "sha256": "25566479a906aa87aa7008a6d104a0036a5a685c85931bb1496a2ac8f821d5a8",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/crown-shy.jpg",
+      "bytes": 30940,
+      "sha256": "2f490db74bc0df273b527fedcf6c532bda222f9da824125fa20c4f04dac3cff1",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/cyrus.jpg",
+      "bytes": 30926,
+      "sha256": "c0cd8463dde8105d9e1a0fb0c15c620ac0b5cad5da591f94b59e704e638a0bb5",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/daniel.jpg",
+      "bytes": 39795,
+      "sha256": "0833ec8327014af3ecaf3b3920180b7c03a5d3392e29d57768cae9e0771f03a2",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/dirt-candy.jpg",
+      "bytes": 34520,
+      "sha256": "e55da5e6801c4cbe11cdc422e664e729b9abfe814a0e66122f017b9870302875",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/elcielo-washington-dc.jpg",
+      "bytes": 43133,
+      "sha256": "c1b85f59d158d3ae9e2f1e6bee17cb109b26a3d929d88b15ea79039acfa71408",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/eleven-madison-park.jpg",
+      "bytes": 29813,
+      "sha256": "2356ec1adaf0f6343649d0542eddb54abbd5402650609fb8d3d8b48bc51b558a",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/enclos.jpg",
+      "bytes": 38617,
+      "sha256": "1eb3770429201f6c3e3f15748b62b052462d4cfd78e189e97ae72157e3010241",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/essential-by-christophe.jpg",
+      "bytes": 38857,
+      "sha256": "23a5f121d3995a720c30dca4d06c959d483189dc2ccbc6106fa9a5c1218978f4",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/estela.jpg",
+      "bytes": 30711,
+      "sha256": "88ad29c00a2cbf03563f6e75c4804d6ba74f17947cd6bc604683f61ae02eabc6",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/family-meal-at-blue-hill.jpg",
+      "bytes": 35014,
+      "sha256": "f0c504cb5d00930ca7b6e508d5c32a491448a3a371e7bbde49e6544dafa118fb",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/fiola.jpg",
+      "bytes": 31384,
+      "sha256": "79b5ca039c5e7c8a80745faa9a02a52aae7c0fa37e8a9b80d44a94dc6605a65b",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/francie.jpg",
+      "bytes": 30438,
+      "sha256": "f679a68272e227a04dfaad465841fb236df80b9a35ec009040807f9ddd14927b",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/frevo.jpg",
+      "bytes": 34013,
+      "sha256": "1cbc653a1f7dc9fc66f4937ef9b035c5f2dfb3f1374d1ced50986be32fd44549",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/gabriel-kreuther.jpg",
+      "bytes": 35218,
+      "sha256": "84937b287dd83927ea33f3dc8ced54f7057fd5b2c14c02982a54ebe6973970e0",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/gramercy-tavern.jpg",
+      "bytes": 26994,
+      "sha256": "dc569f4ffc1f502874b97b66e195aa70e1dfc430e1153628ae0a7499c05ca6df",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/gravitas.jpg",
+      "bytes": 28361,
+      "sha256": "b30f257b9918c470fb37c70e29353b0f1c6fc8c243cae510236e5b7ad3f7d2e4",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/hilda-and-jesse.jpg",
+      "bytes": 33377,
+      "sha256": "30f1c9b06ead7a58211e1278a1949c5374921a977f6c276e98f9dccedb7ff667",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/huso.jpg",
+      "bytes": 37781,
+      "sha256": "01985650c4a572b48e48d1d625285cd3398fb81c52823ad7ba7602a23c7443e4",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/icca.jpg",
+      "bytes": 41413,
+      "sha256": "fbd9360118c6339a31fe8e56664d52d39960372252cdd254a3d69c4ae674571e",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/imperfecto-the-chefs-table.jpg",
+      "bytes": 37136,
+      "sha256": "a5640e80c932fd2dc34484897300c9fb40ee13b983319627f49bc2e464fb821c",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/jean-georges.jpg",
+      "bytes": 31880,
+      "sha256": "92e674f1d615a82b89ffaf796d3c07fb5e564ffa4e29ceff533303adb0933daa",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/jeju-noodle-bar.jpg",
+      "bytes": 38658,
+      "sha256": "f5f3177fa6b2ba1daaa34cb551a02b71c3836b1cee26a8546c8769d107bb5406",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/joji.jpg",
+      "bytes": 37041,
+      "sha256": "722a13e00c836e87f3a1fc397fb8b2ef2b871215c45094772164822a82fb0980",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/jont.jpg",
+      "bytes": 29915,
+      "sha256": "51e140317e123fdbeb42e1fa73f3b9dd5ebb337556dc1b184e196d8a7833b8a4",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/joo-ok.jpg",
+      "bytes": 36322,
+      "sha256": "2fe7a1d13a999a7ed2f97f1f08329c852c1dcf36041a2c721c7f8d6e8ff3e7c5",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/jua.jpg",
+      "bytes": 33277,
+      "sha256": "dad69700e15624c1fd6953ed90d7c0906fde40a101ab5ff07c63f8f4de0868ea",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/jungsik-new-york.jpg",
+      "bytes": 38669,
+      "sha256": "53ea93611db9e546976a44d1242fbafd32c6655883874ad42d60fe9860ed123e",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/kiln.jpg",
+      "bytes": 38375,
+      "sha256": "d631ba82ea98b846e3323b049ff64e8381875a163c79cf116262edb53d15f1e8",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/kin-khao.jpg",
+      "bytes": 25577,
+      "sha256": "3afe3f098ffd357f3f9ed3474a9d16536771c4060cef25a251b104fb9a54cf73",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/kochi.jpg",
+      "bytes": 38931,
+      "sha256": "3e5fc14e42cf7ff898abe4ef1546f071dff2535df2f0a32792c36d8d73297302",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/kosaka.jpg",
+      "bytes": 33758,
+      "sha256": "d701ad43c82937edc8344872fc56f62dfccd8d0c3cab44525dcb3b10c90a9916",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/labeille.jpg",
+      "bytes": 29669,
+      "sha256": "6f6ce815160bc59e5a90684533a15eb52fe68df769c3bd56656320a33e09d458",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/lazy-bear.jpg",
+      "bytes": 38580,
+      "sha256": "2de707a4bd9bc2e80f38d49174025364141b0a702f8550ac4d12d314578e153f",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/le-bernardin.jpg",
+      "bytes": 34898,
+      "sha256": "3f592f4f1a8821e8d8ce1ef7f446ddf403854e5f5df263c97d2f0645989667c4",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/le-coucou.jpg",
+      "bytes": 35987,
+      "sha256": "f0fd910c824d7e98c78a5af5301b3e2859bb7129a0baced9447d941552570084",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/le-pavillon.jpg",
+      "bytes": 31666,
+      "sha256": "40a17a463b40a9f189298c9a3fa3455a5c2dc4b1016ce44e8e1b3dab897e63a9",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/little-pearl.jpg",
+      "bytes": 31375,
+      "sha256": "aa93b0b801670e82598a62d855df0973bebddb51c65baa14eea393ae24cda0cf",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/madcap.jpg",
+      "bytes": 34751,
+      "sha256": "42a1484b7d4fa8fd2a2f1f1227c54221f2f096a51c4fdc9d04330305f9c57beb",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/mari.jpg",
+      "bytes": 42052,
+      "sha256": "86a1dfc200b44ce07c02c4b7d154805c01dae7e9fbb70ab849028e38f0d19a16",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/masa.jpg",
+      "bytes": 30736,
+      "sha256": "2ebd13578709ace58624de4c5f9be68a163a691eccddd704a54cf313b003dfef",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/masseria.jpg",
+      "bytes": 30934,
+      "sha256": "7a1763966b34f7ec619fe66e285649248e88481c30ddf379200bb73ab268e67d",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/meju.jpg",
+      "bytes": 37988,
+      "sha256": "178ffb03f1e70d1cae4428f83e392fa652a6e64a0a4ebbf80692ec4468e8f56a",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/minibar-by-jose-andres.jpg",
+      "bytes": 29764,
+      "sha256": "fc8c7b69c46dc224134651dd1d843272435d9f33fec543fd4ad81177c2d1e413",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/mister-jius.jpg",
+      "bytes": 41642,
+      "sha256": "02dcc8629a46c76beed58c086862e0bba47c6d6b6c8ff57b0695f948ca24b7c8",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/mita.jpg",
+      "bytes": 26151,
+      "sha256": "a8c4e3f7af2d6bb7a472cc7d60e2b26b1d7b6820406e3ecea1967c2b8bc887cb",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/muku.jpg",
+      "bytes": 31813,
+      "sha256": "7c4d9a6fe35426e85b9608a240052a1ea4c9320387c810bdf387141788eb2971",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/nari.jpg",
+      "bytes": 35806,
+      "sha256": "982b4cb22496a011ba2468727c9cecbdc6dc84872372726eba25f1fb9ff1fee7",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/niku-steakhouse.jpg",
+      "bytes": 33941,
+      "sha256": "2794cff85246d4d627fd7fce0ab78db6ce3368df1ed58b4501e19ebb24d65edc",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/nisei.jpg",
+      "bytes": 38912,
+      "sha256": "13ca9ffa35e6e35d5cb440d6648ace9f5e233076a668b6aded61a41b522c53bf",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/noda.jpg",
+      "bytes": 32439,
+      "sha256": "20342dc4999141d209ca50255547e8370933766ebbfe03fe36a73ac239fe5390",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/noksu.jpg",
+      "bytes": 32427,
+      "sha256": "56a9cebbe87d610c8218f3765d6deb020487dc9925df8e5ec7c1a9f5077f43de",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/noz-17.jpg",
+      "bytes": 32480,
+      "sha256": "22e65ebcff4f592bf8c8a036ad27d336376d5308cc9d10558d3a3bb7245c7984",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/odo.jpg",
+      "bytes": 30775,
+      "sha256": "42c5b9415d4d8e998d22be6af86c0fb205bc1f383188e40152f125e5850f668c",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/oiji-mi.jpg",
+      "bytes": 34555,
+      "sha256": "dfff1d4810cce9422626a268b8780b6a2ca67e0f5be59a32f0046896015fc0a9",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/omakase-at-barracks-row.jpg",
+      "bytes": 33607,
+      "sha256": "dc0c1496ec4e3eee68a12644a1dc82969fa4f329447077d5fe5b341e376f2d06",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/oxomoco.jpg",
+      "bytes": 35611,
+      "sha256": "f7960648435534a008dafb5b212438ba46055c4ed2a58c1021f573cc4f5f3fcd",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/oyster-oyster.jpg",
+      "bytes": 35725,
+      "sha256": "56abe0991351da043a65b5569ad052ff6562472109f2be7e9453f03e04447ac1",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/per-se.jpg",
+      "bytes": 27048,
+      "sha256": "a9b6f445e6175008a4502e24877f114f87fa091453c1c969bceac830aa633b98",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/pineapple-and-pearls.jpg",
+      "bytes": 37086,
+      "sha256": "a28f11589e112732791ec4722cfd203a8436c36033e6997c49de9a6745614fbf",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/plumed-horse.jpg",
+      "bytes": 38479,
+      "sha256": "08a59a96a91ab35b228d1297e3d06c6409ea095b96a62c2e50ba70a8bd2e9478",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/press.jpg",
+      "bytes": 39912,
+      "sha256": "3112565ff45a28f9af9db06596aed7ded524409a4ca6b07d9897c67bd15d159d",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/protege.jpg",
+      "bytes": 31528,
+      "sha256": "8911b2dda389b8783c3e84671e558a6fc4303c74ef21ca52f62effa49801b72f",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/quince.jpg",
+      "bytes": 36093,
+      "sha256": "e3a337ac8ef99eb58e950004b85c682ed94e4b89a138deb260d952b646b3a5ce",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/rania.jpg",
+      "bytes": 34519,
+      "sha256": "a0b6f3d5f91d48c6c2988c70a30d2131b31a212cb11af28fbfabadabe181df68",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/restaurant-naides.jpg",
+      "bytes": 29801,
+      "sha256": "1f8c22517cec39cd35d18165790a6cc67300ec394d8b898f26e0280a6108e7e3",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/restaurant-yuu.jpg",
+      "bytes": 41923,
+      "sha256": "a58c15a0815928ad86da26b0b09dde6e6c1f3cd51b92ce69f332de6ebb18604a",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/rezdora.jpg",
+      "bytes": 31691,
+      "sha256": "6454d233167aa9176f76a43c3d0d998a5e76e95dc0cdedcc90095bafeffc7ba4",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/rooster-and-owl.jpg",
+      "bytes": 31510,
+      "sha256": "a23f2e109e91627c15003cbaf6bbadd0be431e9944bd1dba5cd14bfe877449ee",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/roses-luxury.jpg",
+      "bytes": 36762,
+      "sha256": "2f85b0d19a8aa6088eb7575e6659f7ae784ed27c55b44323181296ff8cececf4",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/saga.jpg",
+      "bytes": 28525,
+      "sha256": "4003ea70e9fee111872a8ddd053ef4039e819edd85fcb0a14d36a5e79a5f7eb3",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/saison.jpg",
+      "bytes": 43717,
+      "sha256": "b2ea0374cd59b8ff4d9a833ba5c4f076c58f93c3d1e0a93b1d99afcb3d2adf95",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/san-ho-won.jpg",
+      "bytes": 40845,
+      "sha256": "9d38c57f8deb0adcc7c1527159ac28aa65f46064151117c58e42fb1d63186e01",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/selbys.jpg",
+      "bytes": 46679,
+      "sha256": "44de61d163ec2b4484d8a3bea2d761e982caea40c1b6b1826e6eae3687de07a9",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/semma.jpg",
+      "bytes": 33742,
+      "sha256": "164cd5ca3b75289dc8af9174254e10c3999e927d073f15e4c8e735f33fbf8e31",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/shmone.jpg",
+      "bytes": 33207,
+      "sha256": "2bffe6558f88a97648f82f49d84b2dbe6d902adca3de4a2977c19fca9d21408b",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/shota-omakase.jpg",
+      "bytes": 39855,
+      "sha256": "889594f0f98fa2c1afbf34674de5cdeb552923c1cba54fd5f6927a98eba61126",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/singlethread.jpg",
+      "bytes": 43051,
+      "sha256": "4707d4d2143aa3d0141b6f0d1458d70827cda7ab972eaa493e2c8721d2b4b51a",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/sixty-three-clinton.jpg",
+      "bytes": 34019,
+      "sha256": "2bcd502f88cb1e626bb312263fd86133329a55b45bb2d120e515fdc4fac7d87c",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/sons-and-daughters.jpg",
+      "bytes": 41648,
+      "sha256": "8973cb4e144c3f281809b08d35122637c6c4fb676b855769346a86e978668337",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/sorrel.jpg",
+      "bytes": 37398,
+      "sha256": "c3497a8bbfdce631a68940f5855f0478bbbfb41cc4d3c0bb179552ce8d9ed8be",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/ssal.jpg",
+      "bytes": 28645,
+      "sha256": "def6cb9c09ce03faed6f2e1149e3423a0cec97193dacf2124ea19f7eb8edeb2f",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/state-bird-provisions.jpg",
+      "bytes": 36741,
+      "sha256": "bc49ccd27d5c3479c861562d755271885e88ed57b6425f41ac3b06134a450fa2",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/sun-moon-studio.jpg",
+      "bytes": 31569,
+      "sha256": "f0422e878da7aad04a0e8bfb5ef4ebd8f24067eb41f114bdfb75624e5854a56e",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/sushi-nakazawa-new-york.jpg",
+      "bytes": 36699,
+      "sha256": "7dd8d27b71cd1e232e6e8f12f523e9662fda36f01bc6902ba33006938435f715",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/sushi-nakazawa-washington-dc.jpg",
+      "bytes": 35676,
+      "sha256": "44d1040d08bd5785ed03b1de8d8429db4448c65ff602364ef67404af9e690547",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/sushi-noz.jpg",
+      "bytes": 33662,
+      "sha256": "20012f1d5fadc8d32b79123784a376f5b70afbaeb94399fc80507b5e1c497388",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/sushi-sho.jpg",
+      "bytes": 31614,
+      "sha256": "2eac3cccdab8deaf9419beea10de7f55a6f3684e12944843c8d70bbbe1de1d59",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/tempura-matsui.jpg",
+      "bytes": 44249,
+      "sha256": "b188f223c1d98b3a3a4fb6508b59c646efa103da81f24864d8498747a62c0cb1",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/the-dabney.jpg",
+      "bytes": 33423,
+      "sha256": "8b44330aa3875cd3b29a2a3e3f33b44a0ca4e34d1a795acd74c4c074c6221e04",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/the-four-horsemen.jpg",
+      "bytes": 37171,
+      "sha256": "121666b9ff10a7bd6f45563519ca8f99c4a13f27332358ae7b3649f46964d393",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/the-french-laundry.jpg",
+      "bytes": 44437,
+      "sha256": "dac7fb52bc4e36203e8ff6f7a59a2e3f7792bda5ae78914102a85255e381465a",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/the-inn-at-little-washington.jpg",
+      "bytes": 36145,
+      "sha256": "626b5bb3e3e9b52b726ceae47fd92c26019895fc460ec7226b24c97e43d13ad2",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/the-modern.jpg",
+      "bytes": 35531,
+      "sha256": "12a7740be0301d2d8c3105ca5a73f23b9e4a831690d5b6bf1ceaa40a4cce6557",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/the-progress.jpg",
+      "bytes": 39241,
+      "sha256": "83a35ab6c370bd19dc44914c933c8470d281019b57b416f2810ea576652ff264",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/the-village-pub.jpg",
+      "bytes": 39128,
+      "sha256": "396e5a2be07c67107190b6d6c53d320b72e9d905a3f139b4853e0f21de5a9966",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/torien.jpg",
+      "bytes": 38369,
+      "sha256": "d5914129cf5888af1e17b6d785e2d8e772da41de7e5edfb0e120454fcc44b5de",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/torrisi.jpg",
+      "bytes": 30740,
+      "sha256": "36d00575fb3e2b7fe37ebb58d4a6a9ad6ff2ba437a2a38738bee41ecfcdd1fa5",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/troubadour.jpg",
+      "bytes": 34378,
+      "sha256": "007c0fd38675b519f4cf9b42096272529b7bb235242fc9c739a4c6325425c9cf",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/tsukimi.jpg",
+      "bytes": 30781,
+      "sha256": "c2561091a2cd0b3e113f1dd55de885e3abfad22099a00be66562e37b0ea7f46b",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/tuome.jpg",
+      "bytes": 31945,
+      "sha256": "cf3b1a403c98f7b762942e287976db4eaaa4542607acbb57d6dc94ef2a609581",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/wakuriya.jpg",
+      "bytes": 36607,
+      "sha256": "516b4c03166bf9c2ff28ce6005eef6ba6fa317d85c698544e95f38352a2dc25d",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/wolfsbane.jpg",
+      "bytes": 36980,
+      "sha256": "6c5e0f7912613640e3b3976710f4bfa48695ae8a48531cc0f3f0b45f68e4423c",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/xiquet.jpg",
+      "bytes": 38434,
+      "sha256": "a379bc0dfea9aed808b7dcd777c1ede6e496f7b29a3b36fa0ebe3ab660cb9f4e",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/yamada.jpg",
+      "bytes": 30709,
+      "sha256": "4f74c3b99c45b8c54050445e77fd768418dd92d2fea7db04af8575ac16dc00db",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/yingtao.jpg",
+      "bytes": 36940,
+      "sha256": "51629b8f0206dc472549b332bd04cf4db53c2227c3af2d1dc749c0ecdc059ffc",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "michelin-dining/yoshino.jpg",
+      "bytes": 35086,
+      "sha256": "d05c7fa4586aabb99eb35ad4f51d0039ed4ca27514ee03cab4d17763f9c04584",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/acadia.jpg",
+      "bytes": 145848,
+      "sha256": "7b06ed5d2d3d2ac1f0add2904e7610512807e63e9ef04bc79246bcdf1ed8f60f",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/arches.jpg",
+      "bytes": 259992,
+      "sha256": "6df5b2517eefd45a6ded67fd55c99eb9a71f040753f5c1cb25556ba2b8026f07",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/badlands.jpg",
+      "bytes": 238513,
+      "sha256": "2f924a1d4a064d41e13dda49ebac30a1735ee4fac2c093f760b476ce19d0e6a4",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/big-bend.jpg",
+      "bytes": 238976,
+      "sha256": "15c1e2055091847d86c1202b9bd85b16e41edcd8b918bf71727d91f888a367e4",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/biscayne.jpg",
+      "bytes": 245818,
+      "sha256": "c897fa33a08ed6c0240599a73c87b660292c02ec1b241334d038fbe7c38e1658",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/black-canyon-gunnison.jpg",
+      "bytes": 233523,
+      "sha256": "404886f5e105e7eb7ea586829fda98df17da79408f9f442db28a91ae2e06f2b4",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/bryce-canyon.jpg",
+      "bytes": 246559,
+      "sha256": "2f1f70a25e387cbc9268cd1a7a40c2b00a454d81538c5587f77b9ff2ee2e8ff3",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/canyonlands.jpg",
+      "bytes": 261971,
+      "sha256": "9b51277c8b0c039cb7ec705fdf6bc8dbf392b5f82b17f50dc15c11f6575a382f",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/capitol-reef.jpg",
+      "bytes": 245883,
+      "sha256": "3b845e8bd1600b8282d8e0a79b7315b0d2e1693cee7c9a908511e6c028b33926",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/carlsbad-caverns.jpg",
+      "bytes": 254159,
+      "sha256": "91957bc9957c6b9051c2e4d603a9cb7f3103fdbcf1be35c27b5a76d97646e09e",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/channel-islands.jpg",
+      "bytes": 221482,
+      "sha256": "761ddf9e0efa5c592151f81e89441cc33320b878855d4aabc40279bd84e4995f",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/congaree.jpg",
+      "bytes": 241096,
+      "sha256": "416f82146c7532191a6c4c453d07be058e4925e1d94d2051293c0b07802f79e1",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/crater-lake.jpg",
+      "bytes": 219033,
+      "sha256": "b179e10dfdd681c3325e262751c2483379fc917cebf343d2a5efa1bd66ee44af",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/cuyahoga-valley.jpg",
+      "bytes": 258251,
+      "sha256": "4fd518862005fa8386a28e2ea97c16f1c0f62185c889e3f98fcc3b192d419b32",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/death-valley.jpg",
+      "bytes": 229693,
+      "sha256": "cebd0b09c2fa5f1e5648aca9dd1a4b473a1ef36a1b4d4a2369349a826990c1b0",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/denali.jpg",
+      "bytes": 240315,
+      "sha256": "cd13546b8a0e63efca2f9b0f843740a8695969d60445e62847e604f8d0656906",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/dry-tortugas.jpg",
+      "bytes": 231961,
+      "sha256": "fc64f43e67d17ba201234ca72da2000954501fc82c0e94c13056a2278772ac45",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/everglades.jpg",
+      "bytes": 244113,
+      "sha256": "40ea0e94278c943400dbba93c18730d31e9ab50c1252362ad9f7b64326cf8056",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/gates-of-the-arctic.jpg",
+      "bytes": 235497,
+      "sha256": "5a71d7078dd599a4a3f0ff38e9fde16d5ee01b05f95fcc48d55d0aa4708a3d4d",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/gateway-arch.jpg",
+      "bytes": 122496,
+      "sha256": "42f46a714771cb8812442f432609e0081eafcf2b3ede0126a1c1c70a0a8b4b67",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/glacier-bay.jpg",
+      "bytes": 257783,
+      "sha256": "32f47db08a7547330175f96e6e6a8613eb5492818945a9180461fa0e7c57c378",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/glacier.jpg",
+      "bytes": 238608,
+      "sha256": "7023b1e6f624a47c5591e33c0b7a1f9d8eb50bcd69e3a07d40f230b8f6d8b9d8",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/grand-canyon.jpg",
+      "bytes": 246769,
+      "sha256": "bb6e4f88346477e13fb39ab0c0e1ca58fec1fd50b9b3b19c44a8d932add1781e",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/grand-teton.jpg",
+      "bytes": 261250,
+      "sha256": "b93db7deb37507e4537c8e80e81ac396d15e5098e4c99625a611395f597389d9",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/great-basin.jpg",
+      "bytes": 239609,
+      "sha256": "cd692c8a439944fc56039aea3b542e92619c24fca6c87ad9286f25690e092ee1",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/great-sand-dunes.jpg",
+      "bytes": 244956,
+      "sha256": "4676a5cd3d7293598e717422fd295089da23c3c9b9244a079b0e2d06ddbf4fe5",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/great-smoky-mountains.jpg",
+      "bytes": 243874,
+      "sha256": "c77883fdbd1a275bef3895b54c34006a5367ba407b861d5f61dbc10842e55955",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/guadalupe-mountains.jpg",
+      "bytes": 256213,
+      "sha256": "f17da9947a63c43375a0266c535ce13c67442948ed59856fc0d3e3beaeb013a8",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/haleakala.jpg",
+      "bytes": 258285,
+      "sha256": "9bb26ba5a79d6f719fbd6b0f2a608c7ddfb6c3d94f74a20eb3fba9e3cd4cfbe5",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/hawaii-volcanoes.jpg",
+      "bytes": 255248,
+      "sha256": "bb92cb9582141aace93f000f714d85f77e5af054b1ceb9b8b0c1cabacbff09a5",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/hot-springs.jpg",
+      "bytes": 248319,
+      "sha256": "354bded9f6467c0f318e6fc08d8cbde6e6b3ec06743f28ecb60d7db19d825735",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/indiana-dunes.jpg",
+      "bytes": 249474,
+      "sha256": "46682b970f1ba67174408d1cf249bb566f6568e7eda07d40351410bdb03d5111",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/isle-royale.jpg",
+      "bytes": 229007,
+      "sha256": "58ede1cfb3d0de0659bb7782aac6b6a594076486f1ac99eebc099f613543dd98",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/joshua-tree.jpg",
+      "bytes": 259886,
+      "sha256": "26526c658175236151b57a8a9da2c7af5904f7fbcd7ed8e6b1eef2d635a62dca",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/katmai.jpg",
+      "bytes": 253355,
+      "sha256": "6b912aa6e499afb1fb07810e617e215f208df7af38f8fb125d964bfc5289b52f",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/kenai-fjords.jpg",
+      "bytes": 251284,
+      "sha256": "e5c98979723038ddba73d25afab329bf4343c82e72c71426b80a7c6a6ecf468f",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/kings-canyon.jpg",
+      "bytes": 248259,
+      "sha256": "660290e02942c17e212b9ecfba3ced0fc34f34469ff6c49bc24635aa5269013d",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/kobuk-valley.jpg",
+      "bytes": 236192,
+      "sha256": "cb826b96d408fa8d198ee94e34a23d606d1b3f7f74b7f3785c470a779dce713c",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/lake-clark.jpg",
+      "bytes": 254555,
+      "sha256": "94e94627b2cef9b802544466b580c23340e930017736190b00bde3ed5663c8ae",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/lassen-volcanic.jpg",
+      "bytes": 178084,
+      "sha256": "c1105227dba5f0a69fe956c6fa912e1d36ce5ce25cf0dc39775ebaa45ee34571",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/mammoth-cave.jpg",
+      "bytes": 261829,
+      "sha256": "bf0e48881fbf46617b956bda22b6d260ed21c7daabd6487da9c49fe696835bcc",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/mesa-verde.jpg",
+      "bytes": 250170,
+      "sha256": "64943e20a08930ab409f9c915e54a6c445fe7e885973b7e468c09308876a84e3",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/mount-rainier.jpg",
+      "bytes": 251027,
+      "sha256": "1ad357a49d9a1aebd52c5440b1d67b4a3c758c142270bb5eedfccb77151f2d17",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/national-park-american-samoa.jpg",
+      "bytes": 254692,
+      "sha256": "97440ad3a2773d7b656986d78914e6364cc1889d9556a388804447cdbe3f73a6",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/new-river-gorge.jpg",
+      "bytes": 253870,
+      "sha256": "da08c480ed108b0b952854193fc66ee113171291075fafb210bace44a2cbc253",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/north-cascades.jpg",
+      "bytes": 256208,
+      "sha256": "cb3e0a8ad3b5e07e51cd4650438d305536ec5537da6382f92f1855e072b1d334",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/olympic.jpg",
+      "bytes": 244163,
+      "sha256": "d06272299b64d38badb70b8b193ffb5e17eac120cc4020ce71e07dfef9403e36",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/petrified-forest.jpg",
+      "bytes": 240241,
+      "sha256": "626f94fb943344de602b4989d272ccd336b93cff302f50f6eb1b9c31934c1d1d",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/pinnacles.jpg",
+      "bytes": 254834,
+      "sha256": "0cc07a67c89071ea25cad7fca2e3b3915d8164a990aa317b921d6acbcf1293e1",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/redwood.jpg",
+      "bytes": 257404,
+      "sha256": "984432bf2beefe6f9a60ea2e36ccfd7dac6144759bf0ab52754974ae33a3e69c",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/rocky-mountain.jpg",
+      "bytes": 258698,
+      "sha256": "50d85d34da8272df778e53ee04fc6e694a3e50f87ce2bebc9f1ba0df2b39869d",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/saguaro.jpg",
+      "bytes": 252791,
+      "sha256": "b55c4771d0f3cac678fbb2741526632b5c3dfa8e594edf3045a9e3aacd68a4f8",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/sequoia.jpg",
+      "bytes": 256423,
+      "sha256": "f3743d4319406e094f04d45ec0dfa74f5ebc520721a38c6145e7f19655356f47",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/shenandoah.jpg",
+      "bytes": 245784,
+      "sha256": "d2793fd5201fea3459d77903881be5f82c4fa0fa9f4ed20c3a442ed250577183",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/theodore-roosevelt.jpg",
+      "bytes": 247398,
+      "sha256": "deba84693547d76c823e1ecc3f144229b3453b34010aa440ee83c142bfa44bdd",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/virgin-islands.jpg",
+      "bytes": 251112,
+      "sha256": "82854649d51730d0a86dfdb7723c3cd367f4a7e36a18d40febfeb88fc02066cd",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/voyageurs.jpg",
+      "bytes": 238811,
+      "sha256": "f1ff6bda9c74303039c6e46d37c71fada113a67e6a845e0ca87d951c73404846",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/white-sands.jpg",
+      "bytes": 236944,
+      "sha256": "77436623c3369fb7a4612b743cb0355769b9b39159fc92553588115185c9819b",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/wind-cave.jpg",
+      "bytes": 252539,
+      "sha256": "f0f94abd072093ee9454fcabd8eb2ec2f1563f9855c61836f4492af0cffc4e54",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/wrangell-st-elias.jpg",
+      "bytes": 239082,
+      "sha256": "a94b8a9d1bce185bcf962cb887b5d396733ccffc7bd6eaccc52dd7744ba9e924",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/yellowstone.jpg",
+      "bytes": 230749,
+      "sha256": "6f48ef56d7cdc9f2face9ca5f4fd1792df0330cb30974c0327eb6a7764e29001",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "national-parks/zion.jpg",
+      "bytes": 217948,
+      "sha256": "e7c639ace51216d751bef4fa774dceee539479e6db9326e41672e9f9edbf5f4e",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/alabama.jpg",
+      "bytes": 247115,
+      "sha256": "e0d8eb9fb5bec05c42c214c4c2b417d991dfc661630a57e3e359bcf80cbac415",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/alaska.jpg",
+      "bytes": 256585,
+      "sha256": "54d713af6bc9055422bd8c1861dd149ccea42d7bc2edd68b2f7d73bead1efdad",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/arizona.jpg",
+      "bytes": 259630,
+      "sha256": "be82ff8190ddb20210bdc5650b2f55d494062c483e341ef29d6488deb19b387c",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/arkansas.jpg",
+      "bytes": 257018,
+      "sha256": "917a40e5f1f39c9bb18d25bd5e21e48a38f6a4e1d3245835c27de69d000282e9",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/california.jpg",
+      "bytes": 245960,
+      "sha256": "4f517b2263663da216b890b597d1cb549865669176563f3ad3c25ea0893c2add",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/colorado.jpg",
+      "bytes": 252431,
+      "sha256": "32962c43124da767fe870a25cf20b0056ca3a31205816c7680a5c70a4db5090a",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/connecticut.jpg",
+      "bytes": 243995,
+      "sha256": "0d0ac88cf8c1786b098d71eb80f49da775aef4800f5e689bb767440f1b9075ed",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/delaware.jpg",
+      "bytes": 251697,
+      "sha256": "a91a4b1f6d2974f3c2469ed1de110023c0ab40d7730a9246621ac65f28bba1bc",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/florida.jpg",
+      "bytes": 233301,
+      "sha256": "331cacf71325888b0c4db2100f703d4998b5f6cb1d96e37fb726ec665a0df3db",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/georgia.jpg",
+      "bytes": 248441,
+      "sha256": "b40064154b228724b8db5c8bb6ee8ab08dbaad0f8e5bb989d6e12a16421db599",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/hawaii.jpg",
+      "bytes": 251182,
+      "sha256": "3193392058f2a011a6178e5f82b8d52fff30babac1c36a9b6fc9628619842808",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/idaho.jpg",
+      "bytes": 261920,
+      "sha256": "88a5336e4898e9aa5afb7a856936f2328f0cc4d47d4c086636815c8c14200196",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/illinois.jpg",
+      "bytes": 216915,
+      "sha256": "a0e436604720294495e427d4c712947cb41cac7832eff78a59e816a8b777dd0f",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/indiana.jpg",
+      "bytes": 233008,
+      "sha256": "20965f9a961485816e9005bf339659a8b66a4d0d67315dd49d49b2926bb668a8",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/iowa.jpg",
+      "bytes": 249952,
+      "sha256": "83f15ff9078ac6caa4bc56c755e07627137cfc3d218920581aa86e98d85bfef0",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/kansas.jpg",
+      "bytes": 253800,
+      "sha256": "d71da6d3ad205ebc625d24e9a333c6665fcad7012af7fdeda13c7c8cd47b2b0e",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/kentucky.jpg",
+      "bytes": 223623,
+      "sha256": "eda84ddd214a52fa5c350922b8c67611ad8267a739fb49dd74209a630ebf7376",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/louisiana.jpg",
+      "bytes": 248383,
+      "sha256": "2ac800b74bedf0a1b3acf509a7bc79d2497fd7c237c8c998f3bcb61ed4ce3411",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/maine.jpg",
+      "bytes": 247484,
+      "sha256": "d3976004778b0c6a260bfe6f13119c31b6db6d276057adf579f2ba48eba9d566",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/maryland.jpg",
+      "bytes": 217969,
+      "sha256": "753c98d8aa75fbb613993cb7fc9bda38ced1412882d88c8f144842c983f37af5",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/massachusetts.jpg",
+      "bytes": 232651,
+      "sha256": "c968fcaf36235b7ce2c2c3f337563ae085250c0f515fd357efa9a65019cf34cb",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/michigan.jpg",
+      "bytes": 252048,
+      "sha256": "d21087672e59c96718a3581888e45e4e4eb9841ffda2536d5bc1a37103a9a6a0",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/minnesota.jpg",
+      "bytes": 253814,
+      "sha256": "8c3f0b61a302025edf4479f159a89effcf3d063977fa9e99c7fc1674005edc32",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/mississippi.jpg",
+      "bytes": 241866,
+      "sha256": "bc0ddab8a6eabfdadad4dc3514f06b3e61e9178ecb8434a670eb5c065f02d18e",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/missouri.jpg",
+      "bytes": 255576,
+      "sha256": "a8d20ab66afd8780356322550762314f94b3a94f3a805a5bc5feaa993876e456",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/montana.jpg",
+      "bytes": 248771,
+      "sha256": "f3f246d9a2a44c4f1622ec2bcfa0dc9b78a11e81c6df58ce4effae4d20b65f9f",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/nebraska.jpg",
+      "bytes": 239242,
+      "sha256": "5509915e1cd02c7c17a6312c018196b137f047fa1fed52f02dd26f6ece961959",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/nevada.jpg",
+      "bytes": 253955,
+      "sha256": "940a2f9107603997fc7ad43c3ce27d749406b64a047b7461d11dd86cd0d32df0",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/new-hampshire.jpg",
+      "bytes": 254591,
+      "sha256": "005770f84f335ca0710438812d1cbe965753863b269b72215e5d1d1316c0089a",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/new-jersey.jpg",
+      "bytes": 247788,
+      "sha256": "8da82fdbb95d39d4d38ef27f4d9983c8052fa8f1817bbdb49999b89870a29798",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/new-mexico.jpg",
+      "bytes": 245963,
+      "sha256": "6a2a2f7a68de2fb3694fbda0233aa4c6a30e92c9df86606b8b6169e993d78984",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/new-york.jpg",
+      "bytes": 249787,
+      "sha256": "3c3f2eadf0c606ef135cd83b8df2b609fb11cdb5a42ee8221e0b2f444e330d4c",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/north-carolina.jpg",
+      "bytes": 241578,
+      "sha256": "bfbbb94d646ad0c67fee680a7862621d43c9d4a872051f82dd915754346eff99",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/north-dakota.jpg",
+      "bytes": 262009,
+      "sha256": "9549ba70e5b20ba81400a39d579cdd73d21100845ecd78e2a50db4cc0a48d4b8",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/ohio.jpg",
+      "bytes": 241093,
+      "sha256": "e417506c78eff2ff54e3c616d2305931cc2cdda495ed8bea353d891f0367d323",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/oklahoma.jpg",
+      "bytes": 252666,
+      "sha256": "c61024151d28b384613b666e40f1188147df7e9469add07aa5a9368435edaa44",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/oregon.jpg",
+      "bytes": 233564,
+      "sha256": "d5ba6f616958e3db63a2d24ff45a752d6da834ccfd3f9a4fa38a6cdb90c6ba5e",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/pennsylvania.jpg",
+      "bytes": 239141,
+      "sha256": "bac8531c04edc5e91c7cff7edc1686fe5cda5897bd2cee492707102e7129c8ad",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/rhode-island.jpg",
+      "bytes": 239949,
+      "sha256": "00f0a7e59cc0529d335c4811757f282994eaf16af7a0ca7ae2b6171c8bd08247",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/south-carolina.jpg",
+      "bytes": 256365,
+      "sha256": "a049eff992a1ba9ae2d2b87b99e52e0158f83db9cb68b5f9d745605bb42dee80",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/south-dakota.jpg",
+      "bytes": 225304,
+      "sha256": "cfefa26fb753d48c2dc706b28719cc6b3a37516a05d5ece8b2e933d37b29eb63",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/tennessee.jpg",
+      "bytes": 248535,
+      "sha256": "dc0450f63c2d9f39783c24c3b559a2d6165fe2500e1ef42f885d71db3bf6e258",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/texas.jpg",
+      "bytes": 237260,
+      "sha256": "e3f032e3966917c8b9a60c632b212765eba74e154dd1f6e3101cd68709ec2e8b",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/utah.jpg",
+      "bytes": 219984,
+      "sha256": "1f029ceb9160b4012b07f961d9b6938082b9850a677832ac62bfc9265a9fb6e2",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/vermont.jpg",
+      "bytes": 240822,
+      "sha256": "91bf1f0f78a3c54511cd5531b6e323c029048d6ece32b29844a27b0513635c1b",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/virginia.jpg",
+      "bytes": 254154,
+      "sha256": "593ece95923119dd0e1ac7e013c310f259395906cbd830aafc52d8a4f1149884",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/washington.jpg",
+      "bytes": 252802,
+      "sha256": "78e53f4b8a8dd7f806c61af2cda2292cea284c7dfef6f21c76aa247120711bce",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/west-virginia.jpg",
+      "bytes": 259271,
+      "sha256": "5d2fd86fe42076d11c7b626daf06049c9ea3ccc3606d82274030bf61d9ba3827",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/wisconsin.jpg",
+      "bytes": 204756,
+      "sha256": "06d598c2cfbcc115da0365c34b31c19975d3d7fe84de90682675ba88cf92f031",
+      "width": 896,
+      "height": 896
+    },
+    {
+      "key": "us-states/wyoming.jpg",
+      "bytes": 253578,
+      "sha256": "12c7ea805336e81dfec87a746f5c656ec4885704ec626c68c90190aab61f9261",
+      "width": 896,
+      "height": 896
+    }
+  ]
+}

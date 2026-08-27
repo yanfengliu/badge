@@ -1,3 +1,4 @@
+import { CATALOGUE_RECORD_ID_PREFIX } from "./catalogue-pack-types.js";
 import { requireDiscoverySet } from "./discovery-sets.js";
 import type { SourceStudyDiscoveryBadge } from "./discovery-types.js";
 
@@ -37,6 +38,7 @@ export function defineSourceStudyBadges(
     ]) => ({
       discoveryId,
       availability: "source-study",
+      recordId: `${CATALOGUE_RECORD_ID_PREFIX}${discoveryId}`,
       title,
       criterion,
       locationLabel,

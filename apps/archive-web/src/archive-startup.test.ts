@@ -20,10 +20,10 @@ describe("Archive startup compatibility gate", () => {
     );
     return {
       ...current,
-      records: current.records.map((record) => ({
-        ...record,
-        publishedVisual: legacyById.get(record.recordId)!.publishedVisual,
-      })),
+      records: current.records.map((record) => {
+        const legacy = legacyById.get(record.recordId);
+        return legacy ? { ...record, publishedVisual: legacy.publishedVisual } : record;
+      }),
     };
   }
 
@@ -118,10 +118,12 @@ describe("Archive startup compatibility gate", () => {
     };
     const initialize = vi.fn().mockResolvedValue(loaded);
     const upgradeCatalogueVisuals = vi.fn().mockResolvedValue(loaded);
+    const reconcileCatalogue = vi.fn().mockResolvedValue(loaded);
     const initializeSayingDefaults = vi.fn().mockResolvedValue(defaults);
     const archive = {
       initialize,
       upgradeCatalogueVisuals,
+      reconcileCatalogue,
       initializeSayingDefaults,
     } as unknown as ArchiveApplication;
     const onAssetsLoaded = vi.fn();
@@ -134,6 +136,7 @@ describe("Archive startup compatibility gate", () => {
 
     expect(initialize).toHaveBeenCalledOnce();
     expect(upgradeCatalogueVisuals).toHaveBeenCalledOnce();
+    expect(reconcileCatalogue).toHaveBeenCalledWith(defaults, loaded);
     expect(initializeSayingDefaults).toHaveBeenCalledWith(defaults, loaded);
     expect(onAssetsLoaded).toHaveBeenCalledOnce();
   });
@@ -146,6 +149,7 @@ describe("Archive startup compatibility gate", () => {
     };
     const initialize = vi.fn().mockResolvedValue(loaded);
     const upgradeCatalogueVisuals = vi.fn().mockResolvedValue(loaded);
+    const reconcileCatalogue = vi.fn().mockResolvedValue(loaded);
     const state = vi.fn().mockResolvedValue(defaults);
     const initializeSayingDefaults = vi
       .fn()
@@ -161,6 +165,7 @@ describe("Archive startup compatibility gate", () => {
       initialize,
       state,
       upgradeCatalogueVisuals,
+      reconcileCatalogue,
       initializeSayingDefaults,
       visual,
     } as unknown as ArchiveApplication;
@@ -181,11 +186,13 @@ describe("Archive startup compatibility gate", () => {
     const failure = new ArchivePersistenceError("TRANSACTION_FAILED", "IndexedDB write failed.");
     const initialize = vi.fn().mockResolvedValue(defaults);
     const upgradeCatalogueVisuals = vi.fn().mockResolvedValue(defaults);
+    const reconcileCatalogue = vi.fn().mockResolvedValue(defaults);
     const initializeSayingDefaults = vi.fn().mockRejectedValue(failure);
     const state = vi.fn();
     const archive = {
       initialize,
       upgradeCatalogueVisuals,
+      reconcileCatalogue,
       initializeSayingDefaults,
       state,
     } as unknown as ArchiveApplication;
@@ -225,15 +232,19 @@ describe("Archive startup compatibility gate", () => {
     expect(reviewed).toEqual(loaded);
   });
 
+  it("treats a stored state that predates newly shipped catalogue records as compatible", async () => {
+    const expected = createStarterArchiveState();
+    const olderStore = {
+      ...expected,
+      records: expected.records.filter((record) => record.recordId.startsWith("starter:")),
+    };
+    const archive = { visual: vi.fn().mockResolvedValue({}) } as unknown as ArchiveApplication;
+
+    await expect(validateStarterArchiveForOpen(archive, expected, olderStore)).resolves.toBeUndefined();
+    expect(olderStore.records).toHaveLength(4);
+  });
+
   it.each([
-    {
-      label: "a missing starter record",
-      mutate: (state: ReturnType<typeof legacyStarterState>) => ({
-        ...state,
-        records: state.records.slice(1),
-      }),
-      message: /missing record IDs/i,
-    },
     {
       label: "an unexpected starter record",
       mutate: (state: ReturnType<typeof legacyStarterState>) => ({

@@ -159,7 +159,7 @@ describe("Archive recovery edge conditions", () => {
 
     await expect(
       target.application.recoverBackup(backup, "local-owner", [sourceAsset]),
-    ).rejects.toMatchObject({ code: "BACKUP_INCOMPLETE" });
+    ).rejects.toMatchObject({ code: "RECOVERY_NOT_REQUIRED" });
 
     const recovery = await target.application.recoverBackup(backup, "local-owner", [sourceAsset], {
       mode: "replace-incompatible-readable-state",

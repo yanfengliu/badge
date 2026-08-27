@@ -154,7 +154,7 @@ describe("mounted historical-quotation flow", () => {
     });
     await waitFor(() => expect(container.textContent).toContain("1 result"));
     const prepareYosemite = container.querySelector<HTMLButtonElement>(
-      'button[aria-label="Prepare Yosemite to collect"]',
+      'button[aria-label="Open Yosemite to collect it"]',
     );
     if (!prepareYosemite) throw new Error("Mounted Archive test could not prepare Yosemite from Discover.");
     await act(async () => prepareYosemite.click());
@@ -217,10 +217,10 @@ describe("mounted historical-quotation flow", () => {
     expect(container.querySelector<HTMLInputElement>('input[type="search"]')?.value).toBe("");
     expect(container.textContent).toContain("1 / 64 collected");
     const discoverReplay = container.querySelector<HTMLButtonElement>(
-      '.discovery-card--collected [aria-label="Replay collected memory Yosemite"]',
+      '.discovery-card--collected [aria-label="Open collected memory Yosemite"]',
     );
     expect(discoverReplay?.classList.contains("discovery-card__action")).toBe(true);
-    expect(container.querySelector(".discovery-card--potential")).not.toBeNull();
+    expect(container.querySelector(".discovery-card--uncollected")).not.toBeNull();
 
     discoverReplay?.focus();
     await act(async () => discoverReplay?.click());
@@ -274,7 +274,7 @@ describe("mounted historical-quotation flow", () => {
     });
     expect(container.textContent).toContain("1 result");
     const openSapiens = container.querySelector<HTMLButtonElement>(
-      'button[aria-label="Prepare Read Sapiens to collect"]',
+      'button[aria-label="Open Read Sapiens to collect it"]',
     );
     if (!openSapiens) throw new Error("Mounted Archive test could not find Read Sapiens in Discovery.");
 
@@ -292,7 +292,7 @@ describe("mounted historical-quotation flow", () => {
     expect(container.querySelector<HTMLInputElement>('input[type="search"]')?.value).toBe("Sapiens");
     expect(container.textContent).toContain("1 result");
     expect(document.activeElement).toBe(
-      container.querySelector('button[aria-label="Prepare Read Sapiens to collect"]'),
+      container.querySelector('button[aria-label="Open Read Sapiens to collect it"]'),
     );
   });
 
@@ -304,7 +304,7 @@ describe("mounted historical-quotation flow", () => {
     await clickButton("Show 24 more");
     expect(container.querySelectorAll(".discovery-card")).toHaveLength(48);
     const openSapiens = container.querySelector<HTMLButtonElement>(
-      'button[aria-label="Prepare Read Sapiens to collect"]',
+      'button[aria-label="Open Read Sapiens to collect it"]',
     );
     if (!openSapiens) throw new Error("Mounted Archive test could not prepare Sapiens after reveal.");
     await act(async () => openSapiens.click());
@@ -313,7 +313,7 @@ describe("mounted historical-quotation flow", () => {
     await clickButton("Back to set");
     await waitFor(() => expect(container.querySelectorAll(".discovery-card")).toHaveLength(48));
     expect(document.activeElement).toBe(
-      container.querySelector('button[aria-label="Prepare Read Sapiens to collect"]'),
+      container.querySelector('button[aria-label="Open Read Sapiens to collect it"]'),
     );
   });
 

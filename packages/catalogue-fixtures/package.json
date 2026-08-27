@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     "./archive": "./src/archive.ts",
+    "./catalogue-pack": "./src/catalogue-pack.ts",
     "./discovery": "./src/discovery.ts",
     "./future-expansion": "./src/future-expansion.ts",
     "./legacy-repair": "./src/legacy-repair.ts",

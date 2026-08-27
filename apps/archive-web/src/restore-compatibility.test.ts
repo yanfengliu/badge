@@ -15,11 +15,25 @@ const expectedState = createStarterArchiveState();
 const expectedRecords = expectedState.records;
 
 describe("Archive restore catalogue compatibility", () => {
-  it("rejects a backup that omits an unearned starter before restore confirmation", () => {
+  it("accepts and virtually expands a backup that predates newly shipped catalogue records", () => {
+    const incoming = {
+      ...expectedState,
+      records: expectedRecords.filter((record) => record.recordId.startsWith("starter:")),
+    };
+
+    expect(() => assertCompatibleStarterArchive(expectedState, incoming)).not.toThrow();
+    expect(incoming.records).toHaveLength(4);
+  });
+
+  it("still names an exactly-missing record when the raw catalogue comparison runs unexpanded", () => {
     const incoming = expectedRecords.slice(0, -1);
+    const omitted = expectedRecords.at(-1)!;
 
     expect(() => assertCompatibleStarterCatalogue(expectedRecords, incoming)).toThrow(
-      /missing record IDs “starter:visited-all-us-national-parks”.*selected file was left untouched.*no Archive data was changed/i,
+      new RegExp(
+        `missing record IDs “${omitted.recordId}”.*selected file was left untouched.*no Archive data was changed`,
+        "i",
+      ),
     );
     expect(incoming).toEqual(expectedRecords.slice(0, -1));
   });
@@ -66,12 +80,15 @@ describe("Archive restore catalogue compatibility", () => {
     );
     const incoming = {
       ...expectedState,
-      records: expectedState.records.map((record, index) => ({
-        ...record,
-        publishedVisual: legacyById.get(record.recordId)!.publishedVisual,
-        note: index === 0 ? "Keep this personal note through upgrade." : record.note,
-        visibility: index === 0 ? ("private" as const) : record.visibility,
-      })),
+      records: expectedState.records.map((record, index) => {
+        const legacy = legacyById.get(record.recordId);
+        return {
+          ...record,
+          ...(legacy ? { publishedVisual: legacy.publishedVisual } : {}),
+          note: index === 0 ? "Keep this personal note through upgrade." : record.note,
+          visibility: index === 0 ? ("private" as const) : record.visibility,
+        };
+      }),
     };
 
     expect(() => assertCompatibleStarterArchive(expectedState, incoming)).not.toThrow();

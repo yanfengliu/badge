@@ -19,5 +19,11 @@ export function focusPreparedBadgeTrigger(trigger: HTMLButtonElement | null): vo
   const currentTrigger = [...document.querySelectorAll<HTMLButtonElement>("[data-prepare-record-id]")].find(
     (candidate) => candidate.dataset.prepareRecordId === recordId,
   );
-  currentTrigger?.focus();
+  if (currentTrigger) {
+    currentTrigger.focus();
+    return;
+  }
+  // The prepared card can leave the rendered window (a reset page or filter); keep keyboard
+  // focus in the catalogue instead of dropping it on the document body.
+  document.getElementById("discovery-set-heading")?.focus();
 }

@@ -67,7 +67,7 @@ export function TimelineView({
           <div className="timeline-empty">
             <p className="eyebrow">The first marker is waiting</p>
             <h2>No memories sealed yet</h2>
-            <p>Activate a potential badge from Discover and its real-world date will take its place here.</p>
+            <p>Activate a badge from Discover and its real-world date will take its place here.</p>
             <button className="secondary-button" type="button" onClick={onShowDiscover}>
               Browse Discover <ArrowIcon />
             </button>

@@ -15,6 +15,7 @@ import { canonicalJson } from "@badge/pack-contract";
 import { formatSayingForArchive, type SayingResponse } from "@badge/saying-contract";
 
 import { abortQuietly, openArchiveDatabase, parseStoredState } from "./archive-database.js";
+import { reconcileCatalogueRecords } from "./catalogue-expansion.js";
 import type { ArchiveCatalogueVisualUpgradePlan } from "./catalogue-visual-upgrade.js";
 import {
   prepareCatalogueVisualUpgrade,
@@ -191,6 +192,41 @@ export class IndexedDbArchiveRepository {
         throw new ArchivePersistenceError(
           "TRANSACTION_FAILED",
           "Archive quotation-default initialization failed; existing quotations and records were preserved. Reload Badge and try again.",
+          { cause: error },
+        );
+      }
+    });
+  }
+
+  async reconcileCatalogueRecords(
+    defaultState: ArchiveState,
+    expectedCurrentState: ArchiveState,
+  ): Promise<ArchiveState> {
+    const defaults = archiveStateSchema.parse(defaultState);
+    const expected = archiveStateSchema.parse(expectedCurrentState);
+    return this.enqueueWrite(async () => {
+      const database = await this.database();
+      const transaction = database.transaction(ARCHIVE_STATE_STORE, "readwrite");
+      try {
+        const current = parseStoredState(await transaction.store.get(ARCHIVE_STATE_KEY));
+        if (canonicalJson(current) !== canonicalJson(expected)) {
+          throw new ArchivePersistenceError(
+            "INITIALIZATION_CONFLICT",
+            "Archive state changed while this release's new catalogue records were being added; reload Badge before trying again. No Archive data was changed.",
+          );
+        }
+        const reconciled = reconcileCatalogueRecords(current, defaults);
+        if (reconciled.addedRecordIds.length > 0 || reconciled.reseededRecordIds.length > 0) {
+          await transaction.store.put(reconciled.state, ARCHIVE_STATE_KEY);
+        }
+        await transaction.done;
+        return reconciled.state;
+      } catch (error) {
+        await abortQuietly(transaction);
+        if (error instanceof ArchivePersistenceError) throw error;
+        throw new ArchivePersistenceError(
+          "TRANSACTION_FAILED",
+          "Archive catalogue expansion failed; existing records were preserved. Reload Badge and try again.",
           { cause: error },
         );
       }
@@ -393,15 +429,19 @@ export class IndexedDbArchiveRepository {
   ): Promise<ArchiveState> {
     const parsedIncoming = archiveStateSchema.parse(incomingState);
     if (sayingDefaults) this.quotationAdmission.assertDefaults(sayingDefaults);
-    const state = sayingDefaults
+    const parsedDefaults = sayingDefaults ? archiveStateSchema.parse(sayingDefaults) : undefined;
+    const expandedIncoming = parsedDefaults
+      ? reconcileCatalogueRecords(parsedIncoming, parsedDefaults).state
+      : parsedIncoming;
+    const state = parsedDefaults
       ? applyReviewedSayingDefaults(
-          parsedIncoming,
-          archiveStateSchema.parse(sayingDefaults),
+          expandedIncoming,
+          parsedDefaults,
           () => crypto.randomUUID(),
           (record) => this.quotationAdmission.assertRecordBound(record),
           (record) => this.quotationAdmission.hasTrustedAcceptedSaying(record),
         )
-      : parsedIncoming;
+      : expandedIncoming;
     assertRestorableEarnedSayings(state);
     const expected = archiveStateSchema.parse(expectedCurrentState);
     const sourceAssets = await validateRepositorySourceAssets(incomingSourceAssets, state);
@@ -451,15 +491,18 @@ export class IndexedDbArchiveRepository {
     const parsedIncoming = archiveStateSchema.parse(incomingState);
     if (options.sayingDefaults) this.quotationAdmission.assertDefaults(options.sayingDefaults);
     const defaults = options.sayingDefaults ? archiveStateSchema.parse(options.sayingDefaults) : undefined;
+    const expandedIncoming = defaults
+      ? reconcileCatalogueRecords(parsedIncoming, defaults).state
+      : parsedIncoming;
     const state = defaults
       ? applyReviewedSayingDefaults(
-          parsedIncoming,
+          expandedIncoming,
           defaults,
           () => crypto.randomUUID(),
           (record) => this.quotationAdmission.assertRecordBound(record),
           (record) => this.quotationAdmission.hasTrustedAcceptedSaying(record),
         )
-      : parsedIncoming;
+      : expandedIncoming;
     const backupAssets = await validateRepositorySourceAssets(incomingSourceAssets, state);
     const trustedRepairAssets = await validateRepositorySourceAssets(trustedRepairSourceAssets);
     const sourceAssets = mergeRepositorySourceAssets(backupAssets, trustedRepairAssets);

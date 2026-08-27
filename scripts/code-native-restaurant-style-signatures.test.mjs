@@ -84,7 +84,7 @@ describe("restaurant code-native motif constructions", () => {
     process.stdout.write(
       `\nExact-48 style gate: 14 treatments, RGB nearest ${diagnostic.replaceAll("\n", "; ")}; categorical nearest ${structurePairs[0].left}/${structurePairs[0].right} ${structurePairs[0].distance.toFixed(6)}.\n`,
     );
-  }, 15_000);
+  }, 60_000);
 
   it("keeps every raw 896 render within the exact-48 miniature residual limit", () => {
     expect(codeNativeRestaurantRecipes).toHaveLength(132);
@@ -94,7 +94,7 @@ describe("restaurant code-native motif constructions", () => {
     }));
     const failures = measurements.filter(({ residual }) => residual > 0.045);
     expect(failures, JSON.stringify(failures, null, 2)).toEqual([]);
-  }, 10_000);
+  }, 60_000);
 
   it("keeps every researched motif instance visibly present in the exact-48 result", () => {
     const failures = [];

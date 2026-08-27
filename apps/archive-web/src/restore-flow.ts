@@ -22,6 +22,7 @@ export interface PendingArchiveRestore {
   readonly fileName: string;
   readonly bytes: Uint8Array;
   readonly exportedAt: string;
+  readonly incomingState: ArchiveState;
   readonly incomingEarnedCount: number;
   readonly recoveryMode: ArchiveRecoveryMode | null;
   readonly safetyBackupOffered: boolean;
@@ -371,6 +372,7 @@ export async function inspectArchiveBackupFile(
     fileName: file.name,
     bytes,
     exportedAt: parsed.exportedAt,
+    incomingState: parsed.state,
     incomingEarnedCount: parsed.state.records.filter((record) => record.lifecycle === "earned").length,
     recoveryMode,
     safetyBackupOffered: false,

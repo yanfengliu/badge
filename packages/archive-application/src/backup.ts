@@ -28,7 +28,12 @@ const BACKUP_MAGIC = new TextEncoder().encode("BADGEARCHIVE\u0002");
 const MANIFEST_DIGEST_BYTES = 32;
 const BACKUP_HEADER_BYTES = BACKUP_MAGIC.byteLength + 4 + MANIFEST_DIGEST_BYTES;
 const MAX_BACKUP_MANIFEST_BYTES = 512 * 1024;
-export const MAX_ARCHIVE_BACKUP_TOTAL_DECODED_IMAGE_BYTES = 64 * 1024 * 1024;
+// An absolute cap on the summed declared decode size of a backup's sources. It never refuses
+// an honestly collected full catalogue — 300 seeded badges at 896×896 RGBA decode to about
+// 919 MiB — while still bounding the total decode a hostile backup can claim; per-asset
+// amplification is separately bounded by the 64 MiB per-image decode cap and the 8192px
+// dimension ceiling, not by any per-asset encoded-to-decoded ratio.
+export const MAX_ARCHIVE_BACKUP_TOTAL_DECODED_IMAGE_BYTES = 2 * 1024 * 1024 * 1024;
 export const MAX_ARCHIVE_BACKUP_BYTES =
   BACKUP_HEADER_BYTES +
   MAX_BACKUP_MANIFEST_BYTES +

@@ -67,7 +67,7 @@ export function CollectionView({
         <div className="collection-empty-callout">
           <div>
             <strong>Your cabinet is waiting.</strong>
-            <span>Activate a potential badge from Discover and it will appear here in full color.</span>
+            <span>Activate a badge from Discover and it will appear here in full color.</span>
           </div>
           <button type="button" onClick={onShowDiscover}>
             Browse sets in Discover <ArrowIcon />
@@ -208,9 +208,7 @@ function CollectionShelfRow({
               ))}
             </div>
           ) : (
-            <p>
-              This set has no collected memories yet. Browse it in Discover to find a potential next badge.
-            </p>
+            <p>This set has no collected memories yet. Browse it in Discover to collect its next badge.</p>
           )}
         </div>
       ) : null}

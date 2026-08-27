@@ -17,6 +17,7 @@ interface RenderOverrides {
   readonly acceptedSaying?: string | null;
   readonly acceptedQuotation?: HistoricalQuotation | null;
   readonly generationBlocked?: boolean;
+  readonly hasAlternatives?: boolean;
   readonly lifecycle?: ArchiveLifecycle;
   readonly saving?: boolean;
   readonly successAnnouncement?: string | null;
@@ -37,6 +38,7 @@ function renderComposer(proposal: SayingProposalSnapshot, overrides: RenderOverr
       proposal={proposal}
       saving={overrides.saving ?? false}
       generationBlocked={overrides.generationBlocked ?? false}
+      hasAlternatives={overrides.hasAlternatives ?? true}
       providerNote="Fixture mode rotates only source-checked historical quotations."
       successAnnouncement={overrides.successAnnouncement ?? null}
       focusTargetRef={{ current: null }}
@@ -56,6 +58,13 @@ const idleProposal: SayingProposalSnapshot = {
 };
 
 describe("SayingComposer", () => {
+  it("offers no regeneration action when a record's bank has a single source-checked quotation", () => {
+    const html = renderComposer(idleProposal, { hasAlternatives: false });
+
+    expect(html).not.toContain("Regenerate quote");
+    expect(html).toContain("Verified historical quotation");
+  });
+
   it("shows a preselected sourced quotation with one regeneration action and no authoring UI", () => {
     const html = renderComposer(idleProposal);
 

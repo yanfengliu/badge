@@ -15,6 +15,7 @@ interface SayingComposerProps {
   readonly generationBlocked: boolean;
   readonly providerNote: string;
   readonly successAnnouncement: string | null;
+  readonly hasAlternatives?: boolean;
   readonly focusTargetRef: RefObject<HTMLDivElement | null>;
   readonly onGenerate: () => void;
 }
@@ -114,6 +115,7 @@ export function SayingComposer({
   generationBlocked,
   providerNote,
   successAnnouncement,
+  hasAlternatives = true,
   focusTargetRef,
   onGenerate,
 }: SayingComposerProps) {
@@ -134,7 +136,7 @@ export function SayingComposer({
         {proposalAnnouncement(proposal, saving, successAnnouncement)}
       </div>
 
-      {!isEarned ? (
+      {!isEarned && hasAlternatives ? (
         <div className="saying-interactions" aria-busy={busy}>
           <div className="saying-actions">
             <button

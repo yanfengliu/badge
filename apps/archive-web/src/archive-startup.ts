@@ -39,8 +39,32 @@ export async function initializeStarterArchive(
   onAssetsLoaded(assets);
   const loaded = await archive.initialize(expectedState, assets);
   const upgraded = await initializeStarterVisualUpgrade(archive, expectedState, loaded, assets);
-  await validateStarterArchiveForOpen(archive, expectedState, upgraded);
-  return initializeReviewedSayingDefaults(archive, expectedState, upgraded);
+  const expanded = await initializeCatalogueExpansion(archive, expectedState, upgraded);
+  await validateStarterArchiveForOpen(archive, expectedState, expanded);
+  return initializeReviewedSayingDefaults(archive, expectedState, expanded);
+}
+
+export async function initializeCatalogueExpansion(
+  archive: ArchiveApplication,
+  expectedState: ArchiveState,
+  loaded: ArchiveState,
+): Promise<ArchiveState> {
+  let reviewed = loaded;
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      return await archive.reconcileCatalogue(expectedState, reviewed);
+    } catch (error) {
+      if (
+        !(error instanceof ArchivePersistenceError) ||
+        error.code !== "INITIALIZATION_CONFLICT" ||
+        attempt === 2
+      ) {
+        throw error;
+      }
+      reviewed = await archive.state();
+    }
+  }
+  throw new Error("Archive catalogue reconciliation exhausted its bounded retry loop.");
 }
 
 export async function initializeStarterVisualUpgrade(

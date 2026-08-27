@@ -235,8 +235,7 @@ body,
     padding-left: max(14px, var(--safe-left));
   }
 
-  .collection-stats span,
-  .discovery-card__status {
+  .collection-stats span {
     font-size: 10px;
     letter-spacing: 0.05em;
   }

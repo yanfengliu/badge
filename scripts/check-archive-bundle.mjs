@@ -8,6 +8,8 @@ const archiveOutputDirectory = path.resolve(process.argv[2] ?? "dist/archive");
 const discoveryAssetsRoot = path.resolve("packages/catalogue-authoring/assets");
 const discoveryThumbnailManifestPath = path.join(discoveryAssetsRoot, "discovery-thumbnails.manifest.json");
 const discoveryDetailManifestPath = path.join(discoveryAssetsRoot, "discovery-details.manifest.json");
+const discoverySourceManifestPath = path.join(discoveryAssetsRoot, "discovery-sources.manifest.json");
+const discoverySourceExcludedKeys = new Set(["national-parks/yosemite.jpg"]);
 const forbiddenFileExtensions = new Set([".wasm", ".webp"]);
 const studioOnlyCandidateName = /(?:^|[/\\])yosemite-(?:symbolic|topographic)(?:\.|$)/i;
 const textExtensions = new Set([".css", ".html", ".js", ".json", ".map", ".svg", ".txt"]);
@@ -20,6 +22,7 @@ const forbiddenText = [
 ];
 const discoveryThumbnailManifest = JSON.parse(await readFile(discoveryThumbnailManifestPath, "utf8"));
 const discoveryDetailManifest = JSON.parse(await readFile(discoveryDetailManifestPath, "utf8"));
+const discoverySourceManifest = JSON.parse(await readFile(discoverySourceManifestPath, "utf8"));
 if (discoveryThumbnailManifest.schemaVersion !== 1) {
   throw new Error(
     `Discovery thumbnail manifest schema ${discoveryThumbnailManifest.schemaVersion} is unsupported; regenerate schemaVersion 1 before building Archive.`,
@@ -130,6 +133,59 @@ if ([...manifestKeys].some((key) => !detailManifestKeys.has(key))) {
   throw new Error("Discovery detail manifest keys no longer match the complete list-thumbnail tier.");
 }
 const detailManifestEntriesByKey = new Map(detailManifestEntries.map((entry) => [entry.key, entry]));
+if (
+  discoverySourceManifest.schemaVersion !== 1 ||
+  discoverySourceManifest.recipe?.id !== "catalogue-source-study" ||
+  discoverySourceManifest.recipe?.revision !== 1 ||
+  discoverySourceManifest.width !== 896 ||
+  discoverySourceManifest.height !== 896 ||
+  discoverySourceManifest.loading !== "on-demand"
+) {
+  throw new Error(
+    "Discovery source manifest must declare on-demand catalogue-source-study@1 at exactly 896 by 896 pixels; regenerate the reviewed tier.",
+  );
+}
+const sourceManifestEntries = discoverySourceManifest.entries;
+const expectedSourceKeyCount = manifestEntries.length - discoverySourceExcludedKeys.size;
+if (!Array.isArray(sourceManifestEntries) || sourceManifestEntries.length !== expectedSourceKeyCount) {
+  throw new Error(
+    `Discovery source manifest contains ${Array.isArray(sourceManifestEntries) ? sourceManifestEntries.length : "invalid"} entries; keep exactly one canonical study for each of the ${expectedSourceKeyCount} activatable concepts.`,
+  );
+}
+if (
+  discoverySourceManifest.limits?.maximumEntries !== 320 ||
+  discoverySourceManifest.limits?.maximumFileBytes !== 256 * 1024 ||
+  discoverySourceManifest.limits?.maximumTotalBytes !== 48 * 1024 * 1024 ||
+  discoverySourceManifest.totalBytes > discoverySourceManifest.limits.maximumTotalBytes
+) {
+  throw new Error(
+    "Discovery source manifest exceeds the reviewed 320-entry, 256-KiB-per-file, or 48-MiB-total tier; shard the catalogue before shipping more media.",
+  );
+}
+const sourceManifestKeys = new Set();
+const sourceManifestHashes = new Set();
+for (const entry of sourceManifestEntries) {
+  if (
+    !/^[a-z0-9]+(?:-[a-z0-9]+)*\/[a-z0-9]+(?:-[a-z0-9]+)*\.jpg$/u.test(entry.key) ||
+    !/^[a-f0-9]{64}$/u.test(entry.sha256) ||
+    entry.width !== discoverySourceManifest.width ||
+    entry.height !== discoverySourceManifest.height ||
+    !Number.isInteger(entry.bytes) ||
+    entry.bytes <= 0 ||
+    entry.bytes > discoverySourceManifest.limits.maximumFileBytes ||
+    discoverySourceExcludedKeys.has(entry.key) ||
+    !manifestKeys.has(entry.key) ||
+    sourceManifestKeys.has(entry.key) ||
+    sourceManifestHashes.has(entry.sha256)
+  ) {
+    throw new Error(
+      `Discovery source manifest entry ${String(entry.key)} has invalid integrity, dimensions, bounds, or uniqueness; refresh it from decoded canonical studies.`,
+    );
+  }
+  sourceManifestKeys.add(entry.key);
+  sourceManifestHashes.add(entry.sha256);
+}
+const sourceManifestEntriesByKey = new Map(sourceManifestEntries.map((entry) => [entry.key, entry]));
 execFileSync(
   "powershell",
   [
@@ -155,6 +211,21 @@ execFileSync(
     path.resolve("scripts/check-discovery-detail-decode.ps1"),
     "-ManifestPath",
     discoveryDetailManifestPath,
+    "-AssetsRoot",
+    discoveryAssetsRoot,
+  ],
+  { cwd: path.resolve("."), encoding: "utf8", windowsHide: true },
+);
+execFileSync(
+  "powershell",
+  [
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    path.resolve("scripts/check-discovery-source-decode.ps1"),
+    "-ManifestPath",
+    discoverySourceManifestPath,
     "-AssetsRoot",
     discoveryAssetsRoot,
   ],
@@ -189,9 +260,15 @@ const discoveryDetails = archiveJpegs.filter((file) =>
     .replaceAll(path.sep, "/")
     .startsWith("assets/discovery-details/"),
 );
-if (archiveJpegs.length !== discoveryThumbnails.length + discoveryDetails.length) {
+const discoverySources = archiveJpegs.filter((file) =>
+  path
+    .relative(archiveOutputDirectory, file)
+    .replaceAll(path.sep, "/")
+    .startsWith("assets/discovery-sources/"),
+);
+if (archiveJpegs.length !== discoveryThumbnails.length + discoveryDetails.length + discoverySources.length) {
   throw new Error(
-    `Archive build contains ${archiveJpegs.length - discoveryThumbnails.length - discoveryDetails.length} unqualified JPEG assets; keep catalogue media in its integrity-bound list or detail tier.`,
+    `Archive build contains ${archiveJpegs.length - discoveryThumbnails.length - discoveryDetails.length - discoverySources.length} unqualified JPEG assets; keep catalogue media in its integrity-bound list, detail, or canonical-source tier.`,
   );
 }
 const discoveryThumbnailBytes = await validateArchiveMediaTier({
@@ -210,6 +287,14 @@ const discoveryDetailBytes = await validateArchiveMediaTier({
   outputTier: "discovery-details",
   label: "on-demand detail preview",
 });
+const discoverySourceBytes = await validateArchiveMediaTier({
+  files: discoverySources,
+  manifest: discoverySourceManifest,
+  entriesByKey: sourceManifestEntriesByKey,
+  keys: sourceManifestKeys,
+  outputTier: "discovery-sources",
+  label: "on-demand canonical source study",
+});
 
 for (const file of files) {
   if (!textExtensions.has(path.extname(file).toLowerCase())) continue;
@@ -224,7 +309,7 @@ for (const file of files) {
 }
 
 console.log(
-  `Archive bundle boundary passed for ${files.length} files: ${discoveryThumbnails.length} bounded list thumbnails (${discoveryThumbnailBytes} bytes) and ${discoveryDetails.length} on-demand detail previews (${discoveryDetailBytes} bytes), with no full Studio studies, decoder WASM, or WebP runtime markers.`,
+  `Archive bundle boundary passed for ${files.length} files: ${discoveryThumbnails.length} bounded list thumbnails (${discoveryThumbnailBytes} bytes), ${discoveryDetails.length} on-demand detail previews (${discoveryDetailBytes} bytes), and ${discoverySources.length} on-demand canonical sources (${discoverySourceBytes} bytes), with no draft Studio candidates, decoder WASM, or WebP runtime markers.`,
 );
 
 async function validateArchiveMediaTier({ files, manifest, entriesByKey, keys, outputTier, label }) {

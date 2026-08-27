@@ -17,6 +17,7 @@ export interface AvailableDiscoveryBadge extends DiscoveryBadgeBase {
 
 export interface SourceStudyDiscoveryBadge extends DiscoveryBadgeBase {
   readonly availability: "source-study";
+  readonly recordId: string;
   readonly locationLabel: string;
   readonly searchAliases?: readonly string[];
   readonly referenceUrl?: string;

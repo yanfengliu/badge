@@ -3,6 +3,7 @@ import {
   MAX_ARCHIVE_BACKUP_BYTES,
   applyCatalogueVisualUpgradePlan,
   earnedRecordIdsMissingSaying,
+  reconcileCatalogueRecords,
 } from "@badge/archive-application";
 import { canonicalJson } from "@badge/pack-contract";
 
@@ -77,7 +78,8 @@ export function assertCompatibleStarterArchive(expected: ArchiveState, incoming:
     throw new EarnedSayingCompatibilityError(missingSayings);
   }
   const upgraded = applyCatalogueVisualUpgradePlan(incoming, createStarterVisualUpgradePlan(expected)).state;
-  assertCompatibleStarterCatalogue(expected.records, upgraded.records);
+  const expanded = reconcileCatalogueRecords(upgraded, expected).state;
+  assertCompatibleStarterCatalogue(expected.records, expanded.records);
 }
 
 export function assertCompatibleStarterCatalogue(
@@ -96,7 +98,7 @@ export function assertCompatibleStarterCatalogue(
     ].filter((difference): difference is string => difference !== null);
 
     throw new Error(
-      `Archive backup does not match this four-badge starter Archive: ${differences.join("; ")}. Choose a backup exported by this version of Badge Archive. The selected file was left untouched and no Archive data was changed.`,
+      `Archive backup does not match this Archive's shipped catalogue: ${differences.join("; ")}. Choose a backup exported by this version of Badge Archive. The selected file was left untouched and no Archive data was changed.`,
     );
   }
 

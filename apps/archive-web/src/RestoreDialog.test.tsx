@@ -1,6 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
+import { createStarterArchiveState } from "./archive-state.js";
 import { RestoreDialog } from "./RestoreDialog.js";
 import type { PendingArchiveRestore } from "./restore-flow.js";
 
@@ -10,6 +11,7 @@ describe("RestoreDialog state-rescue reasons", () => {
       fileName: "compatible.badgearchive",
       bytes: new Uint8Array([1]),
       exportedAt: "2026-08-24T17:00:00.000Z",
+      incomingState: createStarterArchiveState(),
       incomingEarnedCount: 1,
       recoveryMode: "replace-incompatible-readable-state",
       safetyBackupOffered: false,

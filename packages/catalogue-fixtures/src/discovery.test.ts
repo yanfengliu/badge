@@ -144,6 +144,7 @@ describe("the Archive-safe discovery catalogue", () => {
         .map((park) => ({
           discoveryId: park.definitionId,
           availability: "source-study" as const,
+          recordId: `catalogue:${park.definitionId}`,
           title: park.shortName,
           criterion: park.criterion,
           locationLabel: park.locationLabel,
@@ -154,6 +155,7 @@ describe("the Archive-safe discovery catalogue", () => {
       ...selectedUsStateStudies.map((state) => ({
         discoveryId: state.definitionId,
         availability: "source-study" as const,
+        recordId: `catalogue:${state.definitionId}`,
         title: state.title,
         criterion: state.criterion,
         locationLabel: state.contextLabel,
@@ -165,6 +167,7 @@ describe("the Archive-safe discovery catalogue", () => {
       ...selectedBookStudies.map((book) => ({
         discoveryId: book.definitionId,
         availability: "source-study" as const,
+        recordId: `catalogue:${book.definitionId}`,
         title: book.title,
         criterion: book.criterion,
         locationLabel: book.contextLabel,
@@ -176,6 +179,7 @@ describe("the Archive-safe discovery catalogue", () => {
       ...selectedEducationMilestoneStudies.map((milestone) => ({
         discoveryId: milestone.definitionId,
         availability: "source-study" as const,
+        recordId: `catalogue:${milestone.definitionId}`,
         title: milestone.title,
         criterion: milestone.criterion,
         locationLabel: milestone.contextLabel,
@@ -187,6 +191,7 @@ describe("the Archive-safe discovery catalogue", () => {
       ...selectedMichelinDiningStudies.map((milestone) => ({
         discoveryId: milestone.definitionId,
         availability: "source-study" as const,
+        recordId: `catalogue:${milestone.definitionId}`,
         title: milestone.title,
         criterion: milestone.criterion,
         locationLabel: milestone.contextLabel,
@@ -283,11 +288,11 @@ describe("the Archive-safe discovery catalogue", () => {
         badge.discoveryId,
       ).toBe(false);
 
+      expect(badge).toHaveProperty("recordId");
       if (badge.availability === "available") {
-        expect(badge).toHaveProperty("recordId");
         expect(badge).toHaveProperty("previewUrl");
       } else {
-        expect(badge).not.toHaveProperty("recordId");
+        expect(badge.recordId).toBe(`catalogue:${badge.discoveryId}`);
         expect(badge).not.toHaveProperty("previewUrl");
       }
     }

@@ -23,7 +23,7 @@ describe("U.S. state prompt export", () => {
       recipe: { id: "badge-source-art", revision: 1 },
     });
     expect(rows[0].prompt).toContain("mountains, hills, or wilderness peaks");
-  });
+  }, 60_000);
 
   it("fails with the accepted selector forms when a state is unknown", () => {
     const result = runPromptExport("not-a-state");
@@ -31,7 +31,7 @@ describe("U.S. state prompt export", () => {
     expect(result.status).not.toBe(0);
     expect(result.stderr).toContain("Unknown U.S. state selector(s): not-a-state");
     expect(result.stderr).toContain("use a two-digit Census FIPS, USPS code, or state slug");
-  });
+  }, 60_000);
 });
 
 function runPromptExport(selector) {

@@ -22,10 +22,15 @@ export function archiveAssetFileName(asset: { readonly originalFileNames: readon
   const catalogueMedia = asset.originalFileNames
     .map((file) => file.replaceAll("\\", "/"))
     .map((file) =>
-      /(?:^|\/)assets\/([a-z0-9]+(?:-[a-z0-9]+)*)\/(thumbnails|details)\/[^/]+\.jpg$/u.exec(file),
+      /(?:^|\/)assets\/([a-z0-9]+(?:-[a-z0-9]+)*)\/(?:(thumbnails|details)\/)?[^/]+\.jpg$/u.exec(file),
     )
     .find((match) => match !== null);
   if (!catalogueMedia) return "assets/[name]-[hash][extname]";
-  const tier = catalogueMedia[2] === "details" ? "discovery-details" : "discovery";
+  const tier =
+    catalogueMedia[2] === "details"
+      ? "discovery-details"
+      : catalogueMedia[2] === "thumbnails"
+        ? "discovery"
+        : "discovery-sources";
   return `assets/${tier}/${catalogueMedia[1]}/[name]-[hash][extname]`;
 }

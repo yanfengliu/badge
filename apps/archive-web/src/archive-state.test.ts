@@ -1,26 +1,38 @@
 import { describe, expect, it } from "vitest";
 import { starterBadges } from "@badge/catalogue-fixtures/archive";
+import { cataloguePackBadges } from "@badge/catalogue-fixtures/catalogue-pack";
 
 import { createStarterArchiveState, createStarterQuotationRequests } from "./archive-state";
 
-describe("starter Archive saying defaults", () => {
-  it("creates every badge with a source-checked attributed quotation already selected", () => {
+const fixtureBanks = new Map([
+  ...starterBadges.map((badge) => [`starter:${badge.definitionId}`, badge.historicalQuotations] as const),
+  ...cataloguePackBadges.map((badge) => [badge.recordId, badge.historicalQuotations] as const),
+]);
+
+describe("seeded Archive saying defaults", () => {
+  it("creates every starter and catalogue badge with a source-checked attributed quotation", () => {
     const state = createStarterArchiveState();
 
+    expect(state.records).toHaveLength(starterBadges.length + cataloguePackBadges.length);
+    expect(state.records.filter((record) => record.recordId.startsWith("starter:"))).toHaveLength(4);
+    expect(state.records.filter((record) => record.recordId.startsWith("catalogue:"))).toHaveLength(296);
     for (const record of state.records) {
-      const fixture = starterBadges.find((badge) => `starter:${badge.definitionId}` === record.recordId);
-      expect(fixture).toBeDefined();
+      const bank = fixtureBanks.get(record.recordId);
+      expect(bank, record.recordId).toBeDefined();
       expect(record.acceptedSaying).not.toBeNull();
       expect(
-        fixture?.historicalQuotations.some(
+        bank?.some(
           (quotation) =>
             record.acceptedSaying === `“${quotation.text}” — ${quotation.person}, ${quotation.sourceTitle}`,
         ),
+        record.recordId,
       ).toBe(true);
+      expect(record.activation).toBeNull();
+      expect(record.definitionRef.namespace).toBe("pack");
     }
   });
 
-  it("binds every trusted quotation bank to its exact starter record wording", () => {
+  it("binds every trusted quotation bank to its exact seeded record wording", () => {
     const state = createStarterArchiveState();
     const requests = createStarterQuotationRequests();
 
