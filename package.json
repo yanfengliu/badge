@@ -25,8 +25,6 @@
     "catalogue:thumbnails": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/write-national-park-thumbnails.ps1",
     "catalogue:refresh-integrity": "node scripts/write-national-park-integrity.mjs",
     "catalogue:refresh-discovery-manifest": "node scripts/write-discovery-thumbnail-manifest.mjs",
-    "catalogue:details": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/write-discovery-detail-previews.ps1",
-    "catalogue:refresh-detail-manifest": "node scripts/write-discovery-detail-manifest.mjs",
     "catalogue:refresh-source-manifest": "node scripts/write-discovery-source-manifest.mjs",
     "prestart": "npm run generate:fixtures",
     "start": "node scripts/run-local.mjs",

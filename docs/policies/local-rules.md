@@ -26,7 +26,7 @@ Git may track a deliberately promoted compact catalogue source study when it is 
 
 Each promoted generated source declares an accessible visual description, sanitized generation workflow and content origin, owner-directed rights basis, recorded exact-prompt association, and deterministic normalization and thumbnail recipes. Digests prove immutable association, not historical model-call causation; never describe a refreshed hash as proof that the current prompt produced arbitrary bytes.
 
-Catalogue result lists use integrity-bound small derivatives and reserve the full source for the selected detail. Regenerate and verify every derivative whenever a parent changes; a later catalogue expansion must measure request counts, decoded dimensions, and the worst-case pixel bound at each required viewport rather than relying on `loading="lazy"` alone.
+Catalogue result lists use the integrity-bound `128 × 128` thumbnail tier and reserve the full canonical source for one selected badge at a time — the same on-demand `896 × 896` study that supplies the activation texture; no intermediate preview tier ships. Regenerate and verify every derivative whenever a parent changes; a later catalogue expansion must measure request counts, decoded dimensions, and the worst-case pixel bound at each required viewport rather than relying on `loading="lazy"` alone.
 
 Curated art styles and prompt recipes are versioned contracts. Once a `{ styleId, revision }`, candidate-role revision, or prompt-recipe revision has compiled a curated candidate, never mutate its directives or semantics in place so prior prompts and selected-source provenance remain reproducible.
 

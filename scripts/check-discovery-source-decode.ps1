@@ -95,7 +95,7 @@ foreach ($entry in $entries) {
 
 $trackedSources = @(
   Get-ChildItem -LiteralPath $assetsDirectory -Recurse -File -Filter "*.jpg" |
-    Where-Object { $_.Directory.Name -ne "details" -and $_.Directory.Name -ne "thumbnails" }
+    Where-Object { $_.Directory.Name -ne "thumbnails" }
 )
 $expectedTrackedCount = $entries.Count + $excludedKeys.Count
 if ($trackedSources.Count -ne $expectedTrackedCount) {

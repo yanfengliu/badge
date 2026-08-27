@@ -20,13 +20,6 @@ describe("Archive catalogue asset naming", () => {
     ).toBe("assets/discovery/national-parks/[name]-[hash][extname]");
     expect(
       archiveAssetFileName({
-        originalFileNames: [
-          "/repo/packages/catalogue-authoring/assets/michelin-dining/details/singlethread.jpg",
-        ],
-      }),
-    ).toBe("assets/discovery-details/michelin-dining/[name]-[hash][extname]");
-    expect(
-      archiveAssetFileName({
         originalFileNames: ["/repo/packages/catalogue-authoring/assets/books-read/dune.jpg"],
       }),
     ).toBe("assets/discovery-sources/books-read/[name]-[hash][extname]");
@@ -36,5 +29,15 @@ describe("Archive catalogue asset naming", () => {
     expect(archiveAssetFileName({ originalFileNames: ["/repo/apps/archive-web/src/archive.css"] })).toBe(
       "assets/[name]-[hash][extname]",
     );
+  });
+
+  it("routes a reappearing retired detail path to the generic name so the bundle gate rejects it", () => {
+    expect(
+      archiveAssetFileName({
+        originalFileNames: [
+          "/repo/packages/catalogue-authoring/assets/michelin-dining/details/singlethread.jpg",
+        ],
+      }),
+    ).toBe("assets/[name]-[hash][extname]");
   });
 });

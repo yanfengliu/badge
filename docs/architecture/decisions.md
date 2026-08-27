@@ -2,6 +2,14 @@
 
 Append decisions newest first. Never rewrite history; add a superseding entry that links to the decision it replaces.
 
+## 2026-08-27 — D-056: Retire the 384-pixel detail tier in favor of the canonical source tier
+
+**Status:** Accepted and implemented; it supersedes the detail-tier delivery language of D-054 and completes D-055's media model.
+
+The `384 × 384` detail previews existed solely to feed the read-only Discover study dialog, and D-055 removed that dialog: the on-demand canonical `896 × 896` source tier now serves the selected-detail role and the activation texture with one integrity-bound manifest. Keeping `297` consumerless derivatives (`8,136,025` bytes) in Git contradicted the promotion rule that a tracked asset must be a live repository input, and every catalogue change would have kept paying to regenerate and re-verify a tier nothing renders. The derivation recipe (`catalogue-detail-preview@1`) remains reproducible from Git history and the tracked canonical sources if a mid-size tier is ever needed again.
+
+Removed end to end: the Archive detail glob and resolvers, the Vite `discovery-details` output tier, the bundle-gate detail sections, the detail manifest and its writer, the System.Drawing derivation and decode scripts, the decode gate test, and the tracked `assets/*/details/` files. The archive bundle drops from three JPEG tiers to two — `297` thumbnails plus `296` canonical sources — and the class is gated on both vectors: the bundle gate rejects any unqualified JPEG reaching `dist`, and the source-tree decode sweep no longer carves out `details/` directories, so a detail file reappearing in Git fails the stray-asset check directly. The in-flight `wip/code-native-catalogue-rerender` branch edits only canonical sources, thumbnails, and recipe modules — no detail files — so it merges over this deletion without conflict; resuming it still must regenerate thumbnails, integrity records, the pack fixture, and the source manifest.
+
 ## 2026-08-26 — D-055: Publish every reviewed study as an activatable fixture-pack badge with a two-state Discover
 
 **Status:** Owner-mandated and implemented; it supersedes the read-only `Selected study` tier of D-054's Discover delivery and narrows D-019's strict-PNG durability rule.

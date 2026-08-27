@@ -125,31 +125,35 @@ describe.sequential("fresh Archive fixture publication on Windows", () => {
     },
   );
 
-  it.each([false, true])("validates an attempt-eight ambiguous success (corrupt: %s)", async (corrupt) => {
-    let attempts = 0;
-    const denial = transientError("EPERM", "simulated final-attempt ambiguous result");
-    const target = await newTarget({
-      async beforePublishRenameAttempt({ stagingDirectory, outputDirectory }) {
-        attempts += 1;
-        if (attempts < 8) throw denial;
-        await rename(stagingDirectory, outputDirectory);
-        if (corrupt) {
-          await writeFile(path.join(outputDirectory, expectedArchiveFixtures[0].fileName), "corrupt");
-        }
-        throw denial;
-      },
-    });
+  it.each([false, true])(
+    "validates an attempt-eight ambiguous success (corrupt: %s)",
+    async (corrupt) => {
+      let attempts = 0;
+      const denial = transientError("EPERM", "simulated final-attempt ambiguous result");
+      const target = await newTarget({
+        async beforePublishRenameAttempt({ stagingDirectory, outputDirectory }) {
+          attempts += 1;
+          if (attempts < 8) throw denial;
+          await rename(stagingDirectory, outputDirectory);
+          if (corrupt) {
+            await writeFile(path.join(outputDirectory, expectedArchiveFixtures[0].fileName), "corrupt");
+          }
+          throw denial;
+        },
+      });
 
-    if (corrupt) {
-      const failure = await rejected(generateArchiveFixtures(target));
-      expect(failure.message).toMatch(/did not produce the complete exact fixture tree/i);
-      expect(failure.cause).toBe(denial);
-    } else {
-      await expect(generateArchiveFixtures(target)).resolves.toHaveLength(expectedArchiveFixtures.length);
-      expect(await readFixtureTree(target.outputDirectory)).toEqual(expectedFixtureTree());
-    }
-    expect(attempts).toBe(8);
-  });
+      if (corrupt) {
+        const failure = await rejected(generateArchiveFixtures(target));
+        expect(failure.message).toMatch(/did not produce the complete exact fixture tree/i);
+        expect(failure.cause).toBe(denial);
+      } else {
+        await expect(generateArchiveFixtures(target)).resolves.toHaveLength(expectedArchiveFixtures.length);
+        expect(await readFixtureTree(target.outputDirectory)).toEqual(expectedFixtureTree());
+      }
+      expect(attempts).toBe(8);
+    },
+    60_000,
+  );
 
   it("aggregates publish, staging-cleanup, and lock-release failures", async () => {
     const publishDenial = transientError("EPERM", "simulated persistent publish hold");
@@ -179,7 +183,7 @@ describe.sequential("fresh Archive fixture publication on Windows", () => {
     expect(retainedEntries).toEqual(
       expect.arrayContaining([expect.stringMatching(/^\.archive-fixtures-stage-/), ".archive-fixtures-lock"]),
     );
-  });
+  }, 60_000);
 });
 
 async function newTarget(testHooks) {

@@ -21,16 +21,9 @@ export default defineConfig({
 export function archiveAssetFileName(asset: { readonly originalFileNames: readonly string[] }): string {
   const catalogueMedia = asset.originalFileNames
     .map((file) => file.replaceAll("\\", "/"))
-    .map((file) =>
-      /(?:^|\/)assets\/([a-z0-9]+(?:-[a-z0-9]+)*)\/(?:(thumbnails|details)\/)?[^/]+\.jpg$/u.exec(file),
-    )
+    .map((file) => /(?:^|\/)assets\/([a-z0-9]+(?:-[a-z0-9]+)*)\/(?:(thumbnails)\/)?[^/]+\.jpg$/u.exec(file))
     .find((match) => match !== null);
   if (!catalogueMedia) return "assets/[name]-[hash][extname]";
-  const tier =
-    catalogueMedia[2] === "details"
-      ? "discovery-details"
-      : catalogueMedia[2] === "thumbnails"
-        ? "discovery"
-        : "discovery-sources";
+  const tier = catalogueMedia[2] === "thumbnails" ? "discovery" : "discovery-sources";
   return `assets/${tier}/${catalogueMedia[1]}/[name]-[hash][extname]`;
 }
