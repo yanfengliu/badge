@@ -1,10 +1,13 @@
 import { findArtStyle } from "./art-styles";
+import { CODE_NATIVE_ENAMEL_GEOMETRY_RECIPE_REF } from "./code-native-art-recipe-types";
+import { landscapeManufacturingLanguageForStyle } from "./code-native-construction-language";
 import type { SelectedUsStateStudy } from "./types";
 import {
   usStatePromptHashes,
   usStateSourceHashes,
   usStateThumbnailHashes,
 } from "./us-state-selected-source-hashes";
+import { usStateCodeNativeLineage } from "./us-state-code-native-lineage";
 import { usStateCampaign } from "./us-states-campaign";
 import { usStates } from "./us-states";
 
@@ -21,6 +24,18 @@ export const selectedUsStateStudies: readonly SelectedUsStateStudy[] = usStates.
       `Selected U.S. state study ${state.name} has no valid primary prompt candidate; repair the campaign before binding generated art.`,
     );
   }
+  const codeNativeLineage = usStateCodeNativeLineage[state.slug];
+  const currentPromptSha256 = usStatePromptHashes[state.slug];
+  if (!codeNativeLineage || !currentPromptSha256) {
+    throw new Error(
+      `Selected U.S. state study ${state.name} has no code-native replacement lineage; run the integrity writer against the reviewed predecessor before binding replacement art.`,
+    );
+  }
+  if (codeNativeLineage.canonicalPromptSha256 !== currentPromptSha256) {
+    throw new Error(
+      `Selected U.S. state study ${state.name} changed its canonical prompt while binding replacement art; preserve the original prompt association.`,
+    );
+  }
   return {
     ...state,
     selectedSource: {
@@ -31,14 +46,29 @@ export const selectedUsStateStudies: readonly SelectedUsStateStudy[] = usStates.
       height: 896,
       sha256: usStateSourceHashes[state.slug] ?? `pending:${state.slug}`,
       promptSha256: usStatePromptHashes[state.slug] ?? `pending:${state.slug}`,
-      generatedOn: "2026-08-25",
+      generatedOn: "2026-08-26",
       promptRecipe: { id: "badge-source-art", revision: 1 },
+      sourceHistory: [
+        {
+          kind: "initial-generation",
+          promptRecipe: { id: "badge-source-art", revision: 1 },
+          promptSha256: codeNativeLineage.canonicalPromptSha256,
+          outputSourceSha256: codeNativeLineage.canonicalSourceSha256,
+        },
+        {
+          kind: "code-native-replacement",
+          renderRecipe: CODE_NATIVE_ENAMEL_GEOMETRY_RECIPE_REF,
+          designBriefSha256: codeNativeLineage.designBriefSha256,
+          rendererImplementationSha256: codeNativeLineage.rendererImplementationSha256,
+          supersededCanonicalSourceSha256: codeNativeLineage.canonicalSourceSha256,
+        },
+      ],
       selectedCandidateKey: primary.candidateKey,
-      accessibleDescription: `An original ${style.label.toLowerCase()} source study showing ${state.artBrief.requiredMotifs[0]}.`,
+      accessibleDescription: `An original source study using ${landscapeManufacturingLanguageForStyle(primary.styleId)}, showing ${state.artBrief.requiredMotifs[0]}.`,
       provenance: {
-        generationWorkflow: "openai-image-generation-via-codex-imagegen",
-        contentOrigin: "trained-algorithm",
-        promptBinding: "recorded-exact-canonical-prompt",
+        generationWorkflow: "deterministic-code-native-enamel-geometry",
+        contentOrigin: "code-authored-geometry",
+        promptBinding: "recorded-canonical-generation-and-code-native-design",
         rightsBasis: "owner-directed-original-generation-for-badge",
         normalization: {
           recipe: { id: "catalogue-study-jpeg", revision: 1 },

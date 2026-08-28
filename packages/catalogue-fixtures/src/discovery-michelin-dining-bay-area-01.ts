@@ -10,7 +10,7 @@ export const discoveryMichelinDiningBayAreaPartOne = defineSourceStudyBadges(
       "Dine at Kiln on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "149 Fell St., San Francisco, CA, 94102, USA · Contemporary",
       "kiln.jpg",
-      "An original culture-led miniature badge study for Kiln, based on this researched cue: A warmed warehouse frames Nordic-inspired curing, drying, and fermentation alongside precise modern cooking. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using wood marquetry strata for Dined at Kiln: An original culture-led miniature badge study for Kiln, based on this researched cue: A warmed warehouse frames Nordic-inspired curing, drying, and fermentation alongside precise modern cooking. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       ["Kiln", "Contemporary", "Bay Area", "San Francisco, California", "SF", "San Francisco & surroundings"],
       "https://guide.michelin.com/us/en/california/san-francisco/restaurant/kiln-1210355",
     ],
@@ -20,7 +20,7 @@ export const discoveryMichelinDiningBayAreaPartOne = defineSourceStudyBadges(
       "Dine at Birdsong on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "1085 Mission St., San Francisco, CA, 94103, USA · Contemporary, American",
       "birdsong.jpg",
-      "An original dish-led miniature badge study for Birdsong, based on this researched cue: Live fire anchors a high-ceilinged room, while lacquered quail arrives with grilled rolls and crisp pickles. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using stained-glass lead cells for Dined at Birdsong: An original dish-led miniature badge study for Birdsong, based on this researched cue: Live fire anchors a high-ceilinged room, while lacquered quail arrives with grilled rolls and crisp pickles. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "Birdsong",
         "Contemporary, American",
@@ -37,7 +37,7 @@ export const discoveryMichelinDiningBayAreaPartOne = defineSourceStudyBadges(
       "Dine at Nari on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "Hotel Kabuki, 1625 Post St., San Francisco, CA, 94115, USA · Thai, Contemporary",
       "nari.jpg",
-      "An original dish-led miniature badge study for Nari, based on this researched cue: A brick-colored bumbai curry pairs crisp eggplant with an airy folded roti in a refined Thai family-style meal. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using ceramic underglaze roundel for Dined at Nari: An original dish-led miniature badge study for Nari, based on this researched cue: A brick-colored bumbai curry pairs crisp eggplant with an airy folded roti in a refined Thai family-style meal. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "Nari",
         "Thai, Contemporary",
@@ -54,7 +54,7 @@ export const discoveryMichelinDiningBayAreaPartOne = defineSourceStudyBadges(
       "Dine at Kin Khao on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "55 Cyril Magnin St., San Francisco, CA, 94102, USA · Thai",
       "kin-khao.jpg",
-      "An original dish-led miniature badge study for Kin Khao, based on this researched cue: Mushroom hor mok presents fragrant curry mousse in a jar with coconut cream and crisp rice cakes. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using large mosaic tesserae for Dined at Kin Khao: An original dish-led miniature badge study for Kin Khao, based on this researched cue: Mushroom hor mok presents fragrant curry mousse in a jar with coconut cream and crisp rice cakes. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "Kin Khao",
         "Thai",
@@ -72,7 +72,7 @@ export const discoveryMichelinDiningBayAreaPartOne = defineSourceStudyBadges(
       "Dine at Californios on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "355 11th St., San Francisco, CA, 94103, USA · Mexican, Contemporary",
       "californios.jpg",
-      "An original dish-led miniature badge study for Californios, based on this researched cue: A pillowy sourdough tortilla carries crisp black cod between contrasting huitlacoche and yellow-corn cremas. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using stained-glass lead cells for Dined at Californios: An original dish-led miniature badge study for Californios, based on this researched cue: A pillowy sourdough tortilla carries crisp black cod between contrasting huitlacoche and yellow-corn cremas. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "Californios",
         "Mexican, Contemporary",
@@ -89,7 +89,7 @@ export const discoveryMichelinDiningBayAreaPartOne = defineSourceStudyBadges(
       "Dine at State Bird Provisions on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "1529 Fillmore St., San Francisco, CA, 94115, USA · Californian",
       "state-bird-provisions.jpg",
-      "An original culture-led miniature badge study for State Bird Provisions, based on this researched cue: Small Californian provisions travel through the lively room on rolling dim-sum-style carts and trays. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using screenprint overlaps for Dined at State Bird Provisions: An original culture-led miniature badge study for State Bird Provisions, based on this researched cue: Small Californian provisions travel through the lively room on rolling dim-sum-style carts and trays. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "State Bird Provisions",
         "Californian",
@@ -107,7 +107,7 @@ export const discoveryMichelinDiningBayAreaPartOne = defineSourceStudyBadges(
       "Dine at The Progress on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "1525 Fillmore St., San Francisco, CA, 94115, USA · Californian",
       "the-progress.jpg",
-      "An original interior-led miniature badge study for The Progress, based on this researched cue: Tall windows, leafy plants, and a geometric hanging form connect the dining room, balcony, and concrete mezzanine. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using wood marquetry strata for Dined at The Progress: An original interior-led miniature badge study for The Progress, based on this researched cue: Tall windows, leafy plants, and a geometric hanging form connect the dining room, balcony, and concrete mezzanine. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "The Progress",
         "Californian",
@@ -125,7 +125,7 @@ export const discoveryMichelinDiningBayAreaPartOne = defineSourceStudyBadges(
       "Dine at 7 Adams on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "1963 Sutter St., San Francisco, CA, 94115, USA · Californian, Contemporary",
       "7-adams.jpg",
-      "An original interior-led miniature badge study for 7 Adams, based on this researched cue: A calm railway-shaped room draws the eye along an open kitchen toward warm milk bread and cultured butter. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using cut-paper layers for Dined at 7 Adams: An original interior-led miniature badge study for 7 Adams, based on this researched cue: A calm railway-shaped room draws the eye along an open kitchen toward warm milk bread and cultured butter. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "7 Adams",
         "Californian, Contemporary",
@@ -142,7 +142,7 @@ export const discoveryMichelinDiningBayAreaPartOne = defineSourceStudyBadges(
       "Dine at Acquerello on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "1722 Sacramento St., San Francisco, CA, 94109, USA · Italian, Contemporary",
       "acquerello.jpg",
-      "An original interior-led miniature badge study for Acquerello, based on this researched cue: A signature A-frame ceiling and warm furnishings culminate in a rolling cart laden with petite sweets. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using wood marquetry strata for Dined at Acquerello: An original interior-led miniature badge study for Acquerello, based on this researched cue: A signature A-frame ceiling and warm furnishings culminate in a rolling cart laden with petite sweets. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "Acquerello",
         "Italian, Contemporary",
@@ -159,7 +159,7 @@ export const discoveryMichelinDiningBayAreaPartOne = defineSourceStudyBadges(
       "Dine at Restaurant Naides on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "708 Bush St., San Francisco, CA, 94108, USA · Filipino",
       "restaurant-naides.jpg",
-      "An original dish-led miniature badge study for Restaurant Naides, based on this researched cue: A Filipino steamed rice cake carries pork rillette, thin lardo, and fresh herbs in the tasting sequence. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using matte painted masses for Dined at Restaurant Naides: An original dish-led miniature badge study for Restaurant Naides, based on this researched cue: A Filipino steamed rice cake carries pork rillette, thin lardo, and fresh herbs in the tasting sequence. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "Restaurant Naides",
         "Filipino",
@@ -177,7 +177,7 @@ export const discoveryMichelinDiningBayAreaPartOne = defineSourceStudyBadges(
       "Dine at Niku Steakhouse on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "61 Division St., San Francisco, CA, 94103, USA · Steakhouse",
       "niku-steakhouse.jpg",
-      "An original interior-led miniature badge study for Niku Steakhouse, based on this researched cue: A gleaming entry opens to a wood-lined room and long chef counter glowing over a bed of coals. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using wood marquetry strata for Dined at Niku Steakhouse: An original interior-led miniature badge study for Niku Steakhouse, based on this researched cue: A gleaming entry opens to a wood-lined room and long chef counter glowing over a bed of coals. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "Niku Steakhouse",
         "Steakhouse",
@@ -194,7 +194,7 @@ export const discoveryMichelinDiningBayAreaPartOne = defineSourceStudyBadges(
       "Dine at Ssal on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "2226 Polk St., San Francisco, CA, 94109, USA · Korean",
       "ssal.jpg",
-      "An original culture-led miniature badge study for Ssal, based on this researched cue: A single tasting menu joins Korean aesthetics and sensibilities with French dégustation technique beside an open kitchen. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using ceramic underglaze roundel for Dined at Ssal: An original culture-led miniature badge study for Ssal, based on this researched cue: A single tasting menu joins Korean aesthetics and sensibilities with French dégustation technique beside an open kitchen. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "Ssal",
         "Korean",
@@ -212,7 +212,7 @@ export const discoveryMichelinDiningBayAreaPartOne = defineSourceStudyBadges(
       "Dine at Mister Jiu’s on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "28 Waverly Pl., San Francisco, CA, 94108, USA · Chinese",
       "mister-jius.jpg",
-      "An original culture-led miniature badge study for Mister Jiu’s, based on this researched cue: A contemporary banquet meal in historic Chinatown centers on whole roasted duck prepared through traditional Chinese technique. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using relief-cut silhouettes for Dined at Mister Jiu’s: An original culture-led miniature badge study for Mister Jiu’s, based on this researched cue: A contemporary banquet meal in historic Chinatown centers on whole roasted duck prepared through traditional Chinese technique. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "Mister Jiu’s",
         "Chinese",
@@ -230,7 +230,7 @@ export const discoveryMichelinDiningBayAreaPartOne = defineSourceStudyBadges(
       "Dine at Benu on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "22 Hawthorne St., San Francisco, CA, 94105, USA · Asian",
       "benu.jpg",
-      "An original dish-led miniature badge study for Benu, based on this researched cue: Michelin highlights Benu's whole roasted quail, glazed with maple and soy and served with sweet-potato crepinette and black truffles. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using bold enamel contour for Dined at Benu: An original dish-led miniature badge study for Benu, based on this researched cue: Michelin highlights Benu's whole roasted quail, glazed with maple and soy and served with sweet-potato crepinette and black truffles. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       ["Benu", "Asian", "Bay Area", "SoMa", "San Francisco, California", "San Francisco & surroundings"],
       "https://guide.michelin.com/us/en/california/san-francisco/restaurant/benu",
       "https://www.benusf.com/menu/",
@@ -241,7 +241,7 @@ export const discoveryMichelinDiningBayAreaPartOne = defineSourceStudyBadges(
       "Dine at Nisei on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "2316 Polk St., San Francisco, CA, 94109, USA · Japanese",
       "nisei.jpg",
-      "An original dish-led miniature badge study for Nisei, based on this researched cue: Michelin identifies Nisei's omurice topped with Japanese omelet and caviar, alongside nori maki filled with silken tofu, Blue Lake lava beans, and trout roe. The design reduces that cue to 5 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using ceramic underglaze roundel for Dined at Nisei: An original dish-led miniature badge study for Nisei, based on this researched cue: Michelin identifies Nisei's omurice topped with Japanese omelet and caviar, alongside nori maki filled with silken tofu, Blue Lake lava beans, and trout roe. The design reduces that cue to 5 broad flat forms for legibility on a manufactured badge.",
       [
         "Nisei",
         "Japanese",
@@ -259,7 +259,7 @@ export const discoveryMichelinDiningBayAreaPartOne = defineSourceStudyBadges(
       "Dine at Lazy Bear on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "3416 19th St., San Francisco, CA, 94110, USA · Contemporary",
       "lazy-bear.jpg",
-      "An original dish-led miniature badge study for Lazy Bear, based on this researched cue: Lazy Bear's bi-level warehouse resembles a hunting lodge; its paired oysters use gooseberry mignonette or charbroiled Jimmy Nardello pepper glaze with pickled biquinho peppers. The design reduces that cue to 5 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using ceramic underglaze roundel for Dined at Lazy Bear: An original dish-led miniature badge study for Lazy Bear, based on this researched cue: Lazy Bear's bi-level warehouse resembles a hunting lodge; its paired oysters use gooseberry mignonette or charbroiled Jimmy Nardello pepper glaze with pickled biquinho peppers. The design reduces that cue to 5 broad flat forms for legibility on a manufactured badge.",
       [
         "Lazy Bear",
         "Contemporary",
@@ -277,7 +277,7 @@ export const discoveryMichelinDiningBayAreaPartOne = defineSourceStudyBadges(
       "Dine at Sons & Daughters on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "2875 18th St., San Francisco, CA, 94110, USA · Contemporary",
       "sons-and-daughters.jpg",
-      "An original culture-led miniature badge study for Sons & Daughters, based on this researched cue: New Nordic preservation shapes vegetables, foraged mushrooms, and seafood, with British roots appearing in a quail Scotch egg. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using broad fiber appliqué for Dined at Sons & Daughters: An original culture-led miniature badge study for Sons & Daughters, based on this researched cue: New Nordic preservation shapes vegetables, foraged mushrooms, and seafood, with British roots appearing in a quail Scotch egg. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "Sons & Daughters",
         "Contemporary",
@@ -294,7 +294,7 @@ export const discoveryMichelinDiningBayAreaPartOne = defineSourceStudyBadges(
       "Dine at Hilda and Jesse on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "701 Union St., San Francisco, CA, 94133, USA · American, Contemporary",
       "hilda-and-jesse.jpg",
-      "An original culture-led miniature badge study for Hilda and Jesse, based on this researched cue: A cheerful modernist-diner room delivers an ambitious brunch as a frequently changing sequence of surprise dishes. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using screenprint overlaps for Dined at Hilda and Jesse: An original culture-led miniature badge study for Hilda and Jesse, based on this researched cue: A cheerful modernist-diner room delivers an ambitious brunch as a frequently changing sequence of surprise dishes. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "Hilda and Jesse",
         "American, Contemporary",
@@ -311,7 +311,7 @@ export const discoveryMichelinDiningBayAreaPartOne = defineSourceStudyBadges(
       "Dine at San Ho Won on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "2170 Bryant St., San Francisco, CA, 94110, USA · Korean, Contemporary",
       "san-ho-won.jpg",
-      "An original dish-led miniature badge study for San Ho Won, based on this researched cue: Korean barbecue and home cooking meet in pork jowl with aged kimchi stew and a soy-pickled ramp. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using ceramic underglaze roundel for Dined at San Ho Won: An original dish-led miniature badge study for San Ho Won, based on this researched cue: Korean barbecue and home cooking meet in pork jowl with aged kimchi stew and a soy-pickled ramp. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "San Ho Won",
         "Korean, Contemporary",
@@ -328,7 +328,7 @@ export const discoveryMichelinDiningBayAreaPartOne = defineSourceStudyBadges(
       "Dine at Quince on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "470 Pacific Ave., San Francisco, CA, 94133, USA · Contemporary, Californian",
       "quince.jpg",
-      "An original dish-led miniature badge study for Quince, based on this researched cue: Fireplace-cooked local lamb meets fava beans, green garlic, edible blossoms, and vegetable-ash bread. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using matte painted masses for Dined at Quince: An original dish-led miniature badge study for Quince, based on this researched cue: Fireplace-cooked local lamb meets fava beans, green garlic, edible blossoms, and vegetable-ash bread. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "Quince",
         "Contemporary, Californian",
@@ -345,7 +345,7 @@ export const discoveryMichelinDiningBayAreaPartOne = defineSourceStudyBadges(
       "Dine at Saison on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "178 Townsend St., San Francisco, CA, 94107, USA · Californian",
       "saison.jpg",
-      "An original culture-led miniature badge study for Saison, based on this researched cue: An open wood hearth shapes a California-terroir menu sourced from regional farms, ranches, and fisheries. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using screenprint overlaps for Dined at Saison: An original culture-led miniature badge study for Saison, based on this researched cue: An open wood hearth shapes a California-terroir menu sourced from regional farms, ranches, and fisheries. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "Saison",
         "Californian",

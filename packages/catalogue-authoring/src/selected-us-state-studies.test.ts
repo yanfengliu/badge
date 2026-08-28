@@ -3,13 +3,25 @@ import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
+import {
+  CODE_NATIVE_ENAMEL_GEOMETRY_RECIPE_REF,
+  findCodeNativeArtRecipe,
+  serializeCodeNativeArtRecipe,
+} from "./code-native-art-recipes.js";
 import { compileCandidatePrompt } from "./prompt-recipe.js";
 import { selectedUsStateStudies } from "./selected-us-state-studies.js";
 import { usStateCampaign } from "./us-states-campaign.js";
 
+const rendererImplementationFiles = [
+  "../../../scripts/render-code-native-catalogue-art.mjs",
+  "../../../scripts/code-native-art/flat-raster.mjs",
+  "../../../scripts/code-native-art/png.mjs",
+] as const;
+
 describe("selected U.S. state source studies", () => {
-  it("binds all 50 reviewed images, thumbnails, and canonical primary prompts", async () => {
+  it("binds all 50 replacements, thumbnails, canonical prompts, and predecessor histories", async () => {
     expect(selectedUsStateStudies).toHaveLength(50);
+    const rendererImplementationSha256 = await sha256Files(rendererImplementationFiles);
     for (const study of selectedUsStateStudies) {
       const project = usStateCampaign.find((candidate) => candidate.definitionId === study.definitionId);
       const primary = project?.candidates.find(
@@ -21,6 +33,14 @@ describe("selected U.S. state source studies", () => {
       expect(createHash("sha256").update(prompt, "utf8").digest("hex"), study.name).toBe(
         study.selectedSource.promptSha256,
       );
+      expect(study.selectedSource).toMatchObject({
+        generatedOn: "2026-08-26",
+        provenance: {
+          generationWorkflow: "deterministic-code-native-enamel-geometry",
+          contentOrigin: "code-authored-geometry",
+          promptBinding: "recorded-canonical-generation-and-code-native-design",
+        },
+      });
       const sourceBytes = await readFile(
         fileURLToPath(new URL(`../assets/us-states/${study.selectedSource.fileName}`, import.meta.url)),
       );
@@ -45,6 +65,31 @@ describe("selected U.S. state source studies", () => {
       expect(createHash("sha256").update(thumbnailBytes).digest("hex"), `${study.name} thumbnail`).toBe(
         study.selectedSource.thumbnail.sha256,
       );
+      const recipe = findCodeNativeArtRecipe("us-states", study.slug);
+      if (!recipe) throw new Error(`Missing code-native U.S. state recipe for ${study.name}.`);
+      expect(study.selectedSource.accessibleDescription, study.name).toContain(recipe.manufacturingLanguage);
+      const sourceHistory = study.selectedSource.sourceHistory;
+      if (!sourceHistory || sourceHistory.length !== 2) {
+        throw new Error(`Missing two-step source history for ${study.name}.`);
+      }
+      expect(sourceHistory[0], study.name).toMatchObject({
+        kind: "initial-generation",
+        promptRecipe: { id: "badge-source-art", revision: 1 },
+        promptSha256: study.selectedSource.promptSha256,
+      });
+      expect(sourceHistory[1], study.name).toEqual({
+        kind: "code-native-replacement",
+        renderRecipe: CODE_NATIVE_ENAMEL_GEOMETRY_RECIPE_REF,
+        designBriefSha256: createHash("sha256")
+          .update(serializeCodeNativeArtRecipe(recipe), "utf8")
+          .digest("hex"),
+        rendererImplementationSha256,
+        supersededCanonicalSourceSha256:
+          sourceHistory[0].kind === "initial-generation" ? sourceHistory[0].outputSourceSha256 : "",
+      });
+      if (sourceHistory[0].kind === "initial-generation") {
+        expect(sourceHistory[0].outputSourceSha256, study.name).not.toBe(study.selectedSource.sha256);
+      }
       expect(prompt).toContain(study.name);
       expect(study.defaultQuotationId).toMatch(/^historic-quotation\//u);
     }
@@ -60,6 +105,17 @@ describe("selected U.S. state source studies", () => {
     }
   });
 });
+
+async function sha256Files(relativeFiles: readonly string[]): Promise<string> {
+  const hash = createHash("sha256");
+  for (const relativeFile of relativeFiles) {
+    hash.update(relativeFile.replace("../../../", ""), "utf8");
+    hash.update("\0", "utf8");
+    hash.update(await readFile(fileURLToPath(new URL(relativeFile, import.meta.url))));
+    hash.update("\0", "utf8");
+  }
+  return hash.digest("hex");
+}
 
 function readJpegHeaderSize(bytes: Uint8Array): { width: number; height: number } {
   if (bytes[0] !== 0xff || bytes[1] !== 0xd8) throw new Error("Selected source is not a JPEG image.");

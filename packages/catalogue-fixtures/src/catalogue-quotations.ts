@@ -139,6 +139,17 @@ export const educationQuotationBank: readonly FixtureHistoricalQuotation[] = [
   },
 ];
 
+export const videoGameQuotationBank: readonly FixtureHistoricalQuotation[] = [
+  {
+    id: "william-shakespeare-plays-the-thing",
+    text: "The play’s the thing Wherein I’ll catch the conscience of the King.",
+    person: "William Shakespeare",
+    personWikipediaUrl: "https://en.wikipedia.org/wiki/William_Shakespeare",
+    sourceTitle: "Hamlet, Act II, Scene II",
+    sourceUrl: "https://www.gutenberg.org/files/1524/1524-h/1524-h.htm",
+  },
+];
+
 export const diningQuotationBank: readonly FixtureHistoricalQuotation[] = [
   {
     id: "oscar-wilde-good-dinner",
@@ -155,6 +166,7 @@ export const catalogueQuotationBanksBySetId: Readonly<Record<string, readonly Fi
     "us-national-parks": parkQuotationBank,
     "us-states": stateQuotationBank,
     "books-read": bookQuotationBank,
+    "video-games-played": videoGameQuotationBank,
     "life-milestones": educationQuotationBank,
     "michelin-dining": diningQuotationBank,
   };

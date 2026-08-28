@@ -6,6 +6,7 @@ import {
   selectedEducationMilestoneStudies,
   selectedMichelinDiningStudies,
   selectedUsStateStudies,
+  selectedVideoGameStudies,
   usNationalParks,
 } from "@badge/catalogue-authoring";
 import { discoveryBadges, discoverySets, type DiscoveryBadge } from "@badge/catalogue-fixtures/discovery";
@@ -86,6 +87,9 @@ const productionFiles = [
   "discovery-starters.ts",
   "discovery-types.ts",
   "discovery-us-states.ts",
+  "discovery-video-games-01.ts",
+  "discovery-video-games-02.ts",
+  "discovery-video-games.ts",
 ] as const;
 
 const publicProjection: readonly DiscoveryBadge[] = discoveryBadges;
@@ -107,6 +111,11 @@ describe("the Archive-safe discovery catalogue", () => {
         setId: "books-read",
         title: "Books Read",
         description: "Finished books kept as cultural memories.",
+      },
+      {
+        setId: "video-games-played",
+        title: "Video Games",
+        description: "Video-game milestones remembered through original abstract badge art.",
       },
       {
         setId: "life-milestones",
@@ -176,6 +185,18 @@ describe("the Archive-safe discovery catalogue", () => {
         accessibleDescription: book.selectedSource.accessibleDescription,
         setIds: ["books-read"],
       })),
+      ...selectedVideoGameStudies.map((game) => ({
+        discoveryId: game.definitionId,
+        availability: "source-study" as const,
+        recordId: `catalogue:${game.definitionId}`,
+        title: game.title,
+        criterion: game.criterion,
+        locationLabel: game.contextLabel,
+        searchAliases: game.aliases,
+        thumbnailKey: `video-games/${game.selectedSource.thumbnail.fileName}`,
+        accessibleDescription: game.selectedSource.accessibleDescription,
+        setIds: ["video-games-played"],
+      })),
       ...selectedEducationMilestoneStudies.map((milestone) => ({
         discoveryId: milestone.definitionId,
         availability: "source-study" as const,
@@ -206,10 +227,10 @@ describe("the Archive-safe discovery catalogue", () => {
     ];
 
     expect(publicProjection).toEqual(expected);
-    expect(discoveryBadges).toHaveLength(300);
-    expect(new Set(discoveryBadges.map((badge) => badge.discoveryId))).toHaveProperty("size", 300);
+    expect(discoveryBadges).toHaveLength(350);
+    expect(new Set(discoveryBadges.map((badge) => badge.discoveryId))).toHaveProperty("size", 350);
     expect(discoveryBadges.filter((badge) => badge.availability === "available")).toHaveLength(4);
-    expect(discoveryBadges.filter((badge) => badge.availability === "source-study")).toHaveLength(296);
+    expect(discoveryBadges.filter((badge) => badge.availability === "source-study")).toHaveLength(346);
     expect(
       discoveryBadges.some((badge) => commonAchievementIdeas.some((idea) => idea.id === badge.discoveryId)),
     ).toBe(false);
@@ -248,6 +269,7 @@ describe("the Archive-safe discovery catalogue", () => {
       "us-national-parks": 64,
       "us-states": 50,
       "books-read": 51,
+      "video-games-played": 50,
       "life-milestones": 3,
       "michelin-dining": 132,
     });

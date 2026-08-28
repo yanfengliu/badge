@@ -176,6 +176,13 @@ interface SelectedSourceCodeNativeRenderBinding {
   readonly rendererImplementationSha256: string;
 }
 
+export interface SelectedSourceCodeNativeLineage {
+  readonly canonicalSourceSha256: string;
+  readonly canonicalPromptSha256: string;
+  readonly designBriefSha256: string;
+  readonly rendererImplementationSha256: string;
+}
+
 export interface SelectedSourceCodeNativeReplacementRenderStep extends SelectedSourceCodeNativeRenderBinding {
   readonly kind: "code-native-replacement";
   /** This digest identifies the exploratory imagegen source that the code-native source replaces; it is not a pixel input claim. */

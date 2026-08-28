@@ -7,7 +7,7 @@ param(
   [ValidateRange(1, 10000)]
   [int]$ExpectedCount = 52,
   [ValidateRange(0.001, 1.0)]
-  [double]$MaximumResidual = 0.045
+  [double]$MaximumResidual = 0.035
 )
 
 $ErrorActionPreference = "Stop"
@@ -230,7 +230,7 @@ if (-not [string]::IsNullOrWhiteSpace($SingleImagePath)) {
   return
 }
 
-$knownCatalogueDirectories = @("books-read", "life-milestones", "michelin-dining")
+$knownCatalogueDirectories = @("books-read", "life-milestones", "michelin-dining", "national-parks", "us-states", "video-games")
 $selectedCatalogueDirectories = @(
   $CatalogueDirectories.Split(',') |
     ForEach-Object { $_.Trim() } |

@@ -99,8 +99,23 @@ describe("phone layout contract", () => {
     expect(phone).toMatch(
       /\.memory-replay__viewer \.badge-fallback__object-frame[^{]*\{[^}]*inline-size:\s*min\(70cqi, var\(--badge-stage-fit-inline\)\)[^}]*block-size:\s*auto[^}]*max-inline-size:\s*none/su,
     );
+    expect(phone).toMatch(
+      /\.artifact-pane \.badge-fallback__stage[^{]*\{[^}]*min-block-size:\s*0[^}]*container-type:\s*size[^}]*overflow:\s*hidden/su,
+    );
+    expect(phone).toMatch(
+      /\.artifact-pane \.badge-fallback\s*\{[^}]*(?<!min-)block-size:\s*clamp\(250px, 46dvh, 330px\)/su,
+    );
+    expect(phone).toMatch(
+      /\.artifact-pane \.badge-fallback__object-frame[^{]*\{[^}]*inline-size:\s*min\(70cqi, var\(--badge-stage-fit-inline\)\)[^}]*block-size:\s*auto[^}]*max-inline-size:\s*none/su,
+    );
     expect(shortLandscape).toMatch(
       /\.artifact-pane \.badge-viewer__viewport[^{]*\{[^}]*block-size:\s*220px/su,
+    );
+    expect(shortLandscape).toMatch(
+      /\.artifact-pane \.badge-fallback__stage[^{]*\{[^}]*min-block-size:\s*0[^}]*container-type:\s*size[^}]*overflow:\s*hidden/su,
+    );
+    expect(shortLandscape).toMatch(
+      /\.artifact-pane \.badge-fallback__object-frame[^{]*\{[^}]*inline-size:\s*min\(70cqi, var\(--badge-stage-fit-inline\)\)[^}]*block-size:\s*auto[^}]*max-inline-size:\s*none/su,
     );
     expect(shortLandscape).toMatch(/\.collection-empty-callout button[^{]*\{[^}]*min-height:\s*44px/su);
     expect(shortLandscape).toMatch(
@@ -122,6 +137,7 @@ describe("phone layout contract", () => {
 
   it("keeps Studio navigation, inputs, candidate browsing, and construction controls touch-safe", () => {
     const base = read("apps/studio-web/src/mobile.css");
+    const artDirection = read("apps/studio-web/src/art-direction-library.css");
     const entry = read("apps/studio-web/src/StudioSurface.tsx");
     const phone = mediaCss("apps/studio-web/src/mobile.css", "(max-width: 480px)");
     const shortLandscape = mediaCss(
@@ -146,8 +162,23 @@ describe("phone layout contract", () => {
     expect(phone).toMatch(/:is\(input, textarea, select\)\s*\{[^}]*font-size:\s*16px/su);
     expect(phone).toMatch(/\.publish-bar \.button\s*\{[^}]*width:\s*100%/su);
     expect(phone).toMatch(/\.art-direction-library__restore-recommendation[^{]*\{[^}]*min-height:\s*44px/su);
+    expect(phone).toMatch(
+      /\.construction-bench \.badge-fallback__stage[^{]*\{[^}]*min-block-size:\s*0[^}]*container-type:\s*size[^}]*overflow:\s*hidden/su,
+    );
+    expect(phone).toMatch(
+      /\.construction-bench \.badge-fallback\s*\{[^}]*(?<!min-)block-size:\s*clamp\(240px, 44dvh, 300px\)/su,
+    );
+    expect(phone).toMatch(
+      /\.construction-bench \.badge-fallback__object-frame[^{]*\{[^}]*inline-size:\s*min\(70cqi, var\(--badge-stage-fit-inline\)\)[^}]*block-size:\s*auto[^}]*max-inline-size:\s*none/su,
+    );
     expect(shortLandscape).toMatch(
       /\.construction-bench \.badge-viewer__viewport[^{]*\{[^}]*block-size:\s*220px/su,
+    );
+    expect(shortLandscape).toMatch(
+      /\.construction-bench \.badge-fallback__stage[^{]*\{[^}]*min-block-size:\s*0[^}]*container-type:\s*size[^}]*overflow:\s*hidden/su,
+    );
+    expect(shortLandscape).toMatch(
+      /\.construction-bench \.badge-fallback__object-frame[^{]*\{[^}]*inline-size:\s*min\(70cqi, var\(--badge-stage-fit-inline\)\)[^}]*block-size:\s*auto[^}]*max-inline-size:\s*none/su,
     );
     expect(shortLandscape).toMatch(/\.segment button[^{]*\{[^}]*min-height:\s*44px/su);
     expect(shortLandscape).toMatch(
@@ -163,5 +194,8 @@ describe("phone layout contract", () => {
       /\.art-direction-library__detail\s*\{[^}]*padding-right:\s*max\(clamp\(28px, 4vw, 54px\), var\(--safe-right\)\)[^}]*padding-left:\s*max\(clamp\(28px, 4vw, 54px\), var\(--safe-left\)\)/su,
     );
     expect(base).toContain("padding-left: max(clamp(24px, 3.2vw, 52px), var(--safe-left));");
+    expect(artDirection).toMatch(
+      /\.art-direction-library__prompt-actions button\s*\{[^}]*min-height:\s*44px/su,
+    );
   });
 });

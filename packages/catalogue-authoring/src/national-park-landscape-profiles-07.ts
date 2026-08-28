@@ -1,0 +1,320 @@
+import { defineLandscapeArtProfile, motif, palette } from "./code-native-landscape-profile";
+
+export const nationalParkLandscapeProfiles07 = [
+  defineLandscapeArtProfile({
+    slug: "theodore-roosevelt",
+    sourceCue: "bison moving through Little Missouri badlands beneath a huge sky",
+    primaryStyleId: "woven-tapestry-field",
+    palette: palette(
+      ["sky", "#70899A"],
+      ["prairie", "#BE9548"],
+      ["clay", "#A75843"],
+      ["sage", "#6D7650"],
+      ["river", "#3F758B"],
+    ),
+    motifs: [
+      motif(
+        "bison moving through Little Missouri badlands beneath a huge sky",
+        "bison",
+        2,
+        0.36,
+        0.61,
+        0.34,
+        0.26,
+      ),
+      motif("a winding river holding prairie and painted buttes together", "ribbon", 4, 0.62, 0.7, 0.38, 0.3),
+      motif(
+        "badland bluffs, grassland, river bends, and cottonwood bottoms",
+        "horizon",
+        1,
+        0.54,
+        0.84,
+        0.84,
+        0.2,
+      ),
+    ],
+    relationship:
+      "A solitary bison crosses the clay badlands while one blue river gathers the broad prairie band.",
+    edgeStrategy: "Prairie crosses the bottom edge while the huge blue sky remains the dominant open field.",
+  }),
+  defineLandscapeArtProfile({
+    slug: "virgin-islands",
+    sourceCue: "a green hillside descending into Trunk Bay's clear reef water",
+    primaryStyleId: "cut-paper-strata",
+    palette: palette(
+      ["deep sea", "#27638C"],
+      ["Caribbean", "#2FA4A1"],
+      ["leaf", "#3E784D"],
+      ["sand", "#E8E0C8"],
+      ["coral", "#D36B5C"],
+    ),
+    motifs: [
+      motif(
+        "a green hillside descending into Trunk Bay's clear reef water",
+        "horizon",
+        2,
+        0.48,
+        0.49,
+        0.78,
+        0.48,
+      ),
+      motif("a white-sand crescent holding sea turtles and coral", "shell", 3, 0.68, 0.67, 0.4, 0.28),
+      motif("steep island slopes, dry forest, bays, beaches, and reef", "oval", 1, 0.47, 0.83, 0.8, 0.22),
+    ],
+    relationship:
+      "A single green hillside descends into a white beach shell above one broad turquoise reef oval.",
+    edgeStrategy:
+      "Island and reef cross the lower sides while deep blue remains open above the beach crescent.",
+  }),
+  defineLandscapeArtProfile({
+    slug: "voyageurs",
+    sourceCue: "a canoe threading pine islands beneath northern lights",
+    primaryStyleId: "cyanotype-field-study",
+    palette: palette(
+      ["lake night", "#173B62"],
+      ["aurora", "#58A66A"],
+      ["pine", "#315A43"],
+      ["granite", "#787B78"],
+      ["star", "#E7E9DB"],
+    ),
+    motifs: [
+      motif("a canoe threading pine islands beneath northern lights", "ribbon", 3, 0.41, 0.64, 0.46, 0.2),
+      motif("one paddle wake crossing a country made mostly of water", "stripe", 4, 0.66, 0.7, 0.42, 0.2),
+      motif(
+        "interlocking lakes, rocky islands, boreal forest, and wetlands",
+        "oval",
+        2,
+        0.54,
+        0.83,
+        0.82,
+        0.22,
+      ),
+    ],
+    relationship:
+      "One granite canoe band crosses one pale paddle wake above a consolidated pine-island lake.",
+    edgeStrategy:
+      "The island lake reaches both lower sides while navy sky remains open for a single aurora field.",
+  }),
+  defineLandscapeArtProfile({
+    slug: "white-sands",
+    sourceCue: "white gypsum dunes curving beneath a pink-blue twilight",
+    primaryStyleId: "fresco-mineral-pigment",
+    palette: palette(
+      ["twilight", "#7C80A8"],
+      ["gypsum", "#EEE9D8"],
+      ["pink", "#D997A2"],
+      ["yucca", "#4D714A"],
+      ["sky", "#6595B5"],
+    ),
+    motifs: [
+      motif("white gypsum dunes curving beneath a pink-blue twilight", "stripe", 1, 0.52, 0.65, 0.8, 0.34),
+      motif("a lone soap-tree yucca holding still in luminous sand", "leaf", 3, 0.31, 0.54, 0.28, 0.44),
+      motif(
+        "wave-like gypsum dunes, interdune flats, and mountain basin",
+        "horizon",
+        2,
+        0.56,
+        0.84,
+        0.82,
+        0.2,
+      ),
+    ],
+    relationship: "One green yucca stands against a broad white dune curve and a single pink basin horizon.",
+    edgeStrategy:
+      "Gypsum and basin cross the lower face while violet-blue twilight stays open around the yucca.",
+  }),
+  defineLandscapeArtProfile({
+    slug: "wind-cave",
+    sourceCue: "delicate honeycomb boxwork fins coating limestone walls below a sunlit bison prairie",
+    primaryStyleId: "prismatic-geometric-symbolism",
+    palette: palette(
+      ["cave", "#4B4C4A"],
+      ["calcite", "#D5A85D"],
+      ["prairie", "#BE9445"],
+      ["bison", "#644632"],
+      ["sky", "#6994AD"],
+    ),
+    motifs: [
+      motif(
+        "delicate honeycomb boxwork fins coating limestone walls below a sunlit bison prairie",
+        "ring",
+        1,
+        0.4,
+        0.61,
+        0.42,
+        0.42,
+      ),
+      motif(
+        "wind breathing between the visible grassland and hidden cave",
+        "ribbon",
+        4,
+        0.68,
+        0.52,
+        0.3,
+        0.38,
+      ),
+      motif(
+        "rolling prairie, ponderosa hills, dry cave passages, and thin calcite boxwork veins",
+        "horizon",
+        2,
+        0.54,
+        0.82,
+        0.82,
+        0.22,
+      ),
+    ],
+    relationship:
+      "One broad calcite ring sits below a gold prairie while one blue wind ribbon joins cave and sky.",
+    edgeStrategy:
+      "Prairie crosses the lower sides while cave gray stays open around one restrained boxwork symbol.",
+  }),
+  defineLandscapeArtProfile({
+    slug: "wrangell-st-elias",
+    sourceCue: "vast icefields flowing between volcanic peaks toward a tiny historic mill",
+    primaryStyleId: "ceramic-underglaze",
+    palette: palette(
+      ["snow", "#E3E6DE"],
+      ["ice", "#70B4CE"],
+      ["volcanic", "#656A70"],
+      ["tundra", "#A65E48"],
+      ["copper", "#B6783E"],
+    ),
+    motifs: [
+      motif(
+        "vast icefields flowing between volcanic peaks toward a tiny historic mill",
+        "stripe",
+        1,
+        0.46,
+        0.57,
+        0.66,
+        0.42,
+      ),
+      motif(
+        "human scale almost disappearing inside the country's largest wild landscape",
+        "block",
+        4,
+        0.75,
+        0.7,
+        0.2,
+        0.2,
+      ),
+      motif(
+        "volcanic range, immense glaciers, river valleys, tundra, and coast",
+        "triangle",
+        2,
+        0.57,
+        0.32,
+        0.6,
+        0.4,
+      ),
+    ],
+    relationship:
+      "A broad blue icefield flows from one volcanic range toward a single small copper mill block.",
+    edgeStrategy:
+      "Ice and tundra touch the lower sides while snow ground keeps the landscape's immense scale open.",
+  }),
+  defineLandscapeArtProfile({
+    slug: "yellowstone",
+    sourceCue: "Grand Prismatic Spring glowing beyond a lone bison in steam",
+    primaryStyleId: "wood-marquetry-landscape",
+    palette: palette(
+      ["steam", "#E8E5D6"],
+      ["thermal", "#2C9BA2"],
+      ["sulfur", "#D5B438"],
+      ["microbial", "#D56C35"],
+      ["bison", "#644532"],
+    ),
+    motifs: [
+      motif("Grand Prismatic Spring glowing beyond a lone bison in steam", "ring", 1, 0.64, 0.55, 0.48, 0.46),
+      motif("the living color of a volcanic world beneath the plateau", "bison", 4, 0.3, 0.63, 0.3, 0.24),
+      motif(
+        "caldera plateau, geyser basins, canyon, lake, rivers, and mountains",
+        "ribbon",
+        3,
+        0.53,
+        0.83,
+        0.8,
+        0.22,
+      ),
+    ],
+    relationship:
+      "A lone bison stands before one turquoise thermal ring above a single orange caldera ribbon.",
+    edgeStrategy:
+      "The caldera ribbon reaches both lower sides while pale steam remains open around bison and spring.",
+  }),
+  defineLandscapeArtProfile({
+    slug: "yosemite",
+    sourceCue: "El Capitan, Half Dome, river, and pines opening through Yosemite Valley",
+    primaryStyleId: "luminous-ligne-claire",
+    palette: palette(
+      ["open light", "#E7DFC5"],
+      ["granite", "#A9AAA5"],
+      ["river", "#3C9A9A"],
+      ["pine", "#3F6846"],
+      ["sun", "#D9AA43"],
+    ),
+    motifs: [
+      motif(
+        "El Capitan, Half Dome, river, and pines opening through Yosemite Valley",
+        "corner",
+        1,
+        0.53,
+        0.43,
+        0.7,
+        0.58,
+      ),
+      motif("granite walls making a small trail feel infinite", "ribbon", 4, 0.34, 0.69, 0.26, 0.32),
+      motif(
+        "glacial valley, granite domes, waterfalls, high country, and river",
+        "horizon",
+        3,
+        0.56,
+        0.82,
+        0.8,
+        0.2,
+      ),
+    ],
+    accent: motif("one open journey line beside the river", "stripe", 2, 0.68, 0.66, 0.28, 0.14),
+    relationship:
+      "One open granite gateway frames a gold trail and a broad pine valley, crossed once by the turquoise river line.",
+    edgeStrategy:
+      "Granite and pine touch only the lower sides, leaving a broad luminous field open through the valley center.",
+  }),
+  defineLandscapeArtProfile({
+    slug: "zion",
+    sourceCue: "the Virgin River winding below towering red-and-cream canyon walls",
+    primaryStyleId: "pixel-cluster-landscape",
+    palette: palette(
+      ["sky", "#356F9D"],
+      ["sandstone", "#B7523F"],
+      ["cream", "#E1C68F"],
+      ["river", "#3F7958"],
+      ["cottonwood", "#D0A13E"],
+    ),
+    motifs: [
+      motif(
+        "the Virgin River winding below towering red-and-cream canyon walls",
+        "corner",
+        1,
+        0.54,
+        0.45,
+        0.76,
+        0.62,
+      ),
+      motif("a narrow bright path rising between stone giants", "ribbon", 4, 0.48, 0.66, 0.24, 0.42),
+      motif(
+        "deep sandstone canyon, hanging gardens, high plateaus, and river narrows",
+        "horizon",
+        3,
+        0.54,
+        0.83,
+        0.82,
+        0.22,
+      ),
+    ],
+    relationship:
+      "Two broad sandstone canyon sides frame one bright path rising from the green river narrows.",
+    edgeStrategy:
+      "Canyon walls and river meet the lower edges while cobalt sky stays open through the central passage.",
+  }),
+];

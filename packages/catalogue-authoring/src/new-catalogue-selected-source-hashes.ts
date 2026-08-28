@@ -3,6 +3,7 @@
 // A superseded canonical digest records lineage only; it does not claim that its pixels were an input to the code-native renderer.
 import { newCatalogueSelectedSourceIntegrityBooksRead } from "./new-catalogue-selected-source-hashes-books-read";
 import { newCatalogueSelectedSourceIntegrityLifeMilestones } from "./new-catalogue-selected-source-hashes-life-milestones";
+import { newCatalogueSelectedSourceIntegrityVideoGames } from "./new-catalogue-selected-source-hashes-video-games";
 import { newCatalogueSelectedSourceIntegrityMichelinDiningBayArea } from "./new-catalogue-selected-source-hashes-michelin-dining-bay-area";
 import { newCatalogueSelectedSourceIntegrityMichelinDiningNewYorkCityAM } from "./new-catalogue-selected-source-hashes-michelin-dining-new-york-city-a-m";
 import { newCatalogueSelectedSourceIntegrityMichelinDiningNewYorkCityNZ } from "./new-catalogue-selected-source-hashes-michelin-dining-new-york-city-n-z";
@@ -38,6 +39,7 @@ export const newCatalogueSelectedSourceIntegrity: Readonly<
 > = {
   ...newCatalogueSelectedSourceIntegrityBooksRead,
   ...newCatalogueSelectedSourceIntegrityLifeMilestones,
+  ...newCatalogueSelectedSourceIntegrityVideoGames,
   ...newCatalogueSelectedSourceIntegrityMichelinDiningBayArea,
   ...newCatalogueSelectedSourceIntegrityMichelinDiningNewYorkCityAM,
   ...newCatalogueSelectedSourceIntegrityMichelinDiningNewYorkCityNZ,

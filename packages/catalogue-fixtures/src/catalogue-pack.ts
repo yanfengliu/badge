@@ -7,6 +7,8 @@ import { cataloguePackStatesAThroughM } from "./catalogue-pack-states-01.js";
 import { cataloguePackStatesNThroughZ } from "./catalogue-pack-states-02.js";
 import { cataloguePackBooks01 } from "./catalogue-pack-books-01.js";
 import { cataloguePackBooks02 } from "./catalogue-pack-books-02.js";
+import { cataloguePackVideoGames01 } from "./catalogue-pack-video-games-01.js";
+import { cataloguePackVideoGames02 } from "./catalogue-pack-video-games-02.js";
 import { cataloguePackEducation } from "./catalogue-pack-education.js";
 import { cataloguePackDiningBayArea } from "./catalogue-pack-dining-bay-area.js";
 import { cataloguePackDiningNewYorkCity01 } from "./catalogue-pack-dining-nyc-01.js";
@@ -21,6 +23,8 @@ export const cataloguePackBadges: readonly CataloguePackBadgeFixture[] = [
   ...cataloguePackStatesNThroughZ,
   ...cataloguePackBooks01,
   ...cataloguePackBooks02,
+  ...cataloguePackVideoGames01,
+  ...cataloguePackVideoGames02,
   ...cataloguePackEducation,
   ...cataloguePackDiningBayArea,
   ...cataloguePackDiningNewYorkCity01,
@@ -30,8 +34,8 @@ export const cataloguePackBadges: readonly CataloguePackBadgeFixture[] = [
 
 export const cataloguePackRef: PackRef = {
   packId: CATALOGUE_PACK_ID,
-  version: "1.0.0-alpha.1",
-  packDigest: "e65bd849f8ef4e22745598a70e847bd32c9406fb06741368e43fd6851628ba46",
+  version: "1.0.0-alpha.2",
+  packDigest: "e7945d2ab4b8af9548fccb4385a82e4f514beaf3ffc35870163fd4605b3c5264",
 };
 
 export {

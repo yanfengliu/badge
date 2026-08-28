@@ -30,6 +30,11 @@ const outputPartitions = [
     moduleName: "new-catalogue-selected-source-hashes-life-milestones",
   },
   {
+    id: "video-games",
+    exportName: "newCatalogueSelectedSourceIntegrityVideoGames",
+    moduleName: "new-catalogue-selected-source-hashes-video-games",
+  },
+  {
     id: "michelin-dining/bay-area",
     exportName: "newCatalogueSelectedSourceIntegrityMichelinDiningBayArea",
     moduleName: "new-catalogue-selected-source-hashes-michelin-dining-bay-area",
@@ -59,10 +64,11 @@ const server = await createServer({
 });
 
 try {
-  const [books, education, dining, prompts, codeNative, existingIntegrity] = await Promise.all([
+  const [books, education, dining, videoGames, prompts, codeNative, existingIntegrity] = await Promise.all([
     server.ssrLoadModule("/packages/catalogue-authoring/src/books-edition.ts"),
     server.ssrLoadModule("/packages/catalogue-authoring/src/education-milestones.ts"),
     server.ssrLoadModule("/packages/catalogue-authoring/src/michelin-dining.ts"),
+    server.ssrLoadModule("/packages/catalogue-authoring/src/video-games-edition.ts"),
     server.ssrLoadModule("/packages/catalogue-authoring/src/manufacturable-prompt-recipe.ts"),
     server.ssrLoadModule("/packages/catalogue-authoring/src/code-native-art-recipes.ts"),
     server.ssrLoadModule("/packages/catalogue-authoring/src/new-catalogue-selected-source-hashes.ts"),
@@ -79,6 +85,12 @@ try {
       records: education.educationMilestoneAuthoringRecords,
       campaign: education.educationMilestoneCampaign,
       partitionId: () => "life-milestones",
+    },
+    {
+      assetDirectory: "video-games",
+      records: videoGames.videoGameAuthoringRecords,
+      campaign: videoGames.videoGameAuthoringCampaign,
+      partitionId: () => "video-games",
     },
     {
       assetDirectory: "michelin-dining",
@@ -125,7 +137,7 @@ try {
       const canonicalPromptSha256 = sha256(new TextEncoder().encode(canonicalPrompt));
       const sourceSha256 = sha256(sourceBytes);
       const priorIntegrity = existingIntegrity.newCatalogueSelectedSourceIntegrity[key];
-      const codeNativeRecipe = codeNative.findCodeNativeArtRecipe(record.slug);
+      const codeNativeRecipe = codeNative.findCodeNativeArtRecipe(group.assetDirectory, record.slug);
       if (codeNativeRecipe) {
         const priorWasDirect = priorIntegrity?.sourceWorkflow === "direct-code-native";
         const canonicalSourceSha256 = priorWasDirect

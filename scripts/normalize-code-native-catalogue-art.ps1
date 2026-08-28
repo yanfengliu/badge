@@ -21,7 +21,7 @@ $assetsRoot = [IO.Path]::GetFullPath(
   (Join-Path $repoRoot "packages/catalogue-authoring/assets")
 )
 $inputSourcesRoot = [IO.Path]::GetFullPath((Join-Path $InputRoot "sources"))
-$knownDirectories = @("books-read", "life-milestones", "michelin-dining")
+$knownDirectories = @("books-read", "life-milestones", "michelin-dining", "national-parks", "us-states", "video-games")
 if (-not [string]::IsNullOrWhiteSpace($AllowedDirectory) -and $AllowedDirectory -notin $knownDirectories) {
   throw "Code-native normalization does not know catalogue directory '$AllowedDirectory'. Use one of: $($knownDirectories -join ', ')."
 }
@@ -129,8 +129,8 @@ foreach ($record in $records) {
       [int]$record.sourceSize[1] -ne 896) {
     throw "Code-native normalization rejected $key because its renderer intermediate is not an 896 by 896 RGB PNG."
   }
-  if (-not [bool]$record.quantitativePass -or [double]$record.miniatureResidual -gt 0.045) {
-    throw "Code-native normalization rejected raw renderer output $key at miniature residual $($record.miniatureResidual); simplify the recipe to 0.045 or below before JPEG processing."
+  if (-not [bool]$record.quantitativePass -or [double]$record.miniatureResidual -gt 0.035) {
+    throw "Code-native normalization rejected raw renderer output $key at miniature residual $($record.miniatureResidual); simplify the recipe to 0.035 or below before JPEG processing."
   }
 
   $inputFile = [IO.Path]::GetFullPath(

@@ -1,9 +1,13 @@
 import { codeNativeClassicHistoryRecipes } from "./code-native-art-recipes-classics-history";
 import { codeNativeEducationRecipes } from "./code-native-art-recipes-education";
 import { codeNativeLiteraryMilestoneRecipes } from "./code-native-art-recipes-literary-milestone";
+import { codeNativeNationalParkRecipes } from "./code-native-art-recipes-national-parks";
 import { codeNativeRestaurantRecipes } from "./code-native-art-recipes-restaurants";
+import { codeNativeRetainedBookRecipes } from "./code-native-art-recipes-retained-books";
 import { codeNativeSciencePhilosophyRecipes } from "./code-native-art-recipes-science-philosophy";
 import { codeNativeTechnologySpeculativeRecipes } from "./code-native-art-recipes-technology-speculative";
+import { codeNativeUsStateRecipes } from "./code-native-art-recipes-us-states";
+import { codeNativeVideoGameRecipes } from "./code-native-art-recipes-video-games";
 import {
   CODE_NATIVE_ENAMEL_GEOMETRY_RECIPE_REF,
   type CodeNativeArtRecipe,
@@ -17,20 +21,33 @@ export const codeNativeArtRecipes: readonly CodeNativeArtRecipe[] = [
   ...codeNativeSciencePhilosophyRecipes,
   ...codeNativeTechnologySpeculativeRecipes,
   ...codeNativeLiteraryMilestoneRecipes,
+  ...codeNativeRetainedBookRecipes,
   ...codeNativeEducationRecipes,
+  ...codeNativeNationalParkRecipes,
+  ...codeNativeUsStateRecipes,
+  ...codeNativeVideoGameRecipes,
   ...codeNativeRestaurantRecipes,
 ];
 
-const recipeBySlug = new Map(codeNativeArtRecipes.map((recipe) => [recipe.slug, recipe]));
+const recipeByKey = new Map(
+  codeNativeArtRecipes.map((recipe) => [recipeKey(recipe.catalogueDirectory, recipe.slug), recipe]),
+);
 
-if (recipeBySlug.size !== codeNativeArtRecipes.length) {
+if (recipeByKey.size !== codeNativeArtRecipes.length) {
   throw new Error(
-    "Code-native catalogue recipes repeat a slug; assign one stable recipe per selected source before rendering.",
+    "Code-native catalogue recipes repeat a catalogue-qualified key; assign one stable recipe per selected source before rendering.",
   );
 }
 
-export function findCodeNativeArtRecipe(slug: string): CodeNativeArtRecipe | undefined {
-  return recipeBySlug.get(slug);
+export function findCodeNativeArtRecipe(
+  catalogueDirectory: CodeNativeArtRecipe["catalogueDirectory"],
+  slug: string,
+): CodeNativeArtRecipe | undefined {
+  return recipeByKey.get(recipeKey(catalogueDirectory, slug));
+}
+
+function recipeKey(catalogueDirectory: CodeNativeArtRecipe["catalogueDirectory"], slug: string): string {
+  return `${catalogueDirectory}/${slug}`;
 }
 
 export function serializeCodeNativeArtRecipe(recipe: CodeNativeArtRecipe): string {

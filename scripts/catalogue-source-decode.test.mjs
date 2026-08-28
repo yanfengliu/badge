@@ -21,6 +21,7 @@ describe("catalogue source full-decode gate", () => {
       const books = runGate(path.join(assetsRoot, "books-read"), 50, "book source study");
       const education = runGate(path.join(assetsRoot, "life-milestones"), 2, "education source study");
       const dining = runGate(path.join(assetsRoot, "michelin-dining"), 132, "dining source study");
+      const games = runGate(path.join(assetsRoot, "video-games"), 50, "video-game source study");
 
       expect(states.status, states.stderr).toBe(0);
       expect(states.stdout).toContain("Fully decoded 50 U.S. state source study JPEGs");
@@ -32,6 +33,8 @@ describe("catalogue source full-decode gate", () => {
       expect(education.stdout).toContain("Fully decoded 2 education source study JPEGs");
       expect(dining.status, dining.stderr).toBe(0);
       expect(dining.stdout).toContain("Fully decoded 132 dining source study JPEGs");
+      expect(games.status, games.stderr).toBe(0);
+      expect(games.stdout).toContain("Fully decoded 50 video-game source study JPEGs");
     },
     60_000,
   );

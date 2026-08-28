@@ -6,65 +6,20 @@ import {
   findCodeNativeArtRecipe,
   serializeCodeNativeArtRecipe,
 } from "../packages/catalogue-authoring/src/code-native-art-recipes.ts";
+import { bookAuthoringRecords } from "../packages/catalogue-authoring/src/books-edition.ts";
+import { educationMilestoneAuthoringRecords } from "../packages/catalogue-authoring/src/education-milestones.ts";
 import { michelinRestaurantResearchSeeds } from "../packages/catalogue-authoring/src/michelin-dining.ts";
+import { usNationalParks } from "../packages/catalogue-authoring/src/us-national-parks.ts";
+import { usStates } from "../packages/catalogue-authoring/src/us-states.ts";
+import { videoGameAuthoringRecords } from "../packages/catalogue-authoring/src/video-games-edition.ts";
 import { measureMiniatureResidual, renderFlatRecipe } from "./code-native-art/flat-raster.mjs";
 
-const EXPECTED_REPLACEMENTS = [
-  "books-read/nineteen-eighty-four",
-  "books-read/to-kill-a-mockingbird",
-  "books-read/the-great-gatsby",
-  "books-read/the-count-of-monte-cristo",
-  "books-read/the-odyssey",
-  "books-read/the-brothers-karamazov",
-  "books-read/the-dawn-of-everything",
-  "books-read/the-silk-roads",
-  "books-read/team-of-rivals",
-  "books-read/the-warmth-of-other-suns",
-  "books-read/spqr",
-  "books-read/a-brief-history-of-time",
-  "books-read/the-selfish-gene",
-  "books-read/the-gene",
-  "books-read/the-emperor-of-all-maladies",
-  "books-read/cosmos",
-  "books-read/meditations",
-  "books-read/the-republic",
-  "books-read/mans-search-for-meaning",
-  "books-read/the-myth-of-sisyphus",
-  "books-read/justice",
-  "books-read/nicomachean-ethics",
-  "books-read/the-innovators",
-  "books-read/the-pragmatic-programmer",
-  "books-read/code",
-  "books-read/algorithms-to-live-by",
-  "books-read/the-phoenix-project",
-  "books-read/chip-war",
-  "books-read/the-three-body-problem",
-  "books-read/foundation",
-  "books-read/neuromancer",
-  "books-read/the-left-hand-of-darkness",
-  "books-read/project-hail-mary",
-  "books-read/beloved",
-  "books-read/the-road",
-  "books-read/a-gentleman-in-moscow",
-  "books-read/the-kite-runner",
-  "books-read/pachinko",
-  "books-read/thinking-fast-and-slow",
-  "books-read/atomic-habits",
-  "books-read/kitchen-confidential",
-  "books-read/the-wager",
-  "books-read/the-anthropocene-reviewed",
-  "life-milestones/masters-degree",
-  "life-milestones/university-nebraska-lincoln-degree",
-].sort();
-
-const PRESERVED_CANONICAL = [
-  "books-read/pride-and-prejudice",
-  "books-read/guns-germs-and-steel",
-  "books-read/the-sixth-extinction",
-  "books-read/the-design-of-everyday-things",
-  "books-read/dune",
-  "books-read/the-remains-of-the-day",
-  "books-read/educated",
+const EXPECTED_NON_RESTAURANT = [
+  ...usNationalParks.map(({ slug }) => `national-parks/${slug}`),
+  ...usStates.map(({ slug }) => `us-states/${slug}`),
+  ...bookAuthoringRecords.map(({ slug }) => `books-read/${slug}`),
+  ...educationMilestoneAuthoringRecords.map(({ slug }) => `life-milestones/${slug}`),
+  ...videoGameAuthoringRecords.map(({ slug }) => `video-games/${slug}`),
 ].sort();
 
 const SUPERSEDED_GENERIC_DINING = [
@@ -81,13 +36,14 @@ const NON_RESTAURANT_RECIPES = codeNativeArtRecipes.filter(
 );
 
 describe("code-native catalogue art recipes", () => {
-  it("pins 45 source replacements and 132 direct named-restaurant recipes without touching retained studies", () => {
+  it("pins all 215 non-restaurant and 132 named-restaurant recipes", () => {
     const keys = codeNativeArtRecipes
       .map(({ catalogueDirectory, slug }) => `${catalogueDirectory}/${slug}`)
       .sort();
-    expect(keys).toEqual([...EXPECTED_REPLACEMENTS, ...EXPECTED_DIRECT_DINING].sort());
-    expect(new Set(keys).size).toBe(177);
-    for (const key of [...PRESERVED_CANONICAL, ...SUPERSEDED_GENERIC_DINING]) {
+    expect(keys).toEqual([...EXPECTED_NON_RESTAURANT, ...EXPECTED_DIRECT_DINING].sort());
+    expect(new Set(keys).size).toBe(347);
+    expect(EXPECTED_NON_RESTAURANT).toHaveLength(215);
+    for (const key of SUPERSEDED_GENERIC_DINING) {
       expect(keys, key).not.toContain(key);
     }
   });
@@ -108,7 +64,9 @@ describe("code-native catalogue art recipes", () => {
       expect(recipe.minimumFeaturePixels, recipe.slug).toBeGreaterThanOrEqual(28);
       expect(recipe.minimumNegativeGapPixels, recipe.slug).toBeGreaterThanOrEqual(23);
       expect(recipe.commands.length, recipe.slug).toBeGreaterThanOrEqual(3);
-      expect(recipe.commands.length, recipe.slug).toBeLessThanOrEqual(20);
+      expect(recipe.commands.length, recipe.slug).toBeLessThanOrEqual(
+        recipe.catalogueDirectory === "michelin-dining" ? 20 : 12,
+      );
       expect(recipe.safeguards, recipe.slug).toEqual([
         "flat-color-only",
         "no-repeated-microdetail",
@@ -117,17 +75,19 @@ describe("code-native catalogue art recipes", () => {
         "source-form-and-relationship-lock",
       ]);
       expect(recipe.sourceSpecificExclusions.length, recipe.slug).toBeGreaterThan(0);
-      expect(recipe.edgeStrategy, recipe.slug).toMatch(/top|bottom|left|right|all four|full-bleed/iu);
+      expect(recipe.edgeStrategy, recipe.slug).toMatch(
+        /top|bottom|left|right|upper|lower|side edge|all four|full-bleed/iu,
+      );
     }
   });
 
   it("gates the non-restaurant raw renderer before normalization can blur miniature reconstruction failures", () => {
-    expect(NON_RESTAURANT_RECIPES).toHaveLength(45);
+    expect(NON_RESTAURANT_RECIPES).toHaveLength(215);
     for (const recipe of NON_RESTAURANT_RECIPES) {
       const rawSource = renderFlatRecipe(recipe);
-      expect(measureMiniatureResidual(rawSource, 48), recipe.slug).toBeLessThanOrEqual(0.045);
+      expect(measureMiniatureResidual(rawSource, 48), recipe.slug).toBeLessThanOrEqual(0.035);
     }
-  }, 15_000);
+  }, 60_000);
 
   it("preserves varied flat manufacturing languages instead of one generic poster style", () => {
     const languages = new Map();
@@ -137,15 +97,15 @@ describe("code-native catalogue art recipes", () => {
       expect(recipe.styleComparison, recipe.slug).toMatch(/without|through|using/iu);
     }
     expect(languages.size).toBeGreaterThanOrEqual(15);
-    expect(Math.max(...languages.values())).toBeLessThanOrEqual(40);
+    expect(Math.max(...languages.values())).toBeLessThanOrEqual(55);
   });
 
   it("serializes immutable design briefs deterministically for provenance binding", () => {
     for (const recipe of codeNativeArtRecipes) {
       const serialized = serializeCodeNativeArtRecipe(recipe);
       expect(serializeCodeNativeArtRecipe(JSON.parse(serialized)), recipe.slug).toBe(serialized);
-      expect(findCodeNativeArtRecipe(recipe.slug), recipe.slug).toBe(recipe);
+      expect(findCodeNativeArtRecipe(recipe.catalogueDirectory, recipe.slug), recipe.slug).toBe(recipe);
     }
-    expect(findCodeNativeArtRecipe("not-a-real-study")).toBeUndefined();
+    expect(findCodeNativeArtRecipe("books-read", "not-a-real-study")).toBeUndefined();
   });
 });

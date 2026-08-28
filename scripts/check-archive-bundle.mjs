@@ -4,6 +4,8 @@ import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 
+import { DISCOVERY_MANIFEST_MAXIMUM_ENTRIES } from "./discovery-media-limits.mjs";
+
 const archiveOutputDirectory = path.resolve(process.argv[2] ?? "dist/archive");
 const discoveryAssetsRoot = path.resolve("packages/catalogue-authoring/assets");
 const discoveryThumbnailManifestPath = path.join(discoveryAssetsRoot, "discovery-thumbnails.manifest.json");
@@ -41,14 +43,14 @@ if (!Array.isArray(manifestEntries) || manifestEntries.length === 0) {
   throw new Error("Discovery thumbnail manifest has no entries; regenerate the reviewed derivative tier.");
 }
 if (
-  discoveryThumbnailManifest.limits?.maximumEntries !== 320 ||
+  discoveryThumbnailManifest.limits?.maximumEntries !== DISCOVERY_MANIFEST_MAXIMUM_ENTRIES ||
   discoveryThumbnailManifest.limits?.maximumFileBytes !== 16 * 1024 ||
   discoveryThumbnailManifest.limits?.maximumTotalBytes !== 2 * 1024 * 1024 ||
   manifestEntries.length > discoveryThumbnailManifest.limits.maximumEntries ||
   discoveryThumbnailManifest.totalBytes > discoveryThumbnailManifest.limits.maximumTotalBytes
 ) {
   throw new Error(
-    "Discovery thumbnail manifest exceeds the reviewed 320-entry, 16-KiB-per-file, or 2-MiB-total tier; shard the catalogue before shipping more media.",
+    `Discovery thumbnail manifest exceeds the reviewed ${DISCOVERY_MANIFEST_MAXIMUM_ENTRIES}-entry, 16-KiB-per-file, or 2-MiB-total tier; shard the catalogue before shipping more media.`,
   );
 }
 const manifestKeys = new Set();
@@ -98,13 +100,13 @@ if (!Array.isArray(sourceManifestEntries) || sourceManifestEntries.length !== ex
   );
 }
 if (
-  discoverySourceManifest.limits?.maximumEntries !== 320 ||
+  discoverySourceManifest.limits?.maximumEntries !== DISCOVERY_MANIFEST_MAXIMUM_ENTRIES ||
   discoverySourceManifest.limits?.maximumFileBytes !== 256 * 1024 ||
   discoverySourceManifest.limits?.maximumTotalBytes !== 48 * 1024 * 1024 ||
   discoverySourceManifest.totalBytes > discoverySourceManifest.limits.maximumTotalBytes
 ) {
   throw new Error(
-    "Discovery source manifest exceeds the reviewed 320-entry, 256-KiB-per-file, or 48-MiB-total tier; shard the catalogue before shipping more media.",
+    `Discovery source manifest exceeds the reviewed ${DISCOVERY_MANIFEST_MAXIMUM_ENTRIES}-entry, 256-KiB-per-file, or 48-MiB-total tier; shard the catalogue before shipping more media.`,
   );
 }
 const sourceManifestKeys = new Set();

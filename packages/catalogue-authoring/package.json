@@ -19,6 +19,7 @@
     "./states": "./src/us-states.ts",
     "./states-campaign": "./src/us-states-campaign.ts",
     "./state-studies": "./src/selected-us-state-studies.ts",
-    "./state-quotations": "./src/us-state-quotations.ts"
+    "./state-quotations": "./src/us-state-quotations.ts",
+    "./video-games": "./src/video-games-edition.ts"
   }
 }

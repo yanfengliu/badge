@@ -13,10 +13,11 @@ const server = await createServer({
 });
 
 try {
-  const [books, education, dining, recipes] = await Promise.all([
+  const [books, education, dining, games, recipes] = await Promise.all([
     server.ssrLoadModule(path.posix.join("/packages/catalogue-authoring/src/books-edition.ts")),
     server.ssrLoadModule(path.posix.join("/packages/catalogue-authoring/src/education-milestones.ts")),
     server.ssrLoadModule(path.posix.join("/packages/catalogue-authoring/src/michelin-dining.ts")),
+    server.ssrLoadModule(path.posix.join("/packages/catalogue-authoring/src/video-games-edition.ts")),
     server.ssrLoadModule(
       path.posix.join("/packages/catalogue-authoring/src/manufacturable-prompt-recipe.ts"),
     ),
@@ -39,6 +40,12 @@ try {
       catalogueDirectory: "michelin-dining",
       records: dining.michelinDiningAuthoringRecords,
       campaign: dining.michelinDiningCampaign,
+    },
+    {
+      selector: "games",
+      catalogueDirectory: "video-games",
+      records: games.videoGameAuthoringRecords,
+      campaign: games.videoGameAuthoringCampaign,
     },
   ];
   const rows = groups.flatMap((group) => {
@@ -82,7 +89,7 @@ try {
     const missing = [...requestedSelectors].filter((selector) => !knownSelectors.has(selector));
     if (missing.length > 0) {
       throw new Error(
-        `Unknown new-catalogue selector(s): ${missing.join(", ")}; use books, education, michelin, or an exact record slug.`,
+        `Unknown new-catalogue selector(s): ${missing.join(", ")}; use books, education, michelin, games, or an exact record slug.`,
       );
     }
   }

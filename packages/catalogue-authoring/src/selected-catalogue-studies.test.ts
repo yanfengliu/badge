@@ -13,10 +13,12 @@ import {
 import { educationMilestoneCampaign } from "./education-milestones.js";
 import { compileManufacturableCandidatePrompt } from "./manufacturable-prompt-recipe.js";
 import { michelinDiningCampaign } from "./michelin-dining.js";
+import { videoGameAuthoringCampaign } from "./video-games-edition.js";
 import {
   selectedBookStudies,
   selectedEducationMilestoneStudies,
   selectedMichelinDiningStudies,
+  selectedVideoGameStudies,
 } from "./selected-catalogue-studies.js";
 import type { CatalogueStudyRecord, PlannedCatalogueStudyProject, SelectedSourceStudy } from "./types.js";
 
@@ -40,6 +42,11 @@ const groups = [
     studies: selectedMichelinDiningStudies,
     campaign: michelinDiningCampaign,
   },
+  {
+    assetDirectory: "video-games",
+    studies: selectedVideoGameStudies,
+    campaign: videoGameAuthoringCampaign,
+  },
 ] as const;
 
 const rendererImplementationFiles = [
@@ -49,10 +56,22 @@ const rendererImplementationFiles = [
 ] as const;
 
 describe("new selected catalogue source studies", () => {
-  // Compiles all 184 campaign prompts and reads and hashes every source and thumbnail
+  it("describes every code-native pixel study by its realized construction", () => {
+    for (const group of groups) {
+      for (const study of group.studies as readonly BoundStudy[]) {
+        const recipe = findCodeNativeArtRecipe(group.assetDirectory, study.slug);
+        expect(recipe, study.title).toBeDefined();
+        expect(study.selectedSource.accessibleDescription, study.title).toContain(
+          recipe?.manufacturingLanguage,
+        );
+      }
+    }
+  });
+
+  // Compiles all 234 campaign prompts and reads and hashes every source and thumbnail
   // asset, so a loaded parallel suite needs the same 60s budget as the sibling
   // prompt-export and geometry gates rather than vitest's 5s default.
-  it("binds retained generations and per-record code-native replacements to immutable histories", async () => {
+  it("binds every study to an immutable direct or replacement code-native history", async () => {
     const sourceHashes = new Set<string>();
     const thumbnailHashes = new Set<string>();
     const rendererImplementationSha256 = await sha256Files(rendererImplementationFiles);
@@ -80,7 +99,7 @@ describe("new selected catalogue source studies", () => {
           revision: 2,
         });
         expect(study.selectedSource.promptSha256, study.title).toBe(canonicalPromptSha256);
-        const recipe = findCodeNativeArtRecipe(study.slug);
+        const recipe = findCodeNativeArtRecipe(group.assetDirectory, study.slug);
         if (recipe) {
           const designBriefSha256 = createHash("sha256")
             .update(serializeCodeNativeArtRecipe(recipe), "utf8")
@@ -175,12 +194,12 @@ describe("new selected catalogue source studies", () => {
         thumbnailHashes.add(thumbnailHash);
       }
     }
-    expect(studyCount).toBeGreaterThan(0);
+    expect(studyCount).toBe(234);
     expect(sourceHashes.size).toBe(studyCount);
     expect(thumbnailHashes.size).toBe(studyCount);
-    expect(codeNativeReplacementCount).toBeGreaterThan(0);
-    expect(directCodeNativeCount).toBeGreaterThan(0);
-    expect(canonicalOnlyCount).toBeGreaterThan(0);
+    expect(codeNativeReplacementCount).toBe(52);
+    expect(directCodeNativeCount).toBe(182);
+    expect(canonicalOnlyCount).toBe(0);
   }, 60_000);
 
   it("keeps every normalized full source authoring-only without conflating generation workflows", () => {
@@ -191,7 +210,13 @@ describe("new selected catalogue source studies", () => {
       const isDirectCodeNative =
         study.selectedSource.sourceHistory?.some((step) => step.kind === "direct-code-native-render") ??
         false;
-      expect(study.selectedSource.generatedOn).toBe(isDirectCodeNative ? "2026-08-26" : "2026-08-25");
+      expect(study.selectedSource.generatedOn).toBe(
+        isDirectCodeNative
+          ? study.artBrief.badgeKey.startsWith("video-games-played/")
+            ? "2026-08-27"
+            : "2026-08-26"
+          : "2026-08-25",
+      );
       workflows.set(
         study.selectedSource.provenance.generationWorkflow,
         (workflows.get(study.selectedSource.provenance.generationWorkflow) ?? 0) + 1,
@@ -201,8 +226,8 @@ describe("new selected catalogue source studies", () => {
         revision: 1,
       });
     }
-    expect(workflows.get("openai-image-generation-via-codex-imagegen")).toBeGreaterThan(0);
-    expect(workflows.get("deterministic-code-native-enamel-geometry")).toBeGreaterThan(0);
+    expect(workflows.get("openai-image-generation-via-codex-imagegen") ?? 0).toBe(0);
+    expect(workflows.get("deterministic-code-native-enamel-geometry")).toBe(studies.length);
     expect([...workflows.values()].reduce((total, count) => total + count, 0)).toBe(studies.length);
   });
 });

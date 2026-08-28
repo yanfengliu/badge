@@ -464,7 +464,7 @@
 }
 
 .art-direction-library__prompt-actions button {
-  min-height: 42px;
+  min-height: 44px;
   padding: 0 18px;
   border: 1px solid var(--library-rust);
   border-radius: 4px;

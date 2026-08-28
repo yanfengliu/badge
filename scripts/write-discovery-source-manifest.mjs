@@ -4,12 +4,14 @@ import { readdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 
+import { DISCOVERY_MANIFEST_MAXIMUM_ENTRIES } from "./discovery-media-limits.mjs";
+
 const repositoryRoot = process.cwd();
 const assetsRoot = path.resolve(repositoryRoot, "packages/catalogue-authoring/assets");
 const thumbnailManifestPath = path.join(assetsRoot, "discovery-thumbnails.manifest.json");
 const outputFile = path.join(assetsRoot, "discovery-sources.manifest.json");
 const temporaryOutputFile = `${outputFile}.${process.pid}.tmp`;
-const maximumEntries = 320;
+const maximumEntries = DISCOVERY_MANIFEST_MAXIMUM_ENTRIES;
 const maximumFileBytes = 256 * 1024;
 const maximumTotalBytes = 48 * 1024 * 1024;
 // Yosemite's study is deduplicated in favor of the published starter badge, so its canonical

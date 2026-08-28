@@ -10,7 +10,7 @@ export const discoveryMichelinDiningDc = defineSourceStudyBadges(
       "Dine at The Inn at Little Washington on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "309 Middle St., Washington, VA, 22747, USA · French, Classic French",
       "the-inn-at-little-washington.jpg",
-      "An original interior-led miniature badge study for The Inn at Little Washington, based on this researched cue: Stately maximalist décor surrounds roaming bread and cheese carts. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using stained-glass lead cells for Dined at The Inn at Little Washington: An original interior-led miniature badge study for The Inn at Little Washington, based on this researched cue: Stately maximalist décor surrounds roaming bread and cheese carts. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "The Inn at Little Washington",
         "French, Classic French",
@@ -26,7 +26,7 @@ export const discoveryMichelinDiningDc = defineSourceStudyBadges(
       "Dine at Jônt on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "1904 14th St. NW, Washington, DC, 20009, USA · Contemporary",
       "jont.jpg",
-      "An original interior-led miniature badge study for Jônt, based on this researched cue: Chefs and servers move in rhythm around a compact kitchen counter. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using relief-cut silhouettes for Dined at Jônt: An original interior-led miniature badge study for Jônt, based on this researched cue: Chefs and servers move in rhythm around a compact kitchen counter. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       ["Jônt", "Contemporary", "Washington, DC & surroundings", "Washington, DC", "District of Columbia"],
       "https://guide.michelin.com/us/en/district-of-columbia/washington-dc/restaurant/jont",
     ],
@@ -36,7 +36,7 @@ export const discoveryMichelinDiningDc = defineSourceStudyBadges(
       "Dine at minibar by José Andrés on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "855 E St. NW, Washington, DC, 20004, USA · Creative",
       "minibar-by-jose-andres.jpg",
-      "An original interior-led miniature badge study for minibar by José Andrés, based on this researched cue: An all-white room leads to a twelve-seat wood kitchen counter. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using prismatic geometric inlay for Dined at minibar by José Andrés: An original interior-led miniature badge study for minibar by José Andrés, based on this researched cue: An all-white room leads to a twelve-seat wood kitchen counter. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "minibar by José Andrés",
         "Creative",
@@ -52,7 +52,7 @@ export const discoveryMichelinDiningDc = defineSourceStudyBadges(
       "Dine at Xiquet on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "2404 Wisconsin Ave. NW, Washington, DC, 20007, USA · Spanish",
       "xiquet.jpg",
-      "An original dish-led miniature badge study for Xiquet, based on this researched cue: Valencian rice with rabbit and mushrooms cooks over a wood-fired hearth. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using ceramic underglaze roundel for Dined at Xiquet: An original dish-led miniature badge study for Xiquet, based on this researched cue: Valencian rice with rabbit and mushrooms cooks over a wood-fired hearth. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       ["Xiquet", "Spanish", "Washington, DC & surroundings", "Washington, DC", "District of Columbia"],
       "https://guide.michelin.com/us/en/district-of-columbia/washington-dc/restaurant/xiquet",
     ],
@@ -62,7 +62,7 @@ export const discoveryMichelinDiningDc = defineSourceStudyBadges(
       "Dine at Rooster & Owl on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "2436 14th St. NW, Washington, DC, 20009, USA · Contemporary, Fusion",
       "rooster-and-owl.jpg",
-      "An original dish-led miniature badge study for Rooster & Owl, based on this researched cue: Pistachio olive-oil cake combines blackberry and goat-cheese mousse. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using matte painted masses for Dined at Rooster & Owl: An original dish-led miniature badge study for Rooster & Owl, based on this researched cue: Pistachio olive-oil cake combines blackberry and goat-cheese mousse. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "Rooster & Owl",
         "Contemporary, Fusion",
@@ -78,7 +78,7 @@ export const discoveryMichelinDiningDc = defineSourceStudyBadges(
       "Dine at Masseria on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "1340 4th St. NE, Washington, DC, 20002, USA · Italian, Regional Cuisine",
       "masseria.jpg",
-      "An original interior-led miniature badge study for Masseria, based on this researched cue: A brick warehouse room joins a steel kitchen, glass cellar, and terrace. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using wood marquetry strata for Dined at Masseria: An original interior-led miniature badge study for Masseria, based on this researched cue: A brick warehouse room joins a steel kitchen, glass cellar, and terrace. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "Masseria",
         "Italian, Regional Cuisine",
@@ -94,7 +94,7 @@ export const discoveryMichelinDiningDc = defineSourceStudyBadges(
       "Dine at Omakase at Barracks Row on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "522 8th St. SE, Washington, DC, 20003, USA · Japanese, Sushi",
       "omakase-at-barracks-row.jpg",
-      "An original culture-led miniature badge study for Omakase at Barracks Row, based on this researched cue: Stairway art recalls printing inked fish onto rice paper in gyotaku. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using bold enamel contour for Dined at Omakase at Barracks Row: An original culture-led miniature badge study for Omakase at Barracks Row, based on this researched cue: Stairway art recalls printing inked fish onto rice paper in gyotaku. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "Omakase at Barracks Row",
         "Japanese, Sushi",
@@ -110,7 +110,7 @@ export const discoveryMichelinDiningDc = defineSourceStudyBadges(
       "Dine at The Dabney on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "122 Blagden Alley NW, Washington, DC, 20001, USA · American, Contemporary",
       "the-dabney.jpg",
-      "An original interior-led miniature badge study for The Dabney, based on this researched cue: Exposed brick, dark wood, and an open kitchen frame a wood-fired hearth. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using relief-cut silhouettes for Dined at The Dabney: An original interior-led miniature badge study for The Dabney, based on this researched cue: Exposed brick, dark wood, and an open kitchen frame a wood-fired hearth. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "The Dabney",
         "American, Contemporary",
@@ -126,7 +126,7 @@ export const discoveryMichelinDiningDc = defineSourceStudyBadges(
       "Dine at Elcielo Washington DC on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "1280 4th St. NE, Washington, DC, 20002, USA · Colombian, Contemporary",
       "elcielo-washington-dc.jpg",
-      "An original dish-led miniature badge study for Elcielo Washington DC, based on this researched cue: A Colombian tasting moves from corn broth to a chocolate finale in two rooms. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using stained-glass lead cells for Dined at Elcielo Washington DC: An original dish-led miniature badge study for Elcielo Washington DC, based on this researched cue: A Colombian tasting moves from corn broth to a chocolate finale in two rooms. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "Elcielo Washington DC",
         "Colombian, Contemporary",
@@ -142,7 +142,7 @@ export const discoveryMichelinDiningDc = defineSourceStudyBadges(
       "Dine at Oyster Oyster on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "1440 8th St. NW, Washington, DC, 20001, USA · Vegetarian, Contemporary",
       "oyster-oyster.jpg",
-      "An original culture-led miniature badge study for Oyster Oyster, based on this researched cue: The vegetable kitchen centers regenerative farms, reuse, and seasonality. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using broad fiber appliqué for Dined at Oyster Oyster: An original culture-led miniature badge study for Oyster Oyster, based on this researched cue: The vegetable kitchen centers regenerative farms, reuse, and seasonality. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "Oyster Oyster",
         "Vegetarian, Contemporary",
@@ -158,7 +158,7 @@ export const discoveryMichelinDiningDc = defineSourceStudyBadges(
       "Dine at Pineapple and Pearls on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "715 8th St. SE, Washington, DC, 20003, USA · Contemporary",
       "pineapple-and-pearls.jpg",
-      "An original interior-led miniature badge study for Pineapple and Pearls, based on this researched cue: Balloons, velvet jackets, pop music, and tableside theater evoke a lavish party. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using prismatic geometric inlay for Dined at Pineapple and Pearls: An original interior-led miniature badge study for Pineapple and Pearls, based on this researched cue: Balloons, velvet jackets, pop music, and tableside theater evoke a lavish party. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "Pineapple and Pearls",
         "Contemporary",
@@ -174,7 +174,7 @@ export const discoveryMichelinDiningDc = defineSourceStudyBadges(
       "Dine at Causa on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "920 Blagden Alley NW, Washington, DC, 20001, USA · Peruvian, Latin American",
       "causa.jpg",
-      "An original culture-led miniature badge study for Causa, based on this researched cue: The Nikkei tasting travels from Lima’s coast through the Andes and Amazon. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using cut-paper layers for Dined at Causa: An original culture-led miniature badge study for Causa, based on this researched cue: The Nikkei tasting travels from Lima’s coast through the Andes and Amazon. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "Causa",
         "Peruvian, Latin American",
@@ -190,7 +190,7 @@ export const discoveryMichelinDiningDc = defineSourceStudyBadges(
       "Dine at Imperfecto: The Chef's Table on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "1124 23rd St. NW, Washington, DC, 20037, USA · Latin American",
       "imperfecto-the-chefs-table.jpg",
-      "An original interior-led miniature badge study for Imperfecto: The Chef's Table, based on this researched cue: Glass, marble, brass, and terra-cotta frame a counter below the chef’s perch. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using prismatic geometric inlay for Dined at Imperfecto: The Chef's Table: An original interior-led miniature badge study for Imperfecto: The Chef's Table, based on this researched cue: Glass, marble, brass, and terra-cotta frame a counter below the chef’s perch. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "Imperfecto: The Chef's Table",
         "Latin American",
@@ -206,7 +206,7 @@ export const discoveryMichelinDiningDc = defineSourceStudyBadges(
       "Dine at Sushi Nakazawa Washington DC on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "Waldorf Astoria, 1100 Pennsylvania Ave. NW, Washington, DC, 20004, USA · Japanese, Sushi",
       "sushi-nakazawa-washington-dc.jpg",
-      "An original interior-led miniature badge study for Sushi Nakazawa Washington DC, based on this researched cue: Dark wood and gold surround a marble counter and precise itamae work. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using wood marquetry strata for Dined at Sushi Nakazawa Washington DC: An original interior-led miniature badge study for Sushi Nakazawa Washington DC, based on this researched cue: Dark wood and gold surround a marble counter and precise itamae work. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "Sushi Nakazawa Washington DC",
         "Japanese, Sushi",
@@ -222,7 +222,7 @@ export const discoveryMichelinDiningDc = defineSourceStudyBadges(
       "Dine at Albi on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "1346 4th St. SE, Washington, DC, 20003, USA · Middle Eastern",
       "albi.jpg",
-      "An original culture-led miniature badge study for Albi, based on this researched cue: Palestinian childhood flavors are reimagined through open-fire cooking. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using ceramic underglaze roundel for Dined at Albi: An original culture-led miniature badge study for Albi, based on this researched cue: Palestinian childhood flavors are reimagined through open-fire cooking. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       ["Albi", "Middle Eastern", "Washington, DC & surroundings", "Washington, DC", "District of Columbia"],
       "https://guide.michelin.com/us/en/district-of-columbia/washington-dc/restaurant/albi",
     ],
@@ -232,7 +232,7 @@ export const discoveryMichelinDiningDc = defineSourceStudyBadges(
       "Dine at MITA on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "804 V St. NW, Washington, DC, 20001, USA · Vegetarian, Latin American",
       "mita.jpg",
-      "An original dish-led miniature badge study for MITA, based on this researched cue: Arepas pair guasacaca, cashew cream, chili oil, and chontaduro butter. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using large mosaic tesserae for Dined at MITA: An original dish-led miniature badge study for MITA, based on this researched cue: Arepas pair guasacaca, cashew cream, chili oil, and chontaduro butter. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "MITA",
         "Vegetarian, Latin American",
@@ -248,7 +248,7 @@ export const discoveryMichelinDiningDc = defineSourceStudyBadges(
       "Dine at Rose’s Luxury on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "717 8th St. SE, Washington, DC, 20003, USA · Contemporary",
       "roses-luxury.jpg",
-      "An original interior-led miniature badge study for Rose’s Luxury, based on this researched cue: Globe lights, eclectic décor, and an open kitchen suggest a playful party. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using screenprint overlaps for Dined at Rose’s Luxury: An original interior-led miniature badge study for Rose’s Luxury, based on this researched cue: Globe lights, eclectic décor, and an open kitchen suggest a playful party. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "Rose’s Luxury",
         "Contemporary",
@@ -264,7 +264,7 @@ export const discoveryMichelinDiningDc = defineSourceStudyBadges(
       "Dine at Little Pearl on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "921 Pennsylvania Ave. SE, Washington, DC, 20003, USA · Contemporary",
       "little-pearl.jpg",
-      "An original interior-led miniature badge study for Little Pearl, based on this researched cue: A carriage-house shell opens into a glassy sunroom facing greenery. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using stained-glass lead cells for Dined at Little Pearl: An original interior-led miniature badge study for Little Pearl, based on this researched cue: A carriage-house shell opens into a glassy sunroom facing greenery. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "Little Pearl",
         "Contemporary",
@@ -280,7 +280,7 @@ export const discoveryMichelinDiningDc = defineSourceStudyBadges(
       "Dine at Fiola on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "601 Pennsylvania Ave. NW, Washington, DC, 20004, USA · Italian, Contemporary",
       "fiola.jpg",
-      "An original interior-led miniature badge study for Fiola, based on this researched cue: Stone walls, seasonal décor, and pop-art prints mix lodge warmth and retro glamour. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using matte painted masses for Dined at Fiola: An original interior-led miniature badge study for Fiola, based on this researched cue: Stone walls, seasonal décor, and pop-art prints mix lodge warmth and retro glamour. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "Fiola",
         "Italian, Contemporary",
@@ -296,7 +296,7 @@ export const discoveryMichelinDiningDc = defineSourceStudyBadges(
       "Dine at Bresca on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "1906 14th St. NW, Washington, DC, 20009, USA · Contemporary, American",
       "bresca.jpg",
-      "An original interior-led miniature badge study for Bresca, based on this researched cue: A moss wall, gold flashes, and sculptural forms create a surreal room. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using large mosaic tesserae for Dined at Bresca: An original interior-led miniature badge study for Bresca, based on this researched cue: A moss wall, gold flashes, and sculptural forms create a surreal room. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "Bresca",
         "Contemporary, American",
@@ -312,7 +312,7 @@ export const discoveryMichelinDiningDc = defineSourceStudyBadges(
       "Dine at Gravitas on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "1401 Okie St. NE, Washington, DC, 20002, USA · Contemporary, American",
       "gravitas.jpg",
-      "An original interior-led miniature badge study for Gravitas, based on this researched cue: Exposed brick and industrial walls soften with greenery and an open kitchen. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using relief-cut silhouettes for Dined at Gravitas: An original interior-led miniature badge study for Gravitas, based on this researched cue: Exposed brick and industrial walls soften with greenery and an open kitchen. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "Gravitas",
         "Contemporary, American",
@@ -328,7 +328,7 @@ export const discoveryMichelinDiningDc = defineSourceStudyBadges(
       "Dine at Rania on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.",
       "427 11th St. NW, Washington, DC, 20004, USA · Indian, Contemporary",
       "rania.jpg",
-      "An original dish-led miniature badge study for Rania, based on this researched cue: Pork vindaloo arrives with crisp belly, dal, Kashmiri pulao, and buttered naan. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
+      "Original abstract source study using stained-glass lead cells for Dined at Rania: An original dish-led miniature badge study for Rania, based on this researched cue: Pork vindaloo arrives with crisp belly, dal, Kashmiri pulao, and buttered naan. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       [
         "Rania",
         "Indian, Contemporary",

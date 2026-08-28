@@ -10,7 +10,7 @@ export const discoveryEducationMilestones = defineSourceStudyBadges(
       "Complete a master's degree",
       "Graduate education · advanced degree",
       "masters-degree.jpg",
-      "Four broad underglaze-style forms show a stepped path leading through an open doorway toward a rising sun and a calm horizon.",
+      "Original abstract source study using ceramic-underglaze-fields for Master's degree: Four broad underglaze-style forms show a stepped path leading through an open doorway toward a rising sun and a calm horizon.",
       [
         "master's degree",
         "master’s degree",
@@ -29,7 +29,7 @@ export const discoveryEducationMilestones = defineSourceStudyBadges(
       "Complete a degree from the University of Nebraska–Lincoln",
       "Lincoln, Nebraska · higher education",
       "university-nebraska-lincoln-degree.jpg",
-      "Large stained-glass-style fields pair Mueller Tower with Love Library's white cupola across a broad campus mall and prairie sky.",
+      "Original abstract source study using large-stained-glass-cells for University of Nebraska–Lincoln degree: Large stained-glass-style fields pair Mueller Tower with Love Library's white cupola across a broad campus mall and prairie sky.",
       [
         "UNL degree",
         "University of Nebraska Lincoln degree",

@@ -19,20 +19,21 @@ describe("Archive discovery thumbnail boundary", () => {
     const manifestKeys = manifest.entries.map((entry: { readonly key: string }) => entry.key).sort();
     const sourceStudies = discoveryBadges.filter((badge) => badge.availability === "source-study");
 
-    expect(thumbnailKeys).toHaveLength(297);
+    expect(thumbnailKeys).toHaveLength(347);
     expect(manifest.limits).toEqual({
-      maximumEntries: 320,
+      maximumEntries: 384,
       maximumFileBytes: 16 * 1024,
       maximumTotalBytes: 2 * 1024 * 1024,
     });
     expect(manifest.totalBytes).toBeLessThanOrEqual(manifest.limits.maximumTotalBytes);
-    expect(new Set(thumbnailKeys)).toHaveProperty("size", 297);
+    expect(new Set(thumbnailKeys)).toHaveProperty("size", 347);
     expect(thumbnailKeys).toEqual(manifestKeys);
     expect(thumbnailKeys).toContain("national-parks/yosemite.jpg");
     expect(thumbnailKeys).toContain("us-states/washington.jpg");
     expect(thumbnailKeys).toContain("books-read/nineteen-eighty-four.jpg");
     expect(thumbnailKeys).toContain("life-milestones/masters-degree.jpg");
     expect(thumbnailKeys).toContain("michelin-dining/jont.jpg");
+    expect(thumbnailKeys).toContain("video-games/baldurs-gate-3.jpg");
     for (const thumbnailKey of thumbnailKeys) {
       const [catalogue, fileName] = thumbnailKey.split("/");
       expect(resolveDiscoveryThumbnail(thumbnailKey), thumbnailKey).toContain(

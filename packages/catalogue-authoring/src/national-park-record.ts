@@ -1,4 +1,7 @@
 import { findArtStyle } from "./art-styles";
+import { CODE_NATIVE_ENAMEL_GEOMETRY_RECIPE_REF } from "./code-native-art-recipe-types";
+import { landscapeManufacturingLanguageForStyle } from "./code-native-construction-language";
+import { nationalParkCodeNativeLineage } from "./selected-source-code-native-lineage";
 import {
   selectedSourceHashes,
   selectedSourcePromptHashes,
@@ -27,6 +30,18 @@ export function defineNationalPark(seed: NationalParkSeed): NationalParkAuthorin
   if (!primaryStyle) {
     throw new Error(
       `National-park authoring record ${seed.slug} references missing primary style ${seed.styles[0]}; register that immutable style revision before loading the catalogue.`,
+    );
+  }
+  const codeNativeLineage = nationalParkCodeNativeLineage[seed.slug];
+  const currentPromptSha256 = selectedSourcePromptHashes[seed.slug];
+  if (!codeNativeLineage || !currentPromptSha256) {
+    throw new Error(
+      `National-park authoring record ${seed.slug} has no code-native replacement lineage; run the integrity writer against the reviewed predecessor before binding replacement art.`,
+    );
+  }
+  if (codeNativeLineage.canonicalPromptSha256 !== currentPromptSha256) {
+    throw new Error(
+      `National-park authoring record ${seed.slug} changed its canonical prompt while binding replacement art; preserve the original prompt association.`,
     );
   }
   const artBrief: BadgeArtBrief = {
@@ -67,14 +82,29 @@ export function defineNationalPark(seed: NationalParkSeed): NationalParkAuthorin
       height: 896,
       sha256: selectedSourceHashes[seed.slug] ?? `pending:${seed.slug}`,
       promptSha256: selectedSourcePromptHashes[seed.slug] ?? `pending:${seed.slug}`,
-      generatedOn: "2026-08-24",
+      generatedOn: "2026-08-26",
       promptRecipe: { id: "badge-source-art", revision: 1 },
+      sourceHistory: [
+        {
+          kind: "initial-generation",
+          promptRecipe: { id: "badge-source-art", revision: 1 },
+          promptSha256: codeNativeLineage.canonicalPromptSha256,
+          outputSourceSha256: codeNativeLineage.canonicalSourceSha256,
+        },
+        {
+          kind: "code-native-replacement",
+          renderRecipe: CODE_NATIVE_ENAMEL_GEOMETRY_RECIPE_REF,
+          designBriefSha256: codeNativeLineage.designBriefSha256,
+          rendererImplementationSha256: codeNativeLineage.rendererImplementationSha256,
+          supersededCanonicalSourceSha256: codeNativeLineage.canonicalSourceSha256,
+        },
+      ],
       selectedCandidateKey,
-      accessibleDescription: `An original ${primaryStyle.label.toLowerCase()} source study showing ${seed.signature}.`,
+      accessibleDescription: `An original source study using ${landscapeManufacturingLanguageForStyle(seed.styles[0])}, showing ${seed.signature}.`,
       provenance: {
-        generationWorkflow: "openai-image-generation-via-codex-imagegen",
-        contentOrigin: "trained-algorithm",
-        promptBinding: "recorded-exact-canonical-prompt",
+        generationWorkflow: "deterministic-code-native-enamel-geometry",
+        contentOrigin: "code-authored-geometry",
+        promptBinding: "recorded-canonical-generation-and-code-native-design",
         rightsBasis: "owner-directed-original-generation-for-badge",
         normalization: {
           recipe: { id: "national-park-study-jpeg", revision: 1 },

@@ -91,21 +91,22 @@ body,
   }
 
   .ceremony-viewer .badge-viewer__viewport canvas,
-  .ceremony-viewer .badge-fallback__stage,
-  .memory-replay__viewer .badge-viewer__viewport canvas,
-  .memory-replay__viewer .badge-fallback__stage {
+  .memory-replay__viewer .badge-viewer__viewport canvas {
     min-block-size: 0;
   }
 
   .ceremony-viewer .badge-fallback__stage,
-  .memory-replay__viewer .badge-fallback__stage {
+  .memory-replay__viewer .badge-fallback__stage,
+  .artifact-pane .badge-fallback__stage {
+    min-block-size: 0;
     container-type: size;
     overflow: hidden;
     padding: 12px;
   }
 
   .ceremony-viewer .badge-fallback__object-frame,
-  .memory-replay__viewer .badge-fallback__object-frame {
+  .memory-replay__viewer .badge-fallback__object-frame,
+  .artifact-pane .badge-fallback__object-frame {
     inline-size: min(70cqi, var(--badge-stage-fit-inline));
     block-size: auto;
     max-inline-size: none;
@@ -329,6 +330,10 @@ body,
     min-block-size: clamp(250px, 46dvh, 330px);
   }
 
+  .artifact-pane .badge-fallback {
+    block-size: clamp(250px, 46dvh, 330px);
+  }
+
   .collection-heading {
     gap: 12px;
   }
@@ -438,10 +443,6 @@ body,
     min-block-size: 220px;
   }
 
-  .artifact-pane .badge-viewer__viewport canvas {
-    min-block-size: 0;
-  }
-
   .timeline-badge-viewer .badge-viewer__viewport,
   .timeline-badge-viewer .badge-fallback {
     block-size: 220px;
@@ -469,21 +470,23 @@ body,
   }
 
   .ceremony-viewer .badge-viewer__viewport canvas,
-  .ceremony-viewer .badge-fallback__stage,
   .memory-replay__viewer .badge-viewer__viewport canvas,
-  .memory-replay__viewer .badge-fallback__stage {
+  .artifact-pane .badge-viewer__viewport canvas {
     min-block-size: 0;
   }
 
   .ceremony-viewer .badge-fallback__stage,
-  .memory-replay__viewer .badge-fallback__stage {
+  .memory-replay__viewer .badge-fallback__stage,
+  .artifact-pane .badge-fallback__stage {
+    min-block-size: 0;
     container-type: size;
     overflow: hidden;
     padding: 12px;
   }
 
   .ceremony-viewer .badge-fallback__object-frame,
-  .memory-replay__viewer .badge-fallback__object-frame {
+  .memory-replay__viewer .badge-fallback__object-frame,
+  .artifact-pane .badge-fallback__object-frame {
     inline-size: min(70cqi, var(--badge-stage-fit-inline));
     block-size: auto;
     max-inline-size: none;

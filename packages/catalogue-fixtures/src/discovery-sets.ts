@@ -21,6 +21,11 @@ export const discoverySets = [
     description: "Finished books kept as cultural memories.",
   },
   {
+    setId: "video-games-played",
+    title: "Video Games",
+    description: "Video-game milestones remembered through original abstract badge art.",
+  },
+  {
     setId: "life-milestones",
     title: "Life Milestones",
     description: "Education and life chapters worth remembering.",

@@ -3,7 +3,8 @@ export const CODE_NATIVE_ENAMEL_GEOMETRY_RECIPE_REF = {
   revision: 1,
 } as const;
 
-export type CodeNativeCatalogueDirectory = "books-read" | "life-milestones" | "michelin-dining";
+export type CodeNativeCatalogueDirectory =
+  "books-read" | "life-milestones" | "michelin-dining" | "national-parks" | "us-states" | "video-games";
 
 export type CodeNativePoint = readonly [number, number];
 

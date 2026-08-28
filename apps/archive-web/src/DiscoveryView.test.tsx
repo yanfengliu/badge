@@ -73,6 +73,7 @@ describe("DiscoveryView", () => {
     expect(html).toContain("0 / 64 collected");
     expect(html).toContain("0 / 50 collected");
     expect(html).toContain("<strong>Books Read</strong><span>0 / 51 collected</span>");
+    expect(html).toContain("<strong>Video Games</strong><span>0 / 50 collected</span>");
     expect(html).toContain("<strong>Life Milestones</strong><span>0 / 3 collected</span>");
     expect(html).toContain("<strong>Michelin Dining</strong><span>0 / 132 collected</span>");
     expect(html).toContain(available.title);

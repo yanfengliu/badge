@@ -10,7 +10,7 @@ export const newCatalogueSelectedSourceIntegrityLifeMilestones: Readonly<
     canonicalPromptSha256: "4387110d8bd66311f59709e49643680e53fc6904549cc02b3c5f03b01e041bc9",
     canonicalSourceSha256: "ee87e59161b9accf776c5196d77ba16270c4ccf2a8fc8b7b8cfb1540c347cfed",
     designBriefSha256: "c8835b477cd45a8f097fb97b6e8dac78791aceb8fb541086061b257da16ba64c",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "30256142807bef105a1b5e92057a47f1b8494db3c7002491c005e96b9d65954f",
   },
   "life-milestones/university-nebraska-lincoln-degree": {
@@ -19,7 +19,7 @@ export const newCatalogueSelectedSourceIntegrityLifeMilestones: Readonly<
     canonicalPromptSha256: "c73431ae71786225fda175397775fd146426f7b6668a9f2f27fe2f083bab29fc",
     canonicalSourceSha256: "d15461f4c63bb2a0765620a624d21213d27fdddac43c6fc7cb1391674388738d",
     designBriefSha256: "ed9c122b6019b071d075e5eed28b0e2d26497f41082891d50e34a6b29bd80b8d",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "170c296e6bf5a8f8894c6acf6e4add02ea1d75f8eca45c8d9b5dd93c517b4d0d",
   },
 };

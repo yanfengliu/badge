@@ -96,7 +96,9 @@ describe("ArtDirectionLibrary", () => {
     expect(html).toContain("<summary");
     expect(html).not.toMatch(/<details[^>]*\sopen(?:=|\s|>)/u);
     expect(html).toContain("Copy prompt");
-    expect(html).toContain("pixel cluster landscape source study showing dawn over Cadillac Mountain");
+    expect(html).toContain(
+      "source study using large stepped pixel clusters, showing dawn over Cadillac Mountain",
+    );
     expect(html).toContain("<legend>Candidate role</legend>");
     expect(html).not.toContain('aria-label="Candidate role"');
     expect(provider).not.toHaveBeenCalled();

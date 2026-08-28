@@ -69,6 +69,16 @@ const setRenderRecipes: Readonly<Record<string, RenderRecipe>> = {
     relief: 0.018,
     crop: { x: 0.5, y: 0.5, scale: 1 },
   },
+  "video-games-played": {
+    version: 1,
+    shape: "square",
+    material: "enamel",
+    borderColor: "#3d3a5d",
+    borderWidth: 0.065,
+    thickness: 0.11,
+    relief: 0.026,
+    crop: { x: 0.5, y: 0.5, scale: 1 },
+  },
   "life-milestones": {
     version: 1,
     shape: "shield",

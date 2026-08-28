@@ -127,7 +127,7 @@ describe("Archive backup source preflight bounds", () => {
   });
 
   it("keeps the decoded-image aggregate cap above one fully collected catalogue while bounding amplification", () => {
-    const fullCatalogueDecodedBytes = 300 * 896 * 896 * 4;
+    const fullCatalogueDecodedBytes = 350 * 896 * 896 * 4;
     expect(MAX_ARCHIVE_BACKUP_TOTAL_DECODED_IMAGE_BYTES).toBe(2 * 1024 * 1024 * 1024);
     expect(fullCatalogueDecodedBytes).toBeLessThan(MAX_ARCHIVE_BACKUP_TOTAL_DECODED_IMAGE_BYTES);
     expect(MAX_ARCHIVE_BACKUP_TOTAL_DECODED_IMAGE_BYTES).toBeLessThanOrEqual(

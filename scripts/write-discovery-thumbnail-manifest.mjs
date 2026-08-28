@@ -4,12 +4,14 @@ import { readdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 
+import { DISCOVERY_MANIFEST_MAXIMUM_ENTRIES } from "./discovery-media-limits.mjs";
+
 const repositoryRoot = process.cwd();
 const assetsRoot = path.resolve(repositoryRoot, "packages/catalogue-authoring/assets");
 const outputFile = path.join(assetsRoot, "discovery-thumbnails.manifest.json");
 const temporaryOutputFile = `${outputFile}.${process.pid}.tmp`;
 const decodeGate = path.resolve(repositoryRoot, "scripts/check-discovery-thumbnail-decode.ps1");
-const maximumEntries = 320;
+const maximumEntries = DISCOVERY_MANIFEST_MAXIMUM_ENTRIES;
 const maximumFileBytes = 16 * 1024;
 const maximumTotalBytes = 2 * 1024 * 1024;
 

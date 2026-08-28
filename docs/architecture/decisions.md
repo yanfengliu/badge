@@ -2,6 +2,16 @@
 
 Append decisions newest first. Never rewrite history; add a superseding entry that links to the decision it replaces.
 
+## 2026-08-27 — D-057: Complete the code-native miniature catalogue and add fifty video-game achievements
+
+**Status:** Owner-directed and implemented; it supersedes D-053's `320`-entry discovery-manifest ceiling and advances the D-055 fixture pack from `1.0.0-alpha.1` to `1.0.0-alpha.2` without weakening either decision's media, rights, or earned-history boundaries.
+
+The owner asked to finish regenerating the existing catalogue in simpler but diverse art styles and to add fifty video-game badges. The completed code-native edition replaces the prior canonical pixels for all `63` parks, all `50` states, and the seven remaining generated-image books with broad miniature-readable construction while retaining each superseded digest as lineage; the other `177` existing recipes and fifty new game recipes bring deterministic construction to all `347` selected studies. The `215` non-restaurant recipes must each reconstruct below residual `0.035` at exact `48 × 48`, every game uses six to eight broad commands and a unique rendered hash, and the game-specific palette-neutral gate compares all `1,225` exact-size pairs against a `0.045` structural-distance floor. Visual review remains required because the numeric gates do not prove recognition or useful diversity.
+
+The `2026-08-27.badge-editorial-50@1` game edition spans fifty finite completion achievements, three deterministic candidate directions per game, all `24` primary authoring-style assignments realized through `14` code-native construction families, and the established luminous-ligne-claire cadence of thirteen candidate trios and five primaries. Game identity comes from the title and honest completion criterion; the abstract source brief admits no screenshot, key art, box art, UI, HUD, logo, wordmark, character, likeness, signature prop, franchise symbol, or game-specific trade dress. Accessible descriptions name the realized construction family rather than claiming that the flat pixels literally use the assigned authoring medium. All fifty records designate the exact reviewed Shakespeare quotation from _Hamlet_, Act II, Scene II, with its separate Project Gutenberg source and English-Wikipedia biography association.
+
+Discover now contains `350` seeded records across six sets: four starters plus `346` fixture-pack badges after Yosemite deduplication. The generated media manifests bind `347` thumbnails totaling `1,006,714` bytes and `346` canonical sources totaling `11,387,491` bytes; both remain well below their existing byte budgets. The reviewed entry ceiling moves from D-053's exhausted `320` to `384`, still close above the exact population rather than becoming unbounded. Publishing the new records requires `badge.catalogue.discovery@1.0.0-alpha.2`: the existing version-gated reconciliation appends records only to stores that demonstrably predate the release, reseeds only drifted unearned lineage, preserves all personal fields, never mutates an earned record, and still refuses a missing record from the same release.
+
 ## 2026-08-27 — D-056: Retire the 384-pixel detail tier in favor of the canonical source tier
 
 **Status:** Accepted and implemented; it supersedes the detail-tier delivery language of D-054 and completes D-055's media model.

@@ -1,6 +1,6 @@
 import { Buffer } from "node:buffer";
 import { spawnSync } from "node:child_process";
-import { readFile, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdir, readFile, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import process from "node:process";
@@ -17,7 +17,7 @@ import {
 
 const repositoryRoot = path.resolve(import.meta.dirname, "..");
 const measurementScript = path.join(repositoryRoot, "scripts/measure-catalogue-source-miniatures.ps1");
-const maximumResidual = 0.045;
+const maximumResidual = 0.035;
 const windowsIt = process.platform === "win32" ? it : it.skip;
 
 describe("selected catalogue source miniature gate", () => {
@@ -26,6 +26,32 @@ describe("selected catalogue source miniature gate", () => {
     const wasmPath = path.resolve("node_modules/@jsquash/webp/codec/dec/webp_dec.wasm");
     await initializeWebpDecoder(await WebAssembly.compile(await readFile(wasmPath)));
   });
+
+  windowsIt(
+    "recognizes the video-games catalogue directory before enforcing its closed count",
+    async () => {
+      const temporaryRoot = await mkdtemp(path.join(tmpdir(), "badge-video-game-miniatures-"));
+      try {
+        await mkdir(path.join(temporaryRoot, "video-games"));
+        const result = runMeasurement([
+          "-AssetsRoot",
+          temporaryRoot,
+          "-CatalogueDirectories",
+          "video-games",
+          "-ExpectedCount",
+          "1",
+          "-MaximumResidual",
+          "0.035",
+        ]);
+        expect(result.status).not.toBe(0);
+        expect(result.stderr).toContain("found 0 selected JPG sources");
+        expect(result.stderr).not.toContain("does not know directory");
+      } finally {
+        await rm(temporaryRoot, { recursive: true, force: true });
+      }
+    },
+    60_000,
+  );
 
   windowsIt(
     "matches the canonical JavaScript proof and residual instrument exactly",
@@ -57,9 +83,9 @@ describe("selected catalogue source miniature gate", () => {
   );
 
   windowsIt(
-    "fully decodes and measures the entire current 52-source books and education class",
+    "fully decodes and measures the complete 52-source books and education class",
     () => {
-      const result = runMeasurement(["-ExpectedCount", "52", "-MaximumResidual", "0.045"]);
+      const result = runMeasurement(["-ExpectedCount", "52", "-MaximumResidual", "0.035"]);
       expect(result.status, result.stderr).toBe(0);
       const records = JSON.parse(result.stdout);
       expect(records).toHaveLength(52);
@@ -90,12 +116,73 @@ describe("selected catalogue source miniature gate", () => {
         "-ExpectedCount",
         "132",
         "-MaximumResidual",
-        "0.045",
+        "0.035",
       ]);
       expect(result.status, result.stderr).toBe(0);
       const records = JSON.parse(result.stdout);
       expect(records).toHaveLength(132);
       expect(records.every(({ key }) => key.startsWith("michelin-dining/"))).toBe(true);
+      for (const record of records) {
+        expect(record, record.key).toMatchObject({
+          width: 896,
+          height: 896,
+          proofSize: 48,
+          proofResize: "bilinear-center-sample-round",
+          passes: true,
+        });
+        expect(record.bytes, record.key).toBeLessThanOrEqual(256 * 1024);
+        expect(record.miniatureResidual, record.key).toBeLessThanOrEqual(maximumResidual);
+      }
+    },
+    60_000,
+  );
+
+  windowsIt(
+    "fully decodes and measures all 113 simplified park and state sources",
+    () => {
+      const result = runMeasurement([
+        "-CatalogueDirectories",
+        "national-parks,us-states",
+        "-ExpectedCount",
+        "113",
+        "-MaximumResidual",
+        "0.035",
+      ]);
+      expect(result.status, result.stderr).toBe(0);
+      const records = JSON.parse(result.stdout);
+      expect(records).toHaveLength(113);
+      expect(records.filter(({ key }) => key.startsWith("national-parks/"))).toHaveLength(63);
+      expect(records.filter(({ key }) => key.startsWith("us-states/"))).toHaveLength(50);
+      for (const record of records) {
+        expect(record, record.key).toMatchObject({
+          width: 896,
+          height: 896,
+          proofSize: 48,
+          proofResize: "bilinear-center-sample-round",
+          passes: true,
+        });
+        expect(record.bytes, record.key).toBeLessThanOrEqual(256 * 1024);
+        expect(record.miniatureResidual, record.key).toBeLessThanOrEqual(maximumResidual);
+      }
+    },
+    60_000,
+  );
+
+  windowsIt(
+    "fully decodes and measures all 50 video-game sources",
+    () => {
+      const result = runMeasurement([
+        "-CatalogueDirectories",
+        "video-games",
+        "-ExpectedCount",
+        "50",
+        "-MaximumResidual",
+        "0.035",
+      ]);
+      expect(result.status, result.stderr).toBe(0);
+      const records = JSON.parse(result.stdout);
+      expect(records).toHaveLength(50);
+      expect(records.every(({ key }) => key.startsWith("video-games/"))).toBe(true);
       for (const record of records) {
         expect(record, record.key).toMatchObject({
           width: 896,

@@ -22,7 +22,7 @@ describe("discovery thumbnail full-decode gate", () => {
       );
 
       expect(result.status, result.stderr).toBe(0);
-      expect(result.stdout).toContain("Fully decoded and key-bound 297 discovery thumbnails.");
+      expect(result.stdout).toContain("Fully decoded and key-bound 347 discovery thumbnails.");
     },
     60_000,
   );

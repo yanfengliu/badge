@@ -10,7 +10,7 @@ const root = process.cwd();
 const fixturesDirectory = path.resolve(root, "packages/catalogue-fixtures/src");
 const assetsRoot = path.resolve(root, "packages/catalogue-authoring/assets");
 
-const CATALOGUE_PACK_VERSION = "1.0.0-alpha.1";
+const CATALOGUE_PACK_VERSION = "1.0.0-alpha.2";
 
 const OUTPUT_PLAN = [
   { file: "catalogue-pack-parks-01.ts", exportName: "cataloguePackParksAThroughG" },
@@ -19,6 +19,8 @@ const OUTPUT_PLAN = [
   { file: "catalogue-pack-states-02.ts", exportName: "cataloguePackStatesNThroughZ" },
   { file: "catalogue-pack-books-01.ts", exportName: "cataloguePackBooks01" },
   { file: "catalogue-pack-books-02.ts", exportName: "cataloguePackBooks02" },
+  { file: "catalogue-pack-video-games-01.ts", exportName: "cataloguePackVideoGames01" },
+  { file: "catalogue-pack-video-games-02.ts", exportName: "cataloguePackVideoGames02" },
   { file: "catalogue-pack-education.ts", exportName: "cataloguePackEducation" },
   { file: "catalogue-pack-dining-bay-area.ts", exportName: "cataloguePackDiningBayArea" },
   { file: "catalogue-pack-dining-nyc-01.ts", exportName: "cataloguePackDiningNewYorkCity01" },
@@ -115,9 +117,9 @@ try {
   const packContract = await server.ssrLoadModule("/packages/pack-contract/src/index.ts");
 
   const studies = discovery.discoveryBadges.filter((badge) => badge.availability === "source-study");
-  if (studies.length !== 296) {
+  if (studies.length !== 346) {
     throw new Error(
-      `Discovery projection exposes ${studies.length} source studies; expected the 296-concept catalogue before writing the pack fixture.`,
+      `Discovery projection exposes ${studies.length} source studies; expected the 346-concept catalogue before writing the pack fixture.`,
     );
   }
 
@@ -144,6 +146,14 @@ try {
       description: book.artBrief.description,
       assetDirectory: "books-read",
       record: book,
+    });
+  }
+  for (const game of authoring.selectedVideoGameStudies) {
+    authoringByDefinitionId.set(game.definitionId, {
+      kind: "video-game",
+      description: game.artBrief.description,
+      assetDirectory: "video-games",
+      record: game,
     });
   }
   for (const milestone of authoring.selectedEducationMilestoneStudies) {
@@ -210,6 +220,7 @@ try {
   const parks = takeGroup("us-national-parks", 62);
   const states = takeGroup("us-states", 50);
   const books = takeGroup("books-read", 50);
+  const videoGames = takeGroup("video-games-played", 50);
   const education = takeGroup("life-milestones", 2);
   const bayArea = takeGroup("michelin-dining:bay-area", 41);
   const newYorkCity = takeGroup("michelin-dining:new-york-city", 69);
@@ -248,26 +259,36 @@ try {
     },
     {
       plan: OUTPUT_PLAN[6],
+      entries: videoGames.slice(0, 25),
+      options: { setId: "video-games-played", assetDirectory: "video-games" },
+    },
+    {
+      plan: OUTPUT_PLAN[7],
+      entries: videoGames.slice(25),
+      options: { setId: "video-games-played", assetDirectory: "video-games" },
+    },
+    {
+      plan: OUTPUT_PLAN[8],
       entries: education,
       options: { setId: "life-milestones", assetDirectory: "life-milestones" },
     },
     {
-      plan: OUTPUT_PLAN[7],
+      plan: OUTPUT_PLAN[9],
       entries: bayArea,
       options: { setId: "michelin-dining", assetDirectory: "michelin-dining", regionId: "bay-area" },
     },
     {
-      plan: OUTPUT_PLAN[8],
+      plan: OUTPUT_PLAN[10],
       entries: newYorkCity.slice(0, 35),
       options: { setId: "michelin-dining", assetDirectory: "michelin-dining", regionId: "new-york-city" },
     },
     {
-      plan: OUTPUT_PLAN[9],
+      plan: OUTPUT_PLAN[11],
       entries: newYorkCity.slice(35),
       options: { setId: "michelin-dining", assetDirectory: "michelin-dining", regionId: "new-york-city" },
     },
     {
-      plan: OUTPUT_PLAN[10],
+      plan: OUTPUT_PLAN[12],
       entries: washingtonDc,
       options: { setId: "michelin-dining", assetDirectory: "michelin-dining", regionId: "washington-dc" },
     },
@@ -325,7 +346,7 @@ try {
   const reload = await server.ssrLoadModule(
     `/packages/catalogue-fixtures/src/catalogue-pack.ts?digest=${digest}`,
   );
-  if (reload.cataloguePackBadges.length !== 296 || reload.cataloguePackRef.packDigest !== digest) {
+  if (reload.cataloguePackBadges.length !== 346 || reload.cataloguePackRef.packDigest !== digest) {
     throw new Error("Catalogue pack fixture failed its own reload check; inspect the generated modules.");
   }
 

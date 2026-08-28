@@ -10,7 +10,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Alabama",
       "AL · Census FIPS 01",
       "alabama.jpg",
-      "An original pixel cluster landscape source study showing longleaf pines opening onto the braided wetlands of the Mobile-Tensaw Delta.",
+      "An original source study using large stepped pixel clusters, showing longleaf pines opening onto the braided wetlands of the Mobile-Tensaw Delta.",
       ["AL"],
     ],
     [
@@ -19,7 +19,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Alaska",
       "AK · Census FIPS 02",
       "alaska.jpg",
-      "An original thread-painted embroidery source study showing Denali rising above braided tundra rivers and dark spruce.",
+      "An original source study using broad fiber appliqué, showing Denali rising above braided tundra rivers and dark spruce.",
       ["AK"],
     ],
     [
@@ -28,7 +28,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Arizona",
       "AZ · Census FIPS 04",
       "arizona.jpg",
-      "An original plein-air broken color source study showing the Colorado River winding through the layered walls of the Grand Canyon.",
+      "An original source study using matte painted masses, showing the Colorado River winding through the layered walls of the Grand Canyon.",
       ["AZ"],
     ],
     [
@@ -37,7 +37,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Arkansas",
       "AR · Census FIPS 05",
       "arkansas.jpg",
-      "An original relief block print source study showing the Buffalo National River beneath pale Ozark limestone bluffs.",
+      "An original source study using relief-cut silhouettes, showing the Buffalo National River beneath pale Ozark limestone bluffs.",
       ["AR"],
     ],
     [
@@ -46,7 +46,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit California",
       "CA · Census FIPS 06",
       "california.jpg",
-      "An original stained-glass field source study showing coastal redwoods framing Pacific light with Sierra granite beyond.",
+      "An original source study using stained-glass lead cells, showing coastal redwoods framing Pacific light with Sierra granite beyond.",
       ["CA"],
     ],
     [
@@ -55,7 +55,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Colorado",
       "CO · Census FIPS 08",
       "colorado.jpg",
-      "An original monoprint ink wash source study showing a snow-lined Rocky Mountain ridge above golden aspen.",
+      "An original source study using bold enamel contour, showing a snow-lined Rocky Mountain ridge above golden aspen.",
       ["CO"],
     ],
     [
@@ -64,7 +64,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Connecticut",
       "CT · Census FIPS 09",
       "connecticut.jpg",
-      "An original contour atlas ink source study showing the Connecticut River passing autumn hardwoods and old fieldstone walls.",
+      "An original source study using broad atlas contours, showing the Connecticut River passing autumn hardwoods and old fieldstone walls.",
       ["CT"],
     ],
     [
@@ -73,7 +73,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Delaware",
       "DE · Census FIPS 10",
       "delaware.jpg",
-      "An original mineral line engraving source study showing Atlantic dunes meeting the salt marshes of Delaware Bay.",
+      "An original source study using relief-cut silhouettes, showing Atlantic dunes meeting the salt marshes of Delaware Bay.",
       ["DE"],
     ],
     [
@@ -82,7 +82,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Florida",
       "FL · Census FIPS 12",
       "florida.jpg",
-      "An original aquatint atmosphere source study showing Everglades sawgrass opening around mangrove islands and a roseate spoonbill.",
+      "An original source study using matte painted masses, showing Everglades sawgrass opening around mangrove islands and a roseate spoonbill.",
       ["FL"],
     ],
     [
@@ -91,7 +91,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Georgia",
       "GA · Census FIPS 13",
       "georgia.jpg",
-      "An original risograph overprint source study showing live oaks and salt-marsh grass along the Georgia coast.",
+      "An original source study using screenprint overlaps, showing live oaks and salt-marsh grass along the Georgia coast.",
       ["GA"],
     ],
     [
@@ -100,7 +100,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Hawaii",
       "HI · Census FIPS 15",
       "hawaii.jpg",
-      "An original matte gouache editorial source study showing dark volcanic slopes meeting the Pacific beside red ʻōhiʻa lehua blossoms.",
+      "An original source study using matte painted masses, showing dark volcanic slopes meeting the Pacific beside red ʻōhiʻa lehua blossoms.",
       ["HI"],
     ],
     [
@@ -109,7 +109,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Idaho",
       "ID · Census FIPS 16",
       "idaho.jpg",
-      "An original woven tapestry field source study showing the jagged Sawtooth Range reflected in a clear alpine lake.",
+      "An original source study using woven tapestry bands, showing the jagged Sawtooth Range reflected in a clear alpine lake.",
       ["ID"],
     ],
     [
@@ -118,7 +118,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Illinois",
       "IL · Census FIPS 17",
       "illinois.jpg",
-      "An original cut-paper strata source study showing Chicago's lakefront skyline rising beyond the blue plane of Lake Michigan.",
+      "An original source study using cut-paper layers, showing Chicago's lakefront skyline rising beyond the blue plane of Lake Michigan.",
       ["IL"],
     ],
     [
@@ -127,7 +127,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Indiana",
       "IN · Census FIPS 18",
       "indiana.jpg",
-      "An original cyanotype field study source study showing marram grass bending across the dunes of Lake Michigan.",
+      "An original source study using bold enamel contour, showing marram grass bending across the dunes of Lake Michigan.",
       ["IN"],
     ],
     [
@@ -136,7 +136,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Iowa",
       "IA · Census FIPS 19",
       "iowa.jpg",
-      "An original watercolor naturalist study source study showing the Loess Hills rising above patchwork farms near the Missouri River.",
+      "An original source study using matte painted masses, showing the Loess Hills rising above patchwork farms near the Missouri River.",
       ["IA"],
     ],
     [
@@ -145,7 +145,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Kansas",
       "KS · Census FIPS 20",
       "kansas.jpg",
-      "An original charcoal and pastel weather source study showing Flint Hills tallgrass rolling beneath a summer thunderstorm.",
+      "An original source study using relief-cut silhouettes, showing Flint Hills tallgrass rolling beneath a summer thunderstorm.",
       ["KS"],
     ],
     [
@@ -154,7 +154,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Kentucky",
       "KY · Census FIPS 21",
       "kentucky.jpg",
-      "An original screenprint night source study showing a lantern revealing the broad limestone passages of Mammoth Cave.",
+      "An original source study using screenprint overlaps, showing a lantern revealing the broad limestone passages of Mammoth Cave.",
       ["KY"],
     ],
     [
@@ -163,7 +163,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Louisiana",
       "LA · Census FIPS 22",
       "louisiana.jpg",
-      "An original mosaic tesserae field source study showing bald cypress and knees standing in a quiet bayou.",
+      "An original source study using large mosaic tesserae, showing bald cypress and knees standing in a quiet bayou.",
       ["LA"],
     ],
     [
@@ -172,7 +172,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Maine",
       "ME · Census FIPS 23",
       "maine.jpg",
-      "An original fresco mineral pigment source study showing a granite Atlantic headland with spruce islands and a working lighthouse.",
+      "An original source study using matte painted masses, showing a granite Atlantic headland with spruce islands and a working lighthouse.",
       ["ME"],
     ],
     [
@@ -181,7 +181,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Maryland",
       "MD · Census FIPS 24",
       "maryland.jpg",
-      "An original prismatic geometric symbolism source study showing a Chesapeake Bay skipjack crossing among tidal creeks and blue herons.",
+      "An original source study using prismatic geometric inlay, showing a Chesapeake Bay skipjack crossing among tidal creeks and blue herons.",
       ["MD"],
     ],
     [
@@ -190,7 +190,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Massachusetts",
       "MA · Census FIPS 25",
       "massachusetts.jpg",
-      "An original ceramic underglaze painting source study showing Cape Cod dunes curving around a lighthouse and broad Atlantic water.",
+      "An original source study using ceramic underglaze roundel, showing Cape Cod dunes curving around a lighthouse and broad Atlantic water.",
       ["MA"],
     ],
     [
@@ -199,7 +199,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Michigan",
       "MI · Census FIPS 26",
       "michigan.jpg",
-      "An original wood marquetry landscape source study showing Pictured Rocks cliffs glowing above the clear water of Lake Superior.",
+      "An original source study using wood marquetry strata, showing Pictured Rocks cliffs glowing above the clear water of Lake Superior.",
       ["MI"],
     ],
     [
@@ -208,7 +208,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Minnesota",
       "MN · Census FIPS 27",
       "minnesota.jpg",
-      "An original scratchboard nocturne source study showing Boundary Waters lakes reflecting boreal pines beneath northern light.",
+      "An original source study using relief-cut silhouettes, showing Boundary Waters lakes reflecting boreal pines beneath northern light.",
       ["MN"],
     ],
     [
@@ -217,7 +217,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Mississippi",
       "MS · Census FIPS 28",
       "mississippi.jpg",
-      "An original luminous ligne claire source study showing cypress wetlands and an oxbow lake across the Mississippi Delta plain.",
+      "An original source study using open clear-line enamel scene, showing cypress wetlands and an oxbow lake across the Mississippi Delta plain.",
       ["MS"],
     ],
     [
@@ -226,7 +226,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Missouri",
       "MO · Census FIPS 29",
       "missouri.jpg",
-      "An original pixel cluster landscape source study showing a clear Ozark spring flowing beneath wooded limestone bluffs.",
+      "An original source study using large stepped pixel clusters, showing a clear Ozark spring flowing beneath wooded limestone bluffs.",
       ["MO"],
     ],
     [
@@ -235,7 +235,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Montana",
       "MT · Census FIPS 30",
       "montana.jpg",
-      "An original thread-painted embroidery source study showing glaciated peaks rising beyond open prairie beneath a vast sky.",
+      "An original source study using broad fiber appliqué, showing glaciated peaks rising beyond open prairie beneath a vast sky.",
       ["MT"],
     ],
     [
@@ -244,7 +244,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Nebraska",
       "NE · Census FIPS 31",
       "nebraska.jpg",
-      "An original plein-air broken color source study showing sandhill cranes gathering along the braided Platte River.",
+      "An original source study using matte painted masses, showing sandhill cranes gathering along the braided Platte River.",
       ["NE"],
     ],
     [
@@ -253,7 +253,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Nevada",
       "NV · Census FIPS 32",
       "nevada.jpg",
-      "An original relief block print source study showing Basin and Range ridges repeating across a bright desert playa.",
+      "An original source study using relief-cut silhouettes, showing Basin and Range ridges repeating across a bright desert playa.",
       ["NV"],
     ],
     [
@@ -262,7 +262,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit New Hampshire",
       "NH · Census FIPS 33",
       "new-hampshire.jpg",
-      "An original stained-glass field source study showing Mount Washington above layered White Mountain forest in autumn.",
+      "An original source study using stained-glass lead cells, showing Mount Washington above layered White Mountain forest in autumn.",
       ["NH"],
     ],
     [
@@ -271,7 +271,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit New Jersey",
       "NJ · Census FIPS 34",
       "new-jersey.jpg",
-      "An original monoprint ink wash source study showing tea-dark Pine Barrens water flowing through Atlantic white cedar.",
+      "An original source study using bold enamel contour, showing tea-dark Pine Barrens water flowing through Atlantic white cedar.",
       ["NJ"],
     ],
     [
@@ -280,7 +280,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit New Mexico",
       "NM · Census FIPS 35",
       "new-mexico.jpg",
-      "An original contour atlas ink source study showing white gypsum dunes folding beneath the blue San Andres Mountains.",
+      "An original source study using broad atlas contours, showing white gypsum dunes folding beneath the blue San Andres Mountains.",
       ["NM"],
     ],
     [
@@ -289,7 +289,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit New York",
       "NY · Census FIPS 36",
       "new-york.jpg",
-      "An original mineral line engraving source study showing the low broad American Falls beside the slender Bridal Veil Falls, separated by wooded Luna Island, with a distant city skyline on a flat Great Lakes horizon.",
+      "An original source study using relief-cut silhouettes, showing the low broad American Falls beside the slender Bridal Veil Falls, separated by wooded Luna Island, with a distant city skyline on a flat Great Lakes horizon.",
       ["NY"],
     ],
     [
@@ -298,7 +298,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit North Carolina",
       "NC · Census FIPS 37",
       "north-carolina.jpg",
-      "An original aquatint atmosphere source study showing layered Blue Ridge summits with blooming rhododendron in the foreground.",
+      "An original source study using matte painted masses, showing layered Blue Ridge summits with blooming rhododendron in the foreground.",
       ["NC"],
     ],
     [
@@ -307,7 +307,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit North Dakota",
       "ND · Census FIPS 38",
       "north-dakota.jpg",
-      "An original risograph overprint source study showing painted badlands rising behind bison and mixed-grass prairie.",
+      "An original source study using screenprint overlaps, showing painted badlands rising behind bison and mixed-grass prairie.",
       ["ND"],
     ],
     [
@@ -316,7 +316,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Ohio",
       "OH · Census FIPS 39",
       "ohio.jpg",
-      "An original matte gouache editorial source study showing a Hocking Hills sandstone recess beneath beech and maple forest.",
+      "An original source study using matte painted masses, showing a Hocking Hills sandstone recess beneath beech and maple forest.",
       ["OH"],
     ],
     [
@@ -325,7 +325,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Oklahoma",
       "OK · Census FIPS 40",
       "oklahoma.jpg",
-      "An original woven tapestry field source study showing rounded Wichita Mountains granite above prairie and a grazing bison.",
+      "An original source study using woven tapestry bands, showing rounded Wichita Mountains granite above prairie and a grazing bison.",
       ["OK"],
     ],
     [
@@ -334,7 +334,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Oregon",
       "OR · Census FIPS 41",
       "oregon.jpg",
-      "An original cut-paper strata source study showing Pacific sea stacks beyond a wind-shaped Douglas-fir coast.",
+      "An original source study using cut-paper layers, showing Pacific sea stacks beyond a wind-shaped Douglas-fir coast.",
       ["OR"],
     ],
     [
@@ -343,7 +343,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Pennsylvania",
       "PA · Census FIPS 42",
       "pennsylvania.jpg",
-      "An original cyanotype field study source study showing the Susquehanna River turning between long forested Appalachian ridges.",
+      "An original source study using bold enamel contour, showing the Susquehanna River turning between long forested Appalachian ridges.",
       ["PA"],
     ],
     [
@@ -352,7 +352,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Rhode Island",
       "RI · Census FIPS 44",
       "rhode-island.jpg",
-      "An original watercolor naturalist study source study showing a rocky Narragansett Bay shore opening around islands and a white sail.",
+      "An original source study using matte painted masses, showing a rocky Narragansett Bay shore opening around islands and a white sail.",
       ["RI"],
     ],
     [
@@ -361,7 +361,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit South Carolina",
       "SC · Census FIPS 45",
       "south-carolina.jpg",
-      "An original charcoal and pastel weather source study showing cypress knees and tupelo reflected in a blackwater river.",
+      "An original source study using relief-cut silhouettes, showing cypress knees and tupelo reflected in a blackwater river.",
       ["SC"],
     ],
     [
@@ -370,7 +370,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit South Dakota",
       "SD · Census FIPS 46",
       "south-dakota.jpg",
-      "An original screenprint night source study showing striped Badlands pinnacles opening abruptly from mixed-grass prairie.",
+      "An original source study using screenprint overlaps, showing striped Badlands pinnacles opening abruptly from mixed-grass prairie.",
       ["SD"],
     ],
     [
@@ -379,7 +379,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Tennessee",
       "TN · Census FIPS 47",
       "tennessee.jpg",
-      "An original mosaic tesserae field source study showing blue Great Smoky Mountain ridges rising behind flowering rhododendron.",
+      "An original source study using large mosaic tesserae, showing blue Great Smoky Mountain ridges rising behind flowering rhododendron.",
       ["TN"],
     ],
     [
@@ -388,7 +388,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Texas",
       "TX · Census FIPS 48",
       "texas.jpg",
-      "An original fresco mineral pigment source study showing the Rio Grande curving through the sheer walls of Santa Elena Canyon.",
+      "An original source study using matte painted masses, showing the Rio Grande curving through the sheer walls of Santa Elena Canyon.",
       ["TX"],
     ],
     [
@@ -397,7 +397,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Utah",
       "UT · Census FIPS 49",
       "utah.jpg",
-      "An original prismatic geometric symbolism source study showing a sandstone arch framing fins, canyon plateaus, and desert sky.",
+      "An original source study using prismatic geometric inlay, showing a sandstone arch framing fins, canyon plateaus, and desert sky.",
       ["UT"],
     ],
     [
@@ -406,7 +406,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Vermont",
       "VT · Census FIPS 50",
       "vermont.jpg",
-      "An original ceramic underglaze painting source study showing a covered bridge crossing a clear river beneath autumn Green Mountains.",
+      "An original source study using ceramic underglaze roundel, showing a covered bridge crossing a clear river beneath autumn Green Mountains.",
       ["VT"],
     ],
     [
@@ -415,7 +415,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Virginia",
       "VA · Census FIPS 51",
       "virginia.jpg",
-      "An original wood marquetry landscape source study showing Shenandoah Valley fields held between long blue mountain ridges.",
+      "An original source study using wood marquetry strata, showing Shenandoah Valley fields held between long blue mountain ridges.",
       ["VA"],
     ],
     [
@@ -424,7 +424,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Washington",
       "WA · Census FIPS 53",
       "washington.jpg",
-      "An original scratchboard nocturne source study showing Mount Rainier above dark evergreen forest and subalpine wildflowers.",
+      "An original source study using relief-cut silhouettes, showing Mount Rainier above dark evergreen forest and subalpine wildflowers.",
       ["WA"],
     ],
     [
@@ -433,7 +433,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit West Virginia",
       "WV · Census FIPS 54",
       "west-virginia.jpg",
-      "An original luminous ligne claire source study showing the steel arch of New River Gorge Bridge spanning a forested canyon.",
+      "An original source study using open clear-line enamel scene, showing the steel arch of New River Gorge Bridge spanning a forested canyon.",
       ["WV"],
     ],
     [
@@ -442,7 +442,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Wisconsin",
       "WI · Census FIPS 55",
       "wisconsin.jpg",
-      "An original pixel cluster landscape source study showing Apostle Islands sandstone sea caves opening onto Lake Superior.",
+      "An original source study using large stepped pixel clusters, showing Apostle Islands sandstone sea caves opening onto Lake Superior.",
       ["WI"],
     ],
     [
@@ -451,7 +451,7 @@ export const discoveryUsStates = defineSourceStudyBadges(
       "Visit Wyoming",
       "WY · Census FIPS 56",
       "wyoming.jpg",
-      "An original thread-painted embroidery source study showing the Grand Teton rising above sagebrush and the winding Snake River.",
+      "An original source study using broad fiber appliqué, showing the Grand Teton rising above sagebrush and the winding Snake River.",
       ["WY"],
     ],
   ],

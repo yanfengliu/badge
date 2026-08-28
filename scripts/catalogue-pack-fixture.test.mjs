@@ -10,7 +10,9 @@ import {
   selectedEducationMilestoneStudies,
   selectedMichelinDiningStudies,
   selectedUsStateStudies,
+  selectedVideoGameStudies,
   usStateHistoricQuotations,
+  videoGameHistoricQuotations,
 } from "@badge/catalogue-authoring";
 import { starterBadges } from "@badge/catalogue-fixtures/archive";
 import {
@@ -60,7 +62,7 @@ describe("discovery catalogue pack fixture", () => {
   const badgesByRecordId = new Map(cataloguePackBadges.map((badge) => [badge.recordId, badge]));
 
   it("covers exactly the projected source-study concepts with unique pack-qualified records", () => {
-    expect(cataloguePackBadges).toHaveLength(296);
+    expect(cataloguePackBadges).toHaveLength(346);
     expect(badgesByRecordId.size).toBe(cataloguePackBadges.length);
     expect(new Set(studies.map((study) => study.recordId)).size).toBe(studies.length);
     expect([...badgesByRecordId.keys()].sort()).toEqual(studies.map((study) => study.recordId).sort());
@@ -79,6 +81,7 @@ describe("discovery catalogue pack fixture", () => {
       "us-national-parks": 62,
       "us-states": 50,
       "books-read": 50,
+      "video-games-played": 50,
       "life-milestones": 2,
       "michelin-dining": 132,
     });
@@ -126,6 +129,7 @@ describe("discovery catalogue pack fixture", () => {
       ...bookHistoricQuotations,
       ...educationMilestoneQuotationBank,
       ...michelinDiningQuotationBank,
+      ...videoGameHistoricQuotations,
     ]) {
       const normalized = normalizedAuthoringQuotation(entry);
       reviewed.set(normalized.id, normalized);
@@ -150,6 +154,7 @@ describe("discovery catalogue pack fixture", () => {
       ...selectedBookStudies,
       ...selectedEducationMilestoneStudies,
       ...selectedMichelinDiningStudies,
+      ...selectedVideoGameStudies,
     ]) {
       designatedByDefinitionId.set(record.definitionId, stripPrefix(record.defaultQuotationId));
     }
@@ -186,6 +191,7 @@ describe("discovery catalogue pack fixture", () => {
 
   it("binds the pack reference to the exact generated content digest", () => {
     expect(cataloguePackRef.packId).toBe("badge.catalogue.discovery");
+    expect(cataloguePackRef.version).toBe("1.0.0-alpha.2");
     const digest = sha256(
       canonicalJson({
         packId: cataloguePackRef.packId,

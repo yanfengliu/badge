@@ -9,7 +9,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningNewYorkCityNZ: Rea
     sourceSha256: "4003ea70e9fee111872a8ddd053ef4039e819edd85fcb0a14d36a5e79a5f7eb3",
     canonicalPromptSha256: "c7d0cee7e34c5f0427461465ce3a0494e6e1cdbdf7a806c19174dea8db80abcd",
     designBriefSha256: "b6257b7ffe3c3e91ff84a4bd39d05932a0eb8af48490543abe54c6efb530a276",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "7b1119b2695aa5a63dd2eb75cf15cac0f4fe85c7cc99d0eda1bee9bc9ea431bd",
   },
   "michelin-dining/yamada": {
@@ -17,7 +17,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningNewYorkCityNZ: Rea
     sourceSha256: "4f74c3b99c45b8c54050445e77fd768418dd92d2fea7db04af8575ac16dc00db",
     canonicalPromptSha256: "1f008021cbe893077e7d2751f27489e6648216e69b8909cccf2e5a7e44d87dad",
     designBriefSha256: "89a9d8f5df28f43b3751eb3fc0ef0e36c0b26d01b81de370122c4a627c399c89",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "4ed3a70ce695d880b4f8f747cdeef7962021b30ec0979ba0ab6474b1b68d1c77",
   },
   "michelin-dining/torrisi": {
@@ -25,7 +25,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningNewYorkCityNZ: Rea
     sourceSha256: "36d00575fb3e2b7fe37ebb58d4a6a9ad6ff2ba437a2a38738bee41ecfcdd1fa5",
     canonicalPromptSha256: "cbbf568215c6ba1b0551db7c09df442715d9f6ad6b3ae5bcec0ec18faa288258",
     designBriefSha256: "bea0c8c4dc2edfeca6d358ad533b35ce589145227f19b4efe87a479f9c47c665",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "5a78863febe51935ca1b1427354243d082da4d6d5aeaa7762be6f71fa2f20ee6",
   },
   "michelin-dining/torien": {
@@ -33,7 +33,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningNewYorkCityNZ: Rea
     sourceSha256: "d5914129cf5888af1e17b6d785e2d8e772da41de7e5edfb0e120454fcc44b5de",
     canonicalPromptSha256: "9eab5acf3b5e00debe19ab5adcb7cbabd7bdb2cf6dfd0a6cf7d7974c7bb6cf92",
     designBriefSha256: "bf4abb14fd8289baa3919f6c84c1ce8f0699d806f3e81c79dfd683050172f126",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "7bfa53898e91268f3de329c11dfac18e7e9397e477fc75b2ad61b0ffa2e7c969",
   },
   "michelin-dining/yoshino": {
@@ -41,7 +41,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningNewYorkCityNZ: Rea
     sourceSha256: "d05c7fa4586aabb99eb35ad4f51d0039ed4ca27514ee03cab4d17763f9c04584",
     canonicalPromptSha256: "5021d09746e18d7138fb2db6f27955997b444c4580c0d6299727260d985daf52",
     designBriefSha256: "099786855c12afe659d8e1733a2941875aa0ba1fd99546eeb74639b6974a3bd3",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "1cb4e7a334b707fcc260a73a626707db8add8a438ae4d8cfa71c6b5ba870a390",
   },
   "michelin-dining/sixty-three-clinton": {
@@ -49,7 +49,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningNewYorkCityNZ: Rea
     sourceSha256: "2bcd502f88cb1e626bb312263fd86133329a55b45bb2d120e515fdc4fac7d87c",
     canonicalPromptSha256: "0895d0a0cec3a5aa4840d5b15c2c8648909dae5da4c2740c132b150b034b9856",
     designBriefSha256: "bee6bc78253eb7da1b1b0d5d00b7e1c69d2992729b23e694f714cd7a240006a5",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "190f88d15d089347a393c271737c28f5c0e3970f77786492195137e9209a9bd1",
   },
   "michelin-dining/sushi-nakazawa-new-york": {
@@ -57,7 +57,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningNewYorkCityNZ: Rea
     sourceSha256: "7dd8d27b71cd1e232e6e8f12f523e9662fda36f01bc6902ba33006938435f715",
     canonicalPromptSha256: "85a6731dc099687c75243d0e8aeab46f68b066020fdfb67e4df42d57762cb321",
     designBriefSha256: "5377b6d48f4ded214c518cd6095089ce9cce24807c27967cb7abf8002637d36b",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "81cdb48ee7a9b2a132fd75e8a2bbd754ddae85bc6e1a3a518fcdb096472f339b",
   },
   "michelin-dining/shmone": {
@@ -65,7 +65,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningNewYorkCityNZ: Rea
     sourceSha256: "2bffe6558f88a97648f82f49d84b2dbe6d902adca3de4a2977c19fca9d21408b",
     canonicalPromptSha256: "d52640beb6919b6b020d0ca7235ae9197318abb79b9b1fdd53473b14531e1cff",
     designBriefSha256: "4866f5daf14ecb44d7f5612f40ee7dfc01bf595dd09f2beaf3a85b0796c4bb05",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "cc55636bd14266c4ece8fe4f99231202904732dfdc4e589b3288328b093738d8",
   },
   "michelin-dining/tuome": {
@@ -73,7 +73,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningNewYorkCityNZ: Rea
     sourceSha256: "cf3b1a403c98f7b762942e287976db4eaaa4542607acbb57d6dc94ef2a609581",
     canonicalPromptSha256: "aced69694247744cfe35e67f090cd0637723d0f2c9b7d125a6acd8434dc9bc99",
     designBriefSha256: "3ec7da0c7358ed9d12025d034caafb528e253d3c32d7dd445f62f78a3aacff91",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "14b2b93c79b820299a7b175932891b3f4e877e79f9d0b6408342405ef9037cb2",
   },
   "michelin-dining/tsukimi": {
@@ -81,7 +81,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningNewYorkCityNZ: Rea
     sourceSha256: "c2561091a2cd0b3e113f1dd55de885e3abfad22099a00be66562e37b0ea7f46b",
     canonicalPromptSha256: "487c3d55c14b829679a52a2e5afe79e8da696e19cc737de661573dd7574ec84e",
     designBriefSha256: "53c1dddcf24113739884b408b25d0a0897a233d580da82e8e590b139932a4ab1",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "f5b1d845ebfb984be259b1270e8acca089c1de85ae50822005ca7e14147a89cf",
   },
   "michelin-dining/semma": {
@@ -89,7 +89,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningNewYorkCityNZ: Rea
     sourceSha256: "164cd5ca3b75289dc8af9174254e10c3999e927d073f15e4c8e735f33fbf8e31",
     canonicalPromptSha256: "ab1be2802801b51c46d5a975342b853348cfc2d44c68465a6b6e95fd8cceeeea",
     designBriefSha256: "5b5305b790cbbe9a61ee23f6d124e45c98b9f9d4d55507dd975d80201d744eb4",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "275d5854d3f35298e4464e11bc1ce6fcee2721f16971c1b5360547d756eca55f",
   },
   "michelin-dining/oiji-mi": {
@@ -97,7 +97,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningNewYorkCityNZ: Rea
     sourceSha256: "dfff1d4810cce9422626a268b8780b6a2ca67e0f5be59a32f0046896015fc0a9",
     canonicalPromptSha256: "51f3b85159ea9baae7993be5c813efe1fd534f0cb4d230b3b86e34fc7a4ac9fb",
     designBriefSha256: "f2433aa133872e0b5e3ad3382edd2b2e4c4f93348d4cf9b0afe6727788c77ee1",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "3c4a40d874bc18f3c01324d2f19f15ab9bb3ba2662a7fa94b0946cc2da8bed54",
   },
   "michelin-dining/rezdora": {
@@ -105,7 +105,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningNewYorkCityNZ: Rea
     sourceSha256: "6454d233167aa9176f76a43c3d0d998a5e76e95dc0cdedcc90095bafeffc7ba4",
     canonicalPromptSha256: "dfa06b8cd82df013a48080cffc0a9a439c1790cd9e0865e3744c8fba67506297",
     designBriefSha256: "3fe535f170d699a9d9729cdb61da6533bf4bcb09f9ec233d0cc97c9a388ba4ab",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "2e9409eb18e4e476689581426aa59367ac791187dcf2a42a9d8c3404963d33aa",
   },
   "michelin-dining/noda": {
@@ -113,7 +113,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningNewYorkCityNZ: Rea
     sourceSha256: "20342dc4999141d209ca50255547e8370933766ebbfe03fe36a73ac239fe5390",
     canonicalPromptSha256: "458e31d6fa728d22508eaefc546f185f4b11609d42f170dc3135b30a149984a5",
     designBriefSha256: "65e0c16a2b8ccfd6bc7b1e497506bbf86d0a398839c4d27d19abd4e55120084e",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "e9bc537d7a82d05086d50b709912c8141ff8db30835f53ad3ecbcf4679009e34",
   },
   "michelin-dining/odo": {
@@ -121,7 +121,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningNewYorkCityNZ: Rea
     sourceSha256: "42c5b9415d4d8e998d22be6af86c0fb205bc1f383188e40152f125e5850f668c",
     canonicalPromptSha256: "77b3bb7ed803644f3916bd5a221e0abb09a74064aa93623806a9475468d0b379",
     designBriefSha256: "d2a8563b55044df16fb15d15852c5a964afd6bfdcf62dd37800244e408d97497",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "29f4130315f944ca2723979b3b4577555bb6573e693111edfdfb39ecd7534d21",
   },
   "michelin-dining/noz-17": {
@@ -129,7 +129,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningNewYorkCityNZ: Rea
     sourceSha256: "22e65ebcff4f592bf8c8a036ad27d336376d5308cc9d10558d3a3bb7245c7984",
     canonicalPromptSha256: "bae8c518f09873f7642a7c6497cbba366bc05f83b859e76a90c94c5f1681a3d0",
     designBriefSha256: "4f5aa1d238635ad8df7a914d639d713ad9c1a1741f8d0b66faed590db295871e",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "2d939d2016f1a7ff6c51e1978dfd250d621b3758c3b11e79905307f400cf8e00",
   },
   "michelin-dining/shota-omakase": {
@@ -137,7 +137,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningNewYorkCityNZ: Rea
     sourceSha256: "889594f0f98fa2c1afbf34674de5cdeb552923c1cba54fd5f6927a98eba61126",
     canonicalPromptSha256: "2c27ffc2fd625ccf909a4a6194a78fa1a160d4209da658f4587fe320cc50eea7",
     designBriefSha256: "ecf7dce422765cee03e48d07843e3a7e647da47e3408fe7465e93c230d39bef2",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "115a5a68c2bea5e43494b8d01fbb791afc4f497aededc988670842eaff4d9f84",
   },
   "michelin-dining/the-four-horsemen": {
@@ -145,7 +145,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningNewYorkCityNZ: Rea
     sourceSha256: "121666b9ff10a7bd6f45563519ca8f99c4a13f27332358ae7b3649f46964d393",
     canonicalPromptSha256: "02e991a839df7b6413bbd80c6d8c6e632e8e463828d4ea86e6f832c7a2e981a6",
     designBriefSha256: "601d3bc15a13c3338a38a64114cf6470964cc35748c25689402e49cb48daf7f3",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "f96fc21004b457db24effa147ad5c74b4218a119c6f733c6bcd1b552109e53f5",
   },
   "michelin-dining/noksu": {
@@ -153,7 +153,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningNewYorkCityNZ: Rea
     sourceSha256: "56a9cebbe87d610c8218f3765d6deb020487dc9925df8e5ec7c1a9f5077f43de",
     canonicalPromptSha256: "c89c261d213a9d80c5bdff5c093e1dbc3c0aab3805330e1f5b13b00260ad478e",
     designBriefSha256: "66f7160f7b607af4260601beb8cfcd9a0ac4664bebaae14972ad01da83832794",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "e1e3004af2105fe50ce5dfd0ed862eda95f4aa20b72df14e4a626f7453044f4f",
   },
   "michelin-dining/oxomoco": {
@@ -161,7 +161,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningNewYorkCityNZ: Rea
     sourceSha256: "f7960648435534a008dafb5b212438ba46055c4ed2a58c1021f573cc4f5f3fcd",
     canonicalPromptSha256: "06b38e35bc980d15229bad0778c740b3508e2e143033b88b3a2ff4eea4b1c38a",
     designBriefSha256: "b7ac0b8b6cc50c07c5ef260a924909f4c204ee879db8f09fdb1d11963bab4832",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "fb7f34484a7f27b4cfa638dac1b39e264d9f722090f998558eda755b99b34971",
   },
   "michelin-dining/tempura-matsui": {
@@ -169,7 +169,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningNewYorkCityNZ: Rea
     sourceSha256: "b188f223c1d98b3a3a4fb6508b59c646efa103da81f24864d8498747a62c0cb1",
     canonicalPromptSha256: "e4c267cf03edf85103fb10e1180c3bf03f3630fa51b3f48a5ab487fe7ff4f634",
     designBriefSha256: "13aa1245b9bdf37630bc3cf4f81281a890dca1f29d4369817a295a10e67e51bb",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "2ed590ccfda6552346c692dc68680c89b370f35516b3dcbb0e94b11489b0f589",
   },
   "michelin-dining/restaurant-yuu": {
@@ -177,7 +177,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningNewYorkCityNZ: Rea
     sourceSha256: "a58c15a0815928ad86da26b0b09dde6e6c1f3cd51b92ce69f332de6ebb18604a",
     canonicalPromptSha256: "da7612647be605daceb5062dc9dd191650b146a9c022ac7f05e8eb77658f0bd9",
     designBriefSha256: "38fa0317ecd702488216f6fe5e3fc993db7656dfe441b00f6acc21ffeb14f7aa",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "6dd2cc93ad60d1283ecd2ccb6117dc66339440ab6def7e94739894f5271d034a",
   },
   "michelin-dining/sushi-sho": {
@@ -185,7 +185,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningNewYorkCityNZ: Rea
     sourceSha256: "2eac3cccdab8deaf9419beea10de7f55a6f3684e12944843c8d70bbbe1de1d59",
     canonicalPromptSha256: "749ac5a7aa20e0daffb0ac283882292f3b965578826a99ce8152a3836dcd73c4",
     designBriefSha256: "650914f2e8bafa25ec62e68cdc46a709f8f1607c5679f0283a9a46dc85dc7ac1",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "4e30923883c9efb9dae015e807a7945479aa5bdf1d554a9fa740a7699ecf4aab",
   },
   "michelin-dining/the-modern": {
@@ -193,7 +193,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningNewYorkCityNZ: Rea
     sourceSha256: "12a7740be0301d2d8c3105ca5a73f23b9e4a831690d5b6bf1ceaa40a4cce6557",
     canonicalPromptSha256: "11a48afc3198721660b654c6e2c3c9445f3047273e5a38772258f04977419dc8",
     designBriefSha256: "e20279b1af49d8ef1deb376870b625d1627692210035693b1d8cd12d5e86ccb4",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "d2563fc13d77dbdd9ebe908fa0bff36711cab6ebfa87f142df03489719ce14ec",
   },
   "michelin-dining/yingtao": {
@@ -201,7 +201,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningNewYorkCityNZ: Rea
     sourceSha256: "51629b8f0206dc472549b332bd04cf4db53c2227c3af2d1dc749c0ecdc059ffc",
     canonicalPromptSha256: "5445d666f7b2aec61ccdfe7312143992f888d5544ae36f2c6441d70274df8df8",
     designBriefSha256: "3831a0ee66c1120f6e766e613ef390c42778ba560496ea9b60cb9532f277a144",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "a6c72c957912b86afe139d944acd5cd290bc8e7524b74822c7c9bb0670611095",
   },
   "michelin-dining/per-se": {
@@ -209,7 +209,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningNewYorkCityNZ: Rea
     sourceSha256: "a9b6f445e6175008a4502e24877f114f87fa091453c1c969bceac830aa633b98",
     canonicalPromptSha256: "d32eff06fdc68a31d3a7cda319b7de4e0eded5ec02a439029c59d33444dc4bba",
     designBriefSha256: "a2666b3442dfac1bf92020e71b11e2d53e837c3f821c1b597e2963e9f6a17926",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "e997b7c073626837e7f0614af21edc6a54bf3b4425fc2724f97bd530d4e778a8",
   },
   "michelin-dining/sushi-noz": {
@@ -217,7 +217,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningNewYorkCityNZ: Rea
     sourceSha256: "20012f1d5fadc8d32b79123784a376f5b70afbaeb94399fc80507b5e1c497388",
     canonicalPromptSha256: "f8a6f3afea676f4adf6b2cd1a89da8fcaaef73984cb4d6752180d06517dffea0",
     designBriefSha256: "37c69093f853f9461ad08b265105c529b7f4ae650ca1a662e1b5651afeee20d6",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "016a02f019899da87d8635947c656c1a2f458dd328d347c2901ccc22d5551920",
   },
 };

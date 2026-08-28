@@ -5,12 +5,23 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 import {
+  CODE_NATIVE_ENAMEL_GEOMETRY_RECIPE_REF,
+  findCodeNativeArtRecipe,
+  serializeCodeNativeArtRecipe,
+} from "./code-native-art-recipes.js";
+import {
   allNationalParksComposite,
   nationalParkCatalogueRelease,
   usNationalParks,
 } from "./us-national-parks.js";
 import { nationalParkCampaign } from "./national-parks-campaign.js";
 import { compileCandidatePrompt } from "./prompt-recipe.js";
+
+const rendererImplementationFiles = [
+  "../../../scripts/render-code-native-catalogue-art.mjs",
+  "../../../scripts/code-native-art/flat-raster.mjs",
+  "../../../scripts/code-native-art/png.mjs",
+] as const;
 
 const OFFICIAL_NAMES = [
   "Acadia National Park",
@@ -115,17 +126,18 @@ describe("the sourced U.S. National Parks authoring catalogue", () => {
   });
 
   it("binds every selected source study to a real compact immutable asset", async () => {
+    const rendererImplementationSha256 = await sha256Files(rendererImplementationFiles);
     for (const [index, park] of usNationalParks.entries()) {
       expect(park.selectedSource).toMatchObject({
         status: "selected-source-study",
         mimeType: "image/jpeg",
         width: 896,
         height: 896,
-        generatedOn: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/u),
+        generatedOn: "2026-08-26",
         provenance: {
-          generationWorkflow: "openai-image-generation-via-codex-imagegen",
-          contentOrigin: "trained-algorithm",
-          promptBinding: "recorded-exact-canonical-prompt",
+          generationWorkflow: "deterministic-code-native-enamel-geometry",
+          contentOrigin: "code-authored-geometry",
+          promptBinding: "recorded-canonical-generation-and-code-native-design",
           rightsBasis: "owner-directed-original-generation-for-badge",
           normalization: {
             recipe: { id: "national-park-study-jpeg", revision: 1 },
@@ -170,9 +182,46 @@ describe("the sourced U.S. National Parks authoring catalogue", () => {
       expect(createHash("sha256").update(prompt, "utf8").digest("hex"), park.slug).toBe(
         park.selectedSource.promptSha256,
       );
+      const recipe = findCodeNativeArtRecipe("national-parks", park.slug);
+      if (!recipe) throw new Error(`Missing code-native national-park recipe for ${park.slug}.`);
+      expect(park.selectedSource.accessibleDescription, park.slug).toContain(recipe.manufacturingLanguage);
+      const sourceHistory = park.selectedSource.sourceHistory;
+      if (!sourceHistory || sourceHistory.length !== 2) {
+        throw new Error(`Missing two-step source history for ${park.slug}.`);
+      }
+      expect(sourceHistory[0], park.slug).toMatchObject({
+        kind: "initial-generation",
+        promptRecipe: { id: "badge-source-art", revision: 1 },
+        promptSha256: park.selectedSource.promptSha256,
+      });
+      expect(sourceHistory[1], park.slug).toEqual({
+        kind: "code-native-replacement",
+        renderRecipe: CODE_NATIVE_ENAMEL_GEOMETRY_RECIPE_REF,
+        designBriefSha256: createHash("sha256")
+          .update(serializeCodeNativeArtRecipe(recipe), "utf8")
+          .digest("hex"),
+        rendererImplementationSha256,
+        supersededCanonicalSourceSha256:
+          sourceHistory[0].kind === "initial-generation" ? sourceHistory[0].outputSourceSha256 : "",
+      });
+      expect(sourceHistory[0].kind).toBe("initial-generation");
+      if (sourceHistory[0].kind === "initial-generation") {
+        expect(sourceHistory[0].outputSourceSha256, park.slug).not.toBe(park.selectedSource.sha256);
+      }
     }
-  });
+  }, 60_000);
 });
+
+async function sha256Files(relativeFiles: readonly string[]): Promise<string> {
+  const hash = createHash("sha256");
+  for (const relativeFile of relativeFiles) {
+    hash.update(relativeFile.replace("../../../", ""), "utf8");
+    hash.update("\0", "utf8");
+    hash.update(await readFile(fileURLToPath(new URL(relativeFile, import.meta.url))));
+    hash.update("\0", "utf8");
+  }
+  return hash.digest("hex");
+}
 
 function readJpegHeaderSize(bytes: Uint8Array): { width: number; height: number } {
   if (bytes[0] !== 0xff || bytes[1] !== 0xd8) throw new Error("Selected source is not a JPEG image.");

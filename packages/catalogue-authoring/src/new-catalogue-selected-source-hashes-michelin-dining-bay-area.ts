@@ -9,7 +9,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "d631ba82ea98b846e3323b049ff64e8381875a163c79cf116262edb53d15f1e8",
     canonicalPromptSha256: "75f21e94141e96194ba52f7fdfbac32764df78fc0efd692a547010b2b684bfaa",
     designBriefSha256: "92f0be3610a2bda38cd2ddae21f744e3d830a0f74d7d20d938ea7b9b5e8f8d91",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "68c05199df59250293b44b86b1a197123324fb534d9496959bad954b300a6561",
   },
   "michelin-dining/birdsong": {
@@ -17,7 +17,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "003ea5fe51383ce59c6aea4facdee0bb6424bf9a9126930d31c6c34ca6ee15d2",
     canonicalPromptSha256: "87f8a963c6055d20dc06c018021fb1552e79f0a3426cc18ddf0455f525937236",
     designBriefSha256: "9ad5d662a88eda5fbd8cf23d998fa76279b350b75665058759435d3cbec6ad40",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "601b435e6a3b01076c9392a450aba790e65885c90282cf4f0ca84a894f14fc8f",
   },
   "michelin-dining/nari": {
@@ -25,7 +25,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "982b4cb22496a011ba2468727c9cecbdc6dc84872372726eba25f1fb9ff1fee7",
     canonicalPromptSha256: "d3811de9e26219cacaae9bca55a595ae88c83716e884b5862212fc2b895a0584",
     designBriefSha256: "1dd5d71ebf03721d5f06812ace5a4c58def83029ac4593820379330f5576679c",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "1b1bec232a1aa492eba2b188d2f59eaad1513448e60a629d1d162b3ebbd4db0f",
   },
   "michelin-dining/kin-khao": {
@@ -33,7 +33,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "3afe3f098ffd357f3f9ed3474a9d16536771c4060cef25a251b104fb9a54cf73",
     canonicalPromptSha256: "a9f18a62fddc0c9203ed1a4bf5091c106412212ff7feffba2fb347aca12ee2df",
     designBriefSha256: "c43c11ed2eaa2861ece3e4dea145c040962ed0b2988aab7ae5f1c642824ac4ab",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "1542993d18bb2e4a725e9d5f40a5ea84bc5e9de6eeb2544e07130ef9d84e20b2",
   },
   "michelin-dining/californios": {
@@ -41,7 +41,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "2ea7d891f4cd705b8aa0c61ab8bc96bac7047f0ef286bfd0139f70298097c451",
     canonicalPromptSha256: "ea01190b09229a02a49225a580c185f82c01d79f08ae255555f999b7cafd6129",
     designBriefSha256: "3b548b1f86e3a10786db027f14a9da44e8ae0fb12017ec1e11e8b20c3390dbb2",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "1fcd2862039e992fdfd48ffeedae5e9e8237ce7b09fba6329bc2e40f8ff39753",
   },
   "michelin-dining/state-bird-provisions": {
@@ -49,7 +49,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "bc49ccd27d5c3479c861562d755271885e88ed57b6425f41ac3b06134a450fa2",
     canonicalPromptSha256: "708e6ec8b5f8bc5debb87f148d2bc6797e0ae97eda93f3a90ce3ee0f9ad64a04",
     designBriefSha256: "db375d813bded37e3e3cb6569f446a23a25165cdd4466cde6d704ef1246ea198",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "d2e73c3ff2b2f62e822f0545a1d1ee17be26fe93b57a7961ee64267aa55ecd31",
   },
   "michelin-dining/the-progress": {
@@ -57,7 +57,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "83a35ab6c370bd19dc44914c933c8470d281019b57b416f2810ea576652ff264",
     canonicalPromptSha256: "9cb011e45789a846a8a86665127f6f725492ee4664ee86ba1c3795405d9b59cd",
     designBriefSha256: "3fb2f79f51239e32723e5ecfaa5fc15bd0bf29a0d84fea25104c38214b77cabb",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "c12bf92c0d1e57a51d71a694a9895bbaab87cc88a6d36d13d1c5dc95e5400b5a",
   },
   "michelin-dining/7-adams": {
@@ -65,7 +65,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "6affe8bd8bd2ef92756b132c0677550bd2af7125d5b0decdf056797f16c0d2e9",
     canonicalPromptSha256: "6a9e5a8574e36a123a0a282e974efbf1f80648106b7bc79fb638f61b5a1e7e8b",
     designBriefSha256: "41a22ea335a25795b7cfdbc1793e8b41afd93ea0258baee6a5961aafb96fe174",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "30fb68a080d69ef78667a0fbc8d5f11dd9978b134636eb5219aa8ee22a723d46",
   },
   "michelin-dining/acquerello": {
@@ -73,7 +73,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "8ffc2a9d93a52fbab0900e57d4d9ac871aa9e927205791f74b03d101414f9541",
     canonicalPromptSha256: "26ccc3859c752f78fc0b9f2c583aada7fd4c5f877ba8ad1d925cc82de3bbb2b9",
     designBriefSha256: "e5da1c1f6987541b7d009c9824ca57204fdd02f3af6f12c5debba8fda32888ab",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "ee7b5a66ac2505c5df37a779ef6e3e88a84f871e20126ab3b0f69ce122079c82",
   },
   "michelin-dining/restaurant-naides": {
@@ -81,7 +81,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "1f8c22517cec39cd35d18165790a6cc67300ec394d8b898f26e0280a6108e7e3",
     canonicalPromptSha256: "4551889fa73eb4bb1883e7eebc3b00efa64dbe42c7c200478c974597c1ffc0bb",
     designBriefSha256: "eeaccf31450055a1b9c7d4ff250641f84fa665db3a87da94e80794473e6c30fd",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "27de3cec02205f3270005824cf11a79932ed56e789ed8c6a8e9df26fb91d27bc",
   },
   "michelin-dining/niku-steakhouse": {
@@ -89,7 +89,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "2794cff85246d4d627fd7fce0ab78db6ce3368df1ed58b4501e19ebb24d65edc",
     canonicalPromptSha256: "c81b0694a4b1951d1d7f91524e4baeae79e4fa7639db992154a639810774efc0",
     designBriefSha256: "dc64c36798233f67b281d1ba0f32ff6d031dee376cde0fd66339be1aab656b6e",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "970ff654cbc7bc3601784a4aa09962f902a4a24362c3fa0c9e2c0e281129a27b",
   },
   "michelin-dining/ssal": {
@@ -97,7 +97,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "def6cb9c09ce03faed6f2e1149e3423a0cec97193dacf2124ea19f7eb8edeb2f",
     canonicalPromptSha256: "0e512deb0733bc03a78f8f24ae88f9ec73e6485d1bd11de64a24053d2affba84",
     designBriefSha256: "c49cd496cfa54dfce93ad866d310d9e27fc21e528850988fef1bda614c714c6e",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "0afb54e4d143451c4c7ca943aba8b2751259c3777812973f1fdc355a3b6c1e3f",
   },
   "michelin-dining/mister-jius": {
@@ -105,7 +105,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "02dcc8629a46c76beed58c086862e0bba47c6d6b6c8ff57b0695f948ca24b7c8",
     canonicalPromptSha256: "cbc57292e1fab07d12e3b305213d3998f6bcbdd299cc065251ffa39e01c8b8aa",
     designBriefSha256: "666dec3b29e78ecc615d0414a4f498882036c39e321465b45f9371d4e33c9f28",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "6a6a0f39dce430efd3351f13509aed2aac3c0ed56cf1e113d7fa42784a098a99",
   },
   "michelin-dining/benu": {
@@ -113,7 +113,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "a03ff05794afef7c014ee8fdd054f6cb6b286ffe22936d412fa775b5e766fd90",
     canonicalPromptSha256: "46f615e292e5d688a2524b0f4435a02e05c9c0a22549eb51b0886fe21d64344e",
     designBriefSha256: "cce58440454658dc844729cbcad5cddc828593555f8c25f73c13ac2ba7c6e52f",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "4989935d955b8ae26739f820d01b8b23ba5f3ef343718e4a17976c6f2d937a0f",
   },
   "michelin-dining/nisei": {
@@ -121,7 +121,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "13ca9ffa35e6e35d5cb440d6648ace9f5e233076a668b6aded61a41b522c53bf",
     canonicalPromptSha256: "d7a3e42c2ead6e2dcf67111853331eb9a5198cf474b50f518d617a6602040994",
     designBriefSha256: "346e386009ae54df5cd8206f0f399049490d7466164378a21b25aaa2b67e6c63",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "f14a6dc9ef58409546217c7f3a6c965130dfd89bac23c97b4a2cb2a73ae73078",
   },
   "michelin-dining/lazy-bear": {
@@ -129,7 +129,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "2de707a4bd9bc2e80f38d49174025364141b0a702f8550ac4d12d314578e153f",
     canonicalPromptSha256: "67a3a11e48f3aaccd8101f3ec384312433d80cd8b5cf39200ae837e855b4eb31",
     designBriefSha256: "59e3dbe3093797e6797f82e6f23cc1a7ad37139ef1435a0aa9aa3d099cf177bb",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "74925e196a65a029f130f6f8cbaad407f67b37390d2b28634b37dac2a2b1eb8b",
   },
   "michelin-dining/sons-and-daughters": {
@@ -137,7 +137,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "8973cb4e144c3f281809b08d35122637c6c4fb676b855769346a86e978668337",
     canonicalPromptSha256: "a7cfd1c3fa0f92a109d788d8de7b44b22daf9a154e9d27db574be53826ea38d3",
     designBriefSha256: "7cf281b7f651e7f43a0d2d280d5437d5cbed55f590fc91cdeaec2d212f477319",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "64acbc224d2115f2ff727082ff67406506e33819fd49e64a54e22ed4e0ef1e2b",
   },
   "michelin-dining/hilda-and-jesse": {
@@ -145,7 +145,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "30f1c9b06ead7a58211e1278a1949c5374921a977f6c276e98f9dccedb7ff667",
     canonicalPromptSha256: "f052b526c0266dce450ccc3b3fd24d7c411f7a5fcbd87f52f626de1560e7b5fd",
     designBriefSha256: "6782519b55f05d804203f872f11535f1f406faa72a36fffc05ee0131752a95f3",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "17373eaf110dc0e18db4db713b07e7616dfec5d1815dd51f3e77c29dda014e4d",
   },
   "michelin-dining/san-ho-won": {
@@ -153,7 +153,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "9d38c57f8deb0adcc7c1527159ac28aa65f46064151117c58e42fb1d63186e01",
     canonicalPromptSha256: "07806211e9acfb420e25cdaa23784efde850334a86bb66b5c9e19e68c343ed8a",
     designBriefSha256: "d55064ea53f5a1212e2ca1c2b7cfdbac09cac9c4aa0ea8658a2d0277d694e671",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "8df19afa32450e74f5d9e40dd894295ab8cabd151e7024094093ab5450336cf9",
   },
   "michelin-dining/quince": {
@@ -161,7 +161,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "e3a337ac8ef99eb58e950004b85c682ed94e4b89a138deb260d952b646b3a5ce",
     canonicalPromptSha256: "914da500c3836da1c44e92a91ccd0bf4b4ed09854647e1ad60573e569c2de751",
     designBriefSha256: "02abffca41d08a8095ee604108d806663b30559bbb1c85d9f2fbdacc0febef5a",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "9e4292e064ace7accbef3772d5b8b6086fdf0a0928483120c2e1ba30027a1ad8",
   },
   "michelin-dining/saison": {
@@ -169,7 +169,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "b2ea0374cd59b8ff4d9a833ba5c4f076c58f93c3d1e0a93b1d99afcb3d2adf95",
     canonicalPromptSha256: "e7fc454ad03ff3ab849cc0aba09d2800c240e43aaf006f7a069951791a77659c",
     designBriefSha256: "de6d50dacb635bd52eb44228f9124530db54e41d6bb00c406152952feb0b2fd3",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "0c328745b3b31d1767731232ffbae4ec6445fcf5a74258b594b231edf5dea58c",
   },
   "michelin-dining/atelier-crenn": {
@@ -177,7 +177,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "f27b706eba149f5e3ee3fbf84bef2d74f3d7e0fe154f99e77f203c68c61ac2c4",
     canonicalPromptSha256: "959c692e06c98fed992b46b5245826869282773ffa06986dd10950c1f80f4c94",
     designBriefSha256: "9d8425f5bf0185a79e531f68933500fd75cb1ba5322e13f85dd87668aeef3cba",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "36c8fe71cac66fd9b804594881ba7924a313b21143e2c9d2fbabfd4e7d563ce8",
   },
   "michelin-dining/sorrel": {
@@ -185,7 +185,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "c3497a8bbfdce631a68940f5855f0478bbbfb41cc4d3c0bb179552ce8d9ed8be",
     canonicalPromptSha256: "cd3b86ed770012cd96619f951b5514445fa98a9d8335fa99b374e09b350d5400",
     designBriefSha256: "57e4ffda96f99b39f9599b363ab4f944b3c2dd009f1493f4781c3bfe9ec6bbfe",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "71e0da44875f2920380f3d49f91d84d036e360aa7a63336679b47b1b5d23654c",
   },
   "michelin-dining/angler-sf": {
@@ -193,7 +193,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "6a606e0a030e8a06e88a6d9ff0112747f025e5e01e2541af371b0e4e1ed6d1a9",
     canonicalPromptSha256: "0c7ff84318daab73cd7330619f72b40da3fbec8bcd34d8f2cdf2443d235859e7",
     designBriefSha256: "a23fb3928d923a0d7d78aff534059e4e2ff3103209460a6fb4a2c9d6613aa253",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "9e1b192378f763f7f63bf8a36576d43d8bfdda446e1ca23b76a9fb9193f43d90",
   },
   "michelin-dining/wolfsbane": {
@@ -201,7 +201,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "6c5e0f7912613640e3b3976710f4bfa48695ae8a48531cc0f3f0b45f68e4423c",
     canonicalPromptSha256: "dcb7cdd8805badae455b29e640b18e591b56f8db3cd8981fc839a821a9fb75b3",
     designBriefSha256: "60e72b349431e567c68f66cee55ff43de67a4a44356c69afe8f204fa2f437e21",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "f33773d9bf8fd5d059875c70a2cfd3e2b8700f95c69dbf8f02ad66245acf01eb",
   },
   "michelin-dining/sun-moon-studio": {
@@ -209,7 +209,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "f0422e878da7aad04a0e8bfb5ef4ebd8f24067eb41f114bdfb75624e5854a56e",
     canonicalPromptSha256: "20e68ce4074f40447af686235f77afe59bcf9db2e57914987fb2b561591b5008",
     designBriefSha256: "e3a85d66d82e77c57d383894737e2bdaa089a4e853710c5240259692348cacf7",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "f4e9245e5cdaf9880d10c8dc296296a9cbfbb65f52df5718a3168eeb8e049a44",
   },
   "michelin-dining/commis": {
@@ -217,7 +217,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "bb9c26e9e171b85f60aa3f09e8e063d0564de5ecc65496a7ecfc4212a3e54af5",
     canonicalPromptSha256: "ca1166cb4e90d80ac0505f98423c8f4ffa4633a0d1eb26ae754e019ead051a90",
     designBriefSha256: "7f691a06e1c8da0241726ead3c2d776e024e9066d5e7f0aa9879ee27436ca2d8",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "07aa80b46fccb9880f262d9ad6db8c17777a2f86c36c54bdf44e20388fea28eb",
   },
   "michelin-dining/madcap": {
@@ -225,7 +225,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "42a1484b7d4fa8fd2a2f1f1227c54221f2f096a51c4fdc9d04330305f9c57beb",
     canonicalPromptSha256: "b0c1c9fdedb871a12b505b7a4d9b6738f75f6d6a9dfa07879f635579fbf392ba",
     designBriefSha256: "1f4f07d25113e2cdf398e09a4db7fa9815df0fd4788ebf313df749528180a908",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "ec6e63424731fe2a32c910fa6ac85ef7761acfcc3cfdd75e2e408628eee3a24e",
   },
   "michelin-dining/wakuriya": {
@@ -233,7 +233,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "516b4c03166bf9c2ff28ce6005eef6ba6fa317d85c698544e95f38352a2dc25d",
     canonicalPromptSha256: "3f0ec64774008daf9903fe266b71de4e24de1ed72623f22c7731ff8faafa7654",
     designBriefSha256: "fc3b51e839649f7cb433158a71c9ad0bd7a3ac257112eaeb3d0884c945efaaf2",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "0572cdd31f5560575129f62aa4bc333ca09fbd965f878b3dad45715693e73835",
   },
   "michelin-dining/singlethread": {
@@ -241,7 +241,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "4707d4d2143aa3d0141b6f0d1458d70827cda7ab972eaa493e2c8721d2b4b51a",
     canonicalPromptSha256: "f059a2e652d441a7f965ea099ca5e41412e72d0920a76e02bab1c36a3f3fe60e",
     designBriefSha256: "aa7e51c94aac0f28e24b9da1a12492a7ab5111aaf1088d348c99872a75d71b14",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "d5209bdd0c8ec539800fb7005326dd73d31b4225d86d4a7b9f3a2644bdb8d199",
   },
   "michelin-dining/auberge-du-soleil": {
@@ -249,7 +249,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "01f766315c7488567a7ac45cf5292f33fbc61c4b20c9bb2eef4a79deb21f0779",
     canonicalPromptSha256: "7198f2a0684683ee291da4dbdd89a9b97da0e5e77013acebcca4145eb1a57729",
     designBriefSha256: "19c0e84deac2f37571393a61aba0c9e58afe247a30020f1a116372eea89cf2e2",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "88a6117cc0d59243960023803e8b829d6951466f715c7790b7540a4ac84ea27d",
   },
   "michelin-dining/auro": {
@@ -257,7 +257,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "210e1f13c0e564efd57d22eb1e8999bb71bc7e1c7252fb9218d9d7b923356b5e",
     canonicalPromptSha256: "de93accf14e3c87d27092cd149023e19cd87c562c0af622774689189774dd6bc",
     designBriefSha256: "5bb92e7210ddae8d50e2c23e674a3b468c63261b31cf17be0eb19dcbf22eb3f1",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "e3c30bd09c828e1ca4fe438f7876d2dddf3570461a3e2264e2cefebfd1d27e2e",
   },
   "michelin-dining/enclos": {
@@ -265,7 +265,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "1eb3770429201f6c3e3f15748b62b052462d4cfd78e189e97ae72157e3010241",
     canonicalPromptSha256: "ee38252e801ee3056a795190c4eac929a2c7ed5118528d058c497eb329077861",
     designBriefSha256: "47530ae424d37539d16f943da93f45927701a50939b436bc84e7a4ca0d9a19fa",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "3d196e6be0db6e11d8a1ec91967ef9337c65455f2c59607ec6fa6ed0745c30e1",
   },
   "michelin-dining/the-french-laundry": {
@@ -273,7 +273,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "dac7fb52bc4e36203e8ff6f7a59a2e3f7792bda5ae78914102a85255e381465a",
     canonicalPromptSha256: "78398fd9b948a38b56bbc468503321f8c281679fdba5a096225c2d6581cfa9e3",
     designBriefSha256: "e0f63a3904b5025770bfe56c793027fa122f25a3ce9753fcc8783c29a206deb4",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "433c584fa694bde1514e9036c99c52dc3eca1584b292e243cab401fd703b48e4",
   },
   "michelin-dining/the-village-pub": {
@@ -281,7 +281,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "396e5a2be07c67107190b6d6c53d320b72e9d905a3f139b4853e0f21de5a9966",
     canonicalPromptSha256: "3fbda2f35c89c7e9973cfe6664eb3acde19f2cd65e21f4d7bc8a5b311ffb8a76",
     designBriefSha256: "3298a72b99554c571569176b1ce8c30391d7561023fe298f508cc6ad28e5f83c",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "7d86769cd32343d38ed29264e78bbd7ab39b67da567a0ae33075f035aa862f75",
   },
   "michelin-dining/cyrus": {
@@ -289,7 +289,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "c0cd8463dde8105d9e1a0fb0c15c620ac0b5cad5da591f94b59e704e638a0bb5",
     canonicalPromptSha256: "470fef85956bfe118fca0d4615b37997ec6392c2f8b01bdfe877c308a007e576",
     designBriefSha256: "29915ef4c8f00507692c351913f3089a8b8b6d45287620144a7617dc466bb5d5",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "757db8431edbb1493ecc3f78af91c960e78921f63568e67bed66a6178bf1866c",
   },
   "michelin-dining/protege": {
@@ -297,7 +297,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "8911b2dda389b8783c3e84671e558a6fc4303c74ef21ca52f62effa49801b72f",
     canonicalPromptSha256: "58fb8a27f080eb04bf52dea7f4da311b9b2e13ca42864fa9dbe2ff0b7ea1b334",
     designBriefSha256: "34bb6071a1e4e1927f58027217da753f7760f5617c86d0a78a716d1a6d29dd76",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "42ace83d20b1cc0bbbf302cff06f1ee37ed1d24191eedc735da65f114be9dd2e",
   },
   "michelin-dining/selbys": {
@@ -305,7 +305,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "44de61d163ec2b4484d8a3bea2d761e982caea40c1b6b1826e6eae3687de07a9",
     canonicalPromptSha256: "dd2861e1dd69d54ad7f4db31af8c006eca6865cceff85121f4c4d7bcc55aba46",
     designBriefSha256: "1d37794886425cd92749994d66844b0d59ff928f91a8339dbac2ba0311469196",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "61fea3dc9e40eeadfb85002c5da037de3f8fd73c0dc3925b65fd99a2a96454b5",
   },
   "michelin-dining/troubadour": {
@@ -313,7 +313,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "007c0fd38675b519f4cf9b42096272529b7bb235242fc9c739a4c6325425c9cf",
     canonicalPromptSha256: "69062fb370602f2c63c8aa68a4b6f7b05fd8e1cce4ca0a80fbdd6bc308a5f855",
     designBriefSha256: "75c0917d41ce4058f9c34f62dec6432a6c4dd48950646b4799abb74a8c753c5f",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "7e9a314f626e380bef46959277f8ff243629b2bad1df0d3dd0b9c5200f20ad86",
   },
   "michelin-dining/plumed-horse": {
@@ -321,7 +321,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "08a59a96a91ab35b228d1297e3d06c6409ea095b96a62c2e50ba70a8bd2e9478",
     canonicalPromptSha256: "361034e9d5efceb37423a096d735604efd93560f000205c47e1558dc8c3b5cd2",
     designBriefSha256: "dcd2f13c95156c86f2aacf3d4e78e307c881d8300f2c5dd2cf2ab2dc7aefcbc9",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "9a72b038636d32f8963a793d302282717a43e2abbd3d7fafc20a6d34ab9f5946",
   },
   "michelin-dining/press": {
@@ -329,7 +329,7 @@ export const newCatalogueSelectedSourceIntegrityMichelinDiningBayArea: Readonly<
     sourceSha256: "3112565ff45a28f9af9db06596aed7ded524409a4ca6b07d9897c67bd15d159d",
     canonicalPromptSha256: "f6146802888a59ee9b73b2c4b880fdd652ec2cef54faf2bc4f17bd8d57ac1760",
     designBriefSha256: "b3b5168168d6cc4b275e76a29f29c60dbb12d193b668396cc7b052aa5dd41e6f",
-    rendererImplementationSha256: "db0fd8ae47b4d3a5bd5faae8846a5612b55bbe38626c3c0684d1b2fb19a2a229",
+    rendererImplementationSha256: "40686dfcc2980d19921a820becd09845f8e2a6b4513eb108a1070744f39b1141",
     thumbnailSha256: "a55f6a4b1f4c4b056b8c3e23d3d242e2d310c2382ae8970e02346949161af065",
   },
 };

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { starterBadges } from "@badge/catalogue-fixtures/archive";
-import { cataloguePackBadges } from "@badge/catalogue-fixtures/catalogue-pack";
+import { cataloguePackBadges, cataloguePackRef } from "@badge/catalogue-fixtures/catalogue-pack";
 
 import { createStarterArchiveState, createStarterQuotationRequests } from "./archive-state";
 
@@ -15,7 +15,13 @@ describe("seeded Archive saying defaults", () => {
 
     expect(state.records).toHaveLength(starterBadges.length + cataloguePackBadges.length);
     expect(state.records.filter((record) => record.recordId.startsWith("starter:"))).toHaveLength(4);
-    expect(state.records.filter((record) => record.recordId.startsWith("catalogue:"))).toHaveLength(296);
+    expect(state.records.filter((record) => record.recordId.startsWith("catalogue:"))).toHaveLength(346);
+    expect(cataloguePackRef.version).toBe("1.0.0-alpha.2");
+    expect(
+      state.records.filter((record) =>
+        record.collectionRefs.some((collection) => collection.collectionId === "video-games-played"),
+      ),
+    ).toHaveLength(50);
     for (const record of state.records) {
       const bank = fixtureBanks.get(record.recordId);
       expect(bank, record.recordId).toBeDefined();
@@ -29,6 +35,9 @@ describe("seeded Archive saying defaults", () => {
       ).toBe(true);
       expect(record.activation).toBeNull();
       expect(record.definitionRef.namespace).toBe("pack");
+      if (record.recordId.startsWith("catalogue:")) {
+        expect(record.publishedVisual.packRef).toEqual(cataloguePackRef);
+      }
     }
   });
 

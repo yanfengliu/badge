@@ -1,4 +1,8 @@
 import { defineCodeNativeArtRecipe, type CodeNativeArtRecipe } from "./code-native-art-recipe-types";
+import {
+  CODE_NATIVE_STYLE_SIGNATURE_BY_STYLE_ID,
+  manufacturingLanguageForSignature,
+} from "./code-native-construction-language";
 import { renderRestaurantMotifConstruction } from "./code-native-restaurant-motif-construction";
 import { sanFranciscoMichelinRestaurantSeeds } from "./michelin-restaurants-bay-area";
 import { washingtonDcMichelinRestaurantSeeds } from "./michelin-restaurants-dc";
@@ -7,38 +11,9 @@ import type { MichelinRestaurantResearchSeed } from "./michelin-restaurant-seed"
 import { sanFranciscoRestaurantArtProfiles } from "./restaurant-art-profiles-bay-area";
 import { washingtonDcRestaurantArtProfiles } from "./restaurant-art-profiles-dc";
 import { newYorkCityRestaurantArtProfiles } from "./restaurant-art-profiles-nyc";
-import type {
-  RestaurantArtProfile,
-  RestaurantGeometryMotif,
-  RestaurantStyleSignature,
-} from "./restaurant-art-profile";
+import type { RestaurantArtProfile, RestaurantGeometryMotif } from "./restaurant-art-profile";
 
-export const RESTAURANT_STYLE_SIGNATURE_BY_STYLE_ID = {
-  "pixel-cluster-landscape": "pixel-step",
-  "thread-painted-embroidery": "fiber-applique",
-  "plein-air-broken-color": "painted-mass",
-  "relief-blockprint": "relief-cut",
-  "stained-glass-field": "lead-cell",
-  "monoprint-ink-wash": "ink-contour",
-  "contour-atlas-ink": "map-contour",
-  "mineral-line-engraving": "relief-cut",
-  "aquatint-atmosphere": "painted-mass",
-  "risograph-overprint": "screenprint-overlap",
-  "matte-gouache-editorial": "painted-mass",
-  "woven-tapestry-field": "woven-band",
-  "cut-paper-strata": "paper-layer",
-  "cyanotype-field-study": "ink-contour",
-  "watercolor-naturalist-study": "painted-mass",
-  "charcoal-pastel-weather": "relief-cut",
-  "screenprint-night": "screenprint-overlap",
-  "mosaic-tesserae-field": "mosaic-cell",
-  "fresco-mineral-pigment": "painted-mass",
-  "prismatic-geometric-symbolism": "geometric-facet",
-  "ceramic-underglaze": "ceramic-roundel",
-  "wood-marquetry-landscape": "marquetry-strata",
-  "scratchboard-nocturne": "relief-cut",
-  "luminous-ligne-claire": "ink-contour",
-} as const satisfies Readonly<Record<string, RestaurantStyleSignature>>;
+export const RESTAURANT_STYLE_SIGNATURE_BY_STYLE_ID = CODE_NATIVE_STYLE_SIGNATURE_BY_STYLE_ID;
 
 const seeds: readonly MichelinRestaurantResearchSeed[] = [
   ...sanFranciscoMichelinRestaurantSeeds,
@@ -72,7 +47,7 @@ function buildRestaurantRecipe(
     catalogueDirectory: "michelin-dining",
     slug: seed.slug,
     primaryStyleId: seed.candidateStyles[0],
-    manufacturingLanguage: manufacturingLanguage(profile.styleSignature),
+    manufacturingLanguage: manufacturingLanguageForSignature(profile.styleSignature),
     styleComparison: `The factual restaurant forms use a visible ${profile.styleSignature} construction through ${seed.candidateStyles[0]}, not a metadata-only style label.`,
     forms: [
       profile.motifs[0].label,
@@ -94,25 +69,6 @@ function buildRestaurantRecipe(
       "No generic geographic, national, skyline, moon, or mountain shorthand unless the factual cue explicitly calls for it.",
     ],
   });
-}
-
-function manufacturingLanguage(signature: RestaurantStyleSignature): string {
-  return {
-    "ceramic-roundel": "ceramic underglaze roundel",
-    "fiber-applique": "broad fiber appliqué",
-    "geometric-facet": "prismatic geometric inlay",
-    "ink-contour": "bold enamel contour",
-    "lead-cell": "stained-glass lead cells",
-    "map-contour": "broad atlas contours",
-    "marquetry-strata": "wood marquetry strata",
-    "mosaic-cell": "large mosaic tesserae",
-    "painted-mass": "matte painted masses",
-    "paper-layer": "cut-paper layers",
-    "pixel-step": "large stepped pixel clusters",
-    "relief-cut": "relief-cut silhouettes",
-    "screenprint-overlap": "screenprint overlaps",
-    "woven-band": "woven tapestry bands",
-  }[signature];
 }
 
 function validateProfiles(

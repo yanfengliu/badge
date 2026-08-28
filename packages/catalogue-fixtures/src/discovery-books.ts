@@ -10,7 +10,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading 1984",
       "George Orwell · Classic",
       "nineteen-eighty-four.jpg",
-      "Selected Screenprint night badge study for Read 1984: Interpret 1984 through an original symbolic miniature: the doorway stands beneath the aperture while the paired beams divide the dark field.",
+      "Original abstract source study using screenprint-masses for Read 1984: Interpret 1984 through an original symbolic miniature: the doorway stands beneath the aperture while the paired beams divide the dark field.",
       ["1984", "George Orwell"],
     ],
     [
@@ -19,7 +19,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading To Kill a Mockingbird",
       "Harper Lee · Classic",
       "to-kill-a-mockingbird.jpg",
-      "Selected Watercolor naturalist study badge study for Read To Kill a Mockingbird: Interpret To Kill a Mockingbird through an original symbolic miniature: the feather settles between the sheltering branch and the severe ascending steps.",
+      "Original abstract source study using cut-paper-naturalist for Read To Kill a Mockingbird: Interpret To Kill a Mockingbird through an original symbolic miniature: the feather settles between the sheltering branch and the severe ascending steps.",
       ["To Kill a Mockingbird", "Harper Lee"],
     ],
     [
@@ -28,7 +28,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading The Great Gatsby",
       "F. Scott Fitzgerald · Classic",
       "the-great-gatsby.jpg",
-      "Selected Stained-glass field badge study for Read The Great Gatsby: Interpret The Great Gatsby through an original symbolic miniature: the unreachable green light glows across the water from the compressed skyline.",
+      "Original abstract source study using large-stained-glass-cells for Read The Great Gatsby: Interpret The Great Gatsby through an original symbolic miniature: the unreachable green light glows across the water from the compressed skyline.",
       ["The Great Gatsby", "F. Scott Fitzgerald"],
     ],
     [
@@ -37,7 +37,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading Pride and Prejudice",
       "Jane Austen · Classic",
       "pride-and-prejudice.jpg",
-      "Selected Cut-paper strata badge study for Read Pride and Prejudice: Interpret Pride and Prejudice through an original symbolic miniature: the profiles remain apart while the path curves between their contrasting hedges.",
+      "Original abstract source study using layered-paper-silhouette for Read Pride and Prejudice: Interpret Pride and Prejudice through an original symbolic miniature: the profiles remain apart while the path curves between their contrasting hedges.",
       ["Pride and Prejudice", "Jane Austen"],
     ],
     [
@@ -46,7 +46,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading The Count of Monte Cristo",
       "Alexandre Dumas · Classic",
       "the-count-of-monte-cristo.jpg",
-      "Selected Mosaic tesserae field badge study for Read The Count of Monte Cristo: Interpret The Count of Monte Cristo through an original symbolic miniature: the key rises from the island as the chain opens around it.",
+      "Original abstract source study using large-enamel-cells for Read The Count of Monte Cristo: Interpret The Count of Monte Cristo through an original symbolic miniature: the key rises from the island as the chain opens around it.",
       ["The Count of Monte Cristo", "Alexandre Dumas"],
     ],
     [
@@ -55,7 +55,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading The Odyssey",
       "Homer · Classic",
       "the-odyssey.jpg",
-      "Selected Relief block print badge study for Read The Odyssey: Interpret The Odyssey through an original symbolic miniature: the sail climbs the spiral wave toward the fixed star.",
+      "Original abstract source study using relief-cut-spot-shapes for Read The Odyssey: Interpret The Odyssey through an original symbolic miniature: the sail climbs the spiral wave toward the fixed star.",
       ["The Odyssey", "Homer"],
     ],
     [
@@ -64,7 +64,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading The Brothers Karamazov",
       "Fyodor Dostoevsky · Classic",
       "the-brothers-karamazov.jpg",
-      "Selected Fresco mineral pigment badge study for Read The Brothers Karamazov: Interpret The Brothers Karamazov through an original symbolic miniature: the divided path converges beneath the dome before opening toward dawn.",
+      "Original abstract source study using mineral-fresco-planes for Read The Brothers Karamazov: Interpret The Brothers Karamazov through an original symbolic miniature: the divided path converges beneath the dome before opening toward dawn.",
       ["The Brothers Karamazov", "Fyodor Dostoevsky"],
     ],
     [
@@ -73,7 +73,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading Guns, Germs, and Steel",
       "Jared Diamond · History",
       "guns-germs-and-steel.jpg",
-      "Selected Prismatic geometric symbolism badge study for Read Guns, Germs, and Steel: Interpret Guns, Germs, and Steel through an original symbolic miniature: the three forces meet without hierarchy at one geometric crossroads.",
+      "Original abstract source study using prismatic-crossroad-inlay for Read Guns, Germs, and Steel: Interpret Guns, Germs, and Steel through an original symbolic miniature: the three forces meet without hierarchy at one geometric crossroads.",
       ["Guns, Germs, and Steel", "Jared Diamond"],
     ],
     [
@@ -82,7 +82,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading The Dawn of Everything",
       "David Graeber and David Wengrow · History",
       "the-dawn-of-everything.jpg",
-      "Selected Fresco mineral pigment badge study for Read The Dawn of Everything: Interpret The Dawn of Everything through an original symbolic miniature: the ring rests within exposed strata as sunrise widens the field above.",
+      "Original abstract source study using mineral-fresco-planes for Read The Dawn of Everything: Interpret The Dawn of Everything through an original symbolic miniature: the ring rests within exposed strata as sunrise widens the field above.",
       ["The Dawn of Everything", "David Graeber and David Wengrow"],
     ],
     [
@@ -91,7 +91,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading The Silk Roads",
       "Peter Frankopan · History",
       "the-silk-roads.jpg",
-      "Selected Contour atlas ink badge study for Read The Silk Roads: Interpret The Silk Roads through an original symbolic miniature: the route crosses the mountain opening and continues into the sea.",
+      "Original abstract source study using broad-map-bands for Read The Silk Roads: Interpret The Silk Roads through an original symbolic miniature: the route crosses the mountain opening and continues into the sea.",
       ["The Silk Roads", "Peter Frankopan"],
     ],
     [
@@ -100,7 +100,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading Team of Rivals",
       "Doris Kearns Goodwin · History",
       "team-of-rivals.jpg",
-      "Selected Wood marquetry landscape badge study for Read Team of Rivals: Interpret Team of Rivals through an original symbolic miniature: the four chairs lean toward the table while the light holds the center.",
+      "Original abstract source study using marquetry-inlay for Read Team of Rivals: Interpret Team of Rivals through an original symbolic miniature: the four chairs lean toward the table while the light holds the center.",
       ["Team of Rivals", "Doris Kearns Goodwin"],
     ],
     [
@@ -109,7 +109,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading The Warmth of Other Suns",
       "Isabel Wilkerson · History",
       "the-warmth-of-other-suns.jpg",
-      "Selected Thread-painted embroidery badge study for Read The Warmth of Other Suns: Interpret The Warmth of Other Suns through an original symbolic miniature: the three streams rise separately toward the same warm horizon.",
+      "Original abstract source study using broad-embroidery-bands for Read The Warmth of Other Suns: Interpret The Warmth of Other Suns through an original symbolic miniature: the three streams rise separately toward the same warm horizon.",
       ["The Warmth of Other Suns", "Isabel Wilkerson"],
     ],
     [
@@ -118,7 +118,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading SPQR",
       "Mary Beard · History",
       "spqr.jpg",
-      "Selected Mineral line engraving badge study for Read SPQR: Interpret SPQR through an original symbolic miniature: the branch crosses the arch while the river carries beneath it.",
+      "Original abstract source study using engraved-broad-linework for Read SPQR: Interpret SPQR through an original symbolic miniature: the branch crosses the arch while the river carries beneath it.",
       ["SPQR", "Mary Beard"],
     ],
     [
@@ -127,7 +127,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading A Brief History of Time",
       "Stephen Hawking · Science",
       "a-brief-history-of-time.jpg",
-      "Selected Screenprint night badge study for Read A Brief History of Time: Interpret A Brief History of Time through an original symbolic miniature: the rings expand from darkness while the star ribbon bends around them.",
+      "Original abstract source study using screenprint-masses for Read A Brief History of Time: Interpret A Brief History of Time through an original symbolic miniature: the rings expand from darkness while the star ribbon bends around them.",
       ["A Brief History of Time", "Stephen Hawking"],
     ],
     [
@@ -136,7 +136,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading The Selfish Gene",
       "Richard Dawkins · Science",
       "the-selfish-gene.jpg",
-      "Selected Stained-glass field badge study for Read The Selfish Gene: Interpret The Selfish Gene through an original symbolic miniature: the paired ribbons twist through the cell with only three durable connections.",
+      "Original abstract source study using large-stained-glass-cells for Read The Selfish Gene: Interpret The Selfish Gene through an original symbolic miniature: the paired ribbons twist through the cell with only three durable connections.",
       ["The Selfish Gene", "Richard Dawkins"],
     ],
     [
@@ -145,7 +145,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading The Gene",
       "Siddhartha Mukherjee · Science",
       "the-gene.jpg",
-      "Selected Cyanotype field study badge study for Read The Gene: Interpret The Gene through an original symbolic miniature: the lineage grows from the chromosome and resolves inside the cell.",
+      "Original abstract source study using cyanotype-silhouette for Read The Gene: Interpret The Gene through an original symbolic miniature: the lineage grows from the chromosome and resolves inside the cell.",
       ["The Gene", "Siddhartha Mukherjee"],
     ],
     [
@@ -154,7 +154,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading The Emperor of All Maladies",
       "Siddhartha Mukherjee · Science",
       "the-emperor-of-all-maladies.jpg",
-      "Selected Monoprint ink wash badge study for Read The Emperor of All Maladies: Interpret The Emperor of All Maladies through an original symbolic miniature: the white fork opens the knot toward the narrow horizon.",
+      "Original abstract source study using monoprint-overlap for Read The Emperor of All Maladies: Interpret The Emperor of All Maladies through an original symbolic miniature: the white fork opens the knot toward the narrow horizon.",
       ["The Emperor of All Maladies", "Siddhartha Mukherjee"],
     ],
     [
@@ -163,7 +163,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading The Sixth Extinction",
       "Elizabeth Kolbert · Science",
       "the-sixth-extinction.jpg",
-      "Selected Charcoal and pastel weather badge study for Read The Sixth Extinction: Interpret The Sixth Extinction through an original symbolic miniature: the wing thins into the horizon above the enduring fossil spiral.",
+      "Original abstract source study using charcoal-pastel-inlay for Read The Sixth Extinction: Interpret The Sixth Extinction through an original symbolic miniature: the wing thins into the horizon above the enduring fossil spiral.",
       ["The Sixth Extinction", "Elizabeth Kolbert"],
     ],
     [
@@ -172,7 +172,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading Cosmos",
       "Carl Sagan · Science",
       "cosmos.jpg",
-      "Selected Scratchboard nocturne badge study for Read Cosmos: Interpret Cosmos through an original symbolic miniature: the observatory faces the planet beneath the immense stellar arc.",
+      "Original abstract source study using scratchboard-cut-silhouette for Read Cosmos: Interpret Cosmos through an original symbolic miniature: the observatory faces the planet beneath the immense stellar arc.",
       ["Cosmos", "Carl Sagan"],
     ],
     [
@@ -181,7 +181,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading Meditations",
       "Marcus Aurelius · Philosophy",
       "meditations.jpg",
-      "Selected Woven tapestry field badge study for Read Meditations: Interpret Meditations through an original symbolic miniature: the flame remains upright within the stone arcs as weather moves outside.",
+      "Original abstract source study using broad-woven-bands for Read Meditations: Interpret Meditations through an original symbolic miniature: the flame remains upright within the stone arcs as weather moves outside.",
       ["Meditations", "Marcus Aurelius"],
     ],
     [
@@ -190,7 +190,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading The Republic",
       "Plato · Philosophy",
       "the-republic.jpg",
-      "Selected Fresco mineral pigment badge study for Read The Republic: Interpret The Republic through an original symbolic miniature: the steps move from the enclosing arch into the unobstructed sun.",
+      "Original abstract source study using mineral-fresco-planes for Read The Republic: Interpret The Republic through an original symbolic miniature: the steps move from the enclosing arch into the unobstructed sun.",
       ["The Republic", "Plato"],
     ],
     [
@@ -199,7 +199,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading Man's Search for Meaning",
       "Viktor E. Frankl · Philosophy",
       "mans-search-for-meaning.jpg",
-      "Selected Monoprint ink wash badge study for Read Man's Search for Meaning: Interpret Man's Search for Meaning through an original symbolic miniature: the figure stands inside the opening and faces the distant light.",
+      "Original abstract source study using monoprint-overlap for Read Man's Search for Meaning: Interpret Man's Search for Meaning through an original symbolic miniature: the figure stands inside the opening and faces the distant light.",
       ["Man's Search for Meaning", "Viktor E. Frankl"],
     ],
     [
@@ -208,7 +208,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading The Myth of Sisyphus",
       "Albert Camus · Philosophy",
       "the-myth-of-sisyphus.jpg",
-      "Selected Relief block print badge study for Read The Myth of Sisyphus: Interpret The Myth of Sisyphus through an original symbolic miniature: the stone holds against the slope while dawn begins behind it.",
+      "Original abstract source study using relief-cut-spot-shapes for Read The Myth of Sisyphus: Interpret The Myth of Sisyphus through an original symbolic miniature: the stone holds against the slope while dawn begins behind it.",
       ["The Myth of Sisyphus", "Albert Camus"],
     ],
     [
@@ -217,7 +217,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading Justice",
       "Michael J. Sandel · Philosophy",
       "justice.jpg",
-      "Selected Prismatic geometric symbolism badge study for Read Justice: Interpret Justice through an original symbolic miniature: the paths hold equal visual weight before meeting at the light.",
+      "Original abstract source study using prismatic-cells for Read Justice: Interpret Justice through an original symbolic miniature: the paths hold equal visual weight before meeting at the light.",
       ["Justice", "Michael J. Sandel"],
     ],
     [
@@ -226,7 +226,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading Nicomachean Ethics",
       "Aristotle · Philosophy",
       "nicomachean-ethics.jpg",
-      "Selected Ceramic underglaze painting badge study for Read Nicomachean Ethics: Interpret Nicomachean Ethics through an original symbolic miniature: the path keeps a deliberate course between extremes toward the branch.",
+      "Original abstract source study using ceramic-underglaze-fields for Read Nicomachean Ethics: Interpret Nicomachean Ethics through an original symbolic miniature: the path keeps a deliberate course between extremes toward the branch.",
       ["Nicomachean Ethics", "Aristotle"],
     ],
     [
@@ -235,7 +235,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading The Innovators",
       "Walter Isaacson · Technology",
       "the-innovators.jpg",
-      "Selected Luminous ligne claire badge study for Read The Innovators: Interpret The Innovators through an original symbolic miniature: the relays pass one continuous path into the spark.",
+      "Original abstract source study using ligne-claire-panels for Read The Innovators: Interpret The Innovators through an original symbolic miniature: the relays pass one continuous path into the spark.",
       ["The Innovators", "Walter Isaacson"],
     ],
     [
@@ -244,7 +244,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading The Design of Everyday Things",
       "Don Norman · Technology",
       "the-design-of-everyday-things.jpg",
-      "Selected Matte gouache editorial badge study for Read The Design of Everyday Things: Interpret The Design of Everyday Things through an original symbolic miniature: the handle explains the opening action before the light reveals the result.",
+      "Original abstract source study using gouache-affordance-planes for Read The Design of Everyday Things: Interpret The Design of Everyday Things through an original symbolic miniature: the handle explains the opening action before the light reveals the result.",
       ["The Design of Everyday Things", "Don Norman"],
     ],
     [
@@ -253,7 +253,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading The Pragmatic Programmer",
       "Andrew Hunt and David Thomas · Technology",
       "the-pragmatic-programmer.jpg",
-      "Selected Pixel cluster landscape badge study for Read The Pragmatic Programmer: Interpret The Pragmatic Programmer through an original symbolic miniature: the modules form a practical bridge toward the clear final tile.",
+      "Original abstract source study using large-pixel-clusters for Read The Pragmatic Programmer: Interpret The Pragmatic Programmer through an original symbolic miniature: the modules form a practical bridge toward the clear final tile.",
       ["The Pragmatic Programmer", "Andrew Hunt and David Thomas"],
     ],
     [
@@ -262,7 +262,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading Code",
       "Charles Petzold · Technology",
       "code.jpg",
-      "Selected Ceramic underglaze painting badge study for Read Code: Interpret Code through an original symbolic miniature: the paired state rivers alternate and converge into the pulse.",
+      "Original abstract source study using ceramic-underglaze-fields for Read Code: Interpret Code through an original symbolic miniature: the paired state rivers alternate and converge into the pulse.",
       ["Code", "Charles Petzold"],
     ],
     [
@@ -271,7 +271,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading Algorithms to Live By",
       "Brian Christian and Tom Griffiths · Technology",
       "algorithms-to-live-by.jpg",
-      "Selected Contour atlas ink badge study for Read Algorithms to Live By: Interpret Algorithms to Live By through an original symbolic miniature: the possible routes simplify as they approach the destination within the boundary.",
+      "Original abstract source study using broad-map-bands for Read Algorithms to Live By: Interpret Algorithms to Live By through an original symbolic miniature: the possible routes simplify as they approach the destination within the boundary.",
       ["Algorithms to Live By", "Brian Christian and Tom Griffiths"],
     ],
     [
@@ -280,7 +280,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading The Phoenix Project",
       "Gene Kim, Kevin Behr, and George Spafford · Technology",
       "the-phoenix-project.jpg",
-      "Selected Stained-glass field badge study for Read The Phoenix Project: Interpret The Phoenix Project through an original symbolic miniature: the firebird rises from the aligned monoliths as the ember arc reconnects them.",
+      "Original abstract source study using large-stained-glass-cells for Read The Phoenix Project: Interpret The Phoenix Project through an original symbolic miniature: the firebird rises from the aligned monoliths as the ember arc reconnects them.",
       ["The Phoenix Project", "Gene Kim, Kevin Behr, and George Spafford"],
     ],
     [
@@ -289,7 +289,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading Chip War",
       "Chris Miller · Technology",
       "chip-war.jpg",
-      "Selected Mosaic tesserae field badge study for Read Chip War: Interpret Chip War through an original symbolic miniature: the wave bands press toward the square while the circuit river escapes between them.",
+      "Original abstract source study using large-prismatic-cells for Read Chip War: Interpret Chip War through an original symbolic miniature: the wave bands press toward the square while the circuit river escapes between them.",
       ["Chip War", "Chris Miller"],
     ],
     [
@@ -298,7 +298,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading Dune",
       "Frank Herbert · Speculative fiction",
       "dune.jpg",
-      "Selected Cut-paper strata badge study for Read Dune: Interpret Dune through an original symbolic miniature: the dunes eclipse part of the sun while the small oasis holds the cool counterpoint.",
+      "Original abstract source study using desert-paper-strata for Read Dune: Interpret Dune through an original symbolic miniature: the dunes eclipse part of the sun while the small oasis holds the cool counterpoint.",
       ["Dune", "Frank Herbert"],
     ],
     [
@@ -307,7 +307,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading The Three-Body Problem",
       "Cixin Liu · Speculative fiction",
       "the-three-body-problem.jpg",
-      "Selected Prismatic geometric symbolism badge study for Read The Three-Body Problem: Interpret The Three-Body Problem through an original symbolic miniature: the orbit band fails to settle as the three suns pull around the planet.",
+      "Original abstract source study using prismatic-cells for Read The Three-Body Problem: Interpret The Three-Body Problem through an original symbolic miniature: the orbit band fails to settle as the three suns pull around the planet.",
       ["The Three-Body Problem", "Cixin Liu"],
     ],
     [
@@ -316,7 +316,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading Foundation",
       "Isaac Asimov · Speculative fiction",
       "foundation.jpg",
-      "Selected Fresco mineral pigment badge study for Read Foundation: Interpret Foundation through an original symbolic miniature: the seed remains intact beyond the fallen arch beneath the fixed star.",
+      "Original abstract source study using mineral-fresco-planes for Read Foundation: Interpret Foundation through an original symbolic miniature: the seed remains intact beyond the fallen arch beneath the fixed star.",
       ["Foundation", "Isaac Asimov"],
     ],
     [
@@ -325,7 +325,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading Neuromancer",
       "William Gibson · Speculative fiction",
       "neuromancer.jpg",
-      "Selected Screenprint night badge study for Read Neuromancer: Interpret Neuromancer through an original symbolic miniature: the data river cuts between the towers and bends toward the moon.",
+      "Original abstract source study using screenprint-masses for Read Neuromancer: Interpret Neuromancer through an original symbolic miniature: the data river cuts between the towers and bends toward the moon.",
       ["Neuromancer", "William Gibson"],
     ],
     [
@@ -334,7 +334,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading The Left Hand of Darkness",
       "Ursula K. Le Guin · Speculative fiction",
       "the-left-hand-of-darkness.jpg",
-      "Selected Woven tapestry field badge study for Read The Left Hand of Darkness: Interpret The Left Hand of Darkness through an original symbolic miniature: the profiles share one boundary above the ridge while the sun holds both tones.",
+      "Original abstract source study using broad-woven-bands for Read The Left Hand of Darkness: Interpret The Left Hand of Darkness through an original symbolic miniature: the profiles share one boundary above the ridge while the sun holds both tones.",
       ["The Left Hand of Darkness", "Ursula K. Le Guin"],
     ],
     [
@@ -343,7 +343,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading Project Hail Mary",
       "Andy Weir · Speculative fiction",
       "project-hail-mary.jpg",
-      "Selected Stained-glass field badge study for Read Project Hail Mary: Interpret Project Hail Mary through an original symbolic miniature: the small craft follows the arc through the space between the suns.",
+      "Original abstract source study using large-stained-glass-cells for Read Project Hail Mary: Interpret Project Hail Mary through an original symbolic miniature: the small craft follows the arc through the space between the suns.",
       ["Project Hail Mary", "Andy Weir"],
     ],
     [
@@ -352,7 +352,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading The Remains of the Day",
       "Kazuo Ishiguro · Literary fiction",
       "the-remains-of-the-day.jpg",
-      "Selected Aquatint atmosphere badge study for Read The Remains of the Day: Interpret The Remains of the Day through an original symbolic miniature: the tray remains precisely centered while the corridor recedes toward the fading garden.",
+      "Original abstract source study using aquatint-corridor-planes for Read The Remains of the Day: Interpret The Remains of the Day through an original symbolic miniature: the tray remains precisely centered while the corridor recedes toward the fading garden.",
       ["The Remains of the Day", "Kazuo Ishiguro"],
     ],
     [
@@ -361,7 +361,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading Beloved",
       "Toni Morrison · Literary fiction",
       "beloved.jpg",
-      "Selected Monoprint ink wash badge study for Read Beloved: Interpret Beloved through an original symbolic miniature: the joined silhouettes hold the threshold while the ribbon passes through memory and space.",
+      "Original abstract source study using monoprint-overlap for Read Beloved: Interpret Beloved through an original symbolic miniature: the joined silhouettes hold the threshold while the ribbon passes through memory and space.",
       ["Beloved", "Toni Morrison"],
     ],
     [
@@ -370,7 +370,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading The Road",
       "Cormac McCarthy · Literary fiction",
       "the-road.jpg",
-      "Selected Charcoal and pastel weather badge study for Read The Road: Interpret The Road through an original symbolic miniature: the footprints continue past the tree toward the only light on the horizon.",
+      "Original abstract source study using charcoal-cut-masses for Read The Road: Interpret The Road through an original symbolic miniature: the footprints continue past the tree toward the only light on the horizon.",
       ["The Road", "Cormac McCarthy"],
     ],
     [
@@ -379,7 +379,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading A Gentleman in Moscow",
       "Amor Towles · Literary fiction",
       "a-gentleman-in-moscow.jpg",
-      "Selected Wood marquetry landscape badge study for Read A Gentleman in Moscow: Interpret A Gentleman in Moscow through an original symbolic miniature: the key rests inside the window frame while the city remains beyond it.",
+      "Original abstract source study using marquetry-inlay for Read A Gentleman in Moscow: Interpret A Gentleman in Moscow through an original symbolic miniature: the key rests inside the window frame while the city remains beyond it.",
       ["A Gentleman in Moscow", "Amor Towles"],
     ],
     [
@@ -388,7 +388,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading The Kite Runner",
       "Khaled Hosseini · Literary fiction",
       "the-kite-runner.jpg",
-      "Selected Cut-paper strata badge study for Read The Kite Runner: Interpret The Kite Runner through an original symbolic miniature: the kite pulls away from the rooftops as the severed string curls back.",
+      "Original abstract source study using cut-paper-strata for Read The Kite Runner: Interpret The Kite Runner through an original symbolic miniature: the kite pulls away from the rooftops as the severed string curls back.",
       ["The Kite Runner", "Khaled Hosseini"],
     ],
     [
@@ -397,7 +397,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading Pachinko",
       "Min Jin Lee · Literary fiction",
       "pachinko.jpg",
-      "Selected Ceramic underglaze painting badge study for Read Pachinko: Interpret Pachinko through an original symbolic miniature: the three balls descend on different courses through the same arc into the shared basin.",
+      "Original abstract source study using ceramic-underglaze-fields for Read Pachinko: Interpret Pachinko through an original symbolic miniature: the three balls descend on different courses through the same arc into the shared basin.",
       ["Pachinko", "Min Jin Lee"],
     ],
     [
@@ -406,7 +406,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading Thinking, Fast and Slow",
       "Daniel Kahneman · Modern nonfiction",
       "thinking-fast-and-slow.jpg",
-      "Selected Prismatic geometric symbolism badge study for Read Thinking, Fast and Slow: Interpret Thinking, Fast and Slow through an original symbolic miniature: the unequal paths begin apart and arrive at the same decision point.",
+      "Original abstract source study using prismatic-cells for Read Thinking, Fast and Slow: Interpret Thinking, Fast and Slow through an original symbolic miniature: the unequal paths begin apart and arrive at the same decision point.",
       ["Thinking, Fast and Slow", "Daniel Kahneman"],
     ],
     [
@@ -415,7 +415,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading Atomic Habits",
       "James Clear · Modern nonfiction",
       "atomic-habits.jpg",
-      "Selected Risograph overprint badge study for Read Atomic Habits: Interpret Atomic Habits through an original symbolic miniature: each block adds one measured step until the seed clears the horizon.",
+      "Original abstract source study using risograph-overprint-planes for Read Atomic Habits: Interpret Atomic Habits through an original symbolic miniature: each block adds one measured step until the seed clears the horizon.",
       ["Atomic Habits", "James Clear"],
     ],
     [
@@ -424,7 +424,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading Educated",
       "Tara Westover · Modern nonfiction",
       "educated.jpg",
-      "Selected Plein-air broken color badge study for Read Educated: Interpret Educated through an original symbolic miniature: the doorway opens away from the mountain interior into dawn.",
+      "Original abstract source study using plein-air-color-blocks for Read Educated: Interpret Educated through an original symbolic miniature: the doorway opens away from the mountain interior into dawn.",
       ["Educated", "Tara Westover"],
     ],
     [
@@ -433,7 +433,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading Kitchen Confidential",
       "Anthony Bourdain · Modern nonfiction",
       "kitchen-confidential.jpg",
-      "Selected Relief block print badge study for Read Kitchen Confidential: Interpret Kitchen Confidential through an original symbolic miniature: the knife and steam cross before the door opens into the working room.",
+      "Original abstract source study using relief-cut-spot-shapes for Read Kitchen Confidential: Interpret Kitchen Confidential through an original symbolic miniature: the knife and steam cross before the door opens into the working room.",
       ["Kitchen Confidential", "Anthony Bourdain"],
     ],
     [
@@ -442,7 +442,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading The Wager",
       "David Grann · Modern nonfiction",
       "the-wager.jpg",
-      "Selected Aquatint atmosphere badge study for Read The Wager: Interpret The Wager through an original symbolic miniature: the wave overtakes the hull while the star remains fixed above the wreck.",
+      "Original abstract source study using aquatint-flat-silhouette for Read The Wager: Interpret The Wager through an original symbolic miniature: the wave overtakes the hull while the star remains fixed above the wreck.",
       ["The Wager", "David Grann"],
     ],
     [
@@ -451,7 +451,7 @@ export const discoveryBooks = defineSourceStudyBadges(
       "Finish reading The Anthropocene Reviewed",
       "John Green · Modern nonfiction",
       "the-anthropocene-reviewed.jpg",
-      "Selected Watercolor naturalist study badge study for Read The Anthropocene Reviewed: Interpret The Anthropocene Reviewed through an original symbolic miniature: the hand steadies the Earth while the flower crosses from human space into the blue field.",
+      "Original abstract source study using cut-paper-naturalist for Read The Anthropocene Reviewed: Interpret The Anthropocene Reviewed through an original symbolic miniature: the hand steadies the Earth while the flower crosses from human space into the blue field.",
       ["The Anthropocene Reviewed", "John Green"],
     ],
   ],

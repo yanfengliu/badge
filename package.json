@@ -20,6 +20,7 @@
     "catalogue:new-correction-prompts": "node scripts/print-new-catalogue-correction-prompts.mjs",
     "catalogue:refresh-state-integrity": "node scripts/write-us-state-integrity.mjs",
     "catalogue:refresh-state-discovery": "node scripts/write-us-state-discovery-fixture.mjs",
+    "catalogue:refresh-park-discovery": "node scripts/write-national-park-discovery-fixtures.mjs",
     "catalogue:refresh-new-discovery": "node scripts/write-new-discovery-fixtures.mjs",
     "catalogue:refresh-pack-fixtures": "node scripts/write-catalogue-pack-fixtures.mjs",
     "catalogue:thumbnails": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/write-national-park-thumbnails.ps1",

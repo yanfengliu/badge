@@ -14,6 +14,7 @@ import { encodeRgbPng } from "./code-native-art/png.mjs";
 
 const SOURCE_SIZE = 896;
 const PROOF_SIZE = 48;
+const MAXIMUM_MINIATURE_RESIDUAL = 0.035;
 const args = parseArguments(process.argv.slice(2));
 const outputRoot = path.resolve(args.output ?? "output/code-native-catalogue-art");
 const server = await createServer({
@@ -85,7 +86,7 @@ try {
       proofSha256: sha256(proofBytes),
       proofSize: [PROOF_SIZE, PROOF_SIZE],
       miniatureResidual,
-      quantitativePass: miniatureResidual <= 0.045,
+      quantitativePass: miniatureResidual <= MAXIMUM_MINIATURE_RESIDUAL,
       palette: recipe.palette,
       paletteColors: recipe.palette.length,
       distinctSourceRgb,

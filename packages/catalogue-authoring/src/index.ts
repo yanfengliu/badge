@@ -15,3 +15,4 @@ export * from "./us-national-parks";
 export * from "./us-states";
 export * from "./us-states-campaign";
 export * from "./us-state-quotations";
+export * from "./video-games-edition";
