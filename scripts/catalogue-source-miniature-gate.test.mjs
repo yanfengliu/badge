@@ -27,30 +27,34 @@ describe("selected catalogue source miniature gate", () => {
     await initializeWebpDecoder(await WebAssembly.compile(await readFile(wasmPath)));
   });
 
-  windowsIt("matches the canonical JavaScript proof and residual instrument exactly", async () => {
-    const temporaryRoot = await mkdtemp(path.join(tmpdir(), "badge-miniature-instrument-"));
-    const inputPath = path.join(temporaryRoot, "instrument.png");
-    const proofRoot = path.join(temporaryRoot, "proofs");
-    try {
-      const image = makeInstrumentImage();
-      await writeFile(inputPath, encodeRgbPng(image));
-      const result = runMeasurement(["-SingleImagePath", inputPath, "-ProofOutputRoot", proofRoot]);
-      expect(result.status, result.stderr).toBe(0);
-      const measured = JSON.parse(result.stdout);
-      expect(measured.proofResize).toBe("bilinear-center-sample-round");
-      expect(measured.miniatureResidual).toBe(measureMiniatureResidual(image, 48));
+  windowsIt(
+    "matches the canonical JavaScript proof and residual instrument exactly",
+    async () => {
+      const temporaryRoot = await mkdtemp(path.join(tmpdir(), "badge-miniature-instrument-"));
+      const inputPath = path.join(temporaryRoot, "instrument.png");
+      const proofRoot = path.join(temporaryRoot, "proofs");
+      try {
+        const image = makeInstrumentImage();
+        await writeFile(inputPath, encodeRgbPng(image));
+        const result = runMeasurement(["-SingleImagePath", inputPath, "-ProofOutputRoot", proofRoot]);
+        expect(result.status, result.stderr).toBe(0);
+        const measured = JSON.parse(result.stdout);
+        expect(measured.proofResize).toBe("bilinear-center-sample-round");
+        expect(measured.miniatureResidual).toBe(measureMiniatureResidual(image, 48));
 
-      const expectedProof = resizeRgbaBilinear(image, 48);
-      const actualProof = decodeGeneratedRgbPng(
-        new Uint8Array(await readFile(path.join(proofRoot, "instrument-48.png"))),
-      );
-      expect(actualProof.width).toBe(48);
-      expect(actualProof.height).toBe(48);
-      expect(Buffer.from(actualProof.data)).toEqual(Buffer.from(expectedProof.data));
-    } finally {
-      await rm(temporaryRoot, { recursive: true, force: true });
-    }
-  });
+        const expectedProof = resizeRgbaBilinear(image, 48);
+        const actualProof = decodeGeneratedRgbPng(
+          new Uint8Array(await readFile(path.join(proofRoot, "instrument-48.png"))),
+        );
+        expect(actualProof.width).toBe(48);
+        expect(actualProof.height).toBe(48);
+        expect(Buffer.from(actualProof.data)).toEqual(Buffer.from(expectedProof.data));
+      } finally {
+        await rm(temporaryRoot, { recursive: true, force: true });
+      }
+    },
+    60_000,
+  );
 
   windowsIt(
     "fully decodes and measures the entire current 52-source books and education class",
@@ -74,7 +78,7 @@ describe("selected catalogue source miniature gate", () => {
         expect(record.miniatureResidual, record.key).toBeLessThanOrEqual(maximumResidual);
       }
     },
-    20_000,
+    60_000,
   );
 
   windowsIt(
@@ -104,7 +108,7 @@ describe("selected catalogue source miniature gate", () => {
         expect(record.miniatureResidual, record.key).toBeLessThanOrEqual(maximumResidual);
       }
     },
-    20_000,
+    60_000,
   );
 
   it("keeps the dense historical Sapiens source as a positive control above the ceiling", async () => {

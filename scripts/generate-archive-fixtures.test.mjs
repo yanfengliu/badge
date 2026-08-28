@@ -22,6 +22,7 @@ import decodeWebp from "@jsquash/webp/decode.js";
 import { unzlibSync } from "fflate";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
+import { TRANSIENT_WINDOWS_RENAME_ATTEMPTS } from "./archive-fixture-fresh-publish.mjs";
 import {
   archiveFixtureTestRootDirectory,
   createArchiveFixtureTestTarget,
@@ -244,9 +245,13 @@ describe.sequential("canonical Archive fixture generation", () => {
     });
 
     await expect(generateArchiveFixtures(target)).resolves.toHaveLength(expectedArchiveFixtures.length);
-    expect(attempts).toBe(2);
+    // A loaded suite can add real transient denials to the lock-release rename on this
+    // live filesystem; the claim is that the simulated denial was retried within the
+    // bound and no stale lock survived.
+    expect(attempts).toBeGreaterThanOrEqual(2);
+    expect(attempts).toBeLessThanOrEqual(TRANSIENT_WINDOWS_RENAME_ATTEMPTS);
     await expect(lstat(target.lockDirectory)).rejects.toMatchObject({ code: "ENOENT" });
-  });
+  }, 60_000);
 
   it("fully validates the complete starter art set without a long opening screen", async () => {
     const sources = await Promise.all(

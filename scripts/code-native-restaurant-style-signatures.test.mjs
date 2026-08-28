@@ -132,7 +132,7 @@ describe("restaurant code-native motif constructions", () => {
       }
     }
     expect(failures, JSON.stringify(failures, null, 2)).toEqual([]);
-  }, 30_000);
+  }, 60_000);
 
   it("rejects a motif whose standalone footprint is mostly covered", () => {
     const recipe = visibilityControlRecipe();

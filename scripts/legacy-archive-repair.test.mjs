@@ -119,7 +119,7 @@ describe.sequential("alpha.3 earned-memory source repair", () => {
       pin: legacy.publishedVisual,
       sourceAsset: legacyAsset,
     });
-  }, 20_000);
+  }, 60_000);
 });
 
 function application() {

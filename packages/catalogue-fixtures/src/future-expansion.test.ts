@@ -245,7 +245,9 @@ describe("the future catalogue expansion brief", () => {
         /["'][^"'\r\n]*(?:future-expansion|future-life-milestones)(?:\.js)?["']/u,
       );
     }
-  });
+    // Sweeping every production TypeScript file needs more than the 5s default when the
+    // suite shares the machine with another full workload.
+  }, 60_000);
 
   it("keeps every new source file below 500 lines", async () => {
     for (const fileName of ["future-expansion.ts", "future-life-milestones.ts", "future-expansion.test.ts"]) {

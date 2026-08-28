@@ -12,34 +12,38 @@ const sourceAssets = path.join(repositoryRoot, "packages/catalogue-authoring/ass
 const windowsIt = process.platform === "win32" ? it : it.skip;
 
 describe("national-park thumbnail derivation", () => {
-  windowsIt("replaces an unrelated stale thumbnail with the derivative of the current source", async () => {
-    const temporaryRoot = await mkdtemp(path.join(tmpdir(), "badge-thumbnail-derivation-"));
-    const temporarySources = path.join(temporaryRoot, "sources");
-    const temporaryThumbnails = path.join(temporaryRoot, "thumbnails");
-    const temporarySource = path.join(temporarySources, "study.jpg");
-    const temporaryThumbnail = path.join(temporaryThumbnails, "study.jpg");
+  windowsIt(
+    "replaces an unrelated stale thumbnail with the derivative of the current source",
+    async () => {
+      const temporaryRoot = await mkdtemp(path.join(tmpdir(), "badge-thumbnail-derivation-"));
+      const temporarySources = path.join(temporaryRoot, "sources");
+      const temporaryThumbnails = path.join(temporaryRoot, "thumbnails");
+      const temporarySource = path.join(temporarySources, "study.jpg");
+      const temporaryThumbnail = path.join(temporaryThumbnails, "study.jpg");
 
-    try {
-      await mkdir(temporarySources, { recursive: true });
-      await mkdir(temporaryThumbnails, { recursive: true });
-      await copyFile(path.join(sourceAssets, "acadia.jpg"), temporarySource);
-      await copyFile(path.join(sourceAssets, "thumbnails/arches.jpg"), temporaryThumbnail);
-      const staleHash = sha256(await readFile(temporaryThumbnail));
+      try {
+        await mkdir(temporarySources, { recursive: true });
+        await mkdir(temporaryThumbnails, { recursive: true });
+        await copyFile(path.join(sourceAssets, "acadia.jpg"), temporarySource);
+        await copyFile(path.join(sourceAssets, "thumbnails/arches.jpg"), temporaryThumbnail);
+        const staleHash = sha256(await readFile(temporaryThumbnail));
 
-      await regenerateCatalogueThumbnails({
-        repositoryRoot,
-        sourceDirectory: temporarySources,
-        outputDirectory: temporaryThumbnails,
-        expectedCount: 1,
-      });
-      const refreshedHash = sha256(await readFile(temporaryThumbnail));
-      const expectedHash = sha256(await readFile(path.join(sourceAssets, "thumbnails/acadia.jpg")));
-      expect(refreshedHash).not.toBe(staleHash);
-      expect(refreshedHash).toBe(expectedHash);
-    } finally {
-      await rm(temporaryRoot, { recursive: true, force: true });
-    }
-  });
+        await regenerateCatalogueThumbnails({
+          repositoryRoot,
+          sourceDirectory: temporarySources,
+          outputDirectory: temporaryThumbnails,
+          expectedCount: 1,
+        });
+        const refreshedHash = sha256(await readFile(temporaryThumbnail));
+        const expectedHash = sha256(await readFile(path.join(sourceAssets, "thumbnails/acadia.jpg")));
+        expect(refreshedHash).not.toBe(staleHash);
+        expect(refreshedHash).toBe(expectedHash);
+      } finally {
+        await rm(temporaryRoot, { recursive: true, force: true });
+      }
+    },
+    60_000,
+  );
 });
 
 function sha256(bytes: Uint8Array): string {

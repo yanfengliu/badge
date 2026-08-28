@@ -49,6 +49,9 @@ const rendererImplementationFiles = [
 ] as const;
 
 describe("new selected catalogue source studies", () => {
+  // Compiles all 184 campaign prompts and reads and hashes every source and thumbnail
+  // asset, so a loaded parallel suite needs the same 60s budget as the sibling
+  // prompt-export and geometry gates rather than vitest's 5s default.
   it("binds retained generations and per-record code-native replacements to immutable histories", async () => {
     const sourceHashes = new Set<string>();
     const thumbnailHashes = new Set<string>();
@@ -178,7 +181,7 @@ describe("new selected catalogue source studies", () => {
     expect(codeNativeReplacementCount).toBeGreaterThan(0);
     expect(directCodeNativeCount).toBeGreaterThan(0);
     expect(canonicalOnlyCount).toBeGreaterThan(0);
-  });
+  }, 60_000);
 
   it("keeps every normalized full source authoring-only without conflating generation workflows", () => {
     const studies = groups.flatMap((group) => [...group.studies]) as readonly BoundStudy[];

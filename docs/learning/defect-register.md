@@ -1,5 +1,15 @@
 # Defect Register
 
+## 2026-08-27 — The full test suite was a coin-flip instrument under parallel CPU load
+
+**Symptom:** Roughly one in three full `npm test` runs failed while other work shared the machine, in files the running task had not touched — first observed as `expect(renameAttempts).toBe(1)` receiving `2` in the fresh-publish gate and a 5-second timeout in the selected-catalogue-studies gate, each passing in isolation and on re-run.
+
+**Investigation:** A deliberate 16-process CPU spin load (one extra full workload, 84–99% total CPU) reproduced the class on demand, and a 32-process extreme load produced a 13-failure census of its members. Two mechanisms emerged. First, gates that exercise the real filesystem — the fresh-publish retry loop and the lock-transition rename — pinned exact attempt counts or exact last-error identities, but a loaded machine injects genuine transient Windows denials (EPERM/EACCES/EBUSY on renames and reads of just-written files) on top of the simulated ones, which is precisely the condition the production retry loop exists to absorb; the pinned interleaving then differs while the behavior under test remains correct. Second, heavy gates — PowerShell System.Drawing decoders behind `windowsIt`, multi-hundred-asset decode-and-hash sweeps, and a whole-repo TypeScript source sweep — sat on vitest's 5-second default (or 20–30 seconds) and legitimately exceed it under contention.
+
+**Root cause:** The instruments encoded one interference-free timeline — exact counts, exact cause identity, default timeouts — instead of the properties the code actually guarantees: that a retry happened, that attempts stay within the loop bound, that no rename runs after publication, that the preserved cause is a transient denial, and that heavy work completes.
+
+**Standing gate:** The reworked assertions themselves. `archive-fixture-fresh-publish.test.mjs` now asserts the retry lower bound plus the shared `TRANSIENT_WINDOWS_RENAME_ATTEMPTS` upper bound, records and forbids any rename attempt that observes an already-published output tree (an invariant exact under any load), and accepts the preserved cause as a transient Windows denial where a real denial can legitimately become the recorded last error; `generate-archive-fixtures.test.mjs` bounds the lock-transition retries the same way. Every census member of the heavy PowerShell, multi-asset decode, and repo-sweep class carries a 60-second budget, while deliberate performance budgets (the 4-second startup-validation assertion) stay untouched. Proof protocol: the full suite passed three consecutive runs under the sustained 16-process load; a future flake report in this class should be reproduced under that same synthetic load before its assertion is trusted.
+
 ## 2026-08-27 — Collection handed the user into Discover with no way back
 
 **Symptom:** The owner said that clicking a badge shelf in the Collection tab takes them to the Discover tab, and that when Discover was reached that way there should be a UI that takes them back.

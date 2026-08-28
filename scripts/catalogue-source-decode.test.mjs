@@ -33,28 +33,32 @@ describe("catalogue source full-decode gate", () => {
       expect(dining.status, dining.stderr).toBe(0);
       expect(dining.stdout).toContain("Fully decoded 132 dining source study JPEGs");
     },
-    20_000,
+    60_000,
   );
 
-  windowsIt("rejects an 896-pixel SOF header with no decodable image payload", async () => {
-    const temporaryRoot = await mkdtemp(path.join(tmpdir(), "badge-source-decode-"));
-    const sourceDirectory = path.join(temporaryRoot, "sources");
-    const headerOnlyJpeg = Buffer.from([
-      0xff, 0xd8, 0xff, 0xc0, 0x00, 0x11, 0x08, 0x03, 0x80, 0x03, 0x80, 0x03, 0x01, 0x11, 0x00, 0x02, 0x11,
-      0x00, 0x03, 0x11, 0x00,
-    ]);
+  windowsIt(
+    "rejects an 896-pixel SOF header with no decodable image payload",
+    async () => {
+      const temporaryRoot = await mkdtemp(path.join(tmpdir(), "badge-source-decode-"));
+      const sourceDirectory = path.join(temporaryRoot, "sources");
+      const headerOnlyJpeg = Buffer.from([
+        0xff, 0xd8, 0xff, 0xc0, 0x00, 0x11, 0x08, 0x03, 0x80, 0x03, 0x80, 0x03, 0x01, 0x11, 0x00, 0x02, 0x11,
+        0x00, 0x03, 0x11, 0x00,
+      ]);
 
-    try {
-      await mkdir(sourceDirectory, { recursive: true });
-      await writeFile(path.join(sourceDirectory, "truncated.jpg"), headerOnlyJpeg);
-      const result = runGate(sourceDirectory, 1, "test source study");
+      try {
+        await mkdir(sourceDirectory, { recursive: true });
+        await writeFile(path.join(sourceDirectory, "truncated.jpg"), headerOnlyJpeg);
+        const result = runGate(sourceDirectory, 1, "test source study");
 
-      expect(result.status).not.toBe(0);
-      expect(result.stderr).toContain("could not fully decode test source study");
-    } finally {
-      await rm(temporaryRoot, { recursive: true, force: true });
-    }
-  });
+        expect(result.status).not.toBe(0);
+        expect(result.stderr).toContain("could not fully decode test source study");
+      } finally {
+        await rm(temporaryRoot, { recursive: true, force: true });
+      }
+    },
+    60_000,
+  );
 });
 
 function runGate(imageDirectory, expectedCount, kind) {
