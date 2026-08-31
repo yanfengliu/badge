@@ -8,7 +8,7 @@ import type { ArchiveState } from "@badge/archive-domain";
 
 import { assertCompatibleStarterArchive, EarnedSayingCompatibilityError } from "./restore-compatibility.js";
 import { auditEarnedArchiveVisuals } from "./restore-flow.js";
-import { loadStarterSourceAssets } from "./starter-assets.js";
+import { loadLegacyStarterActivationRepairAssets, loadStarterSourceAssets } from "./starter-assets.js";
 import { createStarterVisualUpgradePlan } from "./starter-visual-upgrade.js";
 
 export class StarterArchiveCompatibilityError extends Error {
@@ -35,10 +35,15 @@ export async function initializeStarterArchive(
   expectedState: ArchiveState,
   onAssetsLoaded: (assets: readonly ArchiveSourceAssetInput[]) => void,
 ): Promise<ArchiveState> {
-  const assets = await loadStarterSourceAssets();
-  onAssetsLoaded(assets);
-  const loaded = await archive.initialize(expectedState, assets);
-  const upgraded = await initializeStarterVisualUpgrade(archive, expectedState, loaded, assets);
+  const currentAssets = await loadStarterSourceAssets();
+  let loaded = await archive.initialize(expectedState, currentAssets);
+  onAssetsLoaded(currentAssets);
+  const legacyAssets = await loadLegacyStarterActivationRepairAssets(loaded);
+  if (legacyAssets.length > 0) {
+    loaded = await archive.initialize(expectedState, legacyAssets);
+    onAssetsLoaded(legacyAssets);
+  }
+  const upgraded = await initializeStarterVisualUpgrade(archive, expectedState, loaded, currentAssets);
   const expanded = await initializeCatalogueExpansion(archive, expectedState, upgraded);
   await validateStarterArchiveForOpen(archive, expectedState, expanded);
   return initializeReviewedSayingDefaults(archive, expectedState, expanded);

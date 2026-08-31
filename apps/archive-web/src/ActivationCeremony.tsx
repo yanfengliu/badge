@@ -1,5 +1,5 @@
 import { useRef, type RefObject } from "react";
-import { BadgeViewer } from "@badge/renderer-web";
+import { LazyBadgeViewer as BadgeViewer } from "./LazyBadgeViewer";
 import type { RenderRecipe } from "@badge/render-recipe";
 
 import { CloseIcon } from "./icons";

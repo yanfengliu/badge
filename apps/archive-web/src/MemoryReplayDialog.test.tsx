@@ -58,6 +58,10 @@ describe("MemoryReplayDialog", () => {
     );
 
     expect(html).toContain('data-presentation="single-turn"');
+    expect(html).toContain('class="badge-viewer memory-replay__viewer"');
+    expect(html).toContain(
+      'class="badge-viewer__viewport badge-viewer__deferred badge-viewer__viewport--passive"',
+    );
     expect(html).toContain('dateTime="2024-05-14"');
     expect(html).toContain('dateTime="2024-05-16"');
     expect(html).toContain('dateTime="2024-05-17T18:30:00.000Z"');

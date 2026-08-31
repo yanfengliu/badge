@@ -49,6 +49,8 @@ vi.mock("./starter-assets", () => ({
   loadStarterSourceAssets: async () => [
     { hash: testSource.hash, mimeType: "image/png" as const, bytes: testSource.bytes },
   ],
+  loadLegacyStarterActivationRepairAssets: async () => [],
+  loadLegacyStarterRepairAssets: async () => [],
 }));
 
 vi.mock("@badge/renderer-web", () => ({

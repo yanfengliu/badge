@@ -35,14 +35,12 @@ describe("ActivationCeremony", () => {
       />,
     );
 
-    expect(html).toContain('data-testid="ceremony-viewer"');
+    expect(html).toContain('class="badge-viewer ceremony-viewer"');
+    expect(html).toContain('class="badge-viewer__viewport badge-viewer__deferred"');
+    expect(html).toContain("Preparing the badge");
     expect(html.match(/data-presentation="interactive"/gu)).toHaveLength(2);
     expect(html).not.toContain('data-presentation="single-turn"');
-    expect(html).toContain("Inspect object");
-    expect(html).toContain("Adjust light");
-    expect(html).toContain("Zoom in");
-    expect(html).toContain("Reset view");
-    expect(html.match(/<button/gu)).toHaveLength(5);
+    expect(html.match(/<button/gu)).toHaveLength(1);
     expect(html).toContain('aria-label="Close activation ceremony"');
   });
 });

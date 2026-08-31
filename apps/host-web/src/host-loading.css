@@ -1,0 +1,115 @@
+:root {
+  --host-loading-studio-accent: #d77b58;
+  --host-loading-studio-background: #1d1d1a;
+  color: #28261f;
+  background: #f3eee4;
+  font-family: Aptos, "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+}
+
+.host-loading {
+  box-sizing: border-box;
+  display: grid;
+  min-block-size: 100dvh;
+  align-content: center;
+  justify-items: center;
+  padding: max(28px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right))
+    max(28px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left));
+  background: #f3eee4;
+  text-align: center;
+}
+
+.host-loading--studio {
+  color: #f4f0e6;
+  background: var(--host-loading-studio-background);
+}
+
+.host-loading__mark {
+  inline-size: 34px;
+  block-size: 34px;
+  margin-block-end: 18px;
+  border: 1px solid #ae4d2d;
+  transform: rotate(30deg);
+}
+
+.host-loading__mark::after {
+  display: block;
+  inline-size: 18px;
+  block-size: 18px;
+  margin: 7px;
+  border: 1px solid #ae4d2d;
+  content: "";
+}
+
+.host-loading__eyebrow,
+.host-loading__status {
+  margin: 0;
+}
+
+.host-loading__eyebrow {
+  color: #ae4d2d;
+  font-size: 0.6875rem;
+  font-weight: 650;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.host-loading--studio .host-loading__eyebrow {
+  color: var(--host-loading-studio-accent);
+}
+
+.host-loading--studio .host-loading__mark,
+.host-loading--studio .host-loading__mark::after {
+  border-color: var(--host-loading-studio-accent);
+}
+
+.host-loading__status {
+  margin-block-start: 10px;
+  color: #5f5a50;
+  font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+  font-size: clamp(1.25rem, 4vw, 1.75rem);
+}
+
+.host-loading--studio .host-loading__status {
+  color: #c8c2b7;
+}
+
+.host-loading__retry {
+  min-block-size: 44px;
+  margin-block-start: 22px;
+  padding: 10px 18px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+
+.host-loading__retry:focus-visible {
+  outline: 3px solid #ae4d2d;
+  outline-offset: 3px;
+}
+
+.host-loading--studio .host-loading__retry:focus-visible {
+  outline-color: var(--host-loading-studio-accent);
+}
+
+.host-loading--error .host-loading__mark {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .host-loading__mark {
+    animation: host-loading-pulse 900ms ease-in-out infinite alternate;
+  }
+}
+
+@keyframes host-loading-pulse {
+  to {
+    opacity: 0.45;
+  }
+}

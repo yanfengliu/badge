@@ -103,6 +103,39 @@
   letter-spacing: 0.04em;
 }
 
+.badge-viewer__deferred {
+  display: grid;
+  place-items: center;
+  color: var(--ink-soft);
+  cursor: default;
+}
+
+.badge-viewer__deferred-message,
+.visual-load-failure {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+
+.badge-viewer__deferred-message {
+  padding: 24px;
+  text-align: center;
+}
+
+.visual-load-failure {
+  display: grid;
+  max-inline-size: 34rem;
+  padding: 24px;
+  gap: 16px;
+  justify-items: center;
+  text-align: center;
+}
+
+.visual-load-failure p {
+  margin: 0;
+}
+
 .artifact-status {
   position: absolute;
   top: 14px;

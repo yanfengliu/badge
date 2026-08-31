@@ -1,5 +1,11 @@
-import { ArchivePersistenceError, type ArchiveApplication } from "@badge/archive-application";
+import {
+  ArchivePersistenceError,
+  type ArchiveApplication,
+  type ArchiveSourceAssetInput,
+} from "@badge/archive-application";
 import { activateAchievement } from "@badge/archive-domain";
+import { starterBadges } from "@badge/catalogue-fixtures/archive";
+import { legacyStarterRepairSources } from "@badge/catalogue-fixtures/legacy-repair";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { createStarterArchiveState } from "./archive-state.js";
@@ -139,6 +145,176 @@ describe("Archive startup compatibility gate", () => {
     expect(reconcileCatalogue).toHaveBeenCalledWith(defaults, loaded);
     expect(initializeSayingDefaults).toHaveBeenCalledWith(defaults, loaded);
     expect(onAssetsLoaded).toHaveBeenCalledOnce();
+  });
+
+  it("does not retain a current source batch until repository validation succeeds", async () => {
+    const expected = createStarterArchiveState();
+    const failure = new ArchivePersistenceError(
+      "VISUAL_SOURCE_INVALID",
+      "The current source bytes do not match their trusted hash.",
+    );
+    const archive = {
+      initialize: vi.fn().mockRejectedValue(failure),
+    } as unknown as ArchiveApplication;
+    const onAssetsLoaded = vi.fn();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response(new Blob([new Uint8Array([1])], { type: "image/png" }))),
+    );
+
+    await expect(initializeStarterArchive(archive, expected, onAssetsLoaded)).rejects.toBe(failure);
+
+    expect(onAssetsLoaded).not.toHaveBeenCalled();
+  });
+
+  it("retains current sources but not a rejected deferred earned-legacy batch", async () => {
+    const expected = createStarterArchiveState();
+    const legacy = LEGACY_STARTER_VISUAL_LINEAGES[0]!;
+    const loaded = {
+      ...expected,
+      records: expected.records.map((record) =>
+        record.recordId === legacy.recordId
+          ? {
+              ...record,
+              publishedVisual: legacy.publishedVisual,
+              lifecycle: "earned" as const,
+              activation: {
+                occurredStart: "2026-08-20",
+                occurredEnd: "2026-08-20",
+                recordedAt: "2026-08-21T17:00:00.000Z",
+                activatedAt: "2026-08-21T17:00:00.000Z",
+                visualPin: legacy.publishedVisual,
+              },
+            }
+          : record,
+      ),
+    };
+    const failure = new ArchivePersistenceError(
+      "VISUAL_SOURCE_INVALID",
+      "The legacy source bytes do not match their trusted hash.",
+    );
+    const archive = {
+      initialize: vi.fn().mockResolvedValueOnce(loaded).mockRejectedValueOnce(failure),
+    } as unknown as ArchiveApplication;
+    const onAssetsLoaded = vi.fn();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response(new Blob([new Uint8Array([1])], { type: "image/png" }))),
+    );
+
+    await expect(initializeStarterArchive(archive, expected, onAssetsLoaded)).rejects.toBe(failure);
+
+    expect(onAssetsLoaded).toHaveBeenCalledOnce();
+    expect(onAssetsLoaded.mock.calls[0]![0].map((asset: ArchiveSourceAssetInput) => asset.hash)).toEqual(
+      starterBadges.map((badge) => badge.sourceAssetHash),
+    );
+  });
+
+  it("upgrades unearned alpha.3 state without fetching its obsolete source", async () => {
+    const expected = createStarterArchiveState();
+    const legacy = LEGACY_STARTER_VISUAL_LINEAGES[0]!;
+    const loaded = {
+      ...expected,
+      records: expected.records.map((record) =>
+        record.recordId === legacy.recordId ? { ...record, publishedVisual: legacy.publishedVisual } : record,
+      ),
+    };
+    const initialize = vi.fn().mockResolvedValueOnce(loaded);
+    const upgradeCatalogueVisuals = vi.fn().mockResolvedValue(expected);
+    const reconcileCatalogue = vi.fn().mockResolvedValue(expected);
+    const initializeSayingDefaults = vi.fn().mockResolvedValue(expected);
+    const archive = {
+      initialize,
+      upgradeCatalogueVisuals,
+      reconcileCatalogue,
+      initializeSayingDefaults,
+    } as unknown as ArchiveApplication;
+    const fetched: string[] = [];
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (input: string | URL | Request) => {
+        fetched.push(String(input));
+        return new Response(new Blob([new Uint8Array([1])], { type: "image/png" }));
+      }),
+    );
+    const onAssetsLoaded = vi.fn();
+
+    await expect(initializeStarterArchive(archive, expected, onAssetsLoaded)).resolves.toEqual(expected);
+
+    expect(fetched).toEqual(starterBadges.map((badge) => badge.sourceUrl));
+    expect(initialize).toHaveBeenCalledOnce();
+    expect(initialize.mock.calls[0]![1].map((asset: ArchiveSourceAssetInput) => asset.hash)).toEqual(
+      starterBadges.map((badge) => badge.sourceAssetHash),
+    );
+    expect(onAssetsLoaded).toHaveBeenCalledOnce();
+    expect(upgradeCatalogueVisuals.mock.calls[0]![1].map((asset: { hash: string }) => asset.hash)).toEqual(
+      starterBadges.map((badge) => badge.sourceAssetHash),
+    );
+  });
+
+  it("fetches an earned alpha.3 activation source before audit and preserves it through upgrade", async () => {
+    const expected = createStarterArchiveState();
+    const legacy = LEGACY_STARTER_VISUAL_LINEAGES[0]!;
+    const loaded = {
+      ...expected,
+      records: expected.records.map((record) =>
+        record.recordId === legacy.recordId
+          ? {
+              ...record,
+              publishedVisual: legacy.publishedVisual,
+              lifecycle: "earned" as const,
+              activation: {
+                occurredStart: "2026-08-20",
+                occurredEnd: "2026-08-20",
+                recordedAt: "2026-08-21T17:00:00.000Z",
+                activatedAt: "2026-08-21T17:00:00.000Z",
+                visualPin: legacy.publishedVisual,
+              },
+            }
+          : record,
+      ),
+    };
+    const initialize = vi.fn().mockResolvedValueOnce(loaded).mockResolvedValueOnce(loaded);
+    const visual = vi.fn().mockResolvedValue({});
+    const upgradeCatalogueVisuals = vi.fn().mockResolvedValue(loaded);
+    const reconcileCatalogue = vi.fn().mockResolvedValue(loaded);
+    const initializeSayingDefaults = vi.fn().mockResolvedValue(loaded);
+    const archive = {
+      initialize,
+      visual,
+      upgradeCatalogueVisuals,
+      reconcileCatalogue,
+      initializeSayingDefaults,
+    } as unknown as ArchiveApplication;
+    const fetched: string[] = [];
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (input: string | URL | Request) => {
+        fetched.push(String(input));
+        return new Response(new Blob([new Uint8Array([1])], { type: "image/png" }));
+      }),
+    );
+    const onAssetsLoaded = vi.fn();
+
+    await expect(initializeStarterArchive(archive, expected, onAssetsLoaded)).resolves.toEqual(loaded);
+
+    const legacySource = legacyStarterRepairSources.find(
+      (source) => source.sourceAssetHash === legacy.publishedVisual.sourceAssetHash,
+    )!;
+    expect(fetched).toEqual([...starterBadges.map((badge) => badge.sourceUrl), legacySource.sourceUrl]);
+    expect(initialize).toHaveBeenCalledTimes(2);
+    expect(initialize.mock.calls[1]![1].map((asset: ArchiveSourceAssetInput) => asset.hash)).toEqual([
+      legacy.publishedVisual.sourceAssetHash,
+    ]);
+    expect(onAssetsLoaded).toHaveBeenCalledTimes(2);
+    expect(visual).toHaveBeenCalledWith(legacy.recordId);
+    expect(
+      upgradeCatalogueVisuals.mock.calls[0]![1].map((asset: ArchiveSourceAssetInput) => asset.hash),
+    ).toEqual(starterBadges.map((badge) => badge.sourceAssetHash));
+    expect(initialize.mock.invocationCallOrder[1]).toBeLessThan(visual.mock.invocationCallOrder[0]!);
+    expect(visual.mock.invocationCallOrder[0]).toBeLessThan(
+      upgradeCatalogueVisuals.mock.invocationCallOrder[0]!,
+    );
   });
 
   it("re-reads, revalidates, and converges when another tab installs defaults first", async () => {

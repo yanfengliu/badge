@@ -28,11 +28,8 @@ import {
   validateStarterArchiveForOpen,
 } from "./archive-startup";
 import { ArchiveClosedScreen } from "./ArchiveClosedScreen";
-import {
-  fetchCatalogueSourceAsset,
-  isCatalogueSourceHash,
-  loadCatalogueRepairAssets,
-} from "./catalogue-source-assets";
+import { recoverArchiveWithSourceRepair } from "./archive-recovery-assets";
+import { fetchCatalogueSourceAsset, isCatalogueSourceHash } from "./catalogue-source-assets";
 import { CollectionView } from "./CollectionView";
 import { replaySetLinks, type CollectedArchiveRecord, type ReplaySetLink } from "./collection-view-model";
 import { preparationDiscoveryPager, replayDiscoveryPager, type DiscoveryPagerStep } from "./discovery-pager";
@@ -58,7 +55,6 @@ import {
   inspectArchiveBackupFile,
   nextArchiveRestoreAction,
   preparePendingSafetyHandoff,
-  recoverPendingArchive,
   restorePendingArchive,
   unrepairableIncompatibleRecoveryMessage,
   type ArchiveSafetyHandoff,
@@ -112,7 +108,7 @@ export function App({ onShowStudio }: { readonly onShowStudio: () => void }) {
         safetyHandoff.current = "full-backup";
         stateRescueReason.current = null;
         const loaded = await initializeStarterArchive(archive, starterState, (assets) => {
-          starterAssets.current = new Map(assets.map((asset) => [asset.hash, asset]));
+          for (const asset of assets) starterAssets.current.set(asset.hash, asset);
         });
         if (active) setState(loaded);
       } catch (error) {
@@ -394,20 +390,16 @@ export function App({ onShowStudio }: { readonly onShowStudio: () => void }) {
       const action = nextArchiveRestoreAction(pendingRestore);
       if (action === "recover") {
         await saying.observe({ type: "archive-restored" });
-        const storedState = state ?? (await archive.state().catch(() => null));
-        const recovered = await recoverPendingArchive(
+        const recovery = await recoverArchiveWithSourceRepair(
           archive,
           pendingRestore,
           STARTER_OWNER_ID,
-          [
-            ...starterAssets.current.values(),
-            ...(await loadCatalogueRepairAssets([
-              pendingRestore.incomingState,
-              ...(storedState ? [storedState] : []),
-            ])),
-          ],
           starterState,
+          state,
+          starterAssets.current,
         );
+        const recovered = recovery.recovered;
+        starterAssets.current = recovery.assets;
         const reconciled = await initializeCatalogueExpansion(archive, starterState, recovered.state);
         await validateStarterArchiveForOpen(archive, starterState, reconciled, true);
         const initialized = await initializeReviewedSayingDefaults(archive, starterState, reconciled);

@@ -269,6 +269,18 @@ export async function unrepairableIncompatibleRecoveryMessage(
   }
 }
 
+export async function archiveSourceRepairStates(
+  archive: ArchiveApplication,
+  incomingState: ArchiveState,
+  renderedState: ArchiveState | null,
+): Promise<readonly ArchiveState[]> {
+  try {
+    return [incomingState, await archive.state()];
+  } catch {
+    return renderedState ? [incomingState, renderedState] : [incomingState];
+  }
+}
+
 export async function recoverPendingArchive(
   archive: ArchiveApplication,
   restore: PendingArchiveRestore,

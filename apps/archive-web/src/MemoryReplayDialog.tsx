@@ -1,6 +1,6 @@
 import { useRef, type RefObject } from "react";
 import type { HistoricalQuotation } from "@badge/saying-contract";
-import { BadgeViewer } from "@badge/renderer-web";
+import { LazyBadgeViewer as BadgeViewer } from "./LazyBadgeViewer";
 
 import { formatDate, formatDateTime } from "./browser-utilities";
 import { type CollectedArchiveRecord, type ReplaySetLink } from "./collection-view-model";

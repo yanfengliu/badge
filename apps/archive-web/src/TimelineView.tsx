@@ -1,6 +1,8 @@
 import { useState } from "react";
 import type { ActivationRecord, ArchiveState } from "@badge/archive-domain";
-import { BadgePreview, BadgeViewer } from "@badge/renderer-web";
+import { BadgePreview } from "@badge/renderer-web/preview";
+
+import { LazyBadgeViewer as BadgeViewer } from "./LazyBadgeViewer";
 
 import { formatDate } from "./browser-utilities";
 import { replaySetLinks } from "./collection-view-model";

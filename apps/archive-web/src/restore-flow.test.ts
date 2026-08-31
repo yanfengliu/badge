@@ -8,6 +8,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { createStarterArchiveState } from "./archive-state.js";
 import {
+  archiveSourceRepairStates,
   currentEarnedCountCopy,
   inspectArchiveBackupFile,
   nextArchiveRestoreAction,
@@ -17,6 +18,33 @@ import {
 } from "./restore-flow.js";
 
 describe("Archive restore safety flow", () => {
+  it("selects repair sources from freshly persisted state instead of stale rendered state", async () => {
+    const incoming = createStarterArchiveState();
+    const rendered = { ...incoming, ownerId: "stale-rendered-owner" };
+    const persisted = { ...incoming, ownerId: "fresh-persisted-owner" };
+    const archive = {
+      state: vi.fn().mockResolvedValue(persisted),
+    } as unknown as ArchiveApplication;
+
+    await expect(archiveSourceRepairStates(archive, incoming, rendered)).resolves.toEqual([
+      incoming,
+      persisted,
+    ]);
+  });
+
+  it("falls back to rendered state when the damaged repository cannot be read", async () => {
+    const incoming = createStarterArchiveState();
+    const rendered = { ...incoming, ownerId: "last-rendered-owner" };
+    const archive = {
+      state: vi.fn().mockRejectedValue(new Error("IndexedDB is unreadable")),
+    } as unknown as ArchiveApplication;
+
+    await expect(archiveSourceRepairStates(archive, incoming, rendered)).resolves.toEqual([
+      incoming,
+      rendered,
+    ]);
+  });
+
   it("does not present an unknown closed-Archive earned count as zero", () => {
     expect(currentEarnedCountCopy(null)).toMatch(/unavailable while this Archive is closed/i);
     expect(currentEarnedCountCopy(2)).toBe("This Archive currently has 2.");

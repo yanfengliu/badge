@@ -39,8 +39,10 @@ describe("phone layout contract", () => {
     const host = read("apps/host-web/src/App.tsx");
 
     expect(html).toContain('src="/@badge-host/main.tsx"');
-    expect(host).toContain('import { ArchiveSurface } from "../../archive-web/src/ArchiveSurface"');
-    expect(host).toContain('import { StudioSurface } from "../../studio-web/src/StudioSurface"');
+    expect(host).toContain('await import("../../archive-web/src/ArchiveSurface")');
+    expect(host).toContain('await import("../../studio-web/src/StudioSurface")');
+    expect(host).not.toContain("import { ArchiveSurface } from");
+    expect(host).not.toContain("import { StudioSurface } from");
     expect(host).toContain("<ArchiveSurface");
     expect(host).toContain("<StudioSurface");
   });

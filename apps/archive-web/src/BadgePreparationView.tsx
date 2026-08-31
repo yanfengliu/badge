@@ -1,6 +1,6 @@
 import type { FormEvent, RefObject } from "react";
 import type { ArchiveRecord } from "@badge/archive-domain";
-import { BadgeViewer } from "@badge/renderer-web";
+import { LazyBadgeViewer as BadgeViewer } from "./LazyBadgeViewer";
 
 import type { ActivationDraft, ArchiveVisualDisplay } from "./app-types";
 import { formatDate } from "./browser-utilities";

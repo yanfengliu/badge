@@ -1,6 +1,5 @@
-import { Activity, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Activity, lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
-import { ArchiveSurface } from "../../archive-web/src/ArchiveSurface";
 import { archiveSectionButtonId } from "../../archive-web/src/archive-section-focus";
 import {
   badgeHistoryIndex,
@@ -8,7 +7,6 @@ import {
   notifyArchiveSectionLocation,
   observeArchiveSectionWrites,
 } from "../../archive-web/src/archive-section-location";
-import { StudioSurface } from "../../studio-web/src/StudioSurface";
 import type { StudioLeaveGuard } from "../../studio-web/src/studio-leave-guard";
 import {
   hostDestinationFromHash,
@@ -17,8 +15,32 @@ import {
   writeHostDestination,
   type HostDestination,
 } from "./host-location";
+import { SurfaceLoadBoundary } from "./SurfaceLoadBoundary";
 
 type HostSurface = "archive" | "studio";
+
+const ArchiveSurface = lazy(async () => {
+  const module = await import("../../archive-web/src/ArchiveSurface");
+  return { default: module.ArchiveSurface };
+});
+
+const StudioSurface = lazy(async () => {
+  const module = await import("../../studio-web/src/StudioSurface");
+  return { default: module.StudioSurface };
+});
+
+function HostSurfaceLoading({ surface }: { readonly surface: HostSurface }) {
+  const name = surface === "studio" ? "Badge Studio" : "Badge Archive";
+  return (
+    <main className={`host-loading host-loading--${surface}`} aria-busy="true">
+      <div className="host-loading__mark" aria-hidden="true" />
+      <p className="host-loading__eyebrow">{name}</p>
+      <p className="host-loading__status" role="status">
+        Opening your {surface === "studio" ? "workspace" : "collection"}…
+      </p>
+    </main>
+  );
+}
 
 function surfaceForDestination(destination: HostDestination): HostSurface {
   return destination === "studio" ? "studio" : "archive";
@@ -205,7 +227,11 @@ export function App() {
             hidden={surface !== "archive"}
             inert={surface !== "archive" ? true : undefined}
           >
-            <ArchiveSurface onShowStudio={() => void transition("studio", "push")} />
+            <SurfaceLoadBoundary surface="archive">
+              <Suspense fallback={<HostSurfaceLoading surface="archive" />}>
+                <ArchiveSurface onShowStudio={() => void transition("studio", "push")} />
+              </Suspense>
+            </SurfaceLoadBoundary>
           </div>
         </Activity>
       ) : null}
@@ -215,10 +241,14 @@ export function App() {
           hidden={surface !== "studio"}
           inert={surface !== "studio" ? true : undefined}
         >
-          <StudioSurface
-            onSectionChange={(section) => void transition(section, "push")}
-            onLeaveGuardChange={registerStudioLeaveGuard}
-          />
+          <SurfaceLoadBoundary surface="studio">
+            <Suspense fallback={<HostSurfaceLoading surface="studio" />}>
+              <StudioSurface
+                onSectionChange={(section) => void transition(section, "push")}
+                onLeaveGuardChange={registerStudioLeaveGuard}
+              />
+            </Suspense>
+          </SurfaceLoadBoundary>
         </div>
       ) : null}
     </>
