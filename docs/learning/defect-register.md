@@ -92,6 +92,8 @@ The video-game sibling gate applies the same exact-`48px`, palette-neutral visib
 
 **Standing gate:** `BadgeRail.test.tsx` requires every rail button to carry an explicit `aria-label` containing the record title and lifecycle and requires `.thumb-art` to establish a block formatting context; `ArchiveHeader.test.tsx` requires stable labels for Back up and Restore plus a genuinely hidden restore input. Archive verification repeats the complete compact rail and header at `640px`, requires four recognizable shaped thumbnails rather than border slivers, and inspects the accessibility tree for the named controls and absence of the hidden input.
 
+The same form-control class is now also gated by `App.release-replacement.test.tsx`: Studio exposes one named visible own-image button while its programmatically activated file input uses the native `hidden` attribute and contributes no unnamed interactive control.
+
 ## 2026-08-24 — Wool badges looked built from tiny triangles at grazing angles
 
 **Symptom:** At certain object or inspection-light angles, the repeated surface detail made a wool badge look as though its artwork and border were constructed from many tiny triangles. The owner-provided _Sapiens_ capture showed the lattice across the whole front, not only along the 3D edge.

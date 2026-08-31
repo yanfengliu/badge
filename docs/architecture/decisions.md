@@ -2,6 +2,16 @@
 
 Append decisions newest first. Never rewrite history; add a superseding entry that links to the decision it replaces.
 
+## 2026-08-28 — D-059: Keep Studio image replacement activation-agnostic and versioned
+
+**Status:** Owner-directed and implemented for the current Studio fixture UI; applying a replacement edition to Archive remains outside this slice.
+
+Studio keeps its own-image action available before and after publication. Before first publication the upload becomes the working source; after freeze, a successfully validated and saved upload starts a new mutable replacement-edition draft while the exact frozen release remains available to offer again. Publishing changed image or recipe content creates a new immutable content-addressed version rather than thawing or overwriting the old one, while unchanged final content idempotently re-offers the same release without duplicating history.
+
+Studio does not open the Archive database and receives no activation or lifecycle fields, so it cannot truthfully know whether the badge has been activated. Starting or publishing a replacement performs no Archive mutation: the exact activation-pinned pack and visual, occurrence date, activation timestamp, note, quotation, visibility, and other personal fields remain unchanged.
+
+This extends D-014, D-015, and D-021 without authorizing silent restyling of earned records. Explicit installation, rebinding, or reviewed migration of the replacement into Archive is a separate workflow and is not implemented by this decision.
+
 ## 2026-08-27 — D-057: Complete the code-native miniature catalogue and add fifty video-game achievements
 
 **Status:** Owner-directed and implemented; it supersedes D-053's `320`-entry discovery-manifest ceiling and advances the D-055 fixture pack from `1.0.0-alpha.1` to `1.0.0-alpha.2` without weakening either decision's media, rights, or earned-history boundaries.

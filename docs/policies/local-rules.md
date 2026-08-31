@@ -50,6 +50,8 @@ The archive never exposes art generation, upload, reprocessing, prompt, candidat
 
 Badge Studio owns visual creation and publishes versioned immutable badge packs through an explicit validated export. Drafts, rejected candidates, provider metadata beyond sanitized provenance, and credentials never cross into the archive pack.
 
+Badge Studio keeps one own-image action available without receiving or inferring Archive lifecycle state. Before first publication it changes the working source; after a frozen release it starts a new Studio-local replacement edition while preserving the exact frozen bytes. It never rewrites an activation pin, date, note, quotation, or other personal field, and applying a replacement to Archive requires a separate explicit validated install, rebind, or reviewed migration workflow.
+
 Archive Discover consumes only the Git-tracked safe projection of deliberately promoted catalogue studies, their bounded eager list thumbnails, and the integrity-bound on-demand canonical source tier (`assets/discovery-sources.manifest.json`, 896-pixel studies at or below `256 KiB` each) that supplies activation textures and repair bytes. Grids always render the bounded thumbnail tier; one selected badge at a time loads its canonical source. It never imports Studio or catalogue-authoring code, opens Studio persistence, exposes authoring prompts or provenance, or discovers private browser-local projects automatically. Future private Studio work crosses only through an explicit privacy-scrubbed handoff or the ordinary validated publish-and-install path.
 
 ## Persistence and recovery

@@ -158,6 +158,10 @@ describe("phone layout contract", () => {
     expect(phone).toMatch(/\.studio-nav\s*\{[^}]*grid-template-columns:\s*repeat\(4, minmax\(0, 1fr\)\)/su);
     expect(phone).toMatch(/\.studio-nav__link\s*\{[^}]*min-height:\s*48px/su);
     expect(phone).toMatch(/\.candidate-grid\s*\{[^}]*grid-auto-flow:\s*column[^}]*overflow-x:\s*auto/su);
+    expect(phone).toMatch(/\.source-actions\s*\{[^}]*align-items:\s*stretch[^}]*flex-direction:\s*column/su);
+    expect(phone).toMatch(/\.source-actions \.button\s*\{[^}]*width:\s*100%/su);
+    expect(phone).toMatch(/\.publish-bar \.button\s*\{[^}]*max-width:\s*100%/su);
+    expect(phone).toMatch(/\.publish-bar \.button\s*\{[^}]*overflow-wrap:\s*anywhere/su);
     expect(phone).toMatch(/\.segment button\s*\{[^}]*min-height:\s*44px/su);
     expect(phone).toMatch(/:is\(input, textarea, select\)\s*\{[^}]*font-size:\s*16px/su);
     expect(phone).toMatch(/\.publish-bar \.button\s*\{[^}]*width:\s*100%/su);

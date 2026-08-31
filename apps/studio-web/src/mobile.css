@@ -180,6 +180,8 @@ body[data-badge-mode="studio"],
 
   .publish-bar .button {
     width: 100%;
+    max-width: 100%;
+    overflow-wrap: anywhere;
   }
 
   .art-direction-library__tabs small {

@@ -23,8 +23,16 @@ import {
   type PublishedRelease,
 } from "./studio-candidates";
 import { StudioHeader } from "./StudioHeader";
+import { StudioImageSwapPanel } from "./StudioImageSwapPanel";
+import { StudioPublishBar } from "./StudioPublishBar";
 import { type StudioAppProps, useStudioLeaveGuard } from "./studio-leave-guard";
 import { useStudioOperation } from "./studio-operation";
+import {
+  beginReplacementEdition,
+  freezeRelease,
+  initialStudioReleaseState,
+  samePublishedRelease,
+} from "./studio-release-state";
 import { candidateCapabilities, resolveCandidateSelection } from "./studio-selection";
 import { StudioStoreError, openStudioStore, type StudioStore } from "./studio-store";
 const TREATMENT_OPERATION = "warm-mineral-treatment-v1";
@@ -38,8 +46,9 @@ export function App({ onSectionChange, onLeaveGuardChange }: StudioAppProps) {
   const [status, setStatus] = useState("Opening local Studio storage…");
   const { busy, tryBegin, finish, isBusy } = useStudioOperation();
   const [storeReady, setStoreReady] = useState(false);
-  const [publishedRelease, setPublishedRelease] = useState<PublishedRelease | null>(null);
+  const [releaseState, setReleaseState] = useState(initialStudioReleaseState);
   const uploadInput = useRef<HTMLInputElement>(null);
+  const selectedCandidateElement = useRef<HTMLButtonElement>(null);
   const ownedUrls = useRef(new Set<string>());
   const store = useRef<StudioStore | null>(null);
   const selected = useMemo(
@@ -66,7 +75,9 @@ export function App({ onSectionChange, onLeaveGuardChange }: StudioAppProps) {
     store,
     storeReady,
   });
-  const editingDisabled = !storeReady || busy !== null || leaving || publishedRelease !== null;
+  const operationDisabled = !storeReady || busy !== null || leaving;
+  const releaseOfferDisabled = busy !== null || leaving;
+  const editingDisabled = operationDisabled || releaseState.phase === "frozen";
 
   useEffect(() => {
     let cancelled = false;
@@ -131,6 +142,10 @@ export function App({ onSectionChange, onLeaveGuardChange }: StudioAppProps) {
     };
   }, [handleStorageFailure]);
 
+  useEffect(() => {
+    selectedCandidateElement.current?.scrollIntoView?.({ block: "nearest", inline: "nearest" });
+  }, [selectedKey]);
+
   function updateRecipe(patch: Partial<RenderRecipe>) {
     if (editingDisabled || isBusy()) return;
     setRecipe((current) => ({ ...current, ...patch }) as RenderRecipe);
@@ -145,15 +160,23 @@ export function App({ onSectionChange, onLeaveGuardChange }: StudioAppProps) {
     const file = event.target.files?.[0];
     event.target.value = "";
     const activeStore = store.current;
-    if (!file || editingDisabled || !activeStore || !tryBegin("uploading")) return;
+    if (!file || operationDisabled || !activeStore || !tryBegin("uploading")) return;
+    const startsReplacementEdition = releaseState.phase === "frozen";
     try {
       const asset = await readImageAsset(file);
       const identity = uploadedCandidateIdentity(asset.hash);
       const stored = await activeStore.saveOriginal(asset.blob, identity);
+      if (startsReplacementEdition) {
+        setReleaseState((current) => beginReplacementEdition(current));
+      }
       const existing = findEquivalentCandidate(candidates, identity);
       if (existing) {
         setSelectedKey(candidateKey(existing));
-        setStatus(`${file.name} already exists in Studio; its existing candidate is selected.`);
+        setStatus(
+          startsReplacementEdition
+            ? `${file.name} already exists in Studio; it is selected for a new replacement edition while the frozen edition stays available.`
+            : `${file.name} already exists in Studio; its existing candidate is selected.`,
+        );
         return;
       }
       const sourceUrl = URL.createObjectURL(stored.blob);
@@ -172,7 +195,9 @@ export function App({ onSectionChange, onLeaveGuardChange }: StudioAppProps) {
       setCandidates((current) => [...current, candidate]);
       setSelectedKey(candidateKey(candidate));
       setStatus(
-        `${file.name} was stored as a new source candidate; generated proposals were left untouched.`,
+        startsReplacementEdition
+          ? `${file.name} was stored for a new replacement edition; the frozen edition and generated proposals stay available.`
+          : `${file.name} was stored as a new source candidate; generated proposals were left untouched.`,
       );
     } catch (error) {
       handleStorageFailure(error);
@@ -226,7 +251,7 @@ export function App({ onSectionChange, onLeaveGuardChange }: StudioAppProps) {
       !storeReady ||
       !activeStore ||
       leaving ||
-      publishedRelease ||
+      releaseState.phase === "frozen" ||
       !tryBegin("publishing")
     )
       return;
@@ -240,18 +265,28 @@ export function App({ onSectionChange, onLeaveGuardChange }: StudioAppProps) {
         recipe,
         provenance: selected.provenance,
         accessibleDescription:
-          "A crafted Yosemite badge showing granite walls, river, and a path through the valley.",
+          selected.provenance === "uploaded"
+            ? "A user-supplied image used as the face of a crafted Yosemite badge."
+            : "A crafted Yosemite badge showing granite walls, river, and a path through the valley.",
       });
       offerPackClosureDownload(result.bytes, result.themeDependency.bytes);
-      setPublishedRelease({
+      const publishedRelease: PublishedRelease = {
         packId: result.packRef.packId,
         version: result.packRef.version,
         digest: result.packRef.packDigest,
         bytes: result.bytes,
         themeBytes: result.themeDependency.bytes,
-      });
+      };
+      const reofferedUnchangedRelease =
+        releaseState.phase === "revising" &&
+        samePublishedRelease(releaseState.currentRelease, publishedRelease);
+      setReleaseState((current) => freezeRelease(current, publishedRelease));
       setStatus(
-        "The pack and its exact admitted theme dependency were offered for download. Archive installation arrives in a later slice.",
+        reofferedUnchangedRelease
+          ? "Nothing in the badge edition changed, so Studio re-offered the same immutable release without adding duplicate history."
+          : releaseState.phase === "revising"
+            ? "The replacement edition and its exact theme dependency were offered for download. It does not silently change an activated Archive memory."
+            : "The pack and its exact admitted theme dependency were offered for download. Archive installation arrives in a later slice.",
       );
     } catch (error) {
       handleStorageFailure(error);
@@ -274,10 +309,25 @@ export function App({ onSectionChange, onLeaveGuardChange }: StudioAppProps) {
             </p>
           </div>
 
+          <StudioImageSwapPanel
+            busy={busy}
+            canProcess={capabilities.process}
+            editingDisabled={editingDisabled}
+            onReprocess={() => void reprocess()}
+            onUpload={upload}
+            releasePhase={releaseState.phase}
+            uploadDisabled={operationDisabled}
+            uploadInput={uploadInput}
+          />
+          <p className="status-line" role="status">
+            {status}
+          </p>
+
           <div className="candidate-grid" aria-label="Source art candidates">
             {candidates.map((candidate, index) => (
               <button
                 key={candidateKey(candidate)}
+                ref={candidateKey(candidate) === selectedKey ? selectedCandidateElement : undefined}
                 type="button"
                 className="candidate"
                 aria-pressed={candidateKey(candidate) === selectedKey}
@@ -298,38 +348,6 @@ export function App({ onSectionChange, onLeaveGuardChange }: StudioAppProps) {
               </button>
             ))}
           </div>
-
-          <div className="source-actions">
-            <button
-              type="button"
-              className="button secondary"
-              onClick={() => uploadInput.current?.click()}
-              disabled={editingDisabled}
-            >
-              {busy === "uploading" ? "Uploading…" : "Upload my own image"}
-            </button>
-            <button
-              type="button"
-              className="button secondary"
-              onClick={reprocess}
-              disabled={!capabilities.process || editingDisabled}
-            >
-              {busy === "processing" ? "Processing…" : "Process selected again"}
-            </button>
-            <input
-              ref={uploadInput}
-              className="visually-hidden"
-              type="file"
-              accept="image/png,image/jpeg,image/webp"
-              disabled={editingDisabled}
-              tabIndex={-1}
-              aria-hidden="true"
-              onChange={upload}
-            />
-          </div>
-          <p className="status-line" role="status">
-            {status}
-          </p>
         </section>
 
         <section className="construction-bench">
@@ -338,12 +356,22 @@ export function App({ onSectionChange, onLeaveGuardChange }: StudioAppProps) {
               <p className="eyebrow">Live construction</p>
               <h2>Yosemite</h2>
             </div>
-            <span>{publishedRelease ? "Frozen pack ready" : "Recipe v1 · unpublished"}</span>
+            <span>
+              {releaseState.phase === "frozen"
+                ? "Frozen pack ready"
+                : releaseState.phase === "revising"
+                  ? "Replacement draft"
+                  : "Recipe v1 · unpublished"}
+            </span>
           </div>
           <BadgeViewer
             sourceUrl={selected?.sourceUrl ?? candidates[0].sourceUrl}
             recipe={recipe}
-            accessibleDescription="Yosemite badge under construction"
+            accessibleDescription={
+              selected?.provenance === "uploaded"
+                ? "A user-supplied image under construction as a Yosemite badge"
+                : "Yosemite badge under construction"
+            }
             readOnly={false}
             forceFallback={new URLSearchParams(window.location.search).has("fallback")}
           />
@@ -442,34 +470,15 @@ export function App({ onSectionChange, onLeaveGuardChange }: StudioAppProps) {
             </details>
           </div>
 
-          <div className="publish-bar">
-            <div>
-              <strong>
-                {publishedRelease ? "This edition is frozen." : "Ready to freeze this edition?"}
-              </strong>
-              <span>
-                {publishedRelease
-                  ? `${publishedRelease.packId} · ${publishedRelease.digest.slice(0, 12)}… · reload to reopen the draft`
-                  : "Publishing writes an admitted pack and its exact theme dependency. Source drafts stay here."}
-              </span>
-            </div>
-            <button
-              className="button primary"
-              type="button"
-              onClick={() =>
-                publishedRelease
-                  ? offerPackClosureDownload(publishedRelease.bytes, publishedRelease.themeBytes)
-                  : void publish()
-              }
-              disabled={!capabilities.publish || !storeReady || busy !== null || leaving}
-            >
-              {busy === "publishing"
-                ? "Validating pack…"
-                : publishedRelease
-                  ? "Offer both files again"
-                  : "Publish badge pack"}
-            </button>
-          </div>
+          <StudioPublishBar
+            busy={busy}
+            canPublish={capabilities.publish}
+            offerDisabled={releaseOfferDisabled}
+            onOfferCurrent={(release) => offerPackClosureDownload(release.bytes, release.themeBytes)}
+            onPublish={() => void publish()}
+            publishDisabled={operationDisabled}
+            releaseState={releaseState}
+          />
         </section>
         <ArtDirectionLibrary />
       </main>

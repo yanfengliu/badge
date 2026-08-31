@@ -158,6 +158,8 @@ New or deliberately refreshed generation uses prompt recipe `badge-source-art@2`
 
 Candidates appear at a useful comparison size with clear keyboard-reachable selection state. The developer can select one, regenerate the set, refine one candidate, upload an image, process an upload, or leave without losing the Studio draft.
 
+The own-image action remains visible and enabled before or after an Archive activation because Studio intentionally receives no Archive lifecycle state. Before first publication, a successfully validated and saved upload becomes the working source; after the current Studio release is frozen, it opens a new mutable replacement-edition draft while the exact frozen release remains available to offer again. Canceling the picker or rejecting an upload leaves the frozen edition untouched.
+
 An uploaded original is preserved unchanged in Studio. Optional processing creates new candidates or derivatives and must disclose before an image leaves the device for model processing.
 
 Before publication, Studio applies orientation, decodes the chosen pixels, normalizes them to an approved color space and format, and creates a publish-safe derivative with filenames, EXIF, GPS, XMP, IPTC, embedded thumbnails, and opaque ancillary metadata removed. The developer previews the outgoing dimensions, format, byte size, and sanitized manifest metadata; the private original never enters the pack.
@@ -167,6 +169,8 @@ Studio applies shape, material, border color, border width, crop, position, and 
 Publishing requires exactly one selected source image and complete 3D presentation per runtime-visible badge. The publisher validates schemas, stable IDs, asset hashes, compatibility, text-free source art, fallback inputs, binary policy, missing references, and forbidden Studio-only fields before exporting an immutable pack.
 
 Publish first freezes and stores the exact canonical pack bytes and `PackRef` as a prepared release, permanently reserving that pack ID and version for those bytes. File-handle export may become `file write confirmed`; browser download can report only `download offered`, not pretend disk success. Canceling or retrying re-exports the same prepared bytes. Publish never activates an achievement, writes personal Archive state, commits to Git, or installs itself into Archive automatically.
+
+Publishing changed replacement content creates another immutable content-addressed edition rather than thawing or overwriting the prior release; unchanged image and recipe content re-offers the same edition without duplicating history. It does not alter an Archive activation pin, occurrence date, activation timestamp, note, quotation, visibility, or other personal field; explicitly applying the replacement to Archive remains a separate install or reviewed-migration workflow and is not implemented by the current Studio fixture.
 
 ## Runtime historical-quotation selection
 

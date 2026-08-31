@@ -186,6 +186,45 @@ body[data-badge-mode="studio"] [tabindex]:focus-visible {
   gap: 9px;
   margin-top: 18px;
 }
+.image-swap-panel {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: center;
+  gap: 18px;
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px solid #cfc3b3;
+  border-radius: 7px;
+  background: #fffaf0;
+}
+.image-swap-panel__copy strong,
+.image-swap-panel__copy span,
+.image-swap-panel__copy small {
+  display: block;
+}
+.image-swap-panel__copy strong {
+  font-family: var(--display);
+  font-size: 17px;
+  font-weight: 500;
+}
+.image-swap-panel__copy span {
+  max-width: 570px;
+  margin-top: 5px;
+  color: var(--soft);
+  font-size: 11px;
+  line-height: 1.5;
+}
+.image-swap-panel__copy small {
+  margin-top: 8px;
+  color: var(--faint);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.image-swap-panel .source-actions {
+  justify-content: flex-start;
+  margin-top: 0;
+}
 .studio-shell .button {
   min-height: 44px;
   padding: 0 15px;
@@ -377,6 +416,16 @@ body[data-badge-mode="studio"] [tabindex]:focus-visible {
   font-size: 10px;
   line-height: 1.4;
 }
+.publish-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 9px;
+}
+.publish-actions .button {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
 .studio-shell .visually-hidden {
   position: absolute !important;
   width: 1px !important;
@@ -413,6 +462,9 @@ body[data-badge-mode="studio"] [tabindex]:focus-visible {
   }
   .control-row {
     grid-template-columns: 1fr;
+  }
+  .publish-actions {
+    justify-content: flex-start;
   }
   .publish-bar {
     align-items: stretch;
