@@ -1,7 +1,7 @@
 import type { PackRef } from "@badge/pack-contract";
 import type { RenderRecipe } from "@badge/render-recipe";
 
-import { catalogueQuotationBanksBySetId } from "./catalogue-quotations.js";
+import { fixtureQuotationBankForDefinition } from "@badge/catalogue-fixtures/catalogue-quotations";
 import type { FixtureHistoricalQuotation } from "./types";
 
 export const CATALOGUE_PACK_ID = "badge.catalogue.discovery";
@@ -120,12 +120,6 @@ export function defineCataloguePackBadges(
   },
 ): readonly CataloguePackBadgeFixture[] {
   const renderRecipe = catalogueRenderRecipeForSet(options.setId);
-  const bank = catalogueQuotationBanksBySetId[options.setId];
-  if (!bank || bank.length === 0) {
-    throw new Error(
-      `Catalogue set ${options.setId} has no source-checked quotation bank; register one in catalogue-quotations before projecting its badges.`,
-    );
-  }
   return rows.map(
     ([
       definitionId,
@@ -138,9 +132,10 @@ export function defineCataloguePackBadges(
       defaultQuotationId,
       referenceUrl,
     ]) => {
+      const bank = fixtureQuotationBankForDefinition(definitionId);
       if (!bank.some((quotation) => quotation.id === defaultQuotationId)) {
         throw new Error(
-          `Catalogue badge ${definitionId} designates quotation ${defaultQuotationId}, which is not in the ${options.setId} source-checked bank; regenerate the catalogue pack fixture.`,
+          `Catalogue badge ${definitionId} designates quotation ${defaultQuotationId}, which is not in its record-private source-checked bank; regenerate the catalogue pack fixture.`,
         );
       }
       return {

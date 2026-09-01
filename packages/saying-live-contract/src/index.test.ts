@@ -81,7 +81,7 @@ describe("live saying contract", () => {
       "sourceUrl",
     ]);
     expect(SAYING_DISCLOSURE.scope.quotationContractVersion).toBe(SAYING_QUOTATION_CONTRACT_VERSION);
-    expect(SAYING_QUOTATION_CONTRACT_VERSION).toBe("v3");
+    expect(SAYING_QUOTATION_CONTRACT_VERSION).toBe("v6");
     expect(SAYING_DISCLOSURE.scope.excludedFields).toEqual(SAYING_EXCLUDED_FIELDS);
     expect(SAYING_DISCLOSURE.scope.limits).toMatchObject({
       outputCodePoints: SAYING_OUTPUT_CODE_POINT_LIMIT,

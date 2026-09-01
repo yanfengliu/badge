@@ -76,7 +76,7 @@ describe("SayingComposer", () => {
     expect(html).toContain(defaultQuotation.sourceTitle);
     expect(html).toContain(`href="${defaultQuotation.sourceUrl}"`);
     expect(html).toContain("View quote source");
-    expect(html).toContain('href="https://en.wikipedia.org/wiki/John_Muir"');
+    expect(html).toContain(`href="${defaultQuotation.personWikipediaUrl}"`);
     expect(html).toContain("Wikipedia");
     expect(html).toContain("Regenerate quote");
     expect(html.match(/<button/gu)).toHaveLength(1);

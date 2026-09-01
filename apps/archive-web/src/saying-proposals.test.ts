@@ -12,7 +12,7 @@ const promptInput = {
 
 describe("fixture saying provider", () => {
   it("returns only source-checked quotations supplied by the current request", async () => {
-    const allowedQuotations = yosemite.historicalQuotations.slice(1);
+    const allowedQuotations = [...yosemite.historicalQuotations];
     const provider = createFixtureSayingProvider([promptInput], () => "2026-08-23T12:00:00.000Z");
     const signal = new AbortController().signal;
 
@@ -44,7 +44,7 @@ describe("fixture saying provider", () => {
   });
 
   it("cannot return a fixture quotation omitted from the request shortlist", async () => {
-    const allowedQuotation = yosemite.historicalQuotations[2]!;
+    const allowedQuotation = yosemite.historicalQuotations[1]!;
     const provider = createFixtureSayingProvider([yosemite]);
 
     await expect(

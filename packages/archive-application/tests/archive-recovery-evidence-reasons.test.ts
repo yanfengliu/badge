@@ -17,7 +17,11 @@ import {
   createArchiveRecoveryEvidence,
   parseArchiveBackup,
 } from "../src/index.js";
-import { sourceCheckedSaying, withAcceptedQuotation } from "./historical-quotation-fixtures.js";
+import {
+  alternateSourceCheckedSaying,
+  sourceCheckedSaying,
+  withAcceptedQuotation,
+} from "./historical-quotation-fixtures.js";
 import { validPngBytes, validPngHash } from "./image-fixtures.js";
 
 const exportedAt = "2026-08-24T17:00:00.000Z";
@@ -142,7 +146,7 @@ describe("Archive recovery evidence reasons", () => {
       visualEditionId: "missing-source-v1",
       sourceAssetHash: "f".repeat(64),
     };
-    const seed = withAcceptedQuotation(
+    const sharedSeed = withAcceptedQuotation(
       createSeededArchiveState({
         ownerId: "local-owner",
         records: [
@@ -177,6 +181,14 @@ describe("Archive recovery evidence reasons", () => {
         ],
       }),
     );
+    const seed = {
+      ...sharedSeed,
+      records: sharedSeed.records.map((record) =>
+        record.recordId === missingRecordId
+          ? { ...record, acceptedSaying: alternateSourceCheckedSaying }
+          : record,
+      ),
+    };
     const firstEarned = activateAchievement(
       seed,
       {

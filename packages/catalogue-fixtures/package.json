@@ -5,11 +5,15 @@
   "type": "module",
   "exports": {
     "./archive": "./src/archive.ts",
+    "./catalogue-quotations": "./src/catalogue-quotations.ts",
     "./catalogue-pack": "./src/catalogue-pack.ts",
     "./discovery": "./src/discovery.ts",
     "./future-expansion": "./src/future-expansion.ts",
     "./legacy-repair": "./src/legacy-repair.ts",
     "./manufacturing": "./src/manufacturing.ts",
     "./studio": "./src/studio.ts"
+  },
+  "dependencies": {
+    "@badge/catalogue-quotation-data": "*"
   }
 }

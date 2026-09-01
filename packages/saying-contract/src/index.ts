@@ -1,6 +1,7 @@
 import { z } from "zod";
+import { QUOTATION_ID_LENGTH_LIMIT } from "@badge/quotation-identity";
 
-import { quotationRecordsMatch } from "./quotation-comparison.ts";
+import { canonicalQuotationTextKey, quotationRecordsMatch } from "./quotation-comparison.ts";
 import {
   countGraphemes,
   hasBidiControl,
@@ -12,6 +13,7 @@ import {
 } from "./text-safety.ts";
 
 export { SAYING_SYSTEM_PROMPT_V3 } from "./prompt.ts";
+export { canonicalQuotationTextKey, tooCloselyMatchesQuotation } from "./quotation-comparison.ts";
 
 export const SAYING_PROMPT_VERSION = "v3" as const;
 export const SAYING_TITLE_GRAPHEME_LIMIT = 200;
@@ -22,8 +24,8 @@ export const SAYING_VOICE_GRAPHEME_LIMIT = 120;
 export const SAYING_VARIATION_GRAPHEME_LIMIT = 120;
 export const SAYING_USER_DIRECTION_GRAPHEME_LIMIT = 240;
 export const SAYING_ALLOWED_QUOTATION_COUNT_LIMIT = 6;
-export const SAYING_QUOTATION_CONTRACT_VERSION = "v3" as const;
-export const SAYING_QUOTATION_ID_LENGTH_LIMIT = 128;
+export const SAYING_QUOTATION_CONTRACT_VERSION = "v6" as const;
+export const SAYING_QUOTATION_ID_LENGTH_LIMIT = QUOTATION_ID_LENGTH_LIMIT;
 export const SAYING_QUOTATION_PERSON_GRAPHEME_LIMIT = 64;
 export const SAYING_QUOTATION_PERSON_CODE_POINT_LIMIT = 128;
 export const SAYING_QUOTATION_PERSON_UTF8_LIMIT = 512;
@@ -292,6 +294,15 @@ const allowedQuotationsSchema = z
       context.addIssue({
         code: "custom",
         message: "Allowed quotation persisted saying values must be unique.",
+      });
+    }
+    if (
+      new Set(quotations.map((quotation) => canonicalQuotationTextKey(quotation.text))).size !==
+      quotations.length
+    ) {
+      context.addIssue({
+        code: "custom",
+        message: "Allowed quotation canonical text keys must be unique.",
       });
     }
   });

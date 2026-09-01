@@ -12,6 +12,7 @@ import {
   reconcileCatalogueRecords,
 } from "../src/index.js";
 import {
+  alternateSourceCheckedSaying,
   historicalQuotationRequest,
   sourceCheckedResponse,
   sourceCheckedSaying,
@@ -285,6 +286,49 @@ describe("IndexedDbArchiveRepository.reconcileCatalogueRecords", () => {
     expect(await current.read()).toEqual(reconciled);
   });
 
+  it("atomically gives a newly added record an alternate when legacy state owns its default", async () => {
+    const current = repository();
+    const legacyStarter = { ...starterRecord, acceptedSaying: sourceCheckedSaying };
+    const stored = await current.load(stateOf([legacyStarter]));
+    const reconciled = await current.reconcileCatalogueRecords(
+      stateOf([legacyStarter, catalogueRecord]),
+      stored,
+    );
+
+    expect(
+      reconciled.records.find((item) => item.recordId === "starter:visited-yosemite")?.acceptedSaying,
+    ).toBe(sourceCheckedSaying);
+    expect(
+      reconciled.records.find((item) => item.recordId === "catalogue:visited-acadia")?.acceptedSaying,
+    ).toBe(alternateSourceCheckedSaying);
+    expect(await current.read()).toEqual(reconciled);
+  });
+
+  it("rolls back catalogue expansion when existing records reserve every trusted choice", async () => {
+    const current = repository();
+    const starterWithDefault = { ...starterRecord, acceptedSaying: sourceCheckedSaying };
+    const catalogueWithAlternate = {
+      ...catalogueRecord,
+      acceptedSaying: alternateSourceCheckedSaying,
+    };
+    const stored = await current.load(stateOf([starterWithDefault, catalogueWithAlternate]));
+    const nextVisual = (hash: string) => ({
+      ...visual("badge.catalogue.discovery", hash, "1.0.1"),
+      packRef: { packId: "badge.catalogue.discovery", version: "1.0.1", packDigest: "e".repeat(64) },
+    });
+    const defaults = stateOf([
+      starterWithDefault,
+      { ...catalogueRecord, publishedVisual: nextVisual(validJpegHash) },
+      { ...secondCatalogueRecord, publishedVisual: nextVisual("d".repeat(64)) },
+    ]);
+
+    await expect(current.reconcileCatalogueRecords(defaults, stored)).rejects.toMatchObject({
+      code: "SAYING_CONFLICT",
+      message: expect.stringMatching(/no distinct source-checked quotation.*No Archive data was changed/i),
+    });
+    expect(await current.read()).toEqual(stored);
+  });
+
   it("refuses to reconcile over a state that changed after review", async () => {
     const current = repository();
     await current.load(stateOf([starterRecord]));
@@ -343,6 +387,6 @@ describe("catalogue reconciliation during restore", () => {
     expect(earned?.acceptedSaying).toBe(activated.record.acceptedSaying);
     const added = restored.records.find((item) => item.recordId === "catalogue:visited-acadia");
     expect(added?.lifecycle).toBe("suggested");
-    expect(added?.acceptedSaying).toBe(sourceCheckedSaying);
+    expect(added?.acceptedSaying).toBe(alternateSourceCheckedSaying);
   });
 });

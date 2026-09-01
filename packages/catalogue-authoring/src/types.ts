@@ -210,6 +210,7 @@ export interface NationalParkAuthoringRecord {
   aliases: readonly string[];
   artBrief: BadgeArtBrief;
   candidateStyles: readonly [string, string, string];
+  defaultQuotationId: HistoricQuotationId;
   selectedSource: SelectedSourceStudy;
 }
 

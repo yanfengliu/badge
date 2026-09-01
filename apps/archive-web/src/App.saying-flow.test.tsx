@@ -141,7 +141,7 @@ describe("mounted historical-quotation flow", () => {
     const yosemite = starterBadges[0]!;
     const original = yosemite.historicalQuotations[0]!;
     const replacement = yosemite.historicalQuotations[1]!;
-    const rejectedAfterActivation = yosemite.historicalQuotations[2]!;
+    const rejectedAfterActivation = original;
     const recordId = `starter:${yosemite.definitionId}`;
 
     await waitFor(() => expect(container.textContent).toContain("The Field Archive"));

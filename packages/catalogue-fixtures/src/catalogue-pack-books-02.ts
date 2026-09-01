@@ -11,7 +11,7 @@ export const cataloguePackBooks02 = defineCataloguePackBadges(
       "Original abstract source study using ligne-claire-panels for Read The Innovators: Interpret The Innovators through an original symbolic miniature: the relays pass one continuous path into the spark.",
       "the-innovators.jpg",
       "a12bdf322d372dabbd242232322971f462e8910ec3d295875e05046d143294f9",
-      "thomas-jefferson-cannot-live-books-1815",
+      "q-f9ca4db7cf8cbf0390ee8672935681de",
     ],
     [
       "read-the-design-of-everyday-things",
@@ -21,7 +21,7 @@ export const cataloguePackBooks02 = defineCataloguePackBadges(
       "Original abstract source study using gouache-affordance-planes for Read The Design of Everyday Things: Interpret The Design of Everyday Things through an original symbolic miniature: the handle explains the opening action before the light reveals the result.",
       "the-design-of-everyday-things.jpg",
       "c5bf472e37ea8002255683c78f8a0df0df2f4dd0d68740ab5d329c0af1fe9a50",
-      "thomas-jefferson-cannot-live-books-1815",
+      "q-dc08a1511f2e833bd0a1c0be50d49f4d",
     ],
     [
       "read-the-pragmatic-programmer",
@@ -31,7 +31,7 @@ export const cataloguePackBooks02 = defineCataloguePackBadges(
       "Original abstract source study using large-pixel-clusters for Read The Pragmatic Programmer: Interpret The Pragmatic Programmer through an original symbolic miniature: the modules form a practical bridge toward the clear final tile.",
       "the-pragmatic-programmer.jpg",
       "1f0a3a7032e04dfbff3d9aa64dfa585cab412abe9983da1370d3b517836f49fa",
-      "thomas-jefferson-cannot-live-books-1815",
+      "q-9620c5053735f779f75b6833320f197f",
     ],
     [
       "read-code",
@@ -41,7 +41,7 @@ export const cataloguePackBooks02 = defineCataloguePackBadges(
       "Original abstract source study using ceramic-underglaze-fields for Read Code: Interpret Code through an original symbolic miniature: the paired state rivers alternate and converge into the pulse.",
       "code.jpg",
       "5729b09325f566c28dfd8fa6e9df7feeb4586b9fe3af3efee330af07d4fa29dc",
-      "thomas-jefferson-cannot-live-books-1815",
+      "q-5b3d746acf2a8cc02d1d28ebba8bdcb8",
     ],
     [
       "read-algorithms-to-live-by",
@@ -51,7 +51,7 @@ export const cataloguePackBooks02 = defineCataloguePackBadges(
       "Original abstract source study using broad-map-bands for Read Algorithms to Live By: Interpret Algorithms to Live By through an original symbolic miniature: the possible routes simplify as they approach the destination within the boundary.",
       "algorithms-to-live-by.jpg",
       "185f5d990387a199cc515d78ec93b53e7c90fdcb8c98616fec1b9f5855dd4d4d",
-      "thomas-jefferson-cannot-live-books-1815",
+      "q-57b913736b99dd5d8409f8ac4d006719",
     ],
     [
       "read-the-phoenix-project",
@@ -61,7 +61,7 @@ export const cataloguePackBooks02 = defineCataloguePackBadges(
       "Original abstract source study using large-stained-glass-cells for Read The Phoenix Project: Interpret The Phoenix Project through an original symbolic miniature: the firebird rises from the aligned monoliths as the ember arc reconnects them.",
       "the-phoenix-project.jpg",
       "01c4e3183f5114677ee85a4d1c9e314369065e7efc34f30878631b94bfaf4450",
-      "thomas-jefferson-cannot-live-books-1815",
+      "q-0f2e74462376b0484632f8f9567572c5",
     ],
     [
       "read-chip-war",
@@ -71,7 +71,7 @@ export const cataloguePackBooks02 = defineCataloguePackBadges(
       "Original abstract source study using large-prismatic-cells for Read Chip War: Interpret Chip War through an original symbolic miniature: the wave bands press toward the square while the circuit river escapes between them.",
       "chip-war.jpg",
       "f296c7f19419aeb4f37c2d443a001bdb9cb41ce48ce15ee8f4fd5ea60eb1664f",
-      "thomas-jefferson-cannot-live-books-1815",
+      "q-fc0ad6eb7be1c89065faac2431f6c6d1",
     ],
     [
       "read-dune",
@@ -81,7 +81,7 @@ export const cataloguePackBooks02 = defineCataloguePackBadges(
       "Original abstract source study using desert-paper-strata for Read Dune: Interpret Dune through an original symbolic miniature: the dunes eclipse part of the sun while the small oasis holds the cool counterpoint.",
       "dune.jpg",
       "0a1dc5b9d41797c8b875c249d5bf6abbc6b2b1dccf5429fd8b70c5db1680bcf2",
-      "francis-bacon-reading-full-man",
+      "q-6245090fe5b82d0b6c6f3d1db4db5fcd",
     ],
     [
       "read-the-three-body-problem",
@@ -91,7 +91,7 @@ export const cataloguePackBooks02 = defineCataloguePackBadges(
       "Original abstract source study using prismatic-cells for Read The Three-Body Problem: Interpret The Three-Body Problem through an original symbolic miniature: the orbit band fails to settle as the three suns pull around the planet.",
       "the-three-body-problem.jpg",
       "42d60892a58799cc0e0dabb8709c8d9b3dda8a6e709ca84827cec1d7c38d311d",
-      "francis-bacon-reading-full-man",
+      "q-12def3a748f1f01d2cbb9cd0ce3c7d03",
     ],
     [
       "read-foundation",
@@ -101,7 +101,7 @@ export const cataloguePackBooks02 = defineCataloguePackBadges(
       "Original abstract source study using mineral-fresco-planes for Read Foundation: Interpret Foundation through an original symbolic miniature: the seed remains intact beyond the fallen arch beneath the fixed star.",
       "foundation.jpg",
       "8390d9498b32e1d19063628628bb7c54a8a2f4be89fc7d04a10399bf18e88b83",
-      "francis-bacon-reading-full-man",
+      "q-3c21da6b9ee26e265ffbcebd3b94acb5",
     ],
     [
       "read-neuromancer",
@@ -111,7 +111,7 @@ export const cataloguePackBooks02 = defineCataloguePackBadges(
       "Original abstract source study using screenprint-masses for Read Neuromancer: Interpret Neuromancer through an original symbolic miniature: the data river cuts between the towers and bends toward the moon.",
       "neuromancer.jpg",
       "7347492031f1e23bc35e9326b658121a93aa5e1862cd7ea75571ca9f0c258c0a",
-      "francis-bacon-reading-full-man",
+      "q-a6babea11b64484426b8a69cd506c71c",
     ],
     [
       "read-the-left-hand-of-darkness",
@@ -121,7 +121,7 @@ export const cataloguePackBooks02 = defineCataloguePackBadges(
       "Original abstract source study using broad-woven-bands for Read The Left Hand of Darkness: Interpret The Left Hand of Darkness through an original symbolic miniature: the profiles share one boundary above the ridge while the sun holds both tones.",
       "the-left-hand-of-darkness.jpg",
       "4822f4e897fee63950de0302a106a6c2861e52b986e9b125fc77ff175ec03abb",
-      "francis-bacon-reading-full-man",
+      "q-84bd182da7f713212493942ed7ec83f1",
     ],
     [
       "read-project-hail-mary",
@@ -131,7 +131,7 @@ export const cataloguePackBooks02 = defineCataloguePackBadges(
       "Original abstract source study using large-stained-glass-cells for Read Project Hail Mary: Interpret Project Hail Mary through an original symbolic miniature: the small craft follows the arc through the space between the suns.",
       "project-hail-mary.jpg",
       "aeddb86a0620a398410921c8e1e8b6fd2695656b1414e46bf3515aeaf21f5171",
-      "francis-bacon-reading-full-man",
+      "q-262ee998e9ef4e13bb55c21fe47ae12b",
     ],
     [
       "read-the-remains-of-the-day",
@@ -141,7 +141,7 @@ export const cataloguePackBooks02 = defineCataloguePackBadges(
       "Original abstract source study using aquatint-corridor-planes for Read The Remains of the Day: Interpret The Remains of the Day through an original symbolic miniature: the tray remains precisely centered while the corridor recedes toward the fading garden.",
       "the-remains-of-the-day.jpg",
       "9fbb8423999570d1908d64a14b3790412ce48a9a858885297e3147748cfacd0b",
-      "francis-bacon-reading-full-man",
+      "q-23814d5628bf4bf21ea07bf5d46a97e8",
     ],
     [
       "read-beloved",
@@ -151,7 +151,7 @@ export const cataloguePackBooks02 = defineCataloguePackBadges(
       "Original abstract source study using monoprint-overlap for Read Beloved: Interpret Beloved through an original symbolic miniature: the joined silhouettes hold the threshold while the ribbon passes through memory and space.",
       "beloved.jpg",
       "c9bf3c8814bc97bfb406a4091699842b8f0f6b868bb1a42c06a7e87af1fb79ff",
-      "francis-bacon-reading-full-man",
+      "q-12235a10c13ce7a30d194e0770560c44",
     ],
     [
       "read-the-road",
@@ -161,7 +161,7 @@ export const cataloguePackBooks02 = defineCataloguePackBadges(
       "Original abstract source study using charcoal-cut-masses for Read The Road: Interpret The Road through an original symbolic miniature: the footprints continue past the tree toward the only light on the horizon.",
       "the-road.jpg",
       "387420e193a93259859e07c8516be943ef53d7b2d09b5bde44826c543f91bf7f",
-      "francis-bacon-reading-full-man",
+      "q-e5fd242722d453995a028ae26e52ccb9",
     ],
     [
       "read-a-gentleman-in-moscow",
@@ -171,7 +171,7 @@ export const cataloguePackBooks02 = defineCataloguePackBadges(
       "Original abstract source study using marquetry-inlay for Read A Gentleman in Moscow: Interpret A Gentleman in Moscow through an original symbolic miniature: the key rests inside the window frame while the city remains beyond it.",
       "a-gentleman-in-moscow.jpg",
       "5cf457d1975ff183a7dafcc611f88574020031f633c3dfcd09f161706ecf830c",
-      "francis-bacon-reading-full-man",
+      "q-e9bec06b879f495f896ddd49b9b13dc8",
     ],
     [
       "read-the-kite-runner",
@@ -181,7 +181,7 @@ export const cataloguePackBooks02 = defineCataloguePackBadges(
       "Original abstract source study using cut-paper-strata for Read The Kite Runner: Interpret The Kite Runner through an original symbolic miniature: the kite pulls away from the rooftops as the severed string curls back.",
       "the-kite-runner.jpg",
       "14cc9dcb06ee92141d6fe0590b12451cbcf0b675a02e2fd93b564390ecef22cb",
-      "francis-bacon-reading-full-man",
+      "q-4d87ccc80cf89c516881f24af3363157",
     ],
     [
       "read-pachinko",
@@ -191,7 +191,7 @@ export const cataloguePackBooks02 = defineCataloguePackBadges(
       "Original abstract source study using ceramic-underglaze-fields for Read Pachinko: Interpret Pachinko through an original symbolic miniature: the three balls descend on different courses through the same arc into the shared basin.",
       "pachinko.jpg",
       "d362fb4721919a3f8cad01c312ff62b1c1717bc9bf8efc570a1fc3d8b99a8fa6",
-      "francis-bacon-reading-full-man",
+      "q-5991c9d1239ff1bcc1d54f046cf954ff",
     ],
     [
       "read-thinking-fast-and-slow",
@@ -201,7 +201,7 @@ export const cataloguePackBooks02 = defineCataloguePackBadges(
       "Original abstract source study using prismatic-cells for Read Thinking, Fast and Slow: Interpret Thinking, Fast and Slow through an original symbolic miniature: the unequal paths begin apart and arrive at the same decision point.",
       "thinking-fast-and-slow.jpg",
       "65cbfc1b5e267adcffd6870f45b3cab7f15eb1867bc435ef641e44a8b07e5339",
-      "thomas-jefferson-cannot-live-books-1815",
+      "q-2fd98f9db1f553a9a8986b7c7192dbd2",
     ],
     [
       "read-atomic-habits",
@@ -211,7 +211,7 @@ export const cataloguePackBooks02 = defineCataloguePackBadges(
       "Original abstract source study using risograph-overprint-planes for Read Atomic Habits: Interpret Atomic Habits through an original symbolic miniature: each block adds one measured step until the seed clears the horizon.",
       "atomic-habits.jpg",
       "36f35843fdc48a94557c3434889a4a6cce17c3bfadcc8012f1d8d4ffa14fe5ec",
-      "thomas-jefferson-cannot-live-books-1815",
+      "q-2f266da3474a1c67c286b2f22edf3bd7",
     ],
     [
       "read-educated",
@@ -221,7 +221,7 @@ export const cataloguePackBooks02 = defineCataloguePackBadges(
       "Original abstract source study using plein-air-color-blocks for Read Educated: Interpret Educated through an original symbolic miniature: the doorway opens away from the mountain interior into dawn.",
       "educated.jpg",
       "be5bb6fd54f000443a7445aae5469280ac4df7882302b62e3b394659ea9712ef",
-      "thomas-jefferson-cannot-live-books-1815",
+      "q-566494ecbbb75d72adf4989c2b2d4c16",
     ],
     [
       "read-kitchen-confidential",
@@ -231,7 +231,7 @@ export const cataloguePackBooks02 = defineCataloguePackBadges(
       "Original abstract source study using relief-cut-spot-shapes for Read Kitchen Confidential: Interpret Kitchen Confidential through an original symbolic miniature: the knife and steam cross before the door opens into the working room.",
       "kitchen-confidential.jpg",
       "59f3aa712c0a9fd128751e3d06876271120a156aa05c6f7449712c3d3e321e73",
-      "thomas-jefferson-cannot-live-books-1815",
+      "q-e338269e2edaad68ad720fc157ca3f91",
     ],
     [
       "read-the-wager",
@@ -241,7 +241,7 @@ export const cataloguePackBooks02 = defineCataloguePackBadges(
       "Original abstract source study using aquatint-flat-silhouette for Read The Wager: Interpret The Wager through an original symbolic miniature: the wave overtakes the hull while the star remains fixed above the wreck.",
       "the-wager.jpg",
       "743c420a78128e775a24126bfa5c297a700a8858c4501058c96e98a1cb8450ea",
-      "thomas-jefferson-cannot-live-books-1815",
+      "q-f1fb4b0cc5547fb331131cabf24ec25e",
     ],
     [
       "read-the-anthropocene-reviewed",
@@ -251,7 +251,7 @@ export const cataloguePackBooks02 = defineCataloguePackBadges(
       "Original abstract source study using cut-paper-naturalist for Read The Anthropocene Reviewed: Interpret The Anthropocene Reviewed through an original symbolic miniature: the hand steadies the Earth while the flower crosses from human space into the blue field.",
       "the-anthropocene-reviewed.jpg",
       "e90f14e729ee5ec7118d46f1cbda93ed8b7766dc73f7aea3cc328a7e4f99bbb6",
-      "thomas-jefferson-cannot-live-books-1815",
+      "q-05fffea07c5e652bd06142c6a7fde240",
     ],
   ],
   {

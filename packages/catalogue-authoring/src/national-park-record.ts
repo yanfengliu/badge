@@ -1,4 +1,5 @@
 import { findArtStyle } from "./art-styles";
+import { catalogueQuotationBankForDefinition } from "@badge/catalogue-quotation-data";
 import { CODE_NATIVE_ENAMEL_GEOMETRY_RECIPE_REF } from "./code-native-art-recipe-types";
 import { landscapeManufacturingLanguageForStyle } from "./code-native-construction-language";
 import { nationalParkCodeNativeLineage } from "./selected-source-code-native-lineage";
@@ -25,6 +26,7 @@ export interface NationalParkSeed {
 }
 
 export function defineNationalPark(seed: NationalParkSeed): NationalParkAuthoringRecord {
+  const definitionId = `visited-${seed.slug}`;
   const criterion = `Visit ${seed.officialName}`;
   const primaryStyle = findArtStyle(seed.styles[0]);
   if (!primaryStyle) {
@@ -63,7 +65,7 @@ export function defineNationalPark(seed: NationalParkSeed): NationalParkAuthorin
   };
   const selectedCandidateKey = `${seed.slug}:landmark-witness`;
   return {
-    definitionId: `visited-${seed.slug}`,
+    definitionId,
     slug: seed.slug,
     officialName: seed.officialName,
     shortName: seed.shortName,
@@ -74,6 +76,7 @@ export function defineNationalPark(seed: NationalParkSeed): NationalParkAuthorin
     aliases: seed.aliases ?? [],
     artBrief,
     candidateStyles: seed.styles,
+    defaultQuotationId: catalogueQuotationBankForDefinition(definitionId)[0].quotationId,
     selectedSource: {
       status: "selected-source-study",
       fileName: `${seed.slug}.jpg`,

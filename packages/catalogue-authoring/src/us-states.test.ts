@@ -1,3 +1,4 @@
+import { catalogueQuotationBankForDefinition } from "@badge/catalogue-quotation-data";
 import { describe, expect, it } from "vitest";
 
 import { findArtStyle } from "./art-styles.js";
@@ -83,7 +84,6 @@ describe("the sourced 50 U.S. states authoring edition", () => {
   });
 
   it("uses FIPS-bound stable definition and authoring identities", () => {
-    const quotationIds = new Set<string>(usStateHistoricQuotations.map((quotation) => quotation.quotationId));
     expect(new Set(usStates.map((state) => state.definitionId)).size).toBe(50);
     expect(new Set(usStates.map((state) => state.slug)).size).toBe(50);
     for (const state of usStates) {
@@ -94,7 +94,9 @@ describe("the sourced 50 U.S. states authoring edition", () => {
       expect(state.artBrief.themeCues).toHaveLength(3);
       expect(state.candidateStyles).toHaveLength(3);
       expect(new Set(state.candidateStyles).size, state.name).toBe(3);
-      expect(quotationIds.has(state.defaultQuotationId), state.name).toBe(true);
+      expect(state.defaultQuotationId, state.name).toBe(
+        catalogueQuotationBankForDefinition(state.definitionId)[0].quotationId,
+      );
       expect(state.artBriefProvenance.kind).toBe("curated-editorial");
       expect(state.artBriefProvenance.note).toContain("Census source establishes state identity only");
     }
@@ -107,7 +109,7 @@ describe("the sourced 50 U.S. states authoring edition", () => {
     ]);
   });
 
-  it("preselects only source-linked quotations from named historic figures", () => {
+  it("retains the previous source-linked state bank as explicit migration provenance", () => {
     expect(usStateHistoricQuotations).toEqual([
       {
         quotationId: "historic-quotation/mark-twain-travel-prejudice",

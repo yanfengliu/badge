@@ -11,7 +11,7 @@ export const cataloguePackVideoGames02 = defineCataloguePackBadges(
       "Original abstract source study using bold enamel contour for Played Halo: Combat Evolved: Interpret Halo: Combat Evolved through an original symbolic miniature: the explorer-light follows the terrain seam beneath the interrupted sky arc.",
       "halo-combat-evolved.jpg",
       "7e65e71c8f3133c3278862e36ac35fad206aff6c023ab091b03cd79dc664cb15",
-      "william-shakespeare-plays-the-thing",
+      "q-040fe42667b870c878b8c4e1df1df349",
     ],
     [
       "played-video-game-the-elder-scrolls-iii-morrowind",
@@ -21,7 +21,7 @@ export const cataloguePackVideoGames02 = defineCataloguePackBadges(
       "Original abstract source study using matte painted masses for Played The Elder Scrolls III: Morrowind: Interpret The Elder Scrolls III: Morrowind through an original symbolic miniature: a winding path connects the ash plain, mineral pillar, and shore.",
       "the-elder-scrolls-iii-morrowind.jpg",
       "398afacbb69f2746d0b3d0dde64c8e96248f249dbb5472602c40d62b2426da63",
-      "william-shakespeare-plays-the-thing",
+      "q-47c9d7e5a9a2de8de27621f2b62e68c0",
     ],
     [
       "played-video-game-katamari-damacy",
@@ -31,7 +31,7 @@ export const cataloguePackVideoGames02 = defineCataloguePackBadges(
       "Original abstract source study using stained-glass lead cells for Played Katamari Damacy: Interpret Katamari Damacy through an original symbolic miniature: the sphere gathers the color fields into the radial burst.",
       "katamari-damacy.jpg",
       "598d092f96bd05aca0ff76ec802f27efafbe86fc8098c61ea68dcfccc2a57148",
-      "william-shakespeare-plays-the-thing",
+      "q-61eb4975a5cbc715b361e841dac16e3e",
     ],
     [
       "played-video-game-shadow-of-the-colossus",
@@ -41,7 +41,7 @@ export const cataloguePackVideoGames02 = defineCataloguePackBadges(
       "Original abstract source study using matte painted masses for Played Shadow of the Colossus: Interpret Shadow of the Colossus through an original symbolic miniature: the tiny light crosses the plain toward the weathered arch.",
       "shadow-of-the-colossus.jpg",
       "becadba654956af69e419caf68f8c04d818fa2b17b2f5f180d576ef669e4dcf7",
-      "william-shakespeare-plays-the-thing",
+      "q-96e6da7111eade2ea118f2a095972a72",
     ],
     [
       "played-video-game-resident-evil-4",
@@ -51,7 +51,7 @@ export const cataloguePackVideoGames02 = defineCataloguePackBadges(
       "Original abstract source study using relief-cut silhouettes for Played Resident Evil 4: Interpret Resident Evil 4 through an original symbolic miniature: the lantern path bends between the settlement masses and enters the forest.",
       "resident-evil-4.jpg",
       "24b4f33f7cbc7a2a1a84350c05cf0eb99a603ada25da4e3532d2d2a11141cfe7",
-      "william-shakespeare-plays-the-thing",
+      "q-e3f730c2767db1ad7e13313a4d13fe38",
     ],
     [
       "played-video-game-wii-sports",
@@ -61,7 +61,7 @@ export const cataloguePackVideoGames02 = defineCataloguePackBadges(
       "Original abstract source study using broad fiber appliqué for Played Wii Sports: Interpret Wii Sports through an original symbolic miniature: the five gesture arcs return to the shared center.",
       "wii-sports.jpg",
       "6c47e7fa7fcef1a59128a0f6f444b1ca20438c0fc04cd37cbeae363beb601531",
-      "william-shakespeare-plays-the-thing",
+      "q-3a48aaa99f2770e815d81a07c84a0851",
     ],
     [
       "played-video-game-portal",
@@ -71,7 +71,7 @@ export const cataloguePackVideoGames02 = defineCataloguePackBadges(
       "Original abstract source study using prismatic geometric inlay for Played Portal: Interpret Portal through an original symbolic miniature: the white path passes through both thresholds across the folded plane.",
       "portal.jpg",
       "3a5d794ea840c1121ab70679876ea9a448fed8752513bdeac8407f9ee00fad44",
-      "william-shakespeare-plays-the-thing",
+      "q-65706dc98b8c86b65137567ca54714df",
     ],
     [
       "played-video-game-bioshock",
@@ -81,7 +81,7 @@ export const cataloguePackVideoGames02 = defineCataloguePackBadges(
       "Original abstract source study using ceramic underglaze roundel for Played BioShock: Interpret BioShock through an original symbolic miniature: the pressure bands bow beneath the sea while the bubble rises.",
       "bioshock.jpg",
       "7d2c5b7a95f9887a0d837e73f0437cbc57b019552a74ce6d023ffa277d3af783",
-      "william-shakespeare-plays-the-thing",
+      "q-c4b9df7ea7d09a6bb78da875c174c6ee",
     ],
     [
       "played-video-game-mass-effect",
@@ -91,7 +91,7 @@ export const cataloguePackVideoGames02 = defineCataloguePackBadges(
       "Original abstract source study using bold enamel contour for Played Mass Effect: Interpret Mass Effect through an original symbolic miniature: the star routes diverge and return to the same decision point.",
       "mass-effect.jpg",
       "14a338674239cc820feabb5b4e28355041430549b4306a70f4d44f125b94f345",
-      "william-shakespeare-plays-the-thing",
+      "q-d0f7a6a1ea7ee1a30bd4ec1fb6ce6301",
     ],
     [
       "played-video-game-braid",
@@ -101,7 +101,7 @@ export const cataloguePackVideoGames02 = defineCataloguePackBadges(
       "Original abstract source study using woven tapestry bands for Played Braid: Interpret Braid through an original symbolic miniature: the ribbon reverses around the landscape blocks before crossing the threshold.",
       "braid.jpg",
       "0cacb0b45e49857fc99ecad5ed8f5a3b5f633f43d7373ff8f61da53245f56d81",
-      "william-shakespeare-plays-the-thing",
+      "q-3797b7e4cc2fbccc5e58b791fef14623",
     ],
     [
       "played-video-game-minecraft",
@@ -111,7 +111,7 @@ export const cataloguePackVideoGames02 = defineCataloguePackBadges(
       "Original abstract source study using large stepped pixel clusters for Played Minecraft: Interpret Minecraft through an original symbolic miniature: the mineral strata transform into the canopy around the interior light.",
       "minecraft.jpg",
       "9ff1030698d55133da93c5fa04c017c9fd5ab6ff6d061e27ee8fa870e743a600",
-      "william-shakespeare-plays-the-thing",
+      "q-4a39d82dec1259ab77c3c3222055452e",
     ],
     [
       "played-video-game-dark-souls",
@@ -121,7 +121,7 @@ export const cataloguePackVideoGames02 = defineCataloguePackBadges(
       "Original abstract source study using relief-cut silhouettes for Played Dark Souls: Interpret Dark Souls through an original symbolic miniature: the ember rests before the gates while the path continues upward.",
       "dark-souls.jpg",
       "115ff53b73a85b73d515f09f1905aaa13702c1c8ea8dc1bc7ef4f947f4e192d7",
-      "william-shakespeare-plays-the-thing",
+      "q-4b427275aa894c7c08f003be07848a39",
     ],
     [
       "played-video-game-journey",
@@ -131,7 +131,7 @@ export const cataloguePackVideoGames02 = defineCataloguePackBadges(
       "Original abstract source study using cut-paper layers for Played Journey: Interpret Journey through an original symbolic miniature: the sand ribbon climbs the dunes toward the split mountain light.",
       "journey.jpg",
       "65becf3b7e4215ff8ee43b8dd50146ad18364318dc53121925fa8b89b8797d6d",
-      "william-shakespeare-plays-the-thing",
+      "q-2fee41d320a80a9a091397274e2aaac4",
     ],
     [
       "played-video-game-papers-please",
@@ -141,7 +141,7 @@ export const cataloguePackVideoGames02 = defineCataloguePackBadges(
       "Original abstract source study using relief-cut silhouettes for Played Papers, Please: Interpret Papers, Please through an original symbolic miniature: the document planes press against the passage beneath the pressure bar.",
       "papers-please.jpg",
       "a28e8e813fdd15b05e0bbce1bf0249ef823feba7d2cbf98b25515e71bd179d3d",
-      "william-shakespeare-plays-the-thing",
+      "q-c870155c6046ed00b688bd6cb936d48d",
     ],
     [
       "played-video-game-monument-valley",
@@ -151,7 +151,7 @@ export const cataloguePackVideoGames02 = defineCataloguePackBadges(
       "Original abstract source study using matte painted masses for Played Monument Valley: Interpret Monument Valley through an original symbolic miniature: the impossible planes turn around the floating stair.",
       "monument-valley.jpg",
       "177cfce5b082e03c4f784c061d5b0cb9ff88a27fa8be1bbd0ef40d5d0be68e35",
-      "william-shakespeare-plays-the-thing",
+      "q-75501a40fd9586ad1483d10ec74d43d3",
     ],
     [
       "played-video-game-never-alone",
@@ -161,7 +161,7 @@ export const cataloguePackVideoGames02 = defineCataloguePackBadges(
       "Original abstract source study using matte painted masses for Played Never Alone: Interpret Never Alone through an original symbolic miniature: the two tracks cross the winter field together toward the aurora aperture.",
       "never-alone.jpg",
       "a2e21da63841b3eb83929eeefac418d02582c762ed0c6f40dcd6b1b9d814b3b2",
-      "william-shakespeare-plays-the-thing",
+      "q-62bf446d98837756f4789389d00b81fe",
     ],
     [
       "played-video-game-rocket-league",
@@ -171,7 +171,7 @@ export const cataloguePackVideoGames02 = defineCataloguePackBadges(
       "Original abstract source study using stained-glass lead cells for Played Rocket League: Interpret Rocket League through an original symbolic miniature: the kinetic curve lifts the sphere between the opposed field wedges.",
       "rocket-league.jpg",
       "991fa0d1d0d535562309f1f6c553bbe9371c43ecec537ba44ea0f602eebe0d83",
-      "william-shakespeare-plays-the-thing",
+      "q-b0d2e00f010d83a841f19f93b43ca136",
     ],
     [
       "played-video-game-stardew-valley",
@@ -181,7 +181,7 @@ export const cataloguePackVideoGames02 = defineCataloguePackBadges(
       "Original abstract source study using broad fiber appliqué for Played Stardew Valley: Interpret Stardew Valley through an original symbolic miniature: the seasonal bands meet around the homestead light as the path returns.",
       "stardew-valley.jpg",
       "d1a279a2bffece326309a8bd2987966688166cad05ee201b6f992e2e7ac9c2a2",
-      "william-shakespeare-plays-the-thing",
+      "q-d0149a2a97c66509f604236261bc62ea",
     ],
     [
       "played-video-game-the-legend-of-zelda-breath-of-the-wild",
@@ -191,7 +191,7 @@ export const cataloguePackVideoGames02 = defineCataloguePackBadges(
       "Original abstract source study using bold enamel contour for Played The Legend of Zelda: Breath of the Wild: Interpret The Legend of Zelda: Breath of the Wild through an original symbolic miniature: the wind path rises through the terrain layers into open sky.",
       "the-legend-of-zelda-breath-of-the-wild.jpg",
       "f65b3947e7f032cc31856fdcfa7a0c4c410ab0e0a3ab15936617be89d4b64dd3",
-      "william-shakespeare-plays-the-thing",
+      "q-b61e57b24ea579787025a718306854c7",
     ],
     [
       "played-video-game-hollow-knight",
@@ -201,7 +201,7 @@ export const cataloguePackVideoGames02 = defineCataloguePackBadges(
       "Original abstract source study using bold enamel contour for Played Hollow Knight: Interpret Hollow Knight through an original symbolic miniature: the seed descends through the cavern bells toward the root basin.",
       "hollow-knight.jpg",
       "ae6737ca9fd469a138a00688d15b76f8c8f8ea8fba5283d39e12f5a007a74a12",
-      "william-shakespeare-plays-the-thing",
+      "q-fbf0ed90507eaffc26a10a1f72f88b41",
     ],
     [
       "played-video-game-celeste",
@@ -211,7 +211,7 @@ export const cataloguePackVideoGames02 = defineCataloguePackBadges(
       "Original abstract source study using large stepped pixel clusters for Played Celeste: Interpret Celeste through an original symbolic miniature: the ascent crosses every weather band toward the summit disk.",
       "celeste.jpg",
       "4b8b7fd5449e42f8f94f5a88de2eedd5eb341c2fb098932688d63c49fcb44265",
-      "william-shakespeare-plays-the-thing",
+      "q-3e54eb7a2f139ac72ba41744dc64b578",
     ],
     [
       "played-video-game-beat-saber",
@@ -221,7 +221,7 @@ export const cataloguePackVideoGames02 = defineCataloguePackBadges(
       "Original abstract source study using screenprint overlaps for Played Beat Saber: Interpret Beat Saber through an original symbolic miniature: the motion bands cross as the pulse planes advance through the field.",
       "beat-saber.jpg",
       "8d330e03bf4b7a99c352b4172bbbf484e3794e4b863695f7f9bbfc0144d0de2e",
-      "william-shakespeare-plays-the-thing",
+      "q-5b2f5b3e6d545e94fcab855f9f4bb116",
     ],
     [
       "played-video-game-hades",
@@ -231,7 +231,7 @@ export const cataloguePackVideoGames02 = defineCataloguePackBadges(
       "Original abstract source study using ceramic underglaze roundel for Played Hades: Interpret Hades through an original symbolic miniature: the ember path breaks through each mineral gate toward the aperture.",
       "hades.jpg",
       "995b920542774dafadfef17437057414db37e851d053af3d5b78bb8a6512c49f",
-      "william-shakespeare-plays-the-thing",
+      "q-c9787ca9440dbe8a7d8230c9bc78f9ee",
     ],
     [
       "played-video-game-elden-ring",
@@ -241,7 +241,7 @@ export const cataloguePackVideoGames02 = defineCataloguePackBadges(
       "Original abstract source study using matte painted masses for Played Elden Ring: Interpret Elden Ring through an original symbolic miniature: the land bands circle the empty dawn as the path enters.",
       "elden-ring.jpg",
       "a94fd5540ff96e9e6c077a9c0c86b18c4caa93f9e6aa73b66849a84e6eac94e4",
-      "william-shakespeare-plays-the-thing",
+      "q-bfe2be249f187dbce233f79ee3414515",
     ],
     [
       "played-video-game-baldurs-gate-3",
@@ -251,7 +251,7 @@ export const cataloguePackVideoGames02 = defineCataloguePackBadges(
       "Original abstract source study using bold enamel contour for Played Baldur’s Gate 3: Interpret Baldur’s Gate 3 through an original symbolic miniature: the four routes meet to make one bridge across the chasm.",
       "baldurs-gate-3.jpg",
       "cb83f76da85d153b8d11979cf06512eb78704eb50a1eeed7102871a39737593d",
-      "william-shakespeare-plays-the-thing",
+      "q-b7866fd57e15bf941ab97ddff9957518",
     ],
   ],
   {

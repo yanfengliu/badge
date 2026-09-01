@@ -1,5 +1,5 @@
 import { findArtStyle } from "./art-styles";
-import { defaultBookQuotationId } from "./book-quotations";
+import { catalogueQuotationBankForDefinition } from "@badge/catalogue-quotation-data";
 import type { BadgeArtBrief, CatalogueStudyRecord } from "./types";
 
 export type BookCategory =
@@ -103,6 +103,6 @@ export function defineBook(seed: Readonly<BookSeed>): BookAuthoringRecord {
       note: "Original Badge editorial symbolism for one literary work; title and author establish identity only and no published-edition or adaptation artwork is a visual source.",
       sourceUrls: [],
     },
-    defaultQuotationId: defaultBookQuotationId(seed.category),
+    defaultQuotationId: catalogueQuotationBankForDefinition(definitionId)[0].quotationId,
   };
 }

@@ -1,5 +1,5 @@
 import { findArtStyle } from "./art-styles";
-import { defaultVideoGameQuotationId } from "./video-game-quotations";
+import { catalogueQuotationBankForDefinition } from "@badge/catalogue-quotation-data";
 import type { BadgeArtBrief, CatalogueStudyRecord } from "./types";
 
 export type VideoGameCategory =
@@ -116,6 +116,6 @@ export function defineVideoGame(seed: Readonly<VideoGameSeed>): VideoGameAuthori
       note: "Original Badge editorial abstraction for one video game; the title establishes identity only, and no official or commercial game artwork is a visual source.",
       sourceUrls: [],
     },
-    defaultQuotationId: defaultVideoGameQuotationId(),
+    defaultQuotationId: catalogueQuotationBankForDefinition(definitionId)[0].quotationId,
   };
 }

@@ -43,7 +43,7 @@ export const SAYING_JSON_MEDIA_TYPE = "application/json" as const;
 export const SAYING_REQUIRED_FETCH_SITE = "same-origin" as const;
 export const SAYING_HTTP_SUCCESS_STATUS = 200 as const;
 export const SAYING_DISCLOSURE_FINGERPRINT =
-  "sha256:f714d85f810bcb726065ca522080afc6f8e00191a683222e736784789a9366e8" as const;
+  "sha256:564b356eaacd61ad5adefd9f636b89e8398cd3f86d9ca5df63ef28258b1269cb" as const;
 export const SAYING_ROUTE_BODY_LIMIT_BYTES = 16 * 1_024;
 export const SAYING_ROUTE_RESPONSE_LIMIT_BYTES = 16 * 1_024;
 export const SAYING_PROVIDER_STDOUT_LIMIT_BYTES = 64 * 1_024;
@@ -110,7 +110,7 @@ export const SAYING_DISCLOSURE_SCOPE = freezeRecursively({
   quotationContractVersion: SAYING_QUOTATION_CONTRACT_VERSION,
   excludedFields: SAYING_EXCLUDED_FIELDS,
   normalization:
-    "Reject control characters and bidirectional controls; then NFC-normalize, trim, and collapse whitespace to one logical paragraph" as const,
+    "Reject control characters and bidirectional controls; then NFC-normalize, trim, and collapse whitespace to one logical paragraph. Quotation identity additionally uses NFKD, default-ignorable deletion, fixed-point caseless folding, combining-mark removal, and letter-or-number token collapse" as const,
   limits: {
     titleGraphemes: SAYING_TITLE_GRAPHEME_LIMIT,
     criterionGraphemes: SAYING_CRITERION_GRAPHEME_LIMIT,
@@ -184,7 +184,7 @@ const sayingDisclosureScopeSchema = z
       z.literal("signal"),
     ]),
     normalization: z.literal(
-      "Reject control characters and bidirectional controls; then NFC-normalize, trim, and collapse whitespace to one logical paragraph",
+      "Reject control characters and bidirectional controls; then NFC-normalize, trim, and collapse whitespace to one logical paragraph. Quotation identity additionally uses NFKD, default-ignorable deletion, fixed-point caseless folding, combining-mark removal, and letter-or-number token collapse",
     ),
     limits: z
       .object({

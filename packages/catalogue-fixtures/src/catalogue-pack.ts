@@ -34,8 +34,8 @@ export const cataloguePackBadges: readonly CataloguePackBadgeFixture[] = [
 
 export const cataloguePackRef: PackRef = {
   packId: CATALOGUE_PACK_ID,
-  version: "1.0.0-alpha.2",
-  packDigest: "e7945d2ab4b8af9548fccb4385a82e4f514beaf3ffc35870163fd4605b3c5264",
+  version: "1.0.0-alpha.3",
+  packDigest: "af02a9e365f8cdafabc9fadc133819e79136199390092029e1061d7b087c61fa",
 };
 
 export {
@@ -45,4 +45,4 @@ export {
   catalogueRenderRecipeForSet,
 } from "./catalogue-pack-types.js";
 export type { CataloguePackBadgeFixture, CataloguePackBadgeRow } from "./catalogue-pack-types.js";
-export { catalogueQuotationBanksBySetId } from "./catalogue-quotations.js";
+export { catalogueQuotationBanksByDefinitionId } from "./catalogue-quotations.js";

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { starterBadges } from "@badge/catalogue-fixtures/archive";
 import { cataloguePackBadges, cataloguePackRef } from "@badge/catalogue-fixtures/catalogue-pack";
+import { canonicalQuotationTextKey } from "@badge/saying-contract";
 
 import { createStarterArchiveState, createStarterQuotationRequests } from "./archive-state";
 
@@ -16,7 +17,7 @@ describe("seeded Archive saying defaults", () => {
     expect(state.records).toHaveLength(starterBadges.length + cataloguePackBadges.length);
     expect(state.records.filter((record) => record.recordId.startsWith("starter:"))).toHaveLength(4);
     expect(state.records.filter((record) => record.recordId.startsWith("catalogue:"))).toHaveLength(346);
-    expect(cataloguePackRef.version).toBe("1.0.0-alpha.2");
+    expect(cataloguePackRef.version).toBe("1.0.0-alpha.3");
     expect(
       state.records.filter((record) =>
         record.collectionRefs.some((collection) => collection.collectionId === "video-games-played"),
@@ -51,7 +52,32 @@ describe("seeded Archive saying defaults", () => {
         title: record.title,
         criterion: record.criterion,
       });
-      expect(requests[record.recordId]!.allowedQuotations.length).toBeGreaterThan(0);
+      expect(requests[record.recordId]!.allowedQuotations).toHaveLength(2);
     }
+  });
+
+  it("seeds every badge with quotation wording that no other badge uses", () => {
+    const state = createStarterArchiveState();
+    const ownersByQuotationText = new Map<string, string>();
+
+    for (const record of state.records) {
+      expect(record.acceptedSaying, record.recordId).not.toBeNull();
+      const acceptedQuotation = fixtureBanks
+        .get(record.recordId)
+        ?.find(
+          (quotation) =>
+            record.acceptedSaying === `“${quotation.text}” — ${quotation.person}, ${quotation.sourceTitle}`,
+        );
+      expect(acceptedQuotation, record.recordId).toBeDefined();
+      const canonicalText = canonicalQuotationTextKey(acceptedQuotation!.text);
+      const previousOwner = ownersByQuotationText.get(canonicalText);
+      expect(
+        previousOwner,
+        `${record.recordId} starts with the same quotation as ${previousOwner ?? "no badge"}`,
+      ).toBeUndefined();
+      ownersByQuotationText.set(canonicalText, record.recordId);
+    }
+
+    expect(ownersByQuotationText.size).toBe(state.records.length);
   });
 });

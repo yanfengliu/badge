@@ -1,5 +1,9 @@
 import { findArtStyle } from "./art-styles";
 import {
+  catalogueQuotationBankForDefinition,
+  type CatalogueQuotationSourceRecord,
+} from "@badge/catalogue-quotation-data";
+import {
   compileManufacturableCandidatePrompt,
   manufacturingTreatmentByFamily,
   SMALL_BADGE_MANUFACTURING_LIMITS,
@@ -90,8 +94,8 @@ export interface MichelinDiningAuthoringRecord extends CatalogueStudyRecord {
     RegisteredTreatmentChoice,
   ];
   readonly accessibleDescription: string;
-  readonly defaultQuotationId: typeof OSCAR_WILDE_DINNER_QUOTATION.quotationId;
-  readonly defaultQuotation: SourceCheckedHistoricQuotation;
+  readonly defaultQuotationId: CatalogueQuotationSourceRecord["quotationId"];
+  readonly defaultQuotation: CatalogueQuotationSourceRecord;
   readonly primaryPrompt: CompiledManufacturableCandidatePrompt;
 }
 
@@ -128,6 +132,7 @@ export const michelinDiningPrimaryPrompts: readonly BuiltRestaurant["primaryProm
 
 function buildRestaurant(seed: MichelinRestaurantResearchSeed): BuiltRestaurant {
   const definitionId = `michelin-dining-${seed.slug}`;
+  const defaultQuotation = catalogueQuotationBankForDefinition(definitionId)[0];
   const title = `Dined at ${seed.restaurantName}`;
   const criterion = `Dine at ${seed.restaurantName} on a date when it is listed with at least one Michelin star; verify the visit-date status against the linked official Guide page.`;
   const artBrief: BadgeArtBrief = {
@@ -201,8 +206,8 @@ function buildRestaurant(seed: MichelinRestaurantResearchSeed): BuiltRestaurant 
       sourceUrls: seed.evidenceSourceUrls,
     },
     accessibleDescription: `An original ${seed.cueType}-led miniature badge study for ${seed.restaurantName}, based on this researched cue: ${seed.evidenceCue} The design reduces that cue to ${seed.primaryForms.length} broad flat forms for legibility on a manufactured badge.`,
-    defaultQuotationId: OSCAR_WILDE_DINNER_QUOTATION.quotationId,
-    defaultQuotation: OSCAR_WILDE_DINNER_QUOTATION,
+    defaultQuotationId: defaultQuotation.quotationId,
+    defaultQuotation,
     primaryPrompt,
   };
   return {

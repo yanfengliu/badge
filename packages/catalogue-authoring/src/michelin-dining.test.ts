@@ -1,3 +1,4 @@
+import { catalogueQuotationBankForDefinition } from "@badge/catalogue-quotation-data";
 import { describe, expect, it } from "vitest";
 
 import { findArtStyle } from "./art-styles.js";
@@ -9,10 +10,8 @@ import {
   michelinDiningAuthoringRecords,
   michelinDiningCampaign,
   michelinDiningPrimaryPrompts,
-  michelinDiningQuotationBank,
   michelinDiningSet,
   michelinRestaurantResearchSeeds,
-  OSCAR_WILDE_DINNER_QUOTATION,
 } from "./michelin-dining.js";
 
 describe("the named Michelin restaurant authoring edition", () => {
@@ -146,21 +145,19 @@ describe("the named Michelin restaurant authoring edition", () => {
     }
   });
 
-  it("preselects only a verified real-historic-figure quotation with source and biography URLs", () => {
-    expect(michelinDiningQuotationBank).toEqual([OSCAR_WILDE_DINNER_QUOTATION]);
-    expect(OSCAR_WILDE_DINNER_QUOTATION).toMatchObject({
-      quotationId: "historic-quotation/oscar-wilde-good-dinner",
-      personName: "Oscar Wilde",
-      sourceTitle: "A Woman of No Importance",
-      sourceUrl: "https://www.gutenberg.org/cache/epub/854/pg854-images.html",
-      personWikipediaUrl: "https://en.wikipedia.org/wiki/Oscar_Wilde",
-      checkedAt: "2026-08-26",
-    });
+  it("preselects a different verified private quotation bank for every restaurant", () => {
+    const quotationIds = new Set<string>();
     for (const record of michelinDiningAuthoringRecords) {
-      expect(record.defaultQuotationId).toBe(OSCAR_WILDE_DINNER_QUOTATION.quotationId);
-      expect(record.defaultQuotation).toEqual(OSCAR_WILDE_DINNER_QUOTATION);
+      const bank = catalogueQuotationBankForDefinition(record.definitionId);
+      expect(record.defaultQuotationId).toBe(bank[0].quotationId);
+      expect(record.defaultQuotation).toEqual(bank[0]);
       expect(record.defaultQuotation.personWikipediaUrl).toMatch(/^https:\/\/en\.wikipedia\.org\/wiki\//u);
       expect(record.defaultQuotation.sourceUrl).toMatch(/^https:\/\//u);
+      for (const quotation of bank) {
+        expect(quotationIds.has(quotation.quotationId), quotation.quotationId).toBe(false);
+        quotationIds.add(quotation.quotationId);
+      }
     }
+    expect(quotationIds).toHaveProperty("size", 264);
   });
 });

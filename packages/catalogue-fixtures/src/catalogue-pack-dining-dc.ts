@@ -11,7 +11,7 @@ export const cataloguePackDiningWashingtonDc = defineCataloguePackBadges(
       "Original abstract source study using stained-glass lead cells for Dined at The Inn at Little Washington: An original interior-led miniature badge study for The Inn at Little Washington, based on this researched cue: Stately maximalist décor surrounds roaming bread and cheese carts. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "the-inn-at-little-washington.jpg",
       "626b5bb3e3e9b52b726ceae47fd92c26019895fc460ec7226b24c97e43d13ad2",
-      "oscar-wilde-good-dinner",
+      "q-ede245919313d7ad16de144db0d86c4d",
       "https://guide.michelin.com/us/en/district-of-columbia/washington-dc/restaurant/the-inn-at-little-washington",
     ],
     [
@@ -22,7 +22,7 @@ export const cataloguePackDiningWashingtonDc = defineCataloguePackBadges(
       "Original abstract source study using relief-cut silhouettes for Dined at Jônt: An original interior-led miniature badge study for Jônt, based on this researched cue: Chefs and servers move in rhythm around a compact kitchen counter. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "jont.jpg",
       "51e140317e123fdbeb42e1fa73f3b9dd5ebb337556dc1b184e196d8a7833b8a4",
-      "oscar-wilde-good-dinner",
+      "q-d18906298c7cae22f279c5da47fc97db",
       "https://guide.michelin.com/us/en/district-of-columbia/washington-dc/restaurant/jont",
     ],
     [
@@ -33,7 +33,7 @@ export const cataloguePackDiningWashingtonDc = defineCataloguePackBadges(
       "Original abstract source study using prismatic geometric inlay for Dined at minibar by José Andrés: An original interior-led miniature badge study for minibar by José Andrés, based on this researched cue: An all-white room leads to a twelve-seat wood kitchen counter. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "minibar-by-jose-andres.jpg",
       "fc8c7b69c46dc224134651dd1d843272435d9f33fec543fd4ad81177c2d1e413",
-      "oscar-wilde-good-dinner",
+      "q-8700384059a3e227d90ab2b39ae3dab7",
       "https://guide.michelin.com/us/en/district-of-columbia/washington-dc/restaurant/minibar",
     ],
     [
@@ -44,7 +44,7 @@ export const cataloguePackDiningWashingtonDc = defineCataloguePackBadges(
       "Original abstract source study using ceramic underglaze roundel for Dined at Xiquet: An original dish-led miniature badge study for Xiquet, based on this researched cue: Valencian rice with rabbit and mushrooms cooks over a wood-fired hearth. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "xiquet.jpg",
       "a379bc0dfea9aed808b7dcd777c1ede6e496f7b29a3b36fa0ebe3ab660cb9f4e",
-      "oscar-wilde-good-dinner",
+      "q-40c2a6ef922d9f13b70668f2135de374",
       "https://guide.michelin.com/us/en/district-of-columbia/washington-dc/restaurant/xiquet",
     ],
     [
@@ -55,7 +55,7 @@ export const cataloguePackDiningWashingtonDc = defineCataloguePackBadges(
       "Original abstract source study using matte painted masses for Dined at Rooster & Owl: An original dish-led miniature badge study for Rooster & Owl, based on this researched cue: Pistachio olive-oil cake combines blackberry and goat-cheese mousse. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "rooster-and-owl.jpg",
       "a23f2e109e91627c15003cbaf6bbadd0be431e9944bd1dba5cd14bfe877449ee",
-      "oscar-wilde-good-dinner",
+      "q-d2e4bfd5f7231e2c7a0121b2944d032d",
       "https://guide.michelin.com/us/en/district-of-columbia/washington-dc/restaurant/rooster-owl",
     ],
     [
@@ -66,7 +66,7 @@ export const cataloguePackDiningWashingtonDc = defineCataloguePackBadges(
       "Original abstract source study using wood marquetry strata for Dined at Masseria: An original interior-led miniature badge study for Masseria, based on this researched cue: A brick warehouse room joins a steel kitchen, glass cellar, and terrace. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "masseria.jpg",
       "7a1763966b34f7ec619fe66e285649248e88481c30ddf379200bb73ab268e67d",
-      "oscar-wilde-good-dinner",
+      "q-9d094071605d4296d7e0375b319f7773",
       "https://guide.michelin.com/us/en/district-of-columbia/washington-dc/restaurant/masseria",
     ],
     [
@@ -77,7 +77,7 @@ export const cataloguePackDiningWashingtonDc = defineCataloguePackBadges(
       "Original abstract source study using bold enamel contour for Dined at Omakase at Barracks Row: An original culture-led miniature badge study for Omakase at Barracks Row, based on this researched cue: Stairway art recalls printing inked fish onto rice paper in gyotaku. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "omakase-at-barracks-row.jpg",
       "dc0c1496ec4e3eee68a12644a1dc82969fa4f329447077d5fe5b341e376f2d06",
-      "oscar-wilde-good-dinner",
+      "q-624b17ddf00248ffbe024149322ac0d3",
       "https://guide.michelin.com/us/en/district-of-columbia/washington-dc/restaurant/omakase-at-barracks-row",
     ],
     [
@@ -88,7 +88,7 @@ export const cataloguePackDiningWashingtonDc = defineCataloguePackBadges(
       "Original abstract source study using relief-cut silhouettes for Dined at The Dabney: An original interior-led miniature badge study for The Dabney, based on this researched cue: Exposed brick, dark wood, and an open kitchen frame a wood-fired hearth. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "the-dabney.jpg",
       "8b44330aa3875cd3b29a2a3e3f33b44a0ca4e34d1a795acd74c4c074c6221e04",
-      "oscar-wilde-good-dinner",
+      "q-a0cc6d68485b2c611c9e1b5f15b37698",
       "https://guide.michelin.com/us/en/district-of-columbia/washington-dc/restaurant/the-dabney",
     ],
     [
@@ -99,7 +99,7 @@ export const cataloguePackDiningWashingtonDc = defineCataloguePackBadges(
       "Original abstract source study using stained-glass lead cells for Dined at Elcielo Washington DC: An original dish-led miniature badge study for Elcielo Washington DC, based on this researched cue: A Colombian tasting moves from corn broth to a chocolate finale in two rooms. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "elcielo-washington-dc.jpg",
       "c1b85f59d158d3ae9e2f1e6bee17cb109b26a3d929d88b15ea79039acfa71408",
-      "oscar-wilde-good-dinner",
+      "q-2bbbe02dd5964a09612a93d05fb17947",
       "https://guide.michelin.com/us/en/district-of-columbia/washington-dc/restaurant/elcielo-d-c",
     ],
     [
@@ -110,7 +110,7 @@ export const cataloguePackDiningWashingtonDc = defineCataloguePackBadges(
       "Original abstract source study using broad fiber appliqué for Dined at Oyster Oyster: An original culture-led miniature badge study for Oyster Oyster, based on this researched cue: The vegetable kitchen centers regenerative farms, reuse, and seasonality. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "oyster-oyster.jpg",
       "56abe0991351da043a65b5569ad052ff6562472109f2be7e9453f03e04447ac1",
-      "oscar-wilde-good-dinner",
+      "q-b34e8ed5e9bbd4ddd5305dfe9a5c6a78",
       "https://guide.michelin.com/us/en/district-of-columbia/washington-dc/restaurant/oyster-oyster",
     ],
     [
@@ -121,7 +121,7 @@ export const cataloguePackDiningWashingtonDc = defineCataloguePackBadges(
       "Original abstract source study using prismatic geometric inlay for Dined at Pineapple and Pearls: An original interior-led miniature badge study for Pineapple and Pearls, based on this researched cue: Balloons, velvet jackets, pop music, and tableside theater evoke a lavish party. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "pineapple-and-pearls.jpg",
       "a28f11589e112732791ec4722cfd203a8436c36033e6997c49de9a6745614fbf",
-      "oscar-wilde-good-dinner",
+      "q-26f530a30619913390e83776cc7fb648",
       "https://guide.michelin.com/us/en/district-of-columbia/washington-dc/restaurant/pineapple-and-pearls",
     ],
     [
@@ -132,7 +132,7 @@ export const cataloguePackDiningWashingtonDc = defineCataloguePackBadges(
       "Original abstract source study using cut-paper layers for Dined at Causa: An original culture-led miniature badge study for Causa, based on this researched cue: The Nikkei tasting travels from Lima’s coast through the Andes and Amazon. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "causa.jpg",
       "fd679147b4138c615430ffe3a2096bfa342763065cdbeba56fd1495898659765",
-      "oscar-wilde-good-dinner",
+      "q-ebbf80115cc13406d85b97473cb04b67",
       "https://guide.michelin.com/us/en/district-of-columbia/washington-dc/restaurant/causa",
     ],
     [
@@ -143,7 +143,7 @@ export const cataloguePackDiningWashingtonDc = defineCataloguePackBadges(
       "Original abstract source study using prismatic geometric inlay for Dined at Imperfecto: The Chef's Table: An original interior-led miniature badge study for Imperfecto: The Chef's Table, based on this researched cue: Glass, marble, brass, and terra-cotta frame a counter below the chef’s perch. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "imperfecto-the-chefs-table.jpg",
       "a5640e80c932fd2dc34484897300c9fb40ee13b983319627f49bc2e464fb821c",
-      "oscar-wilde-good-dinner",
+      "q-7e463415f91d3c167ad4a5b024be732b",
       "https://guide.michelin.com/us/en/district-of-columbia/washington-dc/restaurant/imperfecto-the-chef-s-table",
     ],
     [
@@ -154,7 +154,7 @@ export const cataloguePackDiningWashingtonDc = defineCataloguePackBadges(
       "Original abstract source study using wood marquetry strata for Dined at Sushi Nakazawa Washington DC: An original interior-led miniature badge study for Sushi Nakazawa Washington DC, based on this researched cue: Dark wood and gold surround a marble counter and precise itamae work. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "sushi-nakazawa-washington-dc.jpg",
       "44d1040d08bd5785ed03b1de8d8429db4448c65ff602364ef67404af9e690547",
-      "oscar-wilde-good-dinner",
+      "q-3df92bbfdf2e4b4a3f2bb607eb6f2d79",
       "https://guide.michelin.com/us/en/district-of-columbia/washington-dc/restaurant/sushi-nakazawa1160153",
     ],
     [
@@ -165,7 +165,7 @@ export const cataloguePackDiningWashingtonDc = defineCataloguePackBadges(
       "Original abstract source study using ceramic underglaze roundel for Dined at Albi: An original culture-led miniature badge study for Albi, based on this researched cue: Palestinian childhood flavors are reimagined through open-fire cooking. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "albi.jpg",
       "f380777744263217bb28cc57117e5c4726b94f21036757d32703da87ccbcad1c",
-      "oscar-wilde-good-dinner",
+      "q-174154a57386059a13ca3cec972119f7",
       "https://guide.michelin.com/us/en/district-of-columbia/washington-dc/restaurant/albi",
     ],
     [
@@ -176,7 +176,7 @@ export const cataloguePackDiningWashingtonDc = defineCataloguePackBadges(
       "Original abstract source study using large mosaic tesserae for Dined at MITA: An original dish-led miniature badge study for MITA, based on this researched cue: Arepas pair guasacaca, cashew cream, chili oil, and chontaduro butter. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "mita.jpg",
       "a8c4e3f7af2d6bb7a472cc7d60e2b26b1d7b6820406e3ecea1967c2b8bc887cb",
-      "oscar-wilde-good-dinner",
+      "q-726712b0efc557af8b42f4fa220a1c8e",
       "https://guide.michelin.com/us/en/district-of-columbia/washington-dc/restaurant/mita",
     ],
     [
@@ -187,7 +187,7 @@ export const cataloguePackDiningWashingtonDc = defineCataloguePackBadges(
       "Original abstract source study using screenprint overlaps for Dined at Rose’s Luxury: An original interior-led miniature badge study for Rose’s Luxury, based on this researched cue: Globe lights, eclectic décor, and an open kitchen suggest a playful party. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "roses-luxury.jpg",
       "2f85b0d19a8aa6088eb7575e6659f7ae784ed27c55b44323181296ff8cececf4",
-      "oscar-wilde-good-dinner",
+      "q-cb3cf8f849f7e10f44c460e39cf9d21d",
       "https://guide.michelin.com/us/en/district-of-columbia/washington-dc/restaurant/rose-s-luxury",
     ],
     [
@@ -198,7 +198,7 @@ export const cataloguePackDiningWashingtonDc = defineCataloguePackBadges(
       "Original abstract source study using stained-glass lead cells for Dined at Little Pearl: An original interior-led miniature badge study for Little Pearl, based on this researched cue: A carriage-house shell opens into a glassy sunroom facing greenery. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "little-pearl.jpg",
       "aa93b0b801670e82598a62d855df0973bebddb51c65baa14eea393ae24cda0cf",
-      "oscar-wilde-good-dinner",
+      "q-5c09a8bfacd938dc885c87ea6ce56444",
       "https://guide.michelin.com/us/en/district-of-columbia/washington-dc/restaurant/little-pearl",
     ],
     [
@@ -209,7 +209,7 @@ export const cataloguePackDiningWashingtonDc = defineCataloguePackBadges(
       "Original abstract source study using matte painted masses for Dined at Fiola: An original interior-led miniature badge study for Fiola, based on this researched cue: Stone walls, seasonal décor, and pop-art prints mix lodge warmth and retro glamour. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "fiola.jpg",
       "79b5ca039c5e7c8a80745faa9a02a52aae7c0fa37e8a9b80d44a94dc6605a65b",
-      "oscar-wilde-good-dinner",
+      "q-847f7c0c77fe010a50c7dbf4bc391a82",
       "https://guide.michelin.com/us/en/district-of-columbia/washington-dc/restaurant/fiola",
     ],
     [
@@ -220,7 +220,7 @@ export const cataloguePackDiningWashingtonDc = defineCataloguePackBadges(
       "Original abstract source study using large mosaic tesserae for Dined at Bresca: An original interior-led miniature badge study for Bresca, based on this researched cue: A moss wall, gold flashes, and sculptural forms create a surreal room. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "bresca.jpg",
       "cd20fc216444aee15f05d9150d6caaa355e2af59b46b8bb6740e918bea73d55e",
-      "oscar-wilde-good-dinner",
+      "q-e8a65676bdf8de19bed0873d2874f0c6",
       "https://guide.michelin.com/us/en/district-of-columbia/washington-dc/restaurant/bresca",
     ],
     [
@@ -231,7 +231,7 @@ export const cataloguePackDiningWashingtonDc = defineCataloguePackBadges(
       "Original abstract source study using relief-cut silhouettes for Dined at Gravitas: An original interior-led miniature badge study for Gravitas, based on this researched cue: Exposed brick and industrial walls soften with greenery and an open kitchen. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "gravitas.jpg",
       "b30f257b9918c470fb37c70e29353b0f1c6fc8c243cae510236e5b7ad3f7d2e4",
-      "oscar-wilde-good-dinner",
+      "q-00c38774fb00fc600f845176efad2c47",
       "https://guide.michelin.com/us/en/district-of-columbia/washington-dc/restaurant/gravitas",
     ],
     [
@@ -242,7 +242,7 @@ export const cataloguePackDiningWashingtonDc = defineCataloguePackBadges(
       "Original abstract source study using stained-glass lead cells for Dined at Rania: An original dish-led miniature badge study for Rania, based on this researched cue: Pork vindaloo arrives with crisp belly, dal, Kashmiri pulao, and buttered naan. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "rania.jpg",
       "a0b6f3d5f91d48c6c2988c70a30d2131b31a212cb11af28fbfabadabe181df68",
-      "oscar-wilde-good-dinner",
+      "q-2a09841a06efe31c2c6ff70956e6af0e",
       "https://guide.michelin.com/us/en/district-of-columbia/washington-dc/restaurant/rania",
     ],
   ],

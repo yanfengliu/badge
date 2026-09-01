@@ -1,10 +1,8 @@
 import {
   ArchiveDomainError,
-  activateAchievement,
   archiveStateSchema,
   exactVisualPinSchema,
   setRecordLifecycle,
-  updateAcceptedSaying,
   type ActivationInput,
   type ActivationResult,
   type ArchiveLifecycle,
@@ -12,9 +10,10 @@ import {
 } from "@badge/archive-domain";
 import type { IDBPDatabase } from "idb";
 import { canonicalJson } from "@badge/pack-contract";
-import { formatSayingForArchive, type SayingResponse } from "@badge/saying-contract";
+import type { SayingResponse } from "@badge/saying-contract";
 
 import { abortQuietly, openArchiveDatabase, parseStoredState } from "./archive-database.js";
+import { loadOrSeedArchive } from "./archive-initialization-storage.js";
 import { reconcileCatalogueRecords } from "./catalogue-expansion.js";
 import type { ArchiveCatalogueVisualUpgradePlan } from "./catalogue-visual-upgrade.js";
 import {
@@ -23,6 +22,7 @@ import {
 } from "./catalogue-visual-upgrade-storage.js";
 import { ArchivePersistenceError } from "./errors.js";
 import { TrustedQuotationAdmission } from "./quotation-admission.js";
+import { QuotationUniquenessPolicy } from "./quotation-uniqueness.js";
 import { recoverArchive } from "./recovery.js";
 import { inspectRecoveryEvidenceSnapshot } from "./recovery-evidence-snapshot.js";
 import type { ArchiveRecoveryReasonCode } from "./recovery-evidence.js";
@@ -32,13 +32,9 @@ import {
   mergeRepositorySourceAssets,
   validateRepositorySourceAssets,
 } from "./repository-source-assets.js";
-import {
-  applyReviewedSayingDefaults,
-  assertRestorableEarnedSayings,
-  prepareQuotationRevisionsForRestore,
-} from "./saying-defaults.js";
+import { assertRestorableEarnedSayings, prepareQuotationRevisionsForRestore } from "./saying-defaults.js";
 import { assertMonotonicArchiveRestore } from "./restore-policy.js";
-import { earnedSourceHashes, referencedSourceHashes } from "./source-references.js";
+import { earnedSourceHashes } from "./source-references.js";
 import {
   copySourceAsset,
   validateSourceAsset,
@@ -70,9 +66,13 @@ export class IndexedDbArchiveRepository {
   private lifecycleRevision = 0;
   private writeQueue: Promise<void> = Promise.resolve();
   private readonly quotationAdmission: TrustedQuotationAdmission;
+  private readonly quotationUniqueness: QuotationUniquenessPolicy;
 
   constructor(private readonly options: IndexedDbArchiveRepositoryOptions = {}) {
     this.quotationAdmission = new TrustedQuotationAdmission(options.trustedQuotationRequests);
+    this.quotationUniqueness = new QuotationUniquenessPolicy(this.quotationAdmission, () =>
+      crypto.randomUUID(),
+    );
   }
 
   private createOpeningAttempt(): Promise<IDBPDatabase<ArchiveDatabase>> {
@@ -126,32 +126,9 @@ export class IndexedDbArchiveRepository {
     const validatedAssets = await validateRepositorySourceAssets(sourceAssets);
     return this.enqueueWrite(async () => {
       const database = await this.database();
-      const transaction = database.transaction([ARCHIVE_STATE_STORE, ARCHIVE_OBJECT_STORE], "readwrite");
-      try {
-        const stateStore = transaction.objectStore(ARCHIVE_STATE_STORE);
-        const objectStore = transaction.objectStore(ARCHIVE_OBJECT_STORE);
-        const existing = await stateStore.get(ARCHIVE_STATE_KEY);
-        const state = existing === undefined ? validatedSeed : parseStoredState(existing);
-        if (existing === undefined) {
-          await stateStore.put(state, ARCHIVE_STATE_KEY);
-        }
-        const referenced = new Set(referencedSourceHashes(state));
-        for (const asset of validatedAssets.filter((candidate) => referenced.has(candidate.hash))) {
-          const stored = await objectStore.get(asset.hash);
-          if (stored === undefined) await objectStore.put(copySourceAsset(asset), asset.hash);
-          else assertCompatibleRepositorySource(stored, asset);
-        }
-        await transaction.done;
-        return state;
-      } catch (error) {
-        await abortQuietly(transaction);
-        if (error instanceof ArchivePersistenceError) throw error;
-        throw new ArchivePersistenceError(
-          "TRANSACTION_FAILED",
-          "Archive initialization failed; existing state and source rows were preserved. Retry or export diagnostics.",
-          { cause: error },
-        );
-      }
+      return loadOrSeedArchive(database, validatedSeed, validatedAssets, (state) =>
+        this.quotationUniqueness.assertNoTextCollisions(state),
+      );
     });
   }
 
@@ -174,13 +151,7 @@ export class IndexedDbArchiveRepository {
           );
         }
 
-        const initialized = applyReviewedSayingDefaults(
-          current,
-          defaults,
-          () => crypto.randomUUID(),
-          (record) => this.quotationAdmission.assertRecordBound(record),
-          (record) => this.quotationAdmission.hasTrustedAcceptedSaying(record),
-        );
+        const initialized = this.quotationUniqueness.applyDefaults(current, defaults);
         if (canonicalJson(initialized) !== canonicalJson(current)) {
           await transaction.store.put(initialized, ARCHIVE_STATE_KEY);
         }
@@ -204,6 +175,7 @@ export class IndexedDbArchiveRepository {
   ): Promise<ArchiveState> {
     const defaults = archiveStateSchema.parse(defaultState);
     const expected = archiveStateSchema.parse(expectedCurrentState);
+    this.quotationAdmission.assertDefaults(defaults);
     return this.enqueueWrite(async () => {
       const database = await this.database();
       const transaction = database.transaction(ARCHIVE_STATE_STORE, "readwrite");
@@ -215,18 +187,20 @@ export class IndexedDbArchiveRepository {
             "Archive state changed while this release's new catalogue records were being added; reload Badge before trying again. No Archive data was changed.",
           );
         }
-        const reconciled = reconcileCatalogueRecords(current, defaults);
-        if (reconciled.addedRecordIds.length > 0 || reconciled.reseededRecordIds.length > 0) {
-          await transaction.store.put(reconciled.state, ARCHIVE_STATE_KEY);
+        const expanded = reconcileCatalogueRecords(current, defaults);
+        const reconciled = this.quotationUniqueness.applyDefaults(expanded.state, defaults);
+        this.quotationUniqueness.assertNoUnearnedTextCollisions(reconciled);
+        if (canonicalJson(reconciled) !== canonicalJson(current)) {
+          await transaction.store.put(reconciled, ARCHIVE_STATE_KEY);
         }
         await transaction.done;
-        return reconciled.state;
+        return reconciled;
       } catch (error) {
         await abortQuietly(transaction);
         if (error instanceof ArchivePersistenceError) throw error;
         throw new ArchivePersistenceError(
           "TRANSACTION_FAILED",
-          "Archive catalogue expansion failed; existing records were preserved. Reload Badge and try again.",
+          "Archive catalogue expansion and quotation reconciliation failed; existing records were preserved. Reload Badge and try again.",
           { cause: error },
         );
       }
@@ -348,20 +322,13 @@ export class IndexedDbArchiveRepository {
         const stateStore = transaction.objectStore(ARCHIVE_STATE_STORE);
         const objectStore = transaction.objectStore(ARCHIVE_OBJECT_STORE);
         const state = parseStoredState(await stateStore.get(ARCHIVE_STATE_KEY));
-        const record = state.records.find((candidate) => candidate.recordId === input.recordId);
-        const acceptedSaying = record
-          ? formatSayingForArchive(this.quotationAdmission.validate(record, acceptedQuotation))
-          : null;
-        if (
-          record &&
-          (record.acceptedSaying !== acceptedSaying || record.quotationRevision !== expectedQuotationRevision)
-        ) {
-          throw new ArchivePersistenceError(
-            "SAYING_CONFLICT",
-            `The source-checked quotation for ${record.title} changed after activation opened; reopen the badge and review the current quote. No Archive data was changed.`,
-          );
-        }
-        result = activateAchievement(state, input, activatedAt);
+        result = this.quotationUniqueness.activateWithAcceptedQuotation(
+          state,
+          input,
+          activatedAt,
+          acceptedQuotation,
+          expectedQuotationRevision,
+        );
         const existingSource = await objectStore.get(sourceAsset.hash);
         if (existingSource === undefined) {
           await objectStore.put(copySourceAsset(sourceAsset), sourceAsset.hash);
@@ -399,17 +366,12 @@ export class IndexedDbArchiveRepository {
     expectedQuotationRevision: string,
   ): Promise<ArchiveState> {
     return this.enqueueMutation("saying", (state) => {
-      const record = state.records.find((candidate) => candidate.recordId === recordId);
-      const saying = record
-        ? formatSayingForArchive(this.quotationAdmission.validate(record, quotation))
-        : null;
-      if (record && record.quotationRevision !== expectedQuotationRevision) {
-        throw new ArchivePersistenceError(
-          "SAYING_CONFLICT",
-          `The accepted quotation for ${record.title} changed while another selection was pending; review the current quote before regenerating again. No Archive data was changed.`,
-        );
-      }
-      const result = updateAcceptedSaying(state, recordId, saying ?? "", crypto.randomUUID());
+      const result = this.quotationUniqueness.updateAcceptedQuotation(
+        state,
+        recordId,
+        quotation,
+        expectedQuotationRevision,
+      );
       return { state: result, result };
     });
   }
@@ -434,14 +396,9 @@ export class IndexedDbArchiveRepository {
       ? reconcileCatalogueRecords(parsedIncoming, parsedDefaults).state
       : parsedIncoming;
     const state = parsedDefaults
-      ? applyReviewedSayingDefaults(
-          expandedIncoming,
-          parsedDefaults,
-          () => crypto.randomUUID(),
-          (record) => this.quotationAdmission.assertRecordBound(record),
-          (record) => this.quotationAdmission.hasTrustedAcceptedSaying(record),
-        )
+      ? this.quotationUniqueness.applyDefaults(expandedIncoming, parsedDefaults)
       : expandedIncoming;
+    this.quotationUniqueness.assertNoUnearnedTextCollisions(state);
     assertRestorableEarnedSayings(state);
     const expected = archiveStateSchema.parse(expectedCurrentState);
     const sourceAssets = await validateRepositorySourceAssets(incomingSourceAssets, state);
@@ -495,14 +452,9 @@ export class IndexedDbArchiveRepository {
       ? reconcileCatalogueRecords(parsedIncoming, defaults).state
       : parsedIncoming;
     const state = defaults
-      ? applyReviewedSayingDefaults(
-          expandedIncoming,
-          defaults,
-          () => crypto.randomUUID(),
-          (record) => this.quotationAdmission.assertRecordBound(record),
-          (record) => this.quotationAdmission.hasTrustedAcceptedSaying(record),
-        )
+      ? this.quotationUniqueness.applyDefaults(expandedIncoming, defaults)
       : expandedIncoming;
+    this.quotationUniqueness.assertNoUnearnedTextCollisions(state);
     const backupAssets = await validateRepositorySourceAssets(incomingSourceAssets, state);
     const trustedRepairAssets = await validateRepositorySourceAssets(trustedRepairSourceAssets);
     const sourceAssets = mergeRepositorySourceAssets(backupAssets, trustedRepairAssets);

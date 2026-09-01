@@ -11,7 +11,7 @@ export const cataloguePackParksAThroughG = defineCataloguePackBadges(
       "An original source study using large stepped pixel clusters, showing dawn over Cadillac Mountain, granite ledges, spruce, and Atlantic islands.",
       "acadia.jpg",
       "5a8a197266209311b6fc30539c8449e0efbda3d1f7e552c99e19d28f7482916d",
-      "henry-david-thoreau-wildness",
+      "q-8fbdd3309405e422b0fa7826603f7093",
     ],
     [
       "visited-arches",
@@ -21,7 +21,7 @@ export const cataloguePackParksAThroughG = defineCataloguePackBadges(
       "An original source study using broad fiber appliqué, showing Delicate Arch above red fins at blue hour.",
       "arches.jpg",
       "da27c4df90bdc207a942bb9c05103b35357d6d7cc1cfa5442fa32fd3908a5d61",
-      "john-wesley-powell-naked-rock-1869",
+      "q-30bc0c129dde0fa33f8e4f3033df4d7d",
     ],
     [
       "visited-badlands",
@@ -31,7 +31,7 @@ export const cataloguePackParksAThroughG = defineCataloguePackBadges(
       "An original source study using matte painted masses, showing striped pinnacles and mixed-grass prairie after a summer storm.",
       "badlands.jpg",
       "52dc339b1025c2bb53cade0c119bc0d627e5bba7abda498528f1d233dd3726a4",
-      "john-muir-mountains-calling-1873",
+      "q-82649a68a410ac28f5b486e6a03d7ecb",
     ],
     [
       "visited-big-bend",
@@ -41,7 +41,7 @@ export const cataloguePackParksAThroughG = defineCataloguePackBadges(
       "An original source study using relief-cut silhouettes, showing the Rio Grande bending through Santa Elena Canyon beneath stars.",
       "big-bend.jpg",
       "a2b5e067eec68277ceee1c9d8639a62428c07c646235fa13317f20efd150df5d",
-      "henry-david-thoreau-wildness",
+      "q-e23e99c3a2574e1401b06273e6ec7b6d",
     ],
     [
       "visited-biscayne",
@@ -51,7 +51,7 @@ export const cataloguePackParksAThroughG = defineCataloguePackBadges(
       "An original source study using stained-glass lead cells, showing a sea turtle gliding over coral gardens and seagrass.",
       "biscayne.jpg",
       "dfce7e25495a48fa7140329aef8d9ab466836152624e66e8c6673d095473d617",
-      "john-muir-mountains-calling-1873",
+      "q-919001c10789c9e793f1747513675b13",
     ],
     [
       "visited-black-canyon-gunnison",
@@ -61,7 +61,7 @@ export const cataloguePackParksAThroughG = defineCataloguePackBadges(
       "An original source study using bold enamel contour, showing a thin silver Gunnison River far below sheer dark walls.",
       "black-canyon-gunnison.jpg",
       "7c9c9f58d5ebcde1573c5de50c14726a026b0bfba7b81def434836f73494c677",
-      "john-muir-every-walk-nature",
+      "q-b58cff6d7dd799640bdf47d1d6133cdc",
     ],
     [
       "visited-bryce-canyon",
@@ -71,7 +71,7 @@ export const cataloguePackParksAThroughG = defineCataloguePackBadges(
       "An original source study using broad atlas contours, showing a sunrise amphitheater crowded with orange hoodoos.",
       "bryce-canyon.jpg",
       "507450a5825b5113cf527e8bbcf4e5c569da40cc225cd46fe6475eca1bae13ab",
-      "john-muir-mountaineers-steep-trails",
+      "q-31ad981da9916515ded40d94330c7da2",
     ],
     [
       "visited-canyonlands",
@@ -81,7 +81,7 @@ export const cataloguePackParksAThroughG = defineCataloguePackBadges(
       "An original source study using relief-cut silhouettes, showing Mesa Arch framing a maze of canyons at first light.",
       "canyonlands.jpg",
       "a6aad7cfa4e3c2ac390280f7d542d0929b2821443ea334e42a9c3ee8dc682a79",
-      "john-muir-mountaineers-steep-trails",
+      "q-a6ddee924f1ad89a6c2fefe48e538438",
     ],
     [
       "visited-capitol-reef",
@@ -91,7 +91,7 @@ export const cataloguePackParksAThroughG = defineCataloguePackBadges(
       "An original source study using matte painted masses, showing the Waterpocket Fold rolling past pale domes and orchard trees.",
       "capitol-reef.jpg",
       "6c0305d6b9111c45f884a6b62d0c88319671dbcc1d74c3454e0efcea854406b0",
-      "fdr-american-national-parks-1934",
+      "q-80d705b594b0cae3a1e2933412977108",
     ],
     [
       "visited-carlsbad-caverns",
@@ -101,7 +101,7 @@ export const cataloguePackParksAThroughG = defineCataloguePackBadges(
       "An original source study using relief-cut silhouettes, showing the Big Room's immense mineral columns descending into darkness.",
       "carlsbad-caverns.jpg",
       "96ae759a35ce44abe296d73193eaa76779cf04d40468953fcd98ea77aaa74e4a",
-      "henry-david-thoreau-wildness",
+      "q-0fd501a99006b3f71e20b6d6de38481f",
     ],
     [
       "visited-channel-islands",
@@ -111,7 +111,7 @@ export const cataloguePackParksAThroughG = defineCataloguePackBadges(
       "An original source study using matte painted masses, showing sea cliffs, kelp forest, and an island fox above clear Pacific water.",
       "channel-islands.jpg",
       "bc007d91fecca616351b700a51c4b54eaf0903516632ab5d8b5c464759621935",
-      "john-wesley-powell-naked-rock-1869",
+      "q-be32d6c867362d49947fe02892dfc305",
     ],
     [
       "visited-congaree",
@@ -121,7 +121,7 @@ export const cataloguePackParksAThroughG = defineCataloguePackBadges(
       "An original source study using woven tapestry bands, showing a flooded old-growth forest mirrored in blackwater.",
       "congaree.jpg",
       "60602885eef988285a347ba3cdc1cd4ab6688808faf3406ccf056c71dea65691",
-      "fdr-american-national-parks-1934",
+      "q-2375f8ccac96023b631449bca2d2e1d1",
     ],
     [
       "visited-crater-lake",
@@ -131,7 +131,7 @@ export const cataloguePackParksAThroughG = defineCataloguePackBadges(
       "An original source study using cut-paper layers, showing Wizard Island inside an impossibly blue caldera under snow.",
       "crater-lake.jpg",
       "6ba41e16fca1954a7becba11bd2ffdb8b06f36b3909f8cd3a8a0e40677cfe67f",
-      "henry-david-thoreau-wildness",
+      "q-731eedd405a3c328dd8c6ca91a07159f",
     ],
     [
       "visited-cuyahoga-valley",
@@ -141,7 +141,7 @@ export const cataloguePackParksAThroughG = defineCataloguePackBadges(
       "An original source study using bold enamel contour, showing Brandywine Falls' tall sixty-foot bridal-veil cascade dropping over a hard Berea Sandstone cap and Bedford and Cleveland shale into a narrow deciduous gorge.",
       "cuyahoga-valley.jpg",
       "3b91fdca34a96824252856af90c2a39c42417e20cf0d3305e852e8c15765b07b",
-      "fdr-american-national-parks-1934",
+      "q-64a68a08452e5c3182fb116267ebbaab",
     ],
     [
       "visited-death-valley",
@@ -151,7 +151,7 @@ export const cataloguePackParksAThroughG = defineCataloguePackBadges(
       "An original source study using matte painted masses, showing Mesquite dunes and salt polygons beneath a violet mountain dusk.",
       "death-valley.jpg",
       "bce7b5b27b2822cd3813c55d303d504557e51a9aac744c1cef12a02c62bc9bcc",
-      "henry-david-thoreau-wildness",
+      "q-976bc693fea68bd11a806711f4c93ed2",
     ],
     [
       "visited-denali",
@@ -161,7 +161,7 @@ export const cataloguePackParksAThroughG = defineCataloguePackBadges(
       "An original source study using relief-cut silhouettes, showing Denali rising above braided tundra rivers and autumn taiga.",
       "denali.jpg",
       "6422c29271eeaede03c0437dfb9cf9118692d4b18e3d439e0099cfb2a09145ed",
-      "john-muir-mountains-calling-1873",
+      "q-78e56a513b883dc732b0d99b0ba5d023",
     ],
     [
       "visited-dry-tortugas",
@@ -171,7 +171,7 @@ export const cataloguePackParksAThroughG = defineCataloguePackBadges(
       "An original source study using screenprint overlaps, showing Fort Jefferson floating in turquoise water beneath circling frigatebirds.",
       "dry-tortugas.jpg",
       "f355b67a9f4b56297dee6904cec957f27ed3d14b4c164f8fde958efed6109cc8",
-      "john-wesley-powell-naked-rock-1869",
+      "q-120bfc60870d9de69de62c48338a6a0b",
     ],
     [
       "visited-everglades",
@@ -181,7 +181,7 @@ export const cataloguePackParksAThroughG = defineCataloguePackBadges(
       "An original source study using large mosaic tesserae, showing an alligator gliding through sawgrass under a roseate sky.",
       "everglades.jpg",
       "f57e6c7391392e90a2e7039677b4a5e7897318afa3ad84f108765e219ae0838e",
-      "john-muir-mountaineers-steep-trails",
+      "q-b01be8c054f0e0484058549ed12d5eec",
     ],
     [
       "visited-gates-of-the-arctic",
@@ -191,7 +191,7 @@ export const cataloguePackParksAThroughG = defineCataloguePackBadges(
       "An original source study using matte painted masses, showing the Arrigetch peaks beyond a winding tundra river with no road in sight.",
       "gates-of-the-arctic.jpg",
       "0754628f5449f0c8d1caf0a1442c3cf781df4eef8a9a27edf1ae8c1f34e7cd6a",
-      "john-muir-every-walk-nature",
+      "q-87e5c0809b5007764c91c171da1cffc5",
     ],
     [
       "visited-gateway-arch",
@@ -201,7 +201,7 @@ export const cataloguePackParksAThroughG = defineCataloguePackBadges(
       "An original source study using prismatic geometric inlay, showing the stainless arc rising over the Mississippi at blue hour.",
       "gateway-arch.jpg",
       "2647652561141be627d00363fa17df16dbebe56fff4428d51e4e21ee5b749feb",
-      "henry-david-thoreau-wildness",
+      "q-92d3d334956874001b49d3c6e9823c06",
     ],
     [
       "visited-glacier-bay",
@@ -211,7 +211,7 @@ export const cataloguePackParksAThroughG = defineCataloguePackBadges(
       "An original source study using ceramic underglaze roundel, showing a tidewater glacier calving beyond a humpback whale's fluke.",
       "glacier-bay.jpg",
       "79aa84614cf27f7233b00617037c2d8dda25d9dfb3f64137d67b3555fbe4d245",
-      "john-muir-mountaineers-steep-trails",
+      "q-25590d8002285897622b8078daa9af01",
     ],
     [
       "visited-glacier",
@@ -221,7 +221,7 @@ export const cataloguePackParksAThroughG = defineCataloguePackBadges(
       "An original source study using wood marquetry strata, showing Hidden Lake below sharp peaks with a mountain goat on the overlook.",
       "glacier.jpg",
       "41d191952a14da2d90987d8d42d8e4dc205096ed19babf9da5df32f0c9ef71ec",
-      "henry-david-thoreau-wildness",
+      "q-cc1d680ac177e43cd665646354660198",
     ],
     [
       "visited-grand-canyon",
@@ -231,7 +231,7 @@ export const cataloguePackParksAThroughG = defineCataloguePackBadges(
       "An original source study using relief-cut silhouettes, showing layer after layer of canyon opening around a distant Colorado River.",
       "grand-canyon.jpg",
       "c3236a56043812f288951da4f80f4fc05cc93a011b3f66c8ce87fc08eb75f8e7",
-      "john-muir-mountaineers-steep-trails",
+      "q-dc729e18ef05b9accc900ce91e57a113",
     ],
     [
       "visited-grand-teton",
@@ -241,7 +241,7 @@ export const cataloguePackParksAThroughG = defineCataloguePackBadges(
       "An original source study using open clear-line enamel scene, showing the Teton skyline reflected in still Snake River water.",
       "grand-teton.jpg",
       "215673af2b0555510e456640f7d163312aa286f35befbc77e613ceb0099e70d3",
-      "john-muir-every-walk-nature",
+      "q-299c3676676a1b0061c3089b0426ad17",
     ],
     [
       "visited-great-basin",
@@ -251,7 +251,7 @@ export const cataloguePackParksAThroughG = defineCataloguePackBadges(
       "An original source study using large stepped pixel clusters, showing ancient bristlecone pines twisting beneath the Milky Way.",
       "great-basin.jpg",
       "0a0c5a3867364d94777bac5df149809f12453f4c88fc765b4f62b54c1677d68d",
-      "john-muir-mountains-calling-1873",
+      "q-6c5bffd58d620c91b219b22a89561925",
     ],
     [
       "visited-great-sand-dunes",
@@ -261,7 +261,7 @@ export const cataloguePackParksAThroughG = defineCataloguePackBadges(
       "An original source study using broad fiber appliqué, showing wind-rippled dunes rising before snowbound Sangre de Cristo peaks.",
       "great-sand-dunes.jpg",
       "3cf7a875c0b08daa6cd95441becb4f8667e10d02826cfbdbaa7b37457ad6bbd3",
-      "john-muir-mountaineers-steep-trails",
+      "q-075f713a40add9f524bee84447e60464",
     ],
     [
       "visited-great-smoky-mountains",
@@ -271,7 +271,7 @@ export const cataloguePackParksAThroughG = defineCataloguePackBadges(
       "An original source study using matte painted masses, showing blue ridges dissolving through mist above a flame-azalea forest.",
       "great-smoky-mountains.jpg",
       "9c4471499044959bc50f7db9fd6c65b19ca2867fa44f0cf4cdea7b5136162cb3",
-      "fdr-american-national-parks-1934",
+      "q-aaaee00de437b09e0a8e87abbd8ad332",
     ],
     [
       "visited-guadalupe-mountains",
@@ -281,7 +281,7 @@ export const cataloguePackParksAThroughG = defineCataloguePackBadges(
       "An original source study using relief-cut silhouettes, showing El Capitan's connected limestone reef escarpment forming a prow-like triangular sloping profile above Chihuahuan Desert flats under migrating clouds.",
       "guadalupe-mountains.jpg",
       "5cf77e7a783ffcc2e526f800040b0106fbc95a66501a2983a530476c90253743",
-      "henry-david-thoreau-wildness",
+      "q-d36ad4147e2c6fcb95f682400b99d7ca",
     ],
     [
       "visited-haleakala",
@@ -291,7 +291,7 @@ export const cataloguePackParksAThroughG = defineCataloguePackBadges(
       "An original source study using stained-glass lead cells, showing silversword plants inside the vast volcanic summit crater at sunrise.",
       "haleakala.jpg",
       "c3310d34c6c3205bf86637db54631e1d60d59385abf7093f1bdfcfda4cb4f172",
-      "henry-david-thoreau-wildness",
+      "q-46af738ced7fac36f44a1a73d4c11119",
     ],
     [
       "visited-hawaii-volcanoes",
@@ -301,7 +301,7 @@ export const cataloguePackParksAThroughG = defineCataloguePackBadges(
       "An original source study using bold enamel contour, showing orange lava meeting black land beneath a rainforest edge.",
       "hawaii-volcanoes.jpg",
       "30beca5879b787a52c7af3808b6f7adecb523387b1a298be1866ca82ca3d7dd7",
-      "henry-david-thoreau-wildness",
+      "q-4ba8ba722ae274723835ac3029a42066",
     ],
     [
       "visited-hot-springs",
@@ -311,7 +311,7 @@ export const cataloguePackParksAThroughG = defineCataloguePackBadges(
       "An original source study using broad atlas contours, showing the real brick and stucco Bathhouse Row streetscape fronting a dry formal Central Avenue promenade, with wooded Hot Springs Mountain behind.",
       "hot-springs.jpg",
       "f975cc3b4fbf2c1c73c1d733f4e6c9c53bdb8970221f1c54ce46b11bd0c04663",
-      "john-muir-every-walk-nature",
+      "q-a33d3de21a0e65f2770ee995ab842329",
     ],
   ],
   {

@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 
+import { catalogueQuotationBankForDefinition } from "@badge/catalogue-quotation-data";
 import { describe, expect, it } from "vitest";
 
 import { artStyleLibrary, findArtStyle, recommendedFrequentArtStyleUsage } from "./art-styles.js";
@@ -8,7 +9,6 @@ import {
   videoGameAuthoringCampaign,
   videoGameAuthoringEdition,
   videoGameAuthoringRecords,
-  videoGameHistoricQuotations,
   videoGamePrimaryPrompts,
 } from "./video-games-edition.js";
 
@@ -301,20 +301,19 @@ describe("the curated 50-video-game authoring edition", () => {
     ]);
   });
 
-  it("preselects the exact source-linked Hamlet quotation", () => {
-    expect(videoGameHistoricQuotations).toEqual([
-      {
-        quotationId: "historic-quotation/william-shakespeare-plays-the-thing",
-        text: "The play’s the thing Wherein I’ll catch the conscience of the King.",
-        personName: "William Shakespeare",
-        sourceTitle: "Hamlet, Act II, Scene II",
-        sourceUrl: "https://www.gutenberg.org/files/1524/1524-h/1524-h.htm",
-        personWikipediaUrl: "https://en.wikipedia.org/wiki/William_Shakespeare",
-      },
-    ]);
+  it("preselects the first source-linked quotation from each game's private bank", () => {
+    const quotationIds = new Set<string>();
     for (const game of videoGameAuthoringRecords) {
-      expect(game.defaultQuotationId).toBe("historic-quotation/william-shakespeare-plays-the-thing");
+      const bank = catalogueQuotationBankForDefinition(game.definitionId);
+      expect(game.defaultQuotationId).toBe(bank[0].quotationId);
+      for (const quotation of bank) {
+        expect(quotationIds.has(quotation.quotationId), quotation.quotationId).toBe(false);
+        quotationIds.add(quotation.quotationId);
+        expect(quotation.sourceUrl).toMatch(/^https:\/\//u);
+        expect(quotation.personWikipediaUrl).toMatch(/^https:\/\/en\.wikipedia\.org\/wiki\//u);
+      }
     }
+    expect(quotationIds).toHaveProperty("size", 100);
   });
 
   it("builds 150 unique role-complete candidates and deterministic v2 primary prompts", () => {

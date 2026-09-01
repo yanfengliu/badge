@@ -11,7 +11,7 @@ export const cataloguePackDiningNewYorkCity01 = defineCataloguePackBadges(
       "Original abstract source study using wood marquetry strata for Dined at Icca: An original interior-led miniature badge study for Icca, based on this researched cue: A discreet cocktail bar gives way to a secluded chef counter where traditional nigiri is lightly brushed with nikiri. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "icca.jpg",
       "fbd9360118c6339a31fe8e56664d52d39960372252cdd254a3d69c4ae674571e",
-      "oscar-wilde-good-dinner",
+      "q-c4fd6fd6363b42da5c79461d347bee5a",
       "https://guide.michelin.com/en/new-york-state/new-york/restaurant/icca",
     ],
     [
@@ -22,7 +22,7 @@ export const cataloguePackDiningNewYorkCity01 = defineCataloguePackBadges(
       "Original abstract source study using screenprint overlaps for Dined at Atera: An original interior-led miniature badge study for Atera, based on this researched cue: The dark, sleek dining room centers on a spacious U-shaped counter facing the open kitchen. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "atera.jpg",
       "c500e0a32584a5374c2569f79e03db9e886ed377f4bf07640cdd0ff92da0b64f",
-      "oscar-wilde-good-dinner",
+      "q-464fe3bd758f3acc72f9c3b952994acc",
       "https://guide.michelin.com/en/new-york-state/new-york/restaurant/atera",
     ],
     [
@@ -33,7 +33,7 @@ export const cataloguePackDiningNewYorkCity01 = defineCataloguePackBadges(
       "Original abstract source study using broad fiber appliqué for Dined at Huso: An original interior-led miniature badge study for Huso, based on this researched cue: Flowing white drapes and soft lighting turn the room behind a caviar shop into a quiet hideaway. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "huso.jpg",
       "01985650c4a572b48e48d1d625285cd3398fb81c52823ad7ba7602a23c7443e4",
-      "oscar-wilde-good-dinner",
+      "q-640df06b4e4ff637f0615e9db31bf04a",
       "https://guide.michelin.com/en/new-york-state/new-york/restaurant/huso-1218089",
     ],
     [
@@ -44,7 +44,7 @@ export const cataloguePackDiningNewYorkCity01 = defineCataloguePackBadges(
       "Original abstract source study using ceramic underglaze roundel for Dined at Jungsik New York: An original culture-led miniature badge study for Jungsik New York, based on this researched cue: Jungsik's tasting opens with banchan before striped jack with white kimchi, crisp octopus with gochujang aioli, and dry-aged Arctic char. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "jungsik-new-york.jpg",
       "53ea93611db9e546976a44d1242fbafd32c6655883874ad42d60fe9860ed123e",
-      "oscar-wilde-good-dinner",
+      "q-97796d205cc8482388db7a62438797ff",
       "https://guide.michelin.com/en/new-york-state/new-york/restaurant/jungsik-new-york",
     ],
     [
@@ -55,7 +55,7 @@ export const cataloguePackDiningNewYorkCity01 = defineCataloguePackBadges(
       "Original abstract source study using stained-glass lead cells for Dined at Crown Shy: An original interior-led miniature badge study for Crown Shy, based on this researched cue: An Art Deco tower lobby brings soaring ceilings, marble floors, and tall windows to the dining room. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "crown-shy.jpg",
       "2f490db74bc0df273b527fedcf6c532bda222f9da824125fa20c4f04dac3cff1",
-      "oscar-wilde-good-dinner",
+      "q-821fcb9c87cee08823c949b87a13476d",
       "https://guide.michelin.com/en/new-york-state/new-york/restaurant/crown-shy",
     ],
     [
@@ -66,7 +66,7 @@ export const cataloguePackDiningNewYorkCity01 = defineCataloguePackBadges(
       "Original abstract source study using cut-paper layers for Dined at Saga: An original interior-led miniature badge study for Saga, based on this researched cue: A high-rise terrace and jewel-toned rooms pair skyline views with peach velvet, green marble, and carved stone. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "saga.jpg",
       "4003ea70e9fee111872a8ddd053ef4039e819edd85fcb0a14d36a5e79a5f7eb3",
-      "oscar-wilde-good-dinner",
+      "q-7ee3a8bc30e838e548a1306a4e10bc1b",
       "https://guide.michelin.com/en/new-york-state/new-york/restaurant/saga",
     ],
     [
@@ -77,7 +77,7 @@ export const cataloguePackDiningNewYorkCity01 = defineCataloguePackBadges(
       "Original abstract source study using matte painted masses for Dined at Bridges: An original dish-led miniature badge study for Bridges, based on this researched cue: Cured tuna, mushrooms, and dates express the warm, contemporary bistro's preference for layered savory contrasts. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "bridges.jpg",
       "462554ee7d353ddaf18e91235e6deac970dbeec0ed87c4ecd7df5de8989de3a2",
-      "oscar-wilde-good-dinner",
+      "q-fc7a136a3b879482d9e3cd71a87befcd",
       "https://guide.michelin.com/en/new-york-state/new-york/restaurant/bridges-1216261",
     ],
     [
@@ -88,7 +88,7 @@ export const cataloguePackDiningNewYorkCity01 = defineCataloguePackBadges(
       "Original abstract source study using wood marquetry strata for Dined at Yamada: An original interior-led miniature badge study for Yamada, based on this researched cue: A pale earth-toned L-shaped counter faces ikebana and a dry garden visible through the windows. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "yamada.jpg",
       "4f74c3b99c45b8c54050445e77fd768418dd92d2fea7db04af8575ac16dc00db",
-      "oscar-wilde-good-dinner",
+      "q-1c7993ccfdf090cf9201629dfa320c09",
       "https://guide.michelin.com/en/new-york-state/new-york/restaurant/yamada",
     ],
     [
@@ -99,7 +99,7 @@ export const cataloguePackDiningNewYorkCity01 = defineCataloguePackBadges(
       "Original abstract source study using matte painted masses for Dined at Le Coucou: An original interior-led miniature badge study for Le Coucou, based on this researched cue: An ornate bar and hand-painted murals give the lofty room an eighteenth-century French atmosphere. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "le-coucou.jpg",
       "f0fd910c824d7e98c78a5af5301b3e2859bb7129a0baced9447d941552570084",
-      "oscar-wilde-good-dinner",
+      "q-99089f6014bddc014a6f7d8967cb1c2d",
       "https://guide.michelin.com/en/new-york-state/new-york/restaurant/le-coucou",
     ],
     [
@@ -110,7 +110,7 @@ export const cataloguePackDiningNewYorkCity01 = defineCataloguePackBadges(
       "Original abstract source study using ceramic underglaze roundel for Dined at Muku: An original culture-led miniature badge study for Muku, based on this researched cue: Chef Manabu Asanuma's kaiseki progression moves from sashimi through steamed, charcoal-grilled, and fried courses to Yamagata soba made with his family's hometown buckwheat. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "muku.jpg",
       "7c4d9a6fe35426e85b9608a240052a1ea4c9320387c810bdf387141788eb2971",
-      "oscar-wilde-good-dinner",
+      "q-fa12b093c606d32c755d672fcd7cb633",
       "https://guide.michelin.com/en/new-york-state/new-york/restaurant/muku",
     ],
     [
@@ -121,7 +121,7 @@ export const cataloguePackDiningNewYorkCity01 = defineCataloguePackBadges(
       "Original abstract source study using broad fiber appliqué for Dined at L’Abeille: An original interior-led miniature badge study for L’Abeille, based on this researched cue: Velvet seating, intimate booths, and a marble bar frame cooking shaped by French technique and Japanese influence. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "labeille.jpg",
       "6f6ce815160bc59e5a90684533a15eb52fe68df769c3bd56656320a33e09d458",
-      "oscar-wilde-good-dinner",
+      "q-a21817364d429e5d60b5722a0455a062",
       "https://guide.michelin.com/en/new-york-state/new-york/restaurant/l%E2%80%99abeille",
     ],
     [
@@ -132,7 +132,7 @@ export const cataloguePackDiningNewYorkCity01 = defineCataloguePackBadges(
       "Original abstract source study using relief-cut silhouettes for Dined at Corima: An original culture-led miniature badge study for Corima, based on this researched cue: Northern Mexican traditions meet a live-fire tasting format, with wheat tortillas and desert ingredients as recurring anchors. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "corima.jpg",
       "fc49165799ea108b72fa72f00428a728c292e8688a8d401ccd0de2ea4c1637d1",
-      "oscar-wilde-good-dinner",
+      "q-7edd902873c6df97a7e530b1222c1464",
       "https://guide.michelin.com/en/new-york-state/new-york/restaurant/corima",
     ],
     [
@@ -143,7 +143,7 @@ export const cataloguePackDiningNewYorkCity01 = defineCataloguePackBadges(
       "Original abstract source study using broad fiber appliqué for Dined at Dirt Candy: An original culture-led miniature badge study for Dirt Candy, based on this researched cue: Seasonal vegetables appear raw, cooked, pickled, and preserved, making changing produce the tasting menu's central subject. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "dirt-candy.jpg",
       "e55da5e6801c4cbe11cdc422e664e729b9abfe814a0e66122f017b9870302875",
-      "oscar-wilde-good-dinner",
+      "q-f44a5e7d9ea03747644864d629a63908",
       "https://guide.michelin.com/en/new-york-state/new-york/restaurant/dirt-candy",
     ],
     [
@@ -154,7 +154,7 @@ export const cataloguePackDiningNewYorkCity01 = defineCataloguePackBadges(
       "Original abstract source study using prismatic geometric inlay for Dined at César: An original interior-led miniature badge study for César, based on this researched cue: A simple, clean room gives every table a clear view of the kitchen preparing a seasonal seafood-forward tasting menu. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "cesar.jpg",
       "8d000ac3c8ed0a6dddc201f3ae58fa4e0fc55b6d9f59d622b8168e26d3ca9d36",
-      "oscar-wilde-good-dinner",
+      "q-eae3771148bd3a6754d8d966df995032",
       "https://guide.michelin.com/en/new-york-state/new-york/restaurant/cesar",
     ],
     [
@@ -165,7 +165,7 @@ export const cataloguePackDiningNewYorkCity01 = defineCataloguePackBadges(
       "Original abstract source study using screenprint overlaps for Dined at Torrisi: An original culture-led miniature badge study for Torrisi, based on this researched cue: New York Italian-American pantry and deli traditions are reworked into polished contemporary dishes in Nolita. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "torrisi.jpg",
       "36d00575fb3e2b7fe37ebb58d4a6a9ad6ff2ba437a2a38738bee41ecfcdd1fa5",
-      "oscar-wilde-good-dinner",
+      "q-0ac32f1d93a077906a0e441e4b85f16d",
       "https://guide.michelin.com/en/new-york-state/new-york/restaurant/torrisi",
     ],
     [
@@ -176,7 +176,7 @@ export const cataloguePackDiningNewYorkCity01 = defineCataloguePackBadges(
       "Original abstract source study using screenprint overlaps for Dined at Estela: An original dish-led miniature badge study for Estela, based on this researched cue: Ink-dark arroz negro with squid and hazelnut captures the kitchen's layered, high-contrast approach to familiar ingredients. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "estela.jpg",
       "88ad29c00a2cbf03563f6e75c4804d6ba74f17947cd6bc604683f61ae02eabc6",
-      "oscar-wilde-good-dinner",
+      "q-07aab49d48129eccc442a6c6e8200133",
       "https://guide.michelin.com/en/new-york-state/new-york/restaurant/estela",
     ],
     [
@@ -187,7 +187,7 @@ export const cataloguePackDiningNewYorkCity01 = defineCataloguePackBadges(
       "Original abstract source study using relief-cut silhouettes for Dined at Torien: An original culture-led miniature badge study for Torien, based on this researched cue: A counter-side yakitori sequence uses binchotan charcoal to shape each skewered cut of chicken. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "torien.jpg",
       "d5914129cf5888af1e17b6d785e2d8e772da41de7e5edfb0e120454fcc44b5de",
-      "oscar-wilde-good-dinner",
+      "q-3869da29de778b2eb670bb04122e9747",
       "https://guide.michelin.com/en/new-york-state/new-york/restaurant/torien",
     ],
     [
@@ -198,7 +198,7 @@ export const cataloguePackDiningNewYorkCity01 = defineCataloguePackBadges(
       "Original abstract source study using wood marquetry strata for Dined at Yoshino: An original interior-led miniature badge study for Yoshino, based on this researched cue: A hinoki counter cut from a centuries-old tree anchors an omakase known for warm saba maki and precise nigiri. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "yoshino.jpg",
       "d05c7fa4586aabb99eb35ad4f51d0039ed4ca27514ee03cab4d17763f9c04584",
-      "oscar-wilde-good-dinner",
+      "q-63b3a7e4967ce6c5c6bea48539642a44",
       "https://guide.michelin.com/en/new-york-state/new-york/restaurant/yoshino-1185037",
     ],
     [
@@ -209,7 +209,7 @@ export const cataloguePackDiningNewYorkCity01 = defineCataloguePackBadges(
       "Original abstract source study using cut-paper layers for Dined at Sixty Three Clinton: An original dish-led miniature badge study for Sixty Three Clinton, based on this researched cue: A playful breakfast taco has become a signature within the understated Lower East Side tasting sequence. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "sixty-three-clinton.jpg",
       "2bcd502f88cb1e626bb312263fd86133329a55b45bb2d120e515fdc4fac7d87c",
-      "oscar-wilde-good-dinner",
+      "q-beaf958172c4f28ad01d07509c6132f6",
       "https://guide.michelin.com/en/new-york-state/new-york/restaurant/63-clinton",
     ],
     [
@@ -220,7 +220,7 @@ export const cataloguePackDiningNewYorkCity01 = defineCataloguePackBadges(
       "Original abstract source study using stained-glass lead cells for Dined at Sushi Nakazawa New York: An original interior-led miniature badge study for Sushi Nakazawa New York, based on this researched cue: A sleek ten-seat counter frames tender fish, seasoned rice, wasabi, and a restrained brush of nikiri. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "sushi-nakazawa-new-york.jpg",
       "7dd8d27b71cd1e232e6e8f12f523e9662fda36f01bc6902ba33006938435f715",
-      "oscar-wilde-good-dinner",
+      "q-1a0c053d288133aadc64b40a386edd16",
       "https://guide.michelin.com/en/new-york-state/new-york/restaurant/sushi-nakazawa",
     ],
     [
@@ -231,7 +231,7 @@ export const cataloguePackDiningNewYorkCity01 = defineCataloguePackBadges(
       "Original abstract source study using broad fiber appliqué for Dined at Family Meal at Blue Hill: An original culture-led miniature badge study for Family Meal at Blue Hill, based on this researched cue: Family-style courses center seasonal vegetables and grains connected to the restaurant's upstate farm network. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "family-meal-at-blue-hill.jpg",
       "f0c504cb5d00930ca7b6e508d5c32a491448a3a371e7bbde49e6544dafa118fb",
-      "oscar-wilde-good-dinner",
+      "q-f4edc90e81c1595cb8511242fe3902e9",
       "https://guide.michelin.com/en/new-york-state/new-york/restaurant/blue-hill",
     ],
     [
@@ -242,7 +242,7 @@ export const cataloguePackDiningNewYorkCity01 = defineCataloguePackBadges(
       "Original abstract source study using ceramic underglaze roundel for Dined at Jeju Noodle Bar: An original dish-led miniature badge study for Jeju Noodle Bar, based on this researched cue: Gochu ramyun brings curly noodles and pork broth together in a deeply savory Korean bowl. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "jeju-noodle-bar.jpg",
       "f5f3177fa6b2ba1daaa34cb551a02b71c3836b1cee26a8546c8769d107bb5406",
-      "oscar-wilde-good-dinner",
+      "q-20eafed48a88762d0c37cfb3618ac963",
       "https://guide.michelin.com/en/new-york-state/new-york/restaurant/jeju-noodle-bar",
     ],
     [
@@ -253,7 +253,7 @@ export const cataloguePackDiningNewYorkCity01 = defineCataloguePackBadges(
       "Original abstract source study using prismatic geometric inlay for Dined at Frevo: An original interior-led miniature badge study for Frevo, based on this researched cue: A rotating art panel conceals the entrance to an intimate chef counter tucked behind a gallery. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "frevo.jpg",
       "1cbc653a1f7dc9fc66f4937ef9b035c5f2dfb3f1374d1ced50986be32fd44549",
-      "oscar-wilde-good-dinner",
+      "q-553b5b93fa8c15778453d1ad43464147",
       "https://guide.michelin.com/en/new-york-state/new-york/restaurant/frevo",
     ],
     [
@@ -264,7 +264,7 @@ export const cataloguePackDiningNewYorkCity01 = defineCataloguePackBadges(
       "Original abstract source study using relief-cut silhouettes for Dined at Shmoné: An original interior-led miniature badge study for Shmoné, based on this researched cue: A small, lively counter looks directly into the close-quarters kitchen as dishes emerge from changing market ingredients. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "shmone.jpg",
       "2bffe6558f88a97648f82f49d84b2dbe6d902adca3de4a2977c19fca9d21408b",
-      "oscar-wilde-good-dinner",
+      "q-4d3243e46fbdf7eaf442893028453e3d",
       "https://guide.michelin.com/en/new-york-state/new-york/restaurant/shmone",
     ],
     [
@@ -275,7 +275,7 @@ export const cataloguePackDiningNewYorkCity01 = defineCataloguePackBadges(
       "Original abstract source study using stained-glass lead cells for Dined at Tuome: An original dish-led miniature badge study for Tuome, based on this researched cue: Tender octopus with pork XO sauce captures the menu's layered Asian-influenced contrasts. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "tuome.jpg",
       "cf3b1a403c98f7b762942e287976db4eaaa4542607acbb57d6dc94ef2a609581",
-      "oscar-wilde-good-dinner",
+      "q-81d604e626dc1eabc3c1e912b740edd9",
       "https://guide.michelin.com/en/new-york-state/new-york/restaurant/tuome",
     ],
     [
@@ -286,7 +286,7 @@ export const cataloguePackDiningNewYorkCity01 = defineCataloguePackBadges(
       "Original abstract source study using wood marquetry strata for Dined at Bar Miller: An original culture-led miniature badge study for Bar Miller, based on this researched cue: An intimate wooden counter presents a sustainable omakase built around local seafood and carefully aged fish. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "bar-miller.jpg",
       "a2cc57c1a3921ba018ad5ff008dddf2faa1957bc29d634b7f22e93c89f82c65d",
-      "oscar-wilde-good-dinner",
+      "q-ae807f51977ce3e471ff1f5101bbea7a",
       "https://guide.michelin.com/en/new-york-state/new-york/restaurant/bar-miller",
     ],
     [
@@ -297,7 +297,7 @@ export const cataloguePackDiningNewYorkCity01 = defineCataloguePackBadges(
       "Original abstract source study using ceramic underglaze roundel for Dined at Tsukimi: An original interior-led miniature badge study for Tsukimi, based on this researched cue: Illuminated ceramics, mirrored panels, and soft arches evoke the restaurant's moon-viewing name. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "tsukimi.jpg",
       "c2561091a2cd0b3e113f1dd55de885e3abfad22099a00be66562e37b0ea7f46b",
-      "oscar-wilde-good-dinner",
+      "q-0c0b042042be411617ba88a4f7bc1eb8",
       "https://guide.michelin.com/en/new-york-state/new-york/restaurant/tsukimi",
     ],
     [
@@ -308,7 +308,7 @@ export const cataloguePackDiningNewYorkCity01 = defineCataloguePackBadges(
       "Original abstract source study using ceramic underglaze roundel for Dined at Semma: An original dish-led miniature badge study for Semma, based on this researched cue: A crisp gunpowder dosa wrapped around potato masala expresses the kitchen's focus on regional South Indian cooking. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "semma.jpg",
       "164cd5ca3b75289dc8af9174254e10c3999e927d073f15e4c8e735f33fbf8e31",
-      "oscar-wilde-good-dinner",
+      "q-741cbfdac480dd5e3c0ea5f0bd6dbcee",
       "https://guide.michelin.com/en/new-york-state/new-york/restaurant/semma",
     ],
     [
@@ -319,7 +319,7 @@ export const cataloguePackDiningNewYorkCity01 = defineCataloguePackBadges(
       "Original abstract source study using wood marquetry strata for Dined at Kosaka: An original interior-led miniature badge study for Kosaka, based on this researched cue: A classic twelve-seat counter and subdued room keep attention on the measured omakase progression. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "kosaka.jpg",
       "d701ad43c82937edc8344872fc56f62dfccd8d0c3cab44525dcb3b10c90a9916",
-      "oscar-wilde-good-dinner",
+      "q-3197b675c8057622335204d88b507a8f",
       "https://guide.michelin.com/en/new-york-state/new-york/restaurant/kosaka",
     ],
     [
@@ -330,7 +330,7 @@ export const cataloguePackDiningNewYorkCity01 = defineCataloguePackBadges(
       "Original abstract source study using matte painted masses for Dined at Casa Mono: An original dish-led miniature badge study for Casa Mono, based on this researched cue: Creamy scrambled eggs with sea urchin exemplify the compact kitchen's bold Spanish tapas combinations. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "casa-mono.jpg",
       "7dc2923857d0919eb846f112c29110b5765fd2119e66d611f923dc9957e14f39",
-      "oscar-wilde-good-dinner",
+      "q-c4e60fbc7a4dadcb50dbb444a667e961",
       "https://guide.michelin.com/en/new-york-state/new-york/restaurant/casa-mono",
     ],
     [
@@ -341,7 +341,7 @@ export const cataloguePackDiningNewYorkCity01 = defineCataloguePackBadges(
       "Original abstract source study using cut-paper layers for Dined at Oiji Mi: An original dish-led miniature badge study for Oiji Mi, based on this researched cue: Lobster ramyun brings luxurious shellfish to a composed contemporary Korean tasting format. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "oiji-mi.jpg",
       "dfff1d4810cce9422626a268b8780b6a2ca67e0f5be59a32f0046896015fc0a9",
-      "oscar-wilde-good-dinner",
+      "q-7a7bce383a954c2bda75191362f4a7cd",
       "https://guide.michelin.com/en/new-york-state/new-york/restaurant/oiji-mi",
     ],
     [
@@ -352,7 +352,7 @@ export const cataloguePackDiningNewYorkCity01 = defineCataloguePackBadges(
       "Original abstract source study using prismatic geometric inlay for Dined at bōm: An original interior-led miniature badge study for bōm, based on this researched cue: A marble counter with integrated grills faces the open kitchen and a visible dry-aging cabinet. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "bom.jpg",
       "ee04055a7686a1fc9fdbbf00fa8c8b96d869eeda9f733dd04a4ab73b18a8a4f0",
-      "oscar-wilde-good-dinner",
+      "q-dcdc5f92b8d87391ece7b560772eebee",
       "https://guide.michelin.com/en/new-york-state/new-york/restaurant/bom",
     ],
     [
@@ -363,7 +363,7 @@ export const cataloguePackDiningNewYorkCity01 = defineCataloguePackBadges(
       "Original abstract source study using wood marquetry strata for Dined at Gramercy Tavern: An original interior-led miniature badge study for Gramercy Tavern, based on this researched cue: A warm wood tavern opens into a more formal dining room, joining neighborhood ease with polished service. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "gramercy-tavern.jpg",
       "dc569f4ffc1f502874b97b66e195aa70e1dfc430e1153628ae0a7499c05ca6df",
-      "oscar-wilde-good-dinner",
+      "q-b0c32194ae1cc65b95f31cf44651d4e8",
       "https://guide.michelin.com/en/new-york-state/new-york/restaurant/gramercy-tavern",
     ],
     [
@@ -374,7 +374,7 @@ export const cataloguePackDiningNewYorkCity01 = defineCataloguePackBadges(
       "Original abstract source study using broad fiber appliqué for Dined at Rezdôra: An original culture-led miniature badge study for Rezdôra, based on this researched cue: Handmade pasta and airy gnocco fritto draw the menu toward the regional food traditions of Emilia-Romagna. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "rezdora.jpg",
       "6454d233167aa9176f76a43c3d0d998a5e76e95dc0cdedcc90095bafeffc7ba4",
-      "oscar-wilde-good-dinner",
+      "q-48da17de5d0808806f01d9655ab22cc6",
       "https://guide.michelin.com/en/new-york-state/new-york/restaurant/rezdora-osteria-emiliana",
     ],
     [
@@ -385,7 +385,7 @@ export const cataloguePackDiningNewYorkCity01 = defineCataloguePackBadges(
       "Original abstract source study using screenprint overlaps for Dined at Noda: An original interior-led miniature badge study for Noda, based on this researched cue: An eight-seat half-moon counter sits beyond a cocktail lounge in a dark, speakeasy-like room. The design reduces that cue to 4 broad flat forms for legibility on a manufactured badge.",
       "noda.jpg",
       "20342dc4999141d209ca50255547e8370933766ebbfe03fe36a73ac239fe5390",
-      "oscar-wilde-good-dinner",
+      "q-b7de024f24a88d4195f6de1a67949e21",
       "https://guide.michelin.com/en/new-york-state/new-york/restaurant/noda",
     ],
   ],

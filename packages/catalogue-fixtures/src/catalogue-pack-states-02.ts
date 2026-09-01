@@ -11,7 +11,7 @@ export const cataloguePackStatesNThroughZ = defineCataloguePackBadges(
       "An original source study using broad fiber appliqué, showing glaciated peaks rising beyond open prairie beneath a vast sky.",
       "montana.jpg",
       "285f8ab1c3cda1b24bcb9bab67eaf94d0fd6d22654ac516a757bff92e6210fdd",
-      "henry-david-thoreau-wildness",
+      "q-b0180ad0ddd561b69432f4391bbd6787",
     ],
     [
       "visited-us-state-31",
@@ -21,7 +21,7 @@ export const cataloguePackStatesNThroughZ = defineCataloguePackBadges(
       "An original source study using matte painted masses, showing sandhill cranes gathering along the braided Platte River.",
       "nebraska.jpg",
       "63d278a09fbe05ae965761838f4470ca48b4b1929ec8d335fa1e77456d132dc7",
-      "john-muir-eternal-sunrise",
+      "q-dd6c204e4e25aa269cb712bcd4f1bef8",
     ],
     [
       "visited-us-state-32",
@@ -31,7 +31,7 @@ export const cataloguePackStatesNThroughZ = defineCataloguePackBadges(
       "An original source study using relief-cut silhouettes, showing Basin and Range ridges repeating across a bright desert playa.",
       "nevada.jpg",
       "e52be3716e2fac7ca411edd640ae2005fceaae5d8669c6c9344dd3b4fdb42621",
-      "mark-twain-travel-prejudice",
+      "q-817f4c6b1974a321467a259c18362f17",
     ],
     [
       "visited-us-state-33",
@@ -41,7 +41,7 @@ export const cataloguePackStatesNThroughZ = defineCataloguePackBadges(
       "An original source study using stained-glass lead cells, showing Mount Washington above layered White Mountain forest in autumn.",
       "new-hampshire.jpg",
       "29d981690afd6a76125f3830618f1609a2e41b4471b908b69522295af7f06153",
-      "john-muir-every-walk-nature",
+      "q-e631d04d796b9cf78695b36c3debcf10",
     ],
     [
       "visited-us-state-34",
@@ -51,7 +51,7 @@ export const cataloguePackStatesNThroughZ = defineCataloguePackBadges(
       "An original source study using bold enamel contour, showing tea-dark Pine Barrens water flowing through Atlantic white cedar.",
       "new-jersey.jpg",
       "258b7dd983cc6f7b018cfde22591f9312c346d1bd2704cb1894886526f447d4d",
-      "henry-david-thoreau-wildness",
+      "q-99950d54a39156dfa8477116057b0924",
     ],
     [
       "visited-us-state-35",
@@ -61,7 +61,7 @@ export const cataloguePackStatesNThroughZ = defineCataloguePackBadges(
       "An original source study using broad atlas contours, showing white gypsum dunes folding beneath the blue San Andres Mountains.",
       "new-mexico.jpg",
       "61da3498934acd8c94034e8b1b999455ad68175cced81f153c226d8b646d8769",
-      "john-muir-eternal-sunrise",
+      "q-533409b2dead0fda9d25b84188354158",
     ],
     [
       "visited-us-state-36",
@@ -71,7 +71,7 @@ export const cataloguePackStatesNThroughZ = defineCataloguePackBadges(
       "An original source study using relief-cut silhouettes, showing the low broad American Falls beside the slender Bridal Veil Falls, separated by wooded Luna Island, with a distant city skyline on a flat Great Lakes horizon.",
       "new-york.jpg",
       "39bca46bbc41d5d670bf0bfb9b2c640a78024891f41f1f3b707813510f03fe61",
-      "mark-twain-travel-prejudice",
+      "q-900ec7c8374c101699da0492bc4df6e3",
     ],
     [
       "visited-us-state-37",
@@ -81,7 +81,7 @@ export const cataloguePackStatesNThroughZ = defineCataloguePackBadges(
       "An original source study using matte painted masses, showing layered Blue Ridge summits with blooming rhododendron in the foreground.",
       "north-carolina.jpg",
       "481f9d78427a643a972124c9676a0ee7a2f7bc9400be59626f5e5615f16575bb",
-      "john-muir-every-walk-nature",
+      "q-58b4e6b61cac051fd2672372e82d8656",
     ],
     [
       "visited-us-state-38",
@@ -91,7 +91,7 @@ export const cataloguePackStatesNThroughZ = defineCataloguePackBadges(
       "An original source study using screenprint overlaps, showing painted badlands rising behind bison and mixed-grass prairie.",
       "north-dakota.jpg",
       "fcda9d7e68f62cc56435a1b4ce3045f856c83d5ff3ccf58dff850031c193bbd7",
-      "henry-david-thoreau-wildness",
+      "q-e55caa94c442aa24ec284f30c45c6c27",
     ],
     [
       "visited-us-state-39",
@@ -101,7 +101,7 @@ export const cataloguePackStatesNThroughZ = defineCataloguePackBadges(
       "An original source study using matte painted masses, showing a Hocking Hills sandstone recess beneath beech and maple forest.",
       "ohio.jpg",
       "21db5b8212256ca7398e79a7b5a90c41a05257cd21acb56406aa3076913ecc2b",
-      "john-muir-eternal-sunrise",
+      "q-0b4cf4284d439dd693f25d9d478dfa90",
     ],
     [
       "visited-us-state-40",
@@ -111,7 +111,7 @@ export const cataloguePackStatesNThroughZ = defineCataloguePackBadges(
       "An original source study using woven tapestry bands, showing rounded Wichita Mountains granite above prairie and a grazing bison.",
       "oklahoma.jpg",
       "cfb9900e5c3823e4836443dabd8fa05fef20a7369e939d28bfb213c073e9bfcc",
-      "mark-twain-travel-prejudice",
+      "q-6f9004c1fda083725a1ce5e5e1767beb",
     ],
     [
       "visited-us-state-41",
@@ -121,7 +121,7 @@ export const cataloguePackStatesNThroughZ = defineCataloguePackBadges(
       "An original source study using cut-paper layers, showing Pacific sea stacks beyond a wind-shaped Douglas-fir coast.",
       "oregon.jpg",
       "a1fce8b7652897a7f49523d97793ef4cccc489a7606e1a6452df8bc12ca0292b",
-      "john-muir-every-walk-nature",
+      "q-6951893c13c4337602d3d91c1c446094",
     ],
     [
       "visited-us-state-42",
@@ -131,7 +131,7 @@ export const cataloguePackStatesNThroughZ = defineCataloguePackBadges(
       "An original source study using bold enamel contour, showing the Susquehanna River turning between long forested Appalachian ridges.",
       "pennsylvania.jpg",
       "c80d99bc4c83881365819b9d4fc4a7d371abd2234a643de619b9e5001b89f71c",
-      "henry-david-thoreau-wildness",
+      "q-188e8a9bc3768bfbb59c060937a77bd2",
     ],
     [
       "visited-us-state-44",
@@ -141,7 +141,7 @@ export const cataloguePackStatesNThroughZ = defineCataloguePackBadges(
       "An original source study using matte painted masses, showing a rocky Narragansett Bay shore opening around islands and a white sail.",
       "rhode-island.jpg",
       "7d7afea250b26bcc82b661cdaaed0d0c71da238a8851fc44e94178e4169223f8",
-      "mark-twain-travel-prejudice",
+      "q-59673e0b69c7cda6fddd3c1b8345b162",
     ],
     [
       "visited-us-state-45",
@@ -151,7 +151,7 @@ export const cataloguePackStatesNThroughZ = defineCataloguePackBadges(
       "An original source study using relief-cut silhouettes, showing cypress knees and tupelo reflected in a blackwater river.",
       "south-carolina.jpg",
       "987f7fba100499fcd7bd69fceae554df64d5e761fa6312b3c8642d17a9cfb513",
-      "john-muir-every-walk-nature",
+      "q-8e521b6311f9fc5c73c7402a5774f84e",
     ],
     [
       "visited-us-state-46",
@@ -161,7 +161,7 @@ export const cataloguePackStatesNThroughZ = defineCataloguePackBadges(
       "An original source study using screenprint overlaps, showing striped Badlands pinnacles opening abruptly from mixed-grass prairie.",
       "south-dakota.jpg",
       "d82783200ebc6990ed6f9769e4ed617c3e3e6190612c9895c4c2e62eccd554ab",
-      "henry-david-thoreau-wildness",
+      "q-284d81793a72886c73c1b5caeb7f206a",
     ],
     [
       "visited-us-state-47",
@@ -171,7 +171,7 @@ export const cataloguePackStatesNThroughZ = defineCataloguePackBadges(
       "An original source study using large mosaic tesserae, showing blue Great Smoky Mountain ridges rising behind flowering rhododendron.",
       "tennessee.jpg",
       "e421c68d862101d9c7f331bf37b593556673c5b9a8e4c8b0b97f127abd204200",
-      "john-muir-eternal-sunrise",
+      "q-756b8df7267601ef040b9a283298b79e",
     ],
     [
       "visited-us-state-48",
@@ -181,7 +181,7 @@ export const cataloguePackStatesNThroughZ = defineCataloguePackBadges(
       "An original source study using matte painted masses, showing the Rio Grande curving through the sheer walls of Santa Elena Canyon.",
       "texas.jpg",
       "fd334b0c9957c38826eede8d0c0c371fd08f3f6b595ff28d15ce5edfc6c2cf92",
-      "mark-twain-travel-prejudice",
+      "q-1624430dac4aa6493ade474a12e2e282",
     ],
     [
       "visited-us-state-49",
@@ -191,7 +191,7 @@ export const cataloguePackStatesNThroughZ = defineCataloguePackBadges(
       "An original source study using prismatic geometric inlay, showing a sandstone arch framing fins, canyon plateaus, and desert sky.",
       "utah.jpg",
       "3f4c87b3ceffe46cf18341c11e6dfdd622c85f17b1375efa21a67e523fbaf44a",
-      "john-muir-every-walk-nature",
+      "q-3287c4cbd25dcbfe7e873b215f5e4668",
     ],
     [
       "visited-us-state-50",
@@ -201,7 +201,7 @@ export const cataloguePackStatesNThroughZ = defineCataloguePackBadges(
       "An original source study using ceramic underglaze roundel, showing a covered bridge crossing a clear river beneath autumn Green Mountains.",
       "vermont.jpg",
       "8865df1b56df32b037d0034ae937a00b2bb363fd06b45ccbfd336a110a936638",
-      "henry-david-thoreau-wildness",
+      "q-d83bce4e60ac1972460ece5eff64ff4d",
     ],
     [
       "visited-us-state-51",
@@ -211,7 +211,7 @@ export const cataloguePackStatesNThroughZ = defineCataloguePackBadges(
       "An original source study using wood marquetry strata, showing Shenandoah Valley fields held between long blue mountain ridges.",
       "virginia.jpg",
       "068ba27126b7970435412f793f6895c16f925cdd6d2bbb52f641acf9980ac0b2",
-      "john-muir-eternal-sunrise",
+      "q-1bdbf34e7a2fa8824cd44d19d66011b3",
     ],
     [
       "visited-us-state-53",
@@ -221,7 +221,7 @@ export const cataloguePackStatesNThroughZ = defineCataloguePackBadges(
       "An original source study using relief-cut silhouettes, showing Mount Rainier above dark evergreen forest and subalpine wildflowers.",
       "washington.jpg",
       "1f6ff08302c979ef9106a9fa33b971d2410af730150e43a7db2550749db730a9",
-      "john-muir-every-walk-nature",
+      "q-c87fa5786b46182a565921a586874ccc",
     ],
     [
       "visited-us-state-54",
@@ -231,7 +231,7 @@ export const cataloguePackStatesNThroughZ = defineCataloguePackBadges(
       "An original source study using open clear-line enamel scene, showing the steel arch of New River Gorge Bridge spanning a forested canyon.",
       "west-virginia.jpg",
       "15679d84fcba68b6202444338d7a056c9650f92cb489f4d2899a3ad517cb6b1e",
-      "henry-david-thoreau-wildness",
+      "q-b66ea173429bf93f3d76966b9c3303be",
     ],
     [
       "visited-us-state-55",
@@ -241,7 +241,7 @@ export const cataloguePackStatesNThroughZ = defineCataloguePackBadges(
       "An original source study using large stepped pixel clusters, showing Apostle Islands sandstone sea caves opening onto Lake Superior.",
       "wisconsin.jpg",
       "348bb4ba5ff24c81be555d1267d5af8035f679a31e0892fb87266424c4895a65",
-      "john-muir-eternal-sunrise",
+      "q-469db9bcd0656b0fda69c098a6e6cf50",
     ],
     [
       "visited-us-state-56",
@@ -251,7 +251,7 @@ export const cataloguePackStatesNThroughZ = defineCataloguePackBadges(
       "An original source study using broad fiber appliqué, showing the Grand Teton rising above sagebrush and the winding Snake River.",
       "wyoming.jpg",
       "9189c48656873959bad3501fbfeb3098c98c8b5189a929e9f6cd0935eafe3b01",
-      "mark-twain-travel-prejudice",
+      "q-da543742eabf59f9dbd1fff4b897db38",
     ],
   ],
   {

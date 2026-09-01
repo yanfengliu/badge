@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 
+import { catalogueQuotationBankForDefinition } from "@badge/catalogue-quotation-data";
 import { describe, expect, it } from "vitest";
 
 import { findArtStyle } from "./art-styles.js";
@@ -7,7 +8,6 @@ import {
   bookAuthoringCampaign,
   bookAuthoringEdition,
   bookAuthoringRecords,
-  bookHistoricQuotations,
   bookPrimaryPrompts,
 } from "./books-edition.js";
 import { compileManufacturableCandidatePrompt } from "./manufacturable-prompt-recipe.js";
@@ -130,19 +130,20 @@ describe("the curated 50-book authoring edition", () => {
     expect(new Set(bookAuthoringRecords.map(({ candidateStyles }) => candidateStyles[0])).size).toBe(24);
   });
 
-  it("preselects a source-linked quotation from a real historical figure", () => {
-    expect(bookHistoricQuotations).toHaveLength(3);
-    const quotationIds = new Set<string>(bookHistoricQuotations.map(({ quotationId }) => quotationId));
-    for (const quotation of bookHistoricQuotations) {
-      expect(quotation.quotationId).toMatch(/^historic-quotation\//u);
-      expect(quotation.personName).toMatch(/\S+\s+\S+/u);
-      expect(quotation.sourceUrl).toMatch(/^https:\/\//u);
-      expect(quotation.personWikipediaUrl).toMatch(/^https:\/\/en\.wikipedia\.org\/wiki\//u);
-    }
+  it("preselects the first source-linked quotation from each book's private bank", () => {
+    const quotationIds = new Set<string>();
     for (const book of bookAuthoringRecords) {
-      expect(book.defaultQuotationId, book.bookTitle).toBeDefined();
-      expect(quotationIds.has(book.defaultQuotationId!), book.bookTitle).toBe(true);
+      const bank = catalogueQuotationBankForDefinition(book.definitionId);
+      expect(book.defaultQuotationId, book.bookTitle).toBe(bank[0].quotationId);
+      for (const quotation of bank) {
+        expect(quotationIds.has(quotation.quotationId), quotation.quotationId).toBe(false);
+        quotationIds.add(quotation.quotationId);
+        expect(quotation.personName.trim()).not.toBe("");
+        expect(quotation.sourceUrl).toMatch(/^https:\/\//u);
+        expect(quotation.personWikipediaUrl).toMatch(/^https:\/\/en\.wikipedia\.org\/wiki\//u);
+      }
     }
+    expect(quotationIds).toHaveProperty("size", 100);
   });
 
   it("builds one deterministic role-complete campaign with a truthful primary per work", () => {

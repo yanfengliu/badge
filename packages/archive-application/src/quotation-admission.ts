@@ -3,6 +3,7 @@ import {
   formatSayingForArchive,
   sayingRequestSchema,
   validateSayingResponseForRequest,
+  type HistoricalQuotation,
   type SayingRequest,
   type SayingResponse,
 } from "@badge/saying-contract";
@@ -65,6 +66,29 @@ export class TrustedQuotationAdmission {
     );
   }
 
+  trustedAcceptedQuotation(record: ArchiveRecord): HistoricalQuotation | null {
+    if (record.acceptedSaying === null) return null;
+    const request = this.requests.get(record.recordId);
+    if (!request || request.title !== record.title || request.criterion !== record.criterion) return null;
+    return (
+      request.allowedQuotations.find(
+        (quotation) =>
+          formatSayingForArchive({ kind: "quotation", saying: quotation.text, quotation }) ===
+          record.acceptedSaying,
+      ) ?? null
+    );
+  }
+
+  uniquenessReservedQuotationTexts(record: ArchiveRecord): readonly string[] {
+    const trustedQuotation = this.trustedAcceptedQuotation(record);
+    if (trustedQuotation) return [trustedQuotation.text];
+    return reservedAcceptedSayingTexts(record.acceptedSaying);
+  }
+
+  trustedQuotationBank(record: ArchiveRecord): readonly HistoricalQuotation[] {
+    return this.requestFor(record).allowedQuotations;
+  }
+
   private requestFor(record: ArchiveRecord): SayingRequest {
     const request = this.requests.get(record.recordId);
     if (!request) {
@@ -81,4 +105,17 @@ export class TrustedQuotationAdmission {
     }
     return request;
   }
+}
+
+function reservedAcceptedSayingTexts(acceptedSaying: string | null): readonly string[] {
+  if (acceptedSaying === null) return [];
+  const possibleTexts = new Set([acceptedSaying]);
+  if (acceptedSaying.startsWith("“")) {
+    let separatorIndex = acceptedSaying.indexOf("” — ", 1);
+    while (separatorIndex >= 0) {
+      possibleTexts.add(acceptedSaying.slice(1, separatorIndex));
+      separatorIndex = acceptedSaying.indexOf("” — ", separatorIndex + 1);
+    }
+  }
+  return [...possibleTexts];
 }

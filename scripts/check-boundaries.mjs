@@ -258,6 +258,7 @@ assertNoReachable("packages/saying-contract/src", [
   "packages/art-generation-contract/src",
   "packages/renderer-web/src",
 ]);
+assertNoReachable("packages/quotation-identity/src", ["apps", "packages/renderer-web/src"]);
 assertNoReachable("packages/saying-live-contract/src", [
   "apps",
   "packages/archive-application/src",
@@ -272,6 +273,7 @@ assertNoExternal("packages/pack-contract/src", ["react", "idb", "three", "@react
 assertNoExternal("packages/pack-compiler/src", ["react", "idb", "three", "@react-three"]);
 assertNoExternal("packages/catalogue-authoring/src", ["react", "idb", "three", "@react-three"]);
 assertNoExternal("packages/saying-contract/src", ["react", "idb", "three", "@react-three"]);
+assertNoExternal("packages/quotation-identity/src", ["react", "idb", "three", "@react-three"]);
 assertNoExternal("packages/saying-live-contract/src", ["react", "idb", "three", "@react-three"]);
 assertNoExternalProduction("packages/saying-live-contract/src", ["vite", "@anthropic-ai", "@openai"]);
 assertNoNodeBuiltinsProduction("packages/saying-live-contract/src");

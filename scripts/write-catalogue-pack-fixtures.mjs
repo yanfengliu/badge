@@ -10,7 +10,7 @@ const root = process.cwd();
 const fixturesDirectory = path.resolve(root, "packages/catalogue-fixtures/src");
 const assetsRoot = path.resolve(root, "packages/catalogue-authoring/assets");
 
-const CATALOGUE_PACK_VERSION = "1.0.0-alpha.2";
+const CATALOGUE_PACK_VERSION = "1.0.0-alpha.3";
 
 const OUTPUT_PLAN = [
   { file: "catalogue-pack-parks-01.ts", exportName: "cataloguePackParksAThroughG" },
@@ -30,14 +30,6 @@ const OUTPUT_PLAN = [
 
 function sha256(bytes) {
   return createHash("sha256").update(bytes).digest("hex");
-}
-
-function stableQuotationIndex(definitionId, bankSize) {
-  let accumulator = 0;
-  for (const character of definitionId) {
-    accumulator = (accumulator * 31 + character.codePointAt(0)) % 0xffffffff;
-  }
-  return accumulator % bankSize;
 }
 
 function stripQuotationPrefix(quotationId) {
@@ -113,7 +105,6 @@ const server = await createServer({
 try {
   const authoring = await server.ssrLoadModule("/packages/catalogue-authoring/src/index.ts");
   const discovery = await server.ssrLoadModule("/packages/catalogue-fixtures/src/discovery.ts");
-  const quotations = await server.ssrLoadModule("/packages/catalogue-fixtures/src/catalogue-quotations.ts");
   const packContract = await server.ssrLoadModule("/packages/pack-contract/src/index.ts");
 
   const studies = discovery.discoveryBadges.filter((badge) => badge.availability === "source-study");
@@ -173,7 +164,6 @@ try {
     });
   }
 
-  const parkBankIds = quotations.parkQuotationBank.map((quotation) => quotation.id);
   const entriesBySet = new Map();
   for (const study of studies) {
     const bound = authoringByDefinitionId.get(study.discoveryId);
@@ -183,10 +173,7 @@ try {
       );
     }
     const record = bound.record;
-    const defaultQuotationId =
-      bound.kind === "park"
-        ? parkBankIds[stableQuotationIndex(study.discoveryId, parkBankIds.length)]
-        : stripQuotationPrefix(record.defaultQuotationId);
+    const defaultQuotationId = stripQuotationPrefix(record.defaultQuotationId);
     const entry = {
       definitionId: study.discoveryId,
       title: study.title,
@@ -326,7 +313,7 @@ try {
     "  catalogueRenderRecipeForSet,",
     '} from "./catalogue-pack-types.js";',
     'export type { CataloguePackBadgeFixture, CataloguePackBadgeRow } from "./catalogue-pack-types.js";',
-    'export { catalogueQuotationBanksBySetId } from "./catalogue-quotations.js";',
+    'export { catalogueQuotationBanksByDefinitionId } from "./catalogue-quotations.js";',
     "",
   ].join("\n");
 

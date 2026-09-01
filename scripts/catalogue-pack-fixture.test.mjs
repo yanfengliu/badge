@@ -3,28 +3,28 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import {
-  bookHistoricQuotations,
-  educationMilestoneQuotationBank,
-  michelinDiningQuotationBank,
   selectedBookStudies,
   selectedEducationMilestoneStudies,
   selectedMichelinDiningStudies,
   selectedUsStateStudies,
   selectedVideoGameStudies,
-  usStateHistoricQuotations,
-  videoGameHistoricQuotations,
+  usNationalParks,
 } from "@badge/catalogue-authoring";
+import {
+  CATALOGUE_QUOTATIONS_CHECKED_AT,
+  catalogueQuotationBanksByDefinitionId as sourceQuotationBanksByDefinitionId,
+} from "@badge/catalogue-quotation-data";
 import { starterBadges } from "@badge/catalogue-fixtures/archive";
 import {
   cataloguePackBadges,
   cataloguePackRef,
-  catalogueQuotationBanksBySetId,
+  catalogueQuotationBanksByDefinitionId,
 } from "@badge/catalogue-fixtures/catalogue-pack";
 import { discoveryBadges } from "@badge/catalogue-fixtures/discovery";
 import { validateArchiveSourceJpeg } from "@badge/archive-application";
 import { canonicalJson } from "@badge/pack-contract";
 import { renderRecipeSchema } from "@badge/render-recipe";
-import { sayingRequestSchema } from "@badge/saying-contract";
+import { canonicalQuotationTextKey, sayingRequestSchema } from "@badge/saying-contract";
 import { describe, expect, it } from "vitest";
 
 const repositoryRoot = path.resolve(import.meta.dirname, "..");
@@ -41,7 +41,7 @@ function stripPrefix(quotationId) {
   return quotationId.replace(/^historic-quotation\//u, "");
 }
 
-function normalizedAuthoringQuotation(entry) {
+function normalizedSourceQuotation(entry) {
   return {
     id: stripPrefix(entry.quotationId),
     text: entry.text,
@@ -50,11 +50,6 @@ function normalizedAuthoringQuotation(entry) {
     sourceUrl: entry.sourceUrl,
     ...(entry.personWikipediaUrl ? { personWikipediaUrl: entry.personWikipediaUrl } : {}),
   };
-}
-
-function normalizedStarterQuotation(entry) {
-  const { id, text, person, sourceTitle, sourceUrl, personWikipediaUrl } = entry;
-  return { id, text, person, sourceTitle, sourceUrl, ...(personWikipediaUrl ? { personWikipediaUrl } : {}) };
 }
 
 describe("discovery catalogue pack fixture", () => {
@@ -117,32 +112,23 @@ describe("discovery catalogue pack fixture", () => {
     }
   }, 120_000);
 
-  it("reuses only already-reviewed source-checked quotations, verbatim", () => {
-    const reviewed = new Map();
-    for (const starter of starterBadges) {
-      for (const quotation of starter.historicalQuotations) {
-        reviewed.set(quotation.id, normalizedStarterQuotation(quotation));
-      }
-    }
-    for (const entry of [
-      ...usStateHistoricQuotations,
-      ...bookHistoricQuotations,
-      ...educationMilestoneQuotationBank,
-      ...michelinDiningQuotationBank,
-      ...videoGameHistoricQuotations,
-    ]) {
-      const normalized = normalizedAuthoringQuotation(entry);
-      reviewed.set(normalized.id, normalized);
-    }
+  it("compiles every source-checked quotation record verbatim into one private fixture bank", () => {
+    const allBadges = [...starterBadges, ...cataloguePackBadges];
+    expect(Object.keys(sourceQuotationBanksByDefinitionId)).toHaveLength(allBadges.length);
+    expect(Object.keys(catalogueQuotationBanksByDefinitionId)).toHaveLength(allBadges.length);
+    expect(CATALOGUE_QUOTATIONS_CHECKED_AT).toBe("2026-08-31");
 
-    for (const [setId, bank] of Object.entries(catalogueQuotationBanksBySetId)) {
-      for (const quotation of bank) {
-        const source = reviewed.get(quotation.id);
-        expect(
-          source,
-          `${setId} bank entry ${quotation.id} exists in a reviewed release module`,
-        ).toBeDefined();
-        expect(normalizedStarterQuotation(quotation)).toEqual(source);
+    for (const badge of allBadges) {
+      const sourceBank = sourceQuotationBanksByDefinitionId[badge.definitionId];
+      const fixtureBank = catalogueQuotationBanksByDefinitionId[badge.definitionId];
+      expect(sourceBank, `${badge.definitionId} has reviewed source rows`).toBeDefined();
+      expect(fixtureBank, `${badge.definitionId} has a compiled private bank`).toBeDefined();
+      expect(fixtureBank).toEqual(sourceBank.map(normalizedSourceQuotation));
+      expect(badge.historicalQuotations).toEqual(fixtureBank);
+      for (const source of sourceBank) {
+        expect(source.sourceSha256, `${source.quotationId} pins reviewed source bytes`).toMatch(
+          /^[a-f0-9]{64}$/u,
+        );
       }
     }
   });
@@ -150,6 +136,7 @@ describe("discovery catalogue pack fixture", () => {
   it("honors each authoring record's designated default quotation", () => {
     const designatedByDefinitionId = new Map();
     for (const record of [
+      ...usNationalParks,
       ...selectedUsStateStudies,
       ...selectedBookStudies,
       ...selectedEducationMilestoneStudies,
@@ -162,11 +149,8 @@ describe("discovery catalogue pack fixture", () => {
       const bankIds = badge.historicalQuotations.map((quotation) => quotation.id);
       expect(bankIds, `${badge.definitionId} default is in its bank`).toContain(badge.defaultQuotationId);
       const designated = designatedByDefinitionId.get(badge.definitionId);
-      if (designated !== undefined) {
-        expect(badge.defaultQuotationId, `${badge.definitionId} designated default`).toBe(designated);
-      } else {
-        expect(badge.setId).toBe("us-national-parks");
-      }
+      expect(designated, `${badge.definitionId} has an authoring default`).toBeDefined();
+      expect(badge.defaultQuotationId, `${badge.definitionId} designated default`).toBe(designated);
     }
   });
 
@@ -189,9 +173,61 @@ describe("discovery catalogue pack fixture", () => {
     }
   });
 
+  it("gives every badge a globally disjoint source-checked quotation bank", () => {
+    const bankOwnersByQuotationText = new Map();
+    const bankOwnersByQuotationId = new Map();
+    const defaultOwnersByQuotationText = new Map();
+    const allBadges = [
+      ...starterBadges.map((badge) => ({
+        recordId: `starter:${badge.definitionId}`,
+        defaultQuotationId: badge.defaultQuotationId,
+        historicalQuotations: badge.historicalQuotations,
+      })),
+      ...cataloguePackBadges,
+    ];
+
+    for (const badge of allBadges) {
+      expect(
+        badge.historicalQuotations.length,
+        `${badge.recordId} has regeneration choice`,
+      ).toBeGreaterThanOrEqual(2);
+
+      for (const quotation of badge.historicalQuotations) {
+        const canonicalText = canonicalQuotationTextKey(quotation.text);
+        const previousTextOwner = bankOwnersByQuotationText.get(canonicalText);
+        expect(
+          previousTextOwner,
+          `${badge.recordId} quote ${quotation.id} repeats the wording owned by ${previousTextOwner ?? "no badge"}`,
+        ).toBeUndefined();
+        bankOwnersByQuotationText.set(canonicalText, badge.recordId);
+
+        const previousIdOwner = bankOwnersByQuotationId.get(quotation.id);
+        expect(
+          previousIdOwner,
+          `${badge.recordId} quote id ${quotation.id} is already owned by ${previousIdOwner ?? "no badge"}`,
+        ).toBeUndefined();
+        bankOwnersByQuotationId.set(quotation.id, badge.recordId);
+      }
+
+      const selected = badge.historicalQuotations.find(
+        (quotation) => quotation.id === badge.defaultQuotationId,
+      );
+      expect(selected, `${badge.recordId} default remains in its private bank`).toBeDefined();
+      const canonicalDefault = canonicalQuotationTextKey(selected.text);
+      const previousDefaultOwner = defaultOwnersByQuotationText.get(canonicalDefault);
+      expect(
+        previousDefaultOwner,
+        `${badge.recordId} defaults to wording already selected by ${previousDefaultOwner ?? "no badge"}`,
+      ).toBeUndefined();
+      defaultOwnersByQuotationText.set(canonicalDefault, badge.recordId);
+    }
+
+    expect(defaultOwnersByQuotationText.size).toBe(allBadges.length);
+  });
+
   it("binds the pack reference to the exact generated content digest", () => {
     expect(cataloguePackRef.packId).toBe("badge.catalogue.discovery");
-    expect(cataloguePackRef.version).toBe("1.0.0-alpha.2");
+    expect(cataloguePackRef.version).toBe("1.0.0-alpha.3");
     const digest = sha256(
       canonicalJson({
         packId: cataloguePackRef.packId,

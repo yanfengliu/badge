@@ -1,5 +1,5 @@
 import { findArtStyle } from "./art-styles";
-import { defaultUsStateQuotationId } from "./us-state-quotations";
+import { catalogueQuotationBankForDefinition } from "@badge/catalogue-quotation-data";
 import type { BadgeArtBrief, UsStateAuthoringRecord } from "./types";
 
 export interface UsStateSeed {
@@ -75,7 +75,7 @@ export function defineUsState(seed: Readonly<UsStateSeed>): UsStateAuthoringReco
       note: "The Census source establishes state identity only; visual landmark, ecology, and palette cues are curated art direction pending item-level authoritative fact references.",
       sourceUrls: seed.artBriefSourceUrls ?? [],
     },
-    defaultQuotationId: defaultUsStateQuotationId(seed.censusStateFips),
+    defaultQuotationId: catalogueQuotationBankForDefinition(definitionId)[0].quotationId,
     censusStateFips: seed.censusStateFips,
     postalCode: seed.postalCode,
   };

@@ -48,6 +48,7 @@
     "precheck:local-startup": "npm run generate:fixtures",
     "check:local-startup": "node scripts/check-local-startup.mjs",
     "audit": "npm audit --audit-level=high",
+    "audit:quotation-sources": "node scripts/audit-catalogue-quotation-sources.mjs",
     "verify": "npm run typecheck && npm run lint && npm run test && npm run build && npm run check:local-startup && npm run check:boundaries && npm run check:docs && npm run format:check && npm run audit"
   },
   "dependencies": {

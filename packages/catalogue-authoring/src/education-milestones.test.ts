@@ -1,3 +1,4 @@
+import { catalogueQuotationBankForDefinition } from "@badge/catalogue-quotation-data";
 import { describe, expect, it } from "vitest";
 
 import { artStyleLibrary, findArtStyle } from "./art-styles.js";
@@ -6,19 +7,16 @@ import {
   educationMilestoneAuthoringRecords,
   educationMilestoneCampaign,
   educationMilestonePrimaryPrompts,
-  educationMilestoneQuotationBank,
 } from "./education-milestones.js";
 
 const expectedIdentity = [
   {
     definitionId: "finished-masters-degree",
     slug: "masters-degree",
-    defaultQuotationId: "historic-quotation/frederick-douglass-no-struggle-1857",
   },
   {
     definitionId: "earned-unl-degree",
     slug: "university-nebraska-lincoln-degree",
-    defaultQuotationId: "historic-quotation/theodore-roosevelt-hard-to-fail-1899",
   },
 ] as const;
 
@@ -31,10 +29,9 @@ describe("Life Milestone potential badge authoring", () => {
   it("defines exactly two stable, searchable potential badges without publication state", () => {
     expect(educationMilestoneAuthoringRecords).toHaveLength(2);
     expect(
-      educationMilestoneAuthoringRecords.map(({ definitionId, slug, defaultQuotationId }) => ({
+      educationMilestoneAuthoringRecords.map(({ definitionId, slug }) => ({
         definitionId,
         slug,
-        defaultQuotationId,
       })),
     ).toEqual(expectedIdentity);
 
@@ -129,45 +126,17 @@ describe("Life Milestone potential badge authoring", () => {
   });
 
   it("resolves every default to a source-cited historic figure quotation with Wikipedia", () => {
-    expect(educationMilestoneQuotationBank).toHaveLength(2);
-
     for (const badge of educationMilestoneAuthoringRecords) {
-      const quotation = educationMilestoneQuotationBank.find(
-        (candidate) => candidate.quotationId === badge.defaultQuotationId,
-      );
-      expect(quotation, badge.title).toBeDefined();
-      expect(quotation?.text).toMatch(/[.!?]$/u);
-      expect(quotation?.personName).toMatch(/^[A-Z][\p{L} .'-]+$/u);
-      expect(quotation?.sourceTitle.length).toBeGreaterThan(10);
-      expect(quotation?.sourceCitation.length).toBeGreaterThan(40);
-      expect(quotation?.sourceUrl).toMatch(/^https:\/\//u);
-      expect(quotation?.personWikipediaUrl).toMatch(/^https:\/\/en\.wikipedia\.org\/wiki\//u);
-      expect(quotation?.checkedAt).toBe("2026-08-25");
+      const bank = catalogueQuotationBankForDefinition(badge.definitionId);
+      expect(badge.defaultQuotationId, badge.title).toBe(bank[0].quotationId);
+      for (const quotation of bank) {
+        expect(quotation.text).toMatch(/[.!?]$/u);
+        expect(quotation.personName).toMatch(/^[A-Z][\p{L} .'-]+$/u);
+        expect(quotation.sourceTitle.length).toBeGreaterThan(5);
+        expect(quotation.sourceUrl).toMatch(/^https:\/\//u);
+        expect(quotation.personWikipediaUrl).toMatch(/^https:\/\/en\.wikipedia\.org\/wiki\//u);
+        expect(quotation.sourceSha256).toMatch(/^[a-f0-9]{64}$/u);
+      }
     }
-
-    expect(educationMilestoneQuotationBank).toEqual([
-      {
-        quotationId: "historic-quotation/frederick-douglass-no-struggle-1857",
-        text: "If there is no struggle, there is no progress.",
-        personName: "Frederick Douglass",
-        sourceTitle: "West India Emancipation address, August 3, 1857",
-        sourceCitation:
-          "West India Emancipation speech, Canandaigua, New York, August 3, 1857; U.S. National Archives Documented Rights exhibit.",
-        sourceUrl: "https://www.archives.gov/exhibits/documented-rights/exhibit/section2/index.html",
-        personWikipediaUrl: "https://en.wikipedia.org/wiki/Frederick_Douglass",
-        checkedAt: "2026-08-25",
-      },
-      {
-        quotationId: "historic-quotation/theodore-roosevelt-hard-to-fail-1899",
-        text: "It is hard to fail, but it is worse never to have tried to succeed.",
-        personName: "Theodore Roosevelt",
-        sourceTitle: "The Strenuous Life, Hamilton Club speech, April 10, 1899",
-        sourceCitation:
-          "The Strenuous Life, address before the Hamilton Club, Chicago, April 10, 1899; Project Gutenberg eBook #58821.",
-        sourceUrl: "https://www.gutenberg.org/files/58821/58821-h/58821-h.htm",
-        personWikipediaUrl: "https://en.wikipedia.org/wiki/Theodore_Roosevelt",
-        checkedAt: "2026-08-25",
-      },
-    ]);
   });
 });

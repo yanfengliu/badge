@@ -1,4 +1,7 @@
 import { normalizePromptText } from "./text-safety.ts";
+import { canonicalQuotationTextKey } from "@badge/quotation-identity";
+
+export { canonicalQuotationTextKey } from "@badge/quotation-identity";
 
 interface QuotationRecordIdentity {
   readonly id: string;
@@ -48,12 +51,7 @@ function canonicalQuotationComparisonText(value: string): string {
   const normalized = normalizePromptText(value);
   const attributedMatch = /^(?:"([^"]+)"|“([^”]+)”)(?:\s+[—–-]\s+\S.*)?$/u.exec(normalized);
   const unwrapped = attributedMatch ? (attributedMatch[1] ?? attributedMatch[2] ?? normalized) : normalized;
-  return unwrapped
-    .normalize("NFKD")
-    .toLocaleLowerCase("en")
-    .replace(/\p{M}/gu, "")
-    .replace(/[^\p{L}\p{N}]+/gu, " ")
-    .trim();
+  return canonicalQuotationTextKey(unwrapped);
 }
 
 function boundedEditDistance(left: string, right: string): number {

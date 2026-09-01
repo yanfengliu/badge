@@ -1,4 +1,5 @@
 import { compileManufacturableCandidatePrompt } from "./manufacturable-prompt-recipe";
+import { catalogueQuotationBankForDefinition } from "@badge/catalogue-quotation-data";
 import type { CompiledManufacturableCandidatePrompt } from "./manufacturable-prompt-recipe";
 import type {
   BadgeArtBrief,
@@ -42,7 +43,6 @@ interface EducationMilestoneSeed {
   paletteCues: BadgeArtBrief["paletteCues"];
   candidateStyles: readonly [string, string, string];
   artBriefProvenance: EducationMilestoneAuthoringRecord["artBriefProvenance"];
-  defaultQuotationId: HistoricQuotationId;
 }
 
 const MUELLER_TOWER_SOURCE_URL = "https://historicbuildings.unl.edu/building.php?b=91";
@@ -122,7 +122,6 @@ const educationMilestoneSeeds: readonly EducationMilestoneSeed[] = [
       note: "The threshold, ascent, and horizon are original editorial metaphors for advanced study rather than claims about a specific institution or degree program.",
       sourceUrls: [],
     },
-    defaultQuotationId: "historic-quotation/frederick-douglass-no-struggle-1857",
   },
   {
     definitionId: "earned-unl-degree",
@@ -168,7 +167,6 @@ const educationMilestoneSeeds: readonly EducationMilestoneSeed[] = [
       note: "Official UNL architecture sources establish Mueller Tower as an 84-foot octagonal landmark on the mall from Love Library and describe Love Library's brick-and-limestone design and distinctive white cupola; the simplified composition is original art direction.",
       sourceUrls: [MUELLER_TOWER_SOURCE_URL, LOVE_LIBRARY_SOURCE_URL],
     },
-    defaultQuotationId: "historic-quotation/theodore-roosevelt-hard-to-fail-1899",
   },
 ] as const;
 
@@ -230,7 +228,7 @@ function defineEducationMilestone(seed: Readonly<EducationMilestoneSeed>): Educa
     artBrief,
     candidateStyles: seed.candidateStyles,
     artBriefProvenance: seed.artBriefProvenance,
-    defaultQuotationId: seed.defaultQuotationId,
+    defaultQuotationId: catalogueQuotationBankForDefinition(seed.definitionId)[0].quotationId,
   };
 }
 

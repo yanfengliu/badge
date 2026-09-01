@@ -11,7 +11,7 @@ export const cataloguePackEducation = defineCataloguePackBadges(
       "Original abstract source study using ceramic-underglaze-fields for Master's degree: Four broad underglaze-style forms show a stepped path leading through an open doorway toward a rising sun and a calm horizon.",
       "masters-degree.jpg",
       "4cb08d32e32de42443a099ee6e18fcc6826c58b78a74dd1d3129ee0f1234c131",
-      "frederick-douglass-no-struggle-1857",
+      "q-772b9c3c64f57c18c029286155905d6c",
     ],
     [
       "earned-unl-degree",
@@ -21,7 +21,7 @@ export const cataloguePackEducation = defineCataloguePackBadges(
       "Original abstract source study using large-stained-glass-cells for University of Nebraska–Lincoln degree: Large stained-glass-style fields pair Mueller Tower with Love Library's white cupola across a broad campus mall and prairie sky.",
       "university-nebraska-lincoln-degree.jpg",
       "674fb3f45405860199335afe8c293c70348f88955b28b213d7cd52cb02c6b0cc",
-      "theodore-roosevelt-hard-to-fail-1899",
+      "q-2837889b233729264e26c68e72b5380a",
     ],
   ],
   {

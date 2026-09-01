@@ -11,7 +11,7 @@ export const cataloguePackVideoGames01 = defineCataloguePackBadges(
       "Original abstract source study using prismatic geometric inlay for Played Pong: Interpret Pong through an original symbolic miniature: the two shore planes exchange the single pulse across open space.",
       "pong.jpg",
       "f4c58949f7b2bd8617f253a6443cf2e6e71d188706b4514aa4cf75d10815ac1f",
-      "william-shakespeare-plays-the-thing",
+      "q-142183e01c699ac61807834682e8401e",
     ],
     [
       "played-video-game-space-invaders",
@@ -21,7 +21,7 @@ export const cataloguePackVideoGames01 = defineCataloguePackBadges(
       "Original abstract source study using screenprint overlaps for Played Space Invaders: Interpret Space Invaders through an original symbolic miniature: the beam rises as the weather band descends.",
       "space-invaders.jpg",
       "d35ae51e3c39599b3327b4e75b6067bde24dbf84a0afbb44b940c5a57e21e370",
-      "william-shakespeare-plays-the-thing",
+      "q-fa5f2a85a363363ca3c4316dc93929c7",
     ],
     [
       "played-video-game-pac-man",
@@ -31,7 +31,7 @@ export const cataloguePackVideoGames01 = defineCataloguePackBadges(
       "Original abstract source study using relief-cut silhouettes for Played PAC-MAN: Interpret PAC-MAN through an original symbolic miniature: the arcs open ahead of the disk and close gently behind it.",
       "pac-man.jpg",
       "6c733da0b91e986f92cf54288e97244383d4e2b29fddeff15363aaea6bc2445f",
-      "william-shakespeare-plays-the-thing",
+      "q-344ec907efbdf5aa9640f3ecde0cb91b",
     ],
     [
       "played-video-game-tetris",
@@ -41,7 +41,7 @@ export const cataloguePackVideoGames01 = defineCataloguePackBadges(
       "Original abstract source study using large mosaic tesserae for Played Tetris: Interpret Tetris through an original symbolic miniature: the varied slabs settle into a level foundation as the open plane descends.",
       "tetris.jpg",
       "0e0765ee9d478757b80ef5b6f7877169b79b5a9f38ac533fd321ca949bc969d0",
-      "william-shakespeare-plays-the-thing",
+      "q-5230b02f59b553b4267150ace19f5a9e",
     ],
     [
       "played-video-game-super-mario-bros",
@@ -51,7 +51,7 @@ export const cataloguePackVideoGames01 = defineCataloguePackBadges(
       "Original abstract source study using cut-paper layers for Played Super Mario Bros.: Interpret Super Mario Bros. through an original symbolic miniature: the path bounds across the ledges toward dawn.",
       "super-mario-bros.jpg",
       "2aac1501a600161733689a1232d04049dd3cc4faabe3347610c8661fdd6f43d3",
-      "william-shakespeare-plays-the-thing",
+      "q-e4c2403042b01078c7214fb17c1995b3",
     ],
     [
       "played-video-game-the-legend-of-zelda",
@@ -61,7 +61,7 @@ export const cataloguePackVideoGames01 = defineCataloguePackBadges(
       "Original abstract source study using wood marquetry strata for Played The Legend of Zelda: Interpret The Legend of Zelda through an original symbolic miniature: the path passes through the woodland cleft toward the distant light.",
       "the-legend-of-zelda.jpg",
       "e925d3a05645a78ced4145c85d1086aa96deb8d35e5b338a3d3d73bdde518058",
-      "william-shakespeare-plays-the-thing",
+      "q-811d5d2fa0f756432b2ff8a88133fb81",
     ],
     [
       "played-video-game-metroid",
@@ -71,7 +71,7 @@ export const cataloguePackVideoGames01 = defineCataloguePackBadges(
       "Original abstract source study using relief-cut silhouettes for Played Metroid: Interpret Metroid through an original symbolic miniature: the nucleus passes through the chambers and finds the return seam.",
       "metroid.jpg",
       "15084fc3b9ca4c96f7dac4e0ee5c92b18c068b4385c6c645e88fdca94f5fad79",
-      "william-shakespeare-plays-the-thing",
+      "q-b04b4400adfacdc01d814d35304b62e7",
     ],
     [
       "played-video-game-dragon-quest",
@@ -81,7 +81,7 @@ export const cataloguePackVideoGames01 = defineCataloguePackBadges(
       "Original abstract source study using matte painted masses for Played Dragon Quest: Interpret Dragon Quest through an original symbolic miniature: the trail crosses all three realms toward the sunrise gate.",
       "dragon-quest.jpg",
       "6ade1a23b9375995d94414ecd0bf8f99610d1e777e696ea054f4bbef2f76b172",
-      "william-shakespeare-plays-the-thing",
+      "q-9968ddf8989f4b9e8654236049666b54",
     ],
     [
       "played-video-game-simcity",
@@ -91,7 +91,7 @@ export const cataloguePackVideoGames01 = defineCataloguePackBadges(
       "Original abstract source study using broad atlas contours for Played SimCity: Interpret SimCity through an original symbolic miniature: the civic masses grow around the river while preserving the clearing.",
       "simcity.jpg",
       "b15ab04060ce63edaa2d7952b6794087a39b1a798ad1f4bbca9fa47f60d086f8",
-      "william-shakespeare-plays-the-thing",
+      "q-9399f6987376f9b4ce9134f342a769fc",
     ],
     [
       "played-video-game-prince-of-persia",
@@ -101,7 +101,7 @@ export const cataloguePackVideoGames01 = defineCataloguePackBadges(
       "Original abstract source study using relief-cut silhouettes for Played Prince of Persia: Interpret Prince of Persia through an original symbolic miniature: the ribbon leaps between the ledges before the sand arc closes.",
       "prince-of-persia.jpg",
       "a815c480bee6483c2755cbfd54d885655af2c4da08cae9d3c9bf6532a9a5dc1c",
-      "william-shakespeare-plays-the-thing",
+      "q-f63733ff49a32c87d3f9cfbf055f7264",
     ],
     [
       "played-video-game-the-secret-of-monkey-island",
@@ -111,7 +111,7 @@ export const cataloguePackVideoGames01 = defineCataloguePackBadges(
       "Original abstract source study using bold enamel contour for Played The Secret of Monkey Island: Interpret The Secret of Monkey Island through an original symbolic miniature: the mast and spiral lean toward opposite shores of the island.",
       "the-secret-of-monkey-island.jpg",
       "9c44e68acb1027ea02d82e6a2cfeb6a10dde87d3d16f8be5bf7fccab3081075b",
-      "william-shakespeare-plays-the-thing",
+      "q-92eaac5ba592b9b9452612ddda1bf6ab",
     ],
     [
       "played-video-game-sonic-the-hedgehog",
@@ -121,7 +121,7 @@ export const cataloguePackVideoGames01 = defineCataloguePackBadges(
       "Original abstract source study using screenprint overlaps for Played Sonic the Hedgehog: Interpret Sonic the Hedgehog through an original symbolic miniature: the ribbon loops around the terrain and releases into the horizon.",
       "sonic-the-hedgehog.jpg",
       "fb004af0954c43a06c89d1c90293730cafabb30cab891b46253e0e6603f683c5",
-      "william-shakespeare-plays-the-thing",
+      "q-82e6af04183eb24252cf7880a53b54f2",
     ],
     [
       "played-video-game-street-fighter-ii",
@@ -131,7 +131,7 @@ export const cataloguePackVideoGames01 = defineCataloguePackBadges(
       "Original abstract source study using stained-glass lead cells for Played Street Fighter II: Interpret Street Fighter II through an original symbolic miniature: the force arcs meet above the grounded circle without crossing the seam.",
       "street-fighter-ii.jpg",
       "3a1e01768b26ded52f349f6f7e7e4774cccb7b7e50c077cbaafb209d59771223",
-      "william-shakespeare-plays-the-thing",
+      "q-8a808e32b43da64a992ec95fdd9f5909",
     ],
     [
       "played-video-game-doom",
@@ -141,7 +141,7 @@ export const cataloguePackVideoGames01 = defineCataloguePackBadges(
       "Original abstract source study using relief-cut silhouettes for Played DOOM: Interpret DOOM through an original symbolic miniature: the pale wedge advances as the fissure opens between the monoliths.",
       "doom.jpg",
       "b79cbd8e8c0b6acaad3b701eb1472a0764f387bf1b834b03463abafa3181b1a7",
-      "william-shakespeare-plays-the-thing",
+      "q-69591ab77622baa6262329a23cbb53da",
     ],
     [
       "played-video-game-myst",
@@ -151,7 +151,7 @@ export const cataloguePackVideoGames01 = defineCataloguePackBadges(
       "Original abstract source study using matte painted masses for Played Myst: Interpret Myst through an original symbolic miniature: the threshold planes align briefly around the aperture.",
       "myst.jpg",
       "86f0e80487fd061cfedfd959bd182ed92579788933d8980b2bef839fe285e2b5",
-      "william-shakespeare-plays-the-thing",
+      "q-411f2cad2b824ef545407acec37fa697",
     ],
     [
       "played-video-game-chrono-trigger",
@@ -161,7 +161,7 @@ export const cataloguePackVideoGames01 = defineCataloguePackBadges(
       "Original abstract source study using bold enamel contour for Played Chrono Trigger: Interpret Chrono Trigger through an original symbolic miniature: the river threads every era disk before returning to the horizon.",
       "chrono-trigger.jpg",
       "bc1e20a15d3affaf8ed14333b847816745cf9c5c2512f9ca7ca797d07c2254ca",
-      "william-shakespeare-plays-the-thing",
+      "q-876f84d4e9068c5547385680157eba4c",
     ],
     [
       "played-video-game-pokemon-red-version",
@@ -171,7 +171,7 @@ export const cataloguePackVideoGames01 = defineCataloguePackBadges(
       "Original abstract source study using ceramic underglaze roundel for Played Pokémon Red Version: Interpret Pokémon Red Version through an original symbolic miniature: the habitat bands converge as the companion-light follows the trail.",
       "pokemon-red-version.jpg",
       "ab823b303350f6b6c2e3f845c3efb4a1e069953aa5fc9e954db78b2893f898af",
-      "william-shakespeare-plays-the-thing",
+      "q-0617ba0e10f097d073f1e8236b22ebb2",
     ],
     [
       "played-video-game-super-mario-64",
@@ -181,7 +181,7 @@ export const cataloguePackVideoGames01 = defineCataloguePackBadges(
       "Original abstract source study using prismatic geometric inlay for Played Super Mario 64: Interpret Super Mario 64 through an original symbolic miniature: the planes spiral upward around the clear axis.",
       "super-mario-64.jpg",
       "24807e702218ffe5dbf7270970eeb907bce5fa1e6322d8f8787222c772cfd3a0",
-      "william-shakespeare-plays-the-thing",
+      "q-fa2dc75bad717aede48db9db290bcf2a",
     ],
     [
       "played-video-game-tomb-raider",
@@ -191,7 +191,7 @@ export const cataloguePackVideoGames01 = defineCataloguePackBadges(
       "Original abstract source study using relief-cut silhouettes for Played Tomb Raider: Interpret Tomb Raider through an original symbolic miniature: the route descends through the stone apertures toward the blue cavern.",
       "tomb-raider.jpg",
       "3d54c6c3576645fb45a7fa3654b8ce76ec4827d63b2442da94b1b29e95225548",
-      "william-shakespeare-plays-the-thing",
+      "q-66ba5ab9ef5ef40e9582b072c00cd388",
     ],
     [
       "played-video-game-final-fantasy-vii",
@@ -201,7 +201,7 @@ export const cataloguePackVideoGames01 = defineCataloguePackBadges(
       "Original abstract source study using screenprint overlaps for Played Final Fantasy VII: Interpret Final Fantasy VII through an original symbolic miniature: the life river rises through the industrial ring toward the flower disk.",
       "final-fantasy-vii.jpg",
       "4319ecdcbb02ef6199ebe2f2c5f638307b90c3a92f28041cff3d3818b1235e64",
-      "william-shakespeare-plays-the-thing",
+      "q-945048c895e9fbf74494283736e7cad3",
     ],
     [
       "played-video-game-castlevania-symphony-of-the-night",
@@ -211,7 +211,7 @@ export const cataloguePackVideoGames01 = defineCataloguePackBadges(
       "Original abstract source study using relief-cut silhouettes for Played Castlevania: Symphony of the Night: Interpret Castlevania: Symphony of the Night through an original symbolic miniature: the masses fold above and below the moonlit midpoint.",
       "castlevania-symphony-of-the-night.jpg",
       "6849803caa23a2842d709eba07e85da8b014f2530cbc42218333501a36cdd0bf",
-      "william-shakespeare-plays-the-thing",
+      "q-05a7682cfa10b6373371a025c55377a7",
     ],
     [
       "played-video-game-half-life",
@@ -221,7 +221,7 @@ export const cataloguePackVideoGames01 = defineCataloguePackBadges(
       "Original abstract source study using bold enamel contour for Played Half-Life: Interpret Half-Life through an original symbolic miniature: the resonance wave crosses the planes and fractures their shared boundary.",
       "half-life.jpg",
       "90b2c673e3d5ba69a5d232ebccc59fde24e7482bcc37847a7be180bae09d5f60",
-      "william-shakespeare-plays-the-thing",
+      "q-4afa2e7dd28de1e7f3e27ffa038236bc",
     ],
     [
       "played-video-game-starcraft",
@@ -231,7 +231,7 @@ export const cataloguePackVideoGames01 = defineCataloguePackBadges(
       "Original abstract source study using large mosaic tesserae for Played StarCraft: Interpret StarCraft through an original symbolic miniature: the three territories converge around the empty star without merging.",
       "starcraft.jpg",
       "37f200ac979b4df629b92d1b419f0e61afa68796eeb9f2fa9df46692a4e004a3",
-      "william-shakespeare-plays-the-thing",
+      "q-17dbd4700cb8f91ca4fa9990d5e696b0",
     ],
     [
       "played-video-game-tony-hawks-pro-skater-2",
@@ -241,7 +241,7 @@ export const cataloguePackVideoGames01 = defineCataloguePackBadges(
       "Original abstract source study using screenprint overlaps for Played Tony Hawk’s Pro Skater 2: Interpret Tony Hawk’s Pro Skater 2 through an original symbolic miniature: the flight arc bridges both inclined masses above the offset shadow.",
       "tony-hawks-pro-skater-2.jpg",
       "996ed06c7854e9e67ad3ea01e5b3e4c4fc31c941c1d5ff098949613535c91ed3",
-      "william-shakespeare-plays-the-thing",
+      "q-85fce8bc91cfaf302b18163f104020a2",
     ],
     [
       "played-video-game-the-sims",
@@ -251,7 +251,7 @@ export const cataloguePackVideoGames01 = defineCataloguePackBadges(
       "Original abstract source study using matte painted masses for Played The Sims: Interpret The Sims through an original symbolic miniature: the domestic planes pivot independently around the shared center.",
       "the-sims.jpg",
       "38270109dacd4022c654825dbda472ce76637b163b3876d237115f7784d88987",
-      "william-shakespeare-plays-the-thing",
+      "q-ebef379e04950bd503c554a72bb702f2",
     ],
   ],
   {

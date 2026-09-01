@@ -11,7 +11,7 @@ export const cataloguePackBooks01 = defineCataloguePackBadges(
       "Original abstract source study using screenprint-masses for Read 1984: Interpret 1984 through an original symbolic miniature: the doorway stands beneath the aperture while the paired beams divide the dark field.",
       "nineteen-eighty-four.jpg",
       "aa36c78c6789b08edd20a619141dbaf6a8ded3ab9c2f839ed88e964db2332dfe",
-      "francis-bacon-reading-full-man",
+      "q-97d3141989281f3fcb6a4591674c44d8",
     ],
     [
       "read-to-kill-a-mockingbird",
@@ -21,7 +21,7 @@ export const cataloguePackBooks01 = defineCataloguePackBadges(
       "Original abstract source study using cut-paper-naturalist for Read To Kill a Mockingbird: Interpret To Kill a Mockingbird through an original symbolic miniature: the feather settles between the sheltering branch and the severe ascending steps.",
       "to-kill-a-mockingbird.jpg",
       "54cd3cd59305fc55d96725eb813d2e8cd781691cf1ce249e1dc07cd5ab2ce51f",
-      "francis-bacon-reading-full-man",
+      "q-5506eb88bd04b6d189994fef1b175b4f",
     ],
     [
       "read-the-great-gatsby",
@@ -31,7 +31,7 @@ export const cataloguePackBooks01 = defineCataloguePackBadges(
       "Original abstract source study using large-stained-glass-cells for Read The Great Gatsby: Interpret The Great Gatsby through an original symbolic miniature: the unreachable green light glows across the water from the compressed skyline.",
       "the-great-gatsby.jpg",
       "c17298a75e4f920baa488d4ad1edfffe006c9cbcec6a507251f2cb19c6126ecf",
-      "francis-bacon-reading-full-man",
+      "q-cf6862471b428618d2347023baf85e4d",
     ],
     [
       "read-pride-and-prejudice",
@@ -41,7 +41,7 @@ export const cataloguePackBooks01 = defineCataloguePackBadges(
       "Original abstract source study using layered-paper-silhouette for Read Pride and Prejudice: Interpret Pride and Prejudice through an original symbolic miniature: the profiles remain apart while the path curves between their contrasting hedges.",
       "pride-and-prejudice.jpg",
       "a48e670d3a16ef9cf5e9e4f26ac2b857d9b8ad661704adc089ba86be71c84ff1",
-      "francis-bacon-reading-full-man",
+      "q-4f17ef8fa66470ae6fc639773a9801fa",
     ],
     [
       "read-the-count-of-monte-cristo",
@@ -51,7 +51,7 @@ export const cataloguePackBooks01 = defineCataloguePackBadges(
       "Original abstract source study using large-enamel-cells for Read The Count of Monte Cristo: Interpret The Count of Monte Cristo through an original symbolic miniature: the key rises from the island as the chain opens around it.",
       "the-count-of-monte-cristo.jpg",
       "78a8fda6124eb7d9eecb3b4ca8b78e958863a4ba652dc64b914076c326d6774c",
-      "francis-bacon-reading-full-man",
+      "q-80254bdf0865ee5af809ee0e16bee6ef",
     ],
     [
       "read-the-odyssey",
@@ -61,7 +61,7 @@ export const cataloguePackBooks01 = defineCataloguePackBadges(
       "Original abstract source study using relief-cut-spot-shapes for Read The Odyssey: Interpret The Odyssey through an original symbolic miniature: the sail climbs the spiral wave toward the fixed star.",
       "the-odyssey.jpg",
       "26b7714538901f3c8295da4695602285cddd22fae434fafc665c45cae85376a7",
-      "francis-bacon-reading-full-man",
+      "q-3866bc33b084278b02866266ea7f5d2c",
     ],
     [
       "read-the-brothers-karamazov",
@@ -71,7 +71,7 @@ export const cataloguePackBooks01 = defineCataloguePackBadges(
       "Original abstract source study using mineral-fresco-planes for Read The Brothers Karamazov: Interpret The Brothers Karamazov through an original symbolic miniature: the divided path converges beneath the dome before opening toward dawn.",
       "the-brothers-karamazov.jpg",
       "6feeb78af7655bce76a3ced3fb78b1920142e9802221745572af239a1597302b",
-      "francis-bacon-reading-full-man",
+      "q-ae81ae2d4141177d352dc283485bbff7",
     ],
     [
       "read-guns-germs-and-steel",
@@ -81,7 +81,7 @@ export const cataloguePackBooks01 = defineCataloguePackBadges(
       "Original abstract source study using prismatic-crossroad-inlay for Read Guns, Germs, and Steel: Interpret Guns, Germs, and Steel through an original symbolic miniature: the three forces meet without hierarchy at one geometric crossroads.",
       "guns-germs-and-steel.jpg",
       "d9d51346216959eff4253e63238659ed8bdea55755c7b8e62def7834784842ab",
-      "francis-bacon-histories-wise",
+      "q-f8ce94f4f131c43d34f9bdcd451b932c",
     ],
     [
       "read-the-dawn-of-everything",
@@ -91,7 +91,7 @@ export const cataloguePackBooks01 = defineCataloguePackBadges(
       "Original abstract source study using mineral-fresco-planes for Read The Dawn of Everything: Interpret The Dawn of Everything through an original symbolic miniature: the ring rests within exposed strata as sunrise widens the field above.",
       "the-dawn-of-everything.jpg",
       "01b17fa95ecd8f9847c038a40bf958dd3f3c76af9fdbc1e562df720635777b61",
-      "francis-bacon-histories-wise",
+      "q-d91083cae70ab6985a6f4f355cc97e6e",
     ],
     [
       "read-the-silk-roads",
@@ -101,7 +101,7 @@ export const cataloguePackBooks01 = defineCataloguePackBadges(
       "Original abstract source study using broad-map-bands for Read The Silk Roads: Interpret The Silk Roads through an original symbolic miniature: the route crosses the mountain opening and continues into the sea.",
       "the-silk-roads.jpg",
       "589f6e113cdb20cd4dce2f3c8c397b0bfcf2ee2afa62f5208b5da6c91b3b67db",
-      "francis-bacon-histories-wise",
+      "q-a9ea568d391fef137f9961442bc3b68f",
     ],
     [
       "read-team-of-rivals",
@@ -111,7 +111,7 @@ export const cataloguePackBooks01 = defineCataloguePackBadges(
       "Original abstract source study using marquetry-inlay for Read Team of Rivals: Interpret Team of Rivals through an original symbolic miniature: the four chairs lean toward the table while the light holds the center.",
       "team-of-rivals.jpg",
       "63bf77f74f20076562ca3f9f8323cff52e63f1d09ea36f22ea51218bb72920fa",
-      "francis-bacon-histories-wise",
+      "q-be1d74ee50a515ff671f21d9c66e4dad",
     ],
     [
       "read-the-warmth-of-other-suns",
@@ -121,7 +121,7 @@ export const cataloguePackBooks01 = defineCataloguePackBadges(
       "Original abstract source study using broad-embroidery-bands for Read The Warmth of Other Suns: Interpret The Warmth of Other Suns through an original symbolic miniature: the three streams rise separately toward the same warm horizon.",
       "the-warmth-of-other-suns.jpg",
       "9076feea1a7d8f2e1ebae42e691ff2be5083fce20355e71dbd3950ddf5c7ec5a",
-      "francis-bacon-histories-wise",
+      "q-6d75b06e714dd194b2e3314f0b2720e6",
     ],
     [
       "read-spqr",
@@ -131,7 +131,7 @@ export const cataloguePackBooks01 = defineCataloguePackBadges(
       "Original abstract source study using engraved-broad-linework for Read SPQR: Interpret SPQR through an original symbolic miniature: the branch crosses the arch while the river carries beneath it.",
       "spqr.jpg",
       "e2da8a6e166e29338385b55383e4ad3a1a47b5e2f859c11cee7fa98170773356",
-      "francis-bacon-histories-wise",
+      "q-7ce75a5d9ddc310a2f54094e8174416f",
     ],
     [
       "read-a-brief-history-of-time",
@@ -141,7 +141,7 @@ export const cataloguePackBooks01 = defineCataloguePackBadges(
       "Original abstract source study using screenprint-masses for Read A Brief History of Time: Interpret A Brief History of Time through an original symbolic miniature: the rings expand from darkness while the star ribbon bends around them.",
       "a-brief-history-of-time.jpg",
       "9b03c0a464a487dfdbc4e2172c9ba0801b102c20f8370ff29675d4d60b1d0c6c",
-      "francis-bacon-histories-wise",
+      "q-c89570042f952f1f325f8b0a25ef9cab",
     ],
     [
       "read-the-selfish-gene",
@@ -151,7 +151,7 @@ export const cataloguePackBooks01 = defineCataloguePackBadges(
       "Original abstract source study using large-stained-glass-cells for Read The Selfish Gene: Interpret The Selfish Gene through an original symbolic miniature: the paired ribbons twist through the cell with only three durable connections.",
       "the-selfish-gene.jpg",
       "4f6c8b253aa571ff59ee94881d609e822cd4d0a1c3230bf53c2ce8bdff777ab2",
-      "francis-bacon-histories-wise",
+      "q-25b7eb0f3bab5009d64bb804b002737a",
     ],
     [
       "read-the-gene",
@@ -161,7 +161,7 @@ export const cataloguePackBooks01 = defineCataloguePackBadges(
       "Original abstract source study using cyanotype-silhouette for Read The Gene: Interpret The Gene through an original symbolic miniature: the lineage grows from the chromosome and resolves inside the cell.",
       "the-gene.jpg",
       "fa95d4f788410e13c912944d85699b379d0ba7352102213fda8d49f59c47c9b6",
-      "francis-bacon-histories-wise",
+      "q-48cb9653ea3f586bfc973703401a9f98",
     ],
     [
       "read-the-emperor-of-all-maladies",
@@ -171,7 +171,7 @@ export const cataloguePackBooks01 = defineCataloguePackBadges(
       "Original abstract source study using monoprint-overlap for Read The Emperor of All Maladies: Interpret The Emperor of All Maladies through an original symbolic miniature: the white fork opens the knot toward the narrow horizon.",
       "the-emperor-of-all-maladies.jpg",
       "a4c27e07e99ad505d90cde618d6ed1de3669d248bb35874ec2e79508ea68388c",
-      "francis-bacon-histories-wise",
+      "q-bafed50257f3f3c34fdace896c0c70c1",
     ],
     [
       "read-the-sixth-extinction",
@@ -181,7 +181,7 @@ export const cataloguePackBooks01 = defineCataloguePackBadges(
       "Original abstract source study using charcoal-pastel-inlay for Read The Sixth Extinction: Interpret The Sixth Extinction through an original symbolic miniature: the wing thins into the horizon above the enduring fossil spiral.",
       "the-sixth-extinction.jpg",
       "bf5d2811080481e4e841f5aac308833479bb3538ed94d5c608e23dab96740532",
-      "francis-bacon-histories-wise",
+      "q-e8e18f86291e164eed582de5d9b3485e",
     ],
     [
       "read-cosmos",
@@ -191,7 +191,7 @@ export const cataloguePackBooks01 = defineCataloguePackBadges(
       "Original abstract source study using scratchboard-cut-silhouette for Read Cosmos: Interpret Cosmos through an original symbolic miniature: the observatory faces the planet beneath the immense stellar arc.",
       "cosmos.jpg",
       "e94659a00dd9b356d33abb7a6449600619d9c3aaa339c60f1ee6bd835ff8195a",
-      "francis-bacon-histories-wise",
+      "q-da491a3126599d24a5019af1683cccf2",
     ],
     [
       "read-meditations",
@@ -201,7 +201,7 @@ export const cataloguePackBooks01 = defineCataloguePackBadges(
       "Original abstract source study using broad-woven-bands for Read Meditations: Interpret Meditations through an original symbolic miniature: the flame remains upright within the stone arcs as weather moves outside.",
       "meditations.jpg",
       "92dd35fc0f147378ec136194dc8ed8092297d1d5da7e5935d24c6d9de915da5b",
-      "francis-bacon-histories-wise",
+      "q-1483b122a37ca64ae353fdb917f191f2",
     ],
     [
       "read-the-republic",
@@ -211,7 +211,7 @@ export const cataloguePackBooks01 = defineCataloguePackBadges(
       "Original abstract source study using mineral-fresco-planes for Read The Republic: Interpret The Republic through an original symbolic miniature: the steps move from the enclosing arch into the unobstructed sun.",
       "the-republic.jpg",
       "9cb59108da662a6c75097cb0e647f1424e724fb1a9d8ae6a8012d146db80b699",
-      "francis-bacon-histories-wise",
+      "q-4503047eb5dc43d3488fbc7e2e132317",
     ],
     [
       "read-mans-search-for-meaning",
@@ -221,7 +221,7 @@ export const cataloguePackBooks01 = defineCataloguePackBadges(
       "Original abstract source study using monoprint-overlap for Read Man's Search for Meaning: Interpret Man's Search for Meaning through an original symbolic miniature: the figure stands inside the opening and faces the distant light.",
       "mans-search-for-meaning.jpg",
       "46433b94b39aef841918f1d1b4110e45ceca7c064eddd1ffcce34cb0b4851490",
-      "francis-bacon-histories-wise",
+      "q-b9bc34b82321c9be469b6cee55184359",
     ],
     [
       "read-the-myth-of-sisyphus",
@@ -231,7 +231,7 @@ export const cataloguePackBooks01 = defineCataloguePackBadges(
       "Original abstract source study using relief-cut-spot-shapes for Read The Myth of Sisyphus: Interpret The Myth of Sisyphus through an original symbolic miniature: the stone holds against the slope while dawn begins behind it.",
       "the-myth-of-sisyphus.jpg",
       "9b89537905894feb2fbdc4ce453d0614726702f5a1de81c9c80076b8e61b6312",
-      "francis-bacon-histories-wise",
+      "q-f565534f08f04d69dcee20e945a070f4",
     ],
     [
       "read-justice",
@@ -241,7 +241,7 @@ export const cataloguePackBooks01 = defineCataloguePackBadges(
       "Original abstract source study using prismatic-cells for Read Justice: Interpret Justice through an original symbolic miniature: the paths hold equal visual weight before meeting at the light.",
       "justice.jpg",
       "acd40012b3109805e6783697efae0c8acbb90167991a959706aae1a45b0acfe0",
-      "francis-bacon-histories-wise",
+      "q-0090d7f8f46e28e9ad2bbed7160830fb",
     ],
     [
       "read-nicomachean-ethics",
@@ -251,7 +251,7 @@ export const cataloguePackBooks01 = defineCataloguePackBadges(
       "Original abstract source study using ceramic-underglaze-fields for Read Nicomachean Ethics: Interpret Nicomachean Ethics through an original symbolic miniature: the path keeps a deliberate course between extremes toward the branch.",
       "nicomachean-ethics.jpg",
       "0b52f52f99e21e0fc390e27ececa449148be8db8ca456dee6ce5b9973066bac4",
-      "francis-bacon-histories-wise",
+      "q-b9fdda00b73094d3d51e6480b97899d1",
     ],
   ],
   {

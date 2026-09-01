@@ -11,7 +11,7 @@ export const cataloguePackStatesAThroughM = defineCataloguePackBadges(
       "An original source study using large stepped pixel clusters, showing longleaf pines opening onto the braided wetlands of the Mobile-Tensaw Delta.",
       "alabama.jpg",
       "53436433edf79102908cc2cb66c4f5b3b8ec85e53dd671a9de2188e7e26c760f",
-      "john-muir-every-walk-nature",
+      "q-1f6b987d51adf918110aba1d47a24992",
     ],
     [
       "visited-us-state-02",
@@ -21,7 +21,7 @@ export const cataloguePackStatesAThroughM = defineCataloguePackBadges(
       "An original source study using broad fiber appliqué, showing Denali rising above braided tundra rivers and dark spruce.",
       "alaska.jpg",
       "7a6877ee2e699c2289cd08e5518d841e7a2d706590b1ffb1fb8bda1152c2a848",
-      "henry-david-thoreau-wildness",
+      "q-a1e11da80733fe52d4877d29eee571f9",
     ],
     [
       "visited-us-state-04",
@@ -31,7 +31,7 @@ export const cataloguePackStatesAThroughM = defineCataloguePackBadges(
       "An original source study using matte painted masses, showing the Colorado River winding through the layered walls of the Grand Canyon.",
       "arizona.jpg",
       "73a1f001318460b9db7729145b467745aaf7df58c32a061e8eeab90e58840bfa",
-      "mark-twain-travel-prejudice",
+      "q-b1507f37dcd14d6e8777d2f52a5ca381",
     ],
     [
       "visited-us-state-05",
@@ -41,7 +41,7 @@ export const cataloguePackStatesAThroughM = defineCataloguePackBadges(
       "An original source study using relief-cut silhouettes, showing the Buffalo National River beneath pale Ozark limestone bluffs.",
       "arkansas.jpg",
       "60038d9cb2cab8c6a9386ae198bd6cdde8a33e4bc2d81af4864cec477882bb30",
-      "john-muir-every-walk-nature",
+      "q-62e0d450493e83f8c75dc73ac04b2cb9",
     ],
     [
       "visited-us-state-06",
@@ -51,7 +51,7 @@ export const cataloguePackStatesAThroughM = defineCataloguePackBadges(
       "An original source study using stained-glass lead cells, showing coastal redwoods framing Pacific light with Sierra granite beyond.",
       "california.jpg",
       "8ff35979e0661a84c1b949c7417f48eda59140c545efafdd9ec699c21dc402f6",
-      "henry-david-thoreau-wildness",
+      "q-fefd4787bcdb534a35fe8e51949f5074",
     ],
     [
       "visited-us-state-08",
@@ -61,7 +61,7 @@ export const cataloguePackStatesAThroughM = defineCataloguePackBadges(
       "An original source study using bold enamel contour, showing a snow-lined Rocky Mountain ridge above golden aspen.",
       "colorado.jpg",
       "9b710eed2acc4aaf7984c74e80f6142da166809ce20a3721bf5695d4cd6a6ab0",
-      "mark-twain-travel-prejudice",
+      "q-a544ba4106764588248b66185180e659",
     ],
     [
       "visited-us-state-09",
@@ -71,7 +71,7 @@ export const cataloguePackStatesAThroughM = defineCataloguePackBadges(
       "An original source study using broad atlas contours, showing the Connecticut River passing autumn hardwoods and old fieldstone walls.",
       "connecticut.jpg",
       "3752a44bd223eab864e53fb5ea97078f827d5a8f7b0dd7f026ecffb26a574b16",
-      "john-muir-every-walk-nature",
+      "q-29b7736ac936d239e06b7a9457051a27",
     ],
     [
       "visited-us-state-10",
@@ -81,7 +81,7 @@ export const cataloguePackStatesAThroughM = defineCataloguePackBadges(
       "An original source study using relief-cut silhouettes, showing Atlantic dunes meeting the salt marshes of Delaware Bay.",
       "delaware.jpg",
       "53ed04c8cb034734b33b2c07edc3e700490ac15153c8ca2bc6eab9fe155bd0d7",
-      "henry-david-thoreau-wildness",
+      "q-dd390aaa56f40d71f870ecc260e4de51",
     ],
     [
       "visited-us-state-12",
@@ -91,7 +91,7 @@ export const cataloguePackStatesAThroughM = defineCataloguePackBadges(
       "An original source study using matte painted masses, showing Everglades sawgrass opening around mangrove islands and a roseate spoonbill.",
       "florida.jpg",
       "5de21adea5a4a401aef39f083171392da421069b77fbece6a9922d7373d67a30",
-      "mark-twain-travel-prejudice",
+      "q-cb59ba1a44faf58437bfc4d21ebdd3f8",
     ],
     [
       "visited-us-state-13",
@@ -101,7 +101,7 @@ export const cataloguePackStatesAThroughM = defineCataloguePackBadges(
       "An original source study using screenprint overlaps, showing live oaks and salt-marsh grass along the Georgia coast.",
       "georgia.jpg",
       "a6c2ef66df3821dd9f902f79f9015fbc196d4a1ea2a5419019ec6541d5a43256",
-      "john-muir-every-walk-nature",
+      "q-b5a58b8827872b47166d8199d0c20f3b",
     ],
     [
       "visited-us-state-15",
@@ -111,7 +111,7 @@ export const cataloguePackStatesAThroughM = defineCataloguePackBadges(
       "An original source study using matte painted masses, showing dark volcanic slopes meeting the Pacific beside red ʻōhiʻa lehua blossoms.",
       "hawaii.jpg",
       "d95ac898b225b4a24823c95f4942deae4b5c87897abab0e245ed9fe19420eca4",
-      "john-muir-eternal-sunrise",
+      "q-ffebdd109d02d64ffc84b6334f0f0ab3",
     ],
     [
       "visited-us-state-16",
@@ -121,7 +121,7 @@ export const cataloguePackStatesAThroughM = defineCataloguePackBadges(
       "An original source study using woven tapestry bands, showing the jagged Sawtooth Range reflected in a clear alpine lake.",
       "idaho.jpg",
       "74528e3639540b6655de641ada74ba9b7a27586bbf7c22a8a8dc08d52c00ee81",
-      "mark-twain-travel-prejudice",
+      "q-ed9a3882322047bb2913d56cf95a8032",
     ],
     [
       "visited-us-state-17",
@@ -131,7 +131,7 @@ export const cataloguePackStatesAThroughM = defineCataloguePackBadges(
       "An original source study using cut-paper layers, showing Chicago's lakefront skyline rising beyond the blue plane of Lake Michigan.",
       "illinois.jpg",
       "24c0ff5bd4c7764737e2c6e7a875a80e08bb2211fce038271b230b847ea45120",
-      "john-muir-every-walk-nature",
+      "q-65d19c276f4e1cb5b9daf8f2120835ee",
     ],
     [
       "visited-us-state-18",
@@ -141,7 +141,7 @@ export const cataloguePackStatesAThroughM = defineCataloguePackBadges(
       "An original source study using bold enamel contour, showing marram grass bending across the dunes of Lake Michigan.",
       "indiana.jpg",
       "12ddff6ec295104214c1236568d7058b6849379c5cd3a469c80cef37269bd21e",
-      "henry-david-thoreau-wildness",
+      "q-34ccd578c0535157e213d37fe54502a4",
     ],
     [
       "visited-us-state-19",
@@ -151,7 +151,7 @@ export const cataloguePackStatesAThroughM = defineCataloguePackBadges(
       "An original source study using matte painted masses, showing the Loess Hills rising above patchwork farms near the Missouri River.",
       "iowa.jpg",
       "91963f10decf87f0512b19bbfe9ba3a82338484d9d90ec49f0cfa0e25854b232",
-      "john-muir-eternal-sunrise",
+      "q-c8155255213345e8ff81d85e8d9e962e",
     ],
     [
       "visited-us-state-20",
@@ -161,7 +161,7 @@ export const cataloguePackStatesAThroughM = defineCataloguePackBadges(
       "An original source study using relief-cut silhouettes, showing Flint Hills tallgrass rolling beneath a summer thunderstorm.",
       "kansas.jpg",
       "b5e37ce4f1ff7e2a02895257728ef2390079bb4c87b6302471c573089b71385f",
-      "mark-twain-travel-prejudice",
+      "q-012144eaeb44825d7e159d1424455334",
     ],
     [
       "visited-us-state-21",
@@ -171,7 +171,7 @@ export const cataloguePackStatesAThroughM = defineCataloguePackBadges(
       "An original source study using screenprint overlaps, showing a lantern revealing the broad limestone passages of Mammoth Cave.",
       "kentucky.jpg",
       "fe78bcc7505b1710c24101c29d5d4f01424cd060ff4190e4d657d08ed4deff68",
-      "john-muir-every-walk-nature",
+      "q-7ff6da7a3c757c1705b1fa52b2a47796",
     ],
     [
       "visited-us-state-22",
@@ -181,7 +181,7 @@ export const cataloguePackStatesAThroughM = defineCataloguePackBadges(
       "An original source study using large mosaic tesserae, showing bald cypress and knees standing in a quiet bayou.",
       "louisiana.jpg",
       "a20f1a12fe488ccf1c7d09cd7703b594a630eeac5db4f7f67873a2dd8194cf24",
-      "henry-david-thoreau-wildness",
+      "q-09b64b538fa00babff145cd9f45428bc",
     ],
     [
       "visited-us-state-23",
@@ -191,7 +191,7 @@ export const cataloguePackStatesAThroughM = defineCataloguePackBadges(
       "An original source study using matte painted masses, showing a granite Atlantic headland with spruce islands and a working lighthouse.",
       "maine.jpg",
       "a7960dc6cb54b57131369fa1a52fa2efcea48584aac79452f17523971a0d21a2",
-      "john-muir-eternal-sunrise",
+      "q-0abde458c299385c29c230ea595da518",
     ],
     [
       "visited-us-state-24",
@@ -201,7 +201,7 @@ export const cataloguePackStatesAThroughM = defineCataloguePackBadges(
       "An original source study using prismatic geometric inlay, showing a Chesapeake Bay skipjack crossing among tidal creeks and blue herons.",
       "maryland.jpg",
       "bfb67778ff8c4e17871f589ec04995a8c7fca4483ae7ef8bce3f85ff6f91a2a4",
-      "mark-twain-travel-prejudice",
+      "q-693aa9e92affcb2f00b471791efe7140",
     ],
     [
       "visited-us-state-25",
@@ -211,7 +211,7 @@ export const cataloguePackStatesAThroughM = defineCataloguePackBadges(
       "An original source study using ceramic underglaze roundel, showing Cape Cod dunes curving around a lighthouse and broad Atlantic water.",
       "massachusetts.jpg",
       "506a883e8970b72aaa80c4f40ef79dae48c7eccc238c73d113d17e4282999c48",
-      "john-muir-every-walk-nature",
+      "q-cab1f22ddcb32e2f0107f9f31dc71356",
     ],
     [
       "visited-us-state-26",
@@ -221,7 +221,7 @@ export const cataloguePackStatesAThroughM = defineCataloguePackBadges(
       "An original source study using wood marquetry strata, showing Pictured Rocks cliffs glowing above the clear water of Lake Superior.",
       "michigan.jpg",
       "38c47fa4fc89046e02b82f339255557deda9bf8122edafc17d6aeb8503e9e715",
-      "henry-david-thoreau-wildness",
+      "q-006e21120a45c54f36b0d203315bfa9c",
     ],
     [
       "visited-us-state-27",
@@ -231,7 +231,7 @@ export const cataloguePackStatesAThroughM = defineCataloguePackBadges(
       "An original source study using relief-cut silhouettes, showing Boundary Waters lakes reflecting boreal pines beneath northern light.",
       "minnesota.jpg",
       "cb23f415abb7169f9a8cf7a3962a78151d45b6e0cf125ac27589d878581ba588",
-      "john-muir-eternal-sunrise",
+      "q-20d3817d8bbac96c8c60d7ee9768cf34",
     ],
     [
       "visited-us-state-28",
@@ -241,7 +241,7 @@ export const cataloguePackStatesAThroughM = defineCataloguePackBadges(
       "An original source study using open clear-line enamel scene, showing cypress wetlands and an oxbow lake across the Mississippi Delta plain.",
       "mississippi.jpg",
       "2d2dfea16bb576d9c984e6d99dc95f7a683144068382c13fe76b4a95cb729e24",
-      "mark-twain-travel-prejudice",
+      "q-498e8b8477faedeae66595a04fac4609",
     ],
     [
       "visited-us-state-29",
@@ -251,7 +251,7 @@ export const cataloguePackStatesAThroughM = defineCataloguePackBadges(
       "An original source study using large stepped pixel clusters, showing a clear Ozark spring flowing beneath wooded limestone bluffs.",
       "missouri.jpg",
       "0c9179c3316301b8a797b7a5236b694eaa244fa6730cf7ce2a177f16a3f2857e",
-      "john-muir-every-walk-nature",
+      "q-a484d40b43f051f7e6e4a68f35da640c",
     ],
   ],
   {
