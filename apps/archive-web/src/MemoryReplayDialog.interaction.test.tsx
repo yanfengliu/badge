@@ -21,6 +21,15 @@ const parksSet: ReplaySetLink = {
   title: "U.S. National Parks",
 };
 
+const yosemiteQuotation = {
+  id: "john-muir-yosemite-temple-1868",
+  text: "It is by far the grandest of all the special temples of Nature I was ever permitted to enter.",
+  person: "John Muir",
+  personWikipediaUrl: "https://en.wikipedia.org/wiki/John_Muir",
+  sourceTitle: "Letters to a Friend, July 26, 1868",
+  sourceUrl: "https://www.nps.gov/jomu/learn/historyculture/john-muir-quotes.htm",
+};
+
 function earnedYosemite() {
   const base = createStarterArchiveState().records[0]!;
   return {
@@ -33,6 +42,15 @@ function earnedYosemite() {
       activatedAt: "2024-05-15T18:30:00.000Z",
       visualPin: toExactVisualPin(base.publishedVisual),
     },
+  };
+}
+
+function earnedEveryNationalPark() {
+  return {
+    ...earnedYosemite(),
+    recordId: "starter:all-national-parks",
+    title: "Every national park",
+    note: "A long memory body that requires its own scrolling region.",
   };
 }
 
@@ -56,6 +74,51 @@ function ReplayHarness({ onBrowseSet }: { readonly onBrowseSet?: (set: ReplaySet
             onBrowseSet?.(set);
             setOpen(false);
           }}
+          onClose={() => setOpen(false)}
+        />
+      ) : null}
+    </>
+  );
+}
+
+function PagedReplayHarness() {
+  const records = [earnedYosemite(), earnedEveryNationalPark()];
+  const [index, setIndex] = useState(0);
+  const [open, setOpen] = useState(false);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const record = records[index]!;
+  const pager = {
+    contextTitle: "Collected in U.S. National Parks",
+    currentTitle: record.title,
+    index: index + 1,
+    total: records.length,
+    previous:
+      index === 0 ? null : { recordId: records[index - 1]!.recordId, title: records[index - 1]!.title },
+    next:
+      index === records.length - 1
+        ? null
+        : { recordId: records[index + 1]!.recordId, title: records[index + 1]!.title },
+  };
+  const onPagerStep = (step: { readonly recordId: string }) => {
+    const nextIndex = records.findIndex((candidate) => candidate.recordId === step.recordId);
+    if (nextIndex >= 0) setIndex(nextIndex);
+  };
+  return (
+    <>
+      <button ref={trigger} type="button" onClick={() => setOpen(true)}>
+        Replay collected set
+      </button>
+      {open ? (
+        <MemoryReplayDialog
+          record={record}
+          sourceUrl={`blob:${record.recordId}`}
+          quotation={index === 0 ? yosemiteQuotation : null}
+          sets={[parksSet]}
+          forceFallback={false}
+          pager={pager}
+          returnFocus={trigger}
+          onBrowseSet={() => undefined}
+          onPagerStep={onPagerStep}
           onClose={() => setOpen(false)}
         />
       ) : null}
@@ -114,5 +177,45 @@ describe("MemoryReplayDialog interactions", () => {
     expect(container.querySelector('[role="dialog"]')).toBeNull();
     expect(document.documentElement.style.overflow).toBe("");
     expect(document.body.style.overflow).toBe("");
+  });
+
+  it("resets the memory body and moves changing-content focus to its visible region", async () => {
+    await act(async () => root.render(<PagedReplayHarness />));
+    const trigger = container.querySelector<HTMLButtonElement>("button");
+    await act(async () => trigger?.click());
+    const content = container.querySelector<HTMLElement>('[role="region"][aria-label="Memory details"]');
+    const setLink = container.querySelector<HTMLButtonElement>("[data-set-link]");
+    if (!content || !setLink) throw new Error("Paged replay did not expose its memory region and set link.");
+
+    content.scrollTop = 120;
+    setLink.focus();
+    await act(async () => {
+      setLink.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
+    });
+
+    expect(container.querySelector("#memory-replay-title")?.textContent).toBe("Every national park");
+    expect(container.querySelector('[role="region"][aria-label="Memory details"]')).toBe(content);
+    expect(content.scrollTop).toBe(0);
+    expect(document.activeElement).toBe(content);
+  });
+
+  it("captures focus before a paged quotation source disappears", async () => {
+    await act(async () => root.render(<PagedReplayHarness />));
+    const trigger = container.querySelector<HTMLButtonElement>("button");
+    await act(async () => trigger?.click());
+    const content = container.querySelector<HTMLElement>('[role="region"][aria-label="Memory details"]');
+    const source = container.querySelector<HTMLAnchorElement>(`a[href="${yosemiteQuotation.sourceUrl}"]`);
+    if (!content || !source) throw new Error("Paged replay did not expose the quotation source link.");
+
+    content.scrollTop = 120;
+    source.focus();
+    await act(async () => {
+      source.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
+    });
+
+    expect(container.querySelector("#memory-replay-title")?.textContent).toBe("Every national park");
+    expect(container.querySelector(`a[href="${yosemiteQuotation.sourceUrl}"]`)).toBeNull();
+    expect(content.scrollTop).toBe(0);
+    expect(document.activeElement).toBe(content);
   });
 });

@@ -179,12 +179,6 @@ export function App({ onShowStudio }: { readonly onShowStudio: () => void }) {
     pendingRestore !== null ||
     saying.disclosure.phase !== "idle";
   useDiscoveryPagerKeys(modalOverPreparation ? null : preparationPager, openPagerStep);
-  useDiscoveryPagerKeys(
-    ceremonyRecordId === null && pendingRestore === null && saying.disclosure.phase === "idle"
-      ? replayPager
-      : null,
-    openReplayStep,
-  );
   const { visibleLimit, onVisibleLimitChange } = discovery.viewProps;
   useEffect(() => {
     // Keep the rendered Discover page deep enough that "Back to set" can land on the
@@ -218,7 +212,12 @@ export function App({ onShowStudio }: { readonly onShowStudio: () => void }) {
     setActiveSection("discover");
     writeArchiveSectionHash("discover");
     setNotice(null);
-    if (trigger) requestAnimationFrame(() => preparationHeading.current?.focus());
+    if (trigger) {
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: 0, left: 0 });
+        preparationHeading.current?.focus({ preventScroll: true });
+      });
+    }
   }
 
   function openPagerStep(step: DiscoveryPagerStep) {
@@ -570,6 +569,9 @@ export function App({ onShowStudio }: { readonly onShowStudio: () => void }) {
           sets={replaySetLinks(replayRecord)}
           forceFallback={forceFallback}
           pager={replayPager}
+          keyboardPagingEnabled={
+            ceremonyRecordId === null && pendingRestore === null && saying.disclosure.phase === "idle"
+          }
           returnFocus={replayReturnFocus}
           onBrowseSet={browseReplaySet}
           onPagerStep={openReplayStep}

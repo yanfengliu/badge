@@ -24,7 +24,7 @@ body,
 }
 
 .ceremony,
-.memory-replay,
+.memory-replay:not(.memory-replay--paged),
 .saying-disclosure-dialog {
   padding-top: max(30px, var(--safe-top));
   padding-right: max(30px, var(--safe-right));
@@ -373,6 +373,10 @@ body,
 }
 
 @media (max-height: 430px) and (orientation: landscape) {
+  .memory-replay {
+    padding: 0;
+  }
+
   .archive-header {
     min-height: calc(96px + var(--safe-top));
     padding-top: var(--safe-top);
@@ -491,8 +495,36 @@ body,
     block-size: auto;
     max-inline-size: none;
   }
+}
+
+@media (max-width: 920px) and (max-height: 430px) and (orientation: landscape) {
   .memory-replay__viewer {
-    height: 58dvh;
-    min-height: 58dvh;
+    height: 50dvh;
+    min-height: 50dvh;
+  }
+
+  .memory-replay__card--paged {
+    grid-template-rows: 50dvh minmax(0, 50dvh);
+  }
+
+  .memory-replay__card--paged .memory-replay__viewer {
+    height: auto;
+    min-height: 0;
+  }
+
+  .memory-replay__details--paged {
+    padding: 10px max(24px, var(--safe-right)) 10px max(24px, var(--safe-left));
+  }
+
+  .memory-replay__pager-slot {
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+  }
+}
+
+@media (min-width: 921px) and (max-height: 430px) and (orientation: landscape) {
+  .memory-replay__close {
+    top: 0;
+    right: 0;
   }
 }

@@ -14,8 +14,7 @@
   background: #eee8dc;
 }
 
-/* With set paging, the pager sits between the heading and the stage so it stays
-   above the fold however tall the story pane grows. */
+/* Same-set controls own the first fixed row so title wrapping cannot move them. */
 .badge-preparation--paged .artifact-pane {
   grid-template-rows: auto auto minmax(430px, 1fr);
 }
@@ -33,9 +32,28 @@
 
 .collection-heading,
 .artifact-stage,
-.badge-rail {
+.badge-rail,
+.badge-preparation__pager-slot {
   position: relative;
   z-index: 1;
+}
+
+.badge-preparation__pager-slot {
+  display: grid;
+  min-block-size: 44px;
+  place-items: center;
+}
+
+.badge-preparation--paged .badge-preparation__pager-slot {
+  grid-row: 1;
+}
+
+.badge-preparation--paged .collection-heading {
+  grid-row: 2;
+}
+
+.badge-preparation--paged .artifact-stage {
+  grid-row: 3;
 }
 
 .collection-heading {

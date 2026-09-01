@@ -279,6 +279,7 @@ describe("mounted historical-quotation flow", () => {
       'button[aria-label="Open Read Sapiens to collect it"]',
     );
     if (!openSapiens) throw new Error("Mounted Archive test could not find Read Sapiens in Discovery.");
+    const scrollTo = vi.spyOn(window, "scrollTo");
 
     await act(async () => {
       openSapiens.click();
@@ -288,6 +289,7 @@ describe("mounted historical-quotation flow", () => {
     await waitFor(() => expect(container.querySelector(".story-title")?.textContent).toBe("Read Sapiens"));
     expect(container.textContent).not.toContain("Discover sets");
     expect(container.querySelector('#archive-section-discover[aria-current="page"]')).not.toBeNull();
+    expect(scrollTo).toHaveBeenCalledWith({ top: 0, left: 0 });
     expect(document.activeElement).toBe(container.querySelector("#badge-preparation-heading"));
     await clickButton("Back to set");
     await waitFor(() => expect(container.textContent).toContain("Discover sets"));

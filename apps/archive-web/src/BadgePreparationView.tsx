@@ -69,7 +69,11 @@ export function BadgePreparationView({
             Back to set
           </button>
         </div>
-        {paged && pager ? <DiscoveryPagerControls pager={pager} onStep={onPagerStep} /> : null}
+        {paged && pager ? (
+          <div className="badge-preparation__pager-slot">
+            <DiscoveryPagerControls pager={pager} onStep={onPagerStep} />
+          </div>
+        ) : null}
         <div className={`artifact-stage${forceFallback ? " fallback-stage" : ""}`}>
           {visual ? (
             <BadgeViewer
