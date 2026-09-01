@@ -31,6 +31,8 @@
     "start": "node scripts/run-local.mjs",
     "predev": "npm run generate:fixtures",
     "dev": "vite --config apps/host-web/vite.config.ts --host 127.0.0.1 --port 5173 --strictPort --mode fixture",
+    "predev:5174": "npm run generate:fixtures",
+    "dev:5174": "vite --config apps/host-web/vite.config.ts --host 127.0.0.1 --port 5174 --strictPort --mode fixture",
     "build": "npm run build:archive && npm run build:studio && npm run build:site",
     "prebuild:archive": "npm run generate:fixtures",
     "build:archive": "vite build --config apps/archive-web/vite.config.ts",

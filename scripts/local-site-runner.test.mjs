@@ -397,4 +397,35 @@ describe("launcher verification state isolation", () => {
       expect(packageJson.scripts).not.toHaveProperty(alias);
     }
   });
+
+  it("keeps both Claude preview origins on fixture-generating unified-host scripts", async () => {
+    const [packageJson, launchJson] = await Promise.all([
+      readFile(path.resolve("package.json"), "utf8").then(JSON.parse),
+      readFile(path.resolve(".claude/launch.json"), "utf8").then(JSON.parse),
+    ]);
+
+    expect(packageJson.scripts.predev).toBe("npm run generate:fixtures");
+    expect(packageJson.scripts.dev).toBe(
+      "vite --config apps/host-web/vite.config.ts --host 127.0.0.1 --port 5173 --strictPort --mode fixture",
+    );
+    expect(packageJson.scripts["predev:5174"]).toBe("npm run generate:fixtures");
+    expect(packageJson.scripts["dev:5174"]).toBe(
+      "vite --config apps/host-web/vite.config.ts --host 127.0.0.1 --port 5174 --strictPort --mode fixture",
+    );
+    expect(launchJson.version).toBe("0.0.1");
+    expect(launchJson.configurations).toEqual([
+      {
+        name: "badge-host-dev",
+        runtimeExecutable: "npm",
+        runtimeArgs: ["run", "dev"],
+        port: 5173,
+      },
+      {
+        name: "badge-host-dev-5174",
+        runtimeExecutable: "npm",
+        runtimeArgs: ["run", "dev:5174"],
+        port: 5174,
+      },
+    ]);
+  });
 });
