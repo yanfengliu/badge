@@ -19,7 +19,7 @@ This index names the current source of truth for each kind of decision.
 ## Project history and learning
 
 - [Devlog summary](devlog/summary.md) is the dated history index; detailed entries live under `devlog/detailed/`.
-- [Lessons](learning/lessons.md) is the staging queue for knowledge waiting on a gate, emptied as each gate lands; [lesson evidence](learning/lessons-evidence.md) holds anchored war stories, [gate proofs](learning/gate-proofs.md) the mutations that proved retired gates, and [canon candidates](learning/canon-candidates.md) what is staged for the fleet constitution.
+- [Lessons](learning/lessons.md) is the staging queue for knowledge waiting on a gate, emptied as each gate lands; [lesson evidence](learning/lessons-evidence.md) holds anchored war stories, [gate proofs](learning/gate-proofs.md) the mutations that proved retired gates. Knowledge with no mechanical trigger is promoted into the fleet constitution or into [local rules](policies/local-rules.md); nothing is staged here between promotions.
 - [Defect register](learning/defect-register.md) records every user-reported defect and the gate that prevents its class.
 
 Do not create a second current-state document for a subject already owned here; update the canonical file and record structural drift or a decision when required.
