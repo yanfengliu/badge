@@ -8,29 +8,18 @@ export type { ArchiveSection } from "./ArchiveSectionNav";
 interface ArchiveHeaderProps {
   activeSection: ArchiveSection;
   onSectionChange: (section: ArchiveSection) => void;
-  onShowStudio: () => void;
   onBackup: () => void;
   onRestore: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
-export function ArchiveHeader({
-  activeSection,
-  onSectionChange,
-  onShowStudio,
-  onBackup,
-  onRestore,
-}: ArchiveHeaderProps) {
+export function ArchiveHeader({ activeSection, onSectionChange, onBackup, onRestore }: ArchiveHeaderProps) {
   const restoreInput = useRef<HTMLInputElement>(null);
   return (
     <header className="archive-header">
       <div className="brand">
         <ArchiveMark /> Badge Archive
       </div>
-      <ArchiveSectionNav
-        activeSection={activeSection}
-        onSectionChange={onSectionChange}
-        onShowStudio={onShowStudio}
-      />
+      <ArchiveSectionNav activeSection={activeSection} onSectionChange={onSectionChange} />
       <div className="header-actions">
         <button className="quiet-button" type="button" aria-label="Back up archive" onClick={onBackup}>
           <DownloadIcon />

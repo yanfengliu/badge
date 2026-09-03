@@ -88,7 +88,7 @@ export function observeArchiveSectionLocation(
 ): () => void {
   let observedSection = archiveSectionFromHash(window.location.hash);
   const synchronize = (event: Event) => {
-    if (!(event instanceof CustomEvent) && window.location.hash === "#studio") return;
+    if (!(event instanceof CustomEvent) && /^#studio(?:\/|$)/u.test(window.location.hash)) return;
     if (event instanceof CustomEvent) {
       const detail = event.detail as ArchiveSectionLocationDetail;
       observedSection = detail.section;

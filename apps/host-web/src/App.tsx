@@ -7,10 +7,13 @@ import {
   notifyArchiveSectionLocation,
   observeArchiveSectionWrites,
 } from "../../archive-web/src/archive-section-location";
+import type { ArchiveStudioBridge } from "../../archive-web/src/studio-bridge-port";
 import type { StudioLeaveGuard } from "../../studio-web/src/studio-leave-guard";
+import type { StudioAdjustmentHandler, StudioBadgeTarget } from "@badge/studio-adjustment-contract";
 import {
   hostDestinationFromHash,
   pushUnindexedHostDestination,
+  studioRecordIdFromHash,
   traverseToHostHistoryIndex,
   writeHostDestination,
   type HostDestination,
@@ -46,6 +49,10 @@ function surfaceForDestination(destination: HostDestination): HostSurface {
   return destination === "studio" ? "studio" : "archive";
 }
 
+function studioTargetRecordId(): string | null {
+  return studioRecordIdFromHash(window.location.hash);
+}
+
 function focusDestination(destination: HostDestination): boolean {
   const id = destination === "studio" ? "studio-section-studio" : archiveSectionButtonId(destination);
   const target = document.getElementById(id);
@@ -66,11 +73,21 @@ function updateDocumentSurface(surface: HostSurface): void {
 export function App() {
   const initialDestination = hostDestinationFromHash(window.location.hash);
   const [surface, setSurface] = useState<HostSurface>(() => surfaceForDestination(initialDestination));
+  // The Archive owns badge persistence and projects the badge Studio adjusts, so it is mounted
+  // even when the session opens straight into `#studio/<recordId>`.
   const [mountedSurfaces, setMountedSurfaces] = useState(() => ({
-    archive: surfaceForDestination(initialDestination) === "archive",
+    archive: true,
     studio: surfaceForDestination(initialDestination) === "studio",
   }));
   const [initialHistoryIndex] = useState(() => ensureBadgeHistoryIndex());
+  const [studioRecordId, setStudioRecordId] = useState<string | null>(() => studioTargetRecordId());
+  const [resolvedStudio, setResolvedStudio] = useState<{
+    readonly recordId: string;
+    readonly target: StudioBadgeTarget | null;
+  } | null>(null);
+  const [studioRevision, setStudioRevision] = useState(0);
+  const studioBridge = useRef<ArchiveStudioBridge | null>(null);
+  const studioRecordIdRef = useRef<string | null>(studioTargetRecordId());
   const surfaceRef = useRef(surface);
   const mountedSurfacesRef = useRef(mountedSurfaces);
   const lastArchiveDestination = useRef<Exclude<HostDestination, "studio"> | null>(
@@ -134,8 +151,10 @@ export function App() {
       destination: HostDestination,
       historyMode: "push" | "already-changed",
       incomingHistoryIndex: number | null = null,
+      nextStudioRecordId: string | null = null,
     ) => {
       const revision = ++transitionRevision.current;
+      const studioBadge = destination === "studio" ? (nextStudioRecordId ?? studioTargetRecordId()) : null;
       const nextSurface = surfaceForDestination(destination);
       if (surfaceRef.current === "archive" && destination === "studio") {
         const currentDestination = hostDestinationFromHash(window.location.hash);
@@ -151,7 +170,7 @@ export function App() {
               committedHistoryIndex.current === null ||
               incomingHistoryIndex === committedHistoryIndex.current
             ) {
-              pushUnindexedHostDestination("studio");
+              pushUnindexedHostDestination("studio", studioRecordIdRef.current);
               committedHistoryIndex.current = null;
               observedLocation.current = window.location.href;
             } else {
@@ -164,8 +183,8 @@ export function App() {
       }
       if (historyMode === "push") {
         const currentIndex = badgeHistoryIndex(window.history.state);
-        if (currentIndex === null) pushUnindexedHostDestination(destination);
-        else writeHostDestination(destination, "push", currentIndex);
+        if (currentIndex === null) pushUnindexedHostDestination(destination, studioBadge);
+        else writeHostDestination(destination, "push", currentIndex, studioBadge);
         committedHistoryIndex.current = badgeHistoryIndex(window.history.state);
         observedLocation.current = window.location.href;
       } else {
@@ -183,6 +202,8 @@ export function App() {
       if (nextSurface === "archive") {
         lastArchiveDestination.current = destination as Exclude<HostDestination, "studio">;
       }
+      studioRecordIdRef.current = studioBadge;
+      setStudioRecordId(studioBadge);
       if (!mountedSurfacesRef.current[nextSurface]) {
         mountedSurfacesRef.current = { ...mountedSurfacesRef.current, [nextSurface]: true };
       }
@@ -204,6 +225,7 @@ export function App() {
         hostDestinationFromHash(window.location.hash),
         "already-changed",
         badgeHistoryIndex(window.history.state),
+        studioTargetRecordId(),
       );
     };
     window.addEventListener("hashchange", synchronize);
@@ -218,6 +240,48 @@ export function App() {
     studioLeaveGuard.current = guard;
   }, []);
 
+  const openStudioBridge = useCallback(async (): Promise<ArchiveStudioBridge> => {
+    if (!studioBridge.current) {
+      const module = await import("../../archive-web/src/studio-bridge-host");
+      studioBridge.current = module.archiveStudioBridge;
+    }
+    return studioBridge.current;
+  }, []);
+
+  useEffect(() => {
+    if (surface !== "studio" || !studioRecordId) return;
+    let active = true;
+    void openStudioBridge()
+      .then((bridge) => bridge.resolveTarget(studioRecordId))
+      .then(
+        (target) => {
+          if (active) setResolvedStudio({ recordId: studioRecordId, target });
+        },
+        () => {
+          if (active) setResolvedStudio({ recordId: studioRecordId, target: null });
+        },
+      );
+    return () => {
+      active = false;
+    };
+  }, [openStudioBridge, studioRecordId, studioRevision, surface]);
+
+  // Derived rather than stored, so leaving Studio or switching badges never renders the badge
+  // that was open a moment ago.
+  const studioTarget =
+    surface === "studio" && studioRecordId !== null && resolvedStudio?.recordId === studioRecordId
+      ? resolvedStudio.target
+      : null;
+
+  const applyStudioAdjustment = useCallback<StudioAdjustmentHandler>(
+    async (submission) => {
+      const result = await (await openStudioBridge()).apply(submission);
+      if (result.ok) setStudioRevision((current) => current + 1);
+      return result;
+    },
+    [openStudioBridge],
+  );
+
   return (
     <>
       {mountedSurfaces.archive ? (
@@ -229,7 +293,9 @@ export function App() {
           >
             <SurfaceLoadBoundary surface="archive">
               <Suspense fallback={<HostSurfaceLoading surface="archive" />}>
-                <ArchiveSurface onShowStudio={() => void transition("studio", "push")} />
+                <ArchiveSurface
+                  onShowStudio={(recordId) => void transition("studio", "push", null, recordId)}
+                />
               </Suspense>
             </SurfaceLoadBoundary>
           </div>
@@ -244,7 +310,9 @@ export function App() {
           <SurfaceLoadBoundary surface="studio">
             <Suspense fallback={<HostSurfaceLoading surface="studio" />}>
               <StudioSurface
-                onSectionChange={(section) => void transition(section, "push")}
+                target={studioTarget}
+                onApply={applyStudioAdjustment}
+                onClose={() => void transition("discover", "push")}
                 onLeaveGuardChange={registerStudioLeaveGuard}
               />
             </Suspense>

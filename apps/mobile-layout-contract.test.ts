@@ -137,9 +137,8 @@ describe("phone layout contract", () => {
     expect(base).toContain("padding-bottom: calc(84px + var(--safe-bottom));");
   });
 
-  it("keeps Studio navigation, inputs, candidate browsing, and construction controls touch-safe", () => {
+  it("keeps Studio navigation, adjustment panels, and construction controls touch-safe", () => {
     const base = read("apps/studio-web/src/mobile.css");
-    const artDirection = read("apps/studio-web/src/art-direction-library.css");
     const entry = read("apps/studio-web/src/StudioSurface.tsx");
     const phone = mediaCss("apps/studio-web/src/mobile.css", "(max-width: 480px)");
     const shortLandscape = mediaCss(
@@ -157,17 +156,25 @@ describe("phone layout contract", () => {
     expect(base).toContain("env(safe-area-inset-top");
     expect(base).toContain("env(safe-area-inset-bottom");
     expect(base).toContain("100dvh");
-    expect(phone).toMatch(/\.studio-nav\s*\{[^}]*grid-template-columns:\s*repeat\(4, minmax\(0, 1fr\)\)/su);
-    expect(phone).toMatch(/\.studio-nav__link\s*\{[^}]*min-height:\s*48px/su);
-    expect(phone).toMatch(/\.candidate-grid\s*\{[^}]*grid-auto-flow:\s*column[^}]*overflow-x:\s*auto/su);
-    expect(phone).toMatch(/\.source-actions\s*\{[^}]*align-items:\s*stretch[^}]*flex-direction:\s*column/su);
-    expect(phone).toMatch(/\.source-actions \.button\s*\{[^}]*width:\s*100%/su);
-    expect(phone).toMatch(/\.publish-bar \.button\s*\{[^}]*max-width:\s*100%/su);
-    expect(phone).toMatch(/\.publish-bar \.button\s*\{[^}]*overflow-wrap:\s*anywhere/su);
+    expect(phone).toMatch(
+      /\.studio-header__actions\s*\{[^}]*grid-template-columns:\s*repeat\(2, minmax\(0, 1fr\)\)/su,
+    );
+    expect(phone).toMatch(/\.studio-nav__link,\s*\.studio-save\s*\{[^}]*min-height:\s*48px/su);
+    expect(phone).toMatch(
+      /\.studio-quote-choices\s*\{[^}]*grid-auto-flow:\s*column[^}]*overflow-x:\s*auto/su,
+    );
+    expect(phone).toMatch(
+      /\.studio-image-actions,\s*\.studio-bench-actions\s*\{[^}]*align-items:\s*stretch[^}]*flex-direction:\s*column/su,
+    );
+    expect(phone).toMatch(
+      /\.studio-image-actions button,\s*\.studio-bench-actions button\s*\{[^}]*width:\s*100%/su,
+    );
+    expect(phone).toMatch(/\.studio-tag-entry button\s*\{[^}]*max-width:\s*100%/su);
+    expect(phone).toMatch(/\.studio-tag-entry button\s*\{[^}]*overflow-wrap:\s*anywhere/su);
+    expect(phone).toMatch(/\.studio-tag-entry button\s*\{[^}]*width:\s*100%/su);
+    expect(phone).toMatch(/\.studio-collections label\s*\{[^}]*min-height:\s*48px/su);
     expect(phone).toMatch(/\.segment button\s*\{[^}]*min-height:\s*44px/su);
     expect(phone).toMatch(/:is\(input, textarea, select\)\s*\{[^}]*font-size:\s*16px/su);
-    expect(phone).toMatch(/\.publish-bar \.button\s*\{[^}]*width:\s*100%/su);
-    expect(phone).toMatch(/\.art-direction-library__restore-recommendation[^{]*\{[^}]*min-height:\s*44px/su);
     expect(phone).toMatch(
       /\.construction-bench \.badge-fallback__stage[^{]*\{[^}]*min-block-size:\s*0[^}]*container-type:\s*size[^}]*overflow:\s*hidden/su,
     );
@@ -186,22 +193,19 @@ describe("phone layout contract", () => {
     expect(shortLandscape).toMatch(
       /\.construction-bench \.badge-fallback__object-frame[^{]*\{[^}]*inline-size:\s*min\(70cqi, var\(--badge-stage-fit-inline\)\)[^}]*block-size:\s*auto[^}]*max-inline-size:\s*none/su,
     );
-    expect(shortLandscape).toMatch(/\.segment button[^{]*\{[^}]*min-height:\s*44px/su);
     expect(shortLandscape).toMatch(
-      /\.art-direction-library__restore-recommendation[^{]*\{[^}]*min-height:\s*44px/su,
+      /\.segment button,[^{]*\.studio-tag-entry button\s*\{[^}]*min-height:\s*44px/su,
     );
+    expect(shortLandscape).toMatch(/\.studio-collections label\s*\{[^}]*min-height:\s*44px/su);
     expect(shortLandscape).toMatch(/input\[type="range"\]\s*\{[^}]*min-height:\s*44px/su);
-    expect(shortLandscape).toContain(".art-direction-library__index");
     expect(base).toMatch(
-      /\.art-direction-library__index\s*\{[^}]*padding-right:\s*max\(20px, var\(--safe-right\)\)[^}]*padding-left:\s*max\(20px, var\(--safe-left\)\)/su,
-    );
-    expect(shortLandscape).toContain(".art-direction-library__detail");
-    expect(base).toMatch(
-      /\.art-direction-library__detail\s*\{[^}]*padding-right:\s*max\(clamp\(28px, 4vw, 54px\), var\(--safe-right\)\)[^}]*padding-left:\s*max\(clamp\(28px, 4vw, 54px\), var\(--safe-left\)\)/su,
+      /\.adjustment-bench,\s*\.construction-bench\s*\{[^}]*padding-left:\s*max\(clamp\(34px, 4vw, 58px\), var\(--safe-left\)\)/su,
     );
     expect(base).toContain("padding-left: max(clamp(24px, 3.2vw, 52px), var(--safe-left));");
-    expect(artDirection).toMatch(
-      /\.art-direction-library__prompt-actions button\s*\{[^}]*min-height:\s*44px/su,
-    );
+    // Badge Studio no longer carries a prompt library or candidate browser; nothing should
+    // reintroduce their layout rules alongside the adjustment panels.
+    expect(base).not.toContain("art-direction-library");
+    expect(base).not.toContain("candidate-grid");
+    expect(base).not.toContain("publish-bar");
   });
 });

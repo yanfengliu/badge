@@ -47,12 +47,14 @@ export function preparationDiscoveryPager(
   recordId: string,
   view: PreparationPagerView,
   badges: readonly DiscoveryBadge[] = discoveryBadges,
+  tagsByRecordId: ReadonlyMap<string, readonly string[]> = new Map(),
 ): DiscoveryPager | null {
   const sequence = filterDiscoveryBadges(
     badges,
     view.query,
     view.selectedSetId,
     effectiveDiscoveryRegionId(view.selectedSetId, view.regionId),
+    tagsByRecordId,
   );
   const set = discoverySets.find((candidate) => candidate.setId === view.selectedSetId);
   return pagerFor(sequence, recordId, set?.title ?? "All created badges");

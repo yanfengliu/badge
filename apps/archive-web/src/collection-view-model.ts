@@ -1,4 +1,10 @@
-import type { ActivationRecord, ArchiveRecord, ArchiveState, CollectionRef } from "@badge/archive-domain";
+import {
+  effectiveCollectionRefs,
+  type ActivationRecord,
+  type ArchiveRecord,
+  type ArchiveState,
+  type CollectionRef,
+} from "@badge/archive-domain";
 import { STARTER_PACK_ID } from "@badge/catalogue-fixtures/archive";
 import { CATALOGUE_PACK_ID } from "@badge/catalogue-fixtures/catalogue-pack";
 import { discoveryBadges, discoverySets, type DiscoverySet } from "@badge/catalogue-fixtures/discovery";
@@ -65,7 +71,8 @@ function fallbackCollectionTitle(ref: CollectionRef): string {
 
 export function replaySetLinks(record: ArchiveRecord): readonly ReplaySetLink[] {
   const seen = new Set<string>();
-  return record.collectionRefs.flatMap((ref) => {
+  // Shelves follow where the owner put the badge, not only where the catalogue shipped it.
+  return effectiveCollectionRefs(record).flatMap((ref) => {
     const key = collectionRefKey(ref);
     if (seen.has(key)) return [];
     seen.add(key);
@@ -80,6 +87,30 @@ export function replaySetLinks(record: ArchiveRecord): readonly ReplaySetLink[] 
   });
 }
 
+/**
+ * How many badges a shelf can hold once the owner's moves are counted. The catalogue's own
+ * `setIds` are the baseline; a badge the owner moved out no longer counts toward the set it left,
+ * and one they moved in counts toward the set it joined.
+ */
+function shelfTotalsBySetId(state: ArchiveState): ReadonlyMap<string, number> {
+  const moved = new Map<string, readonly string[]>();
+  for (const record of state.records) {
+    if (record.adjustment?.collectionRefs) {
+      moved.set(
+        record.recordId,
+        effectiveCollectionRefs(record).map((ref) => ref.collectionId),
+      );
+    }
+  }
+  const totals = new Map<string, number>();
+  for (const badge of discoveryBadges) {
+    for (const setId of moved.get(badge.recordId) ?? badge.setIds) {
+      totals.set(setId, (totals.get(setId) ?? 0) + 1);
+    }
+  }
+  return totals;
+}
+
 function latestFirst(left: CollectedArchiveRecord, right: CollectedArchiveRecord): number {
   return (
     Date.parse(right.activation.activatedAt) - Date.parse(left.activation.activatedAt) ||
@@ -89,9 +120,12 @@ function latestFirst(left: CollectedArchiveRecord, right: CollectedArchiveRecord
 
 export function buildCollectionShelves(state: ArchiveState): readonly CollectionShelf[] {
   const collected = state.records.filter(isCollected);
+  const setTotals = shelfTotalsBySetId(state);
   const canonical = discoverySets.flatMap((set) => {
     const records = collected
-      .filter((record) => record.collectionRefs.some((ref) => discoverySetForRef(ref)?.setId === set.setId))
+      .filter((record) =>
+        effectiveCollectionRefs(record).some((ref) => discoverySetForRef(ref)?.setId === set.setId),
+      )
       .sort(latestFirst);
     if (records.length === 0) return [];
     return [
@@ -100,7 +134,7 @@ export function buildCollectionShelves(state: ArchiveState): readonly Collection
         setId: set.setId,
         title: set.title,
         description: set.description,
-        totalCount: discoveryBadges.filter((badge) => badge.setIds.includes(set.setId)).length,
+        totalCount: setTotals.get(set.setId) ?? 0,
         collectedCount: records.length,
         records,
       } satisfies CollectionShelf,
@@ -109,17 +143,19 @@ export function buildCollectionShelves(state: ArchiveState): readonly Collection
 
   const unknownRefs = new Map<string, CollectionRef>();
   collected.forEach((record) =>
-    record.collectionRefs.forEach((ref) => {
+    effectiveCollectionRefs(record).forEach((ref) => {
       if (discoverySetForRef(ref)) return;
       unknownRefs.set(collectionRefKey(ref), ref);
     }),
   );
   const unknown = [...unknownRefs.entries()].map(([key, ref]) => {
     const records = collected
-      .filter((record) => record.collectionRefs.some((candidate) => collectionRefKey(candidate) === key))
+      .filter((record) =>
+        effectiveCollectionRefs(record).some((candidate) => collectionRefKey(candidate) === key),
+      )
       .sort(latestFirst);
     const totalCount = state.records.filter((record) =>
-      record.collectionRefs.some((candidate) => collectionRefKey(candidate) === key),
+      effectiveCollectionRefs(record).some((candidate) => collectionRefKey(candidate) === key),
     ).length;
     return {
       key,
@@ -137,7 +173,9 @@ export function buildCollectionShelves(state: ArchiveState): readonly Collection
 
 export function collectionStats(state: ArchiveState): CollectionStats {
   const collected = state.records.filter(isCollected).sort(latestFirst);
-  const setKeys = new Set(collected.flatMap((record) => record.collectionRefs.map(collectionRefKey)));
+  const setKeys = new Set(
+    collected.flatMap((record) => effectiveCollectionRefs(record).map(collectionRefKey)),
+  );
   const years = collected.flatMap((record) => [
     Number(record.activation.occurredStart.slice(0, 4)),
     Number(record.activation.occurredEnd.slice(0, 4)),

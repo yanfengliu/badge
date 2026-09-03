@@ -1,5 +1,5 @@
 import type { FormEvent, RefObject } from "react";
-import type { ArchiveRecord } from "@badge/archive-domain";
+import { effectiveTags, type ArchiveRecord } from "@badge/archive-domain";
 import { LazyBadgeViewer as BadgeViewer } from "./LazyBadgeViewer";
 
 import type { ActivationDraft, ArchiveVisualDisplay } from "./app-types";
@@ -28,6 +28,7 @@ interface BadgePreparationViewProps {
   readonly onPagerStep: (step: DiscoveryPagerStep) => void;
   readonly onDraftChange: (patch: Partial<ActivationDraft>) => void;
   readonly onActivate: (event: FormEvent) => void;
+  readonly onAdjustInStudio: () => void;
   readonly onReplay: () => void;
 }
 
@@ -51,9 +52,12 @@ export function BadgePreparationView({
   onPagerStep,
   onDraftChange,
   onActivate,
+  onAdjustInStudio,
   onReplay,
 }: BadgePreparationViewProps) {
   const sets = replaySetLinks(record);
+  const tags = effectiveTags(record);
+  const adjusted = record.adjustment !== null;
   const paged = pager !== null && pager.total > 1;
   return (
     <main className={`archive-main badge-preparation${paged ? " badge-preparation--paged" : ""}`}>
@@ -108,6 +112,27 @@ export function BadgePreparationView({
               </a>
             </p>
           ) : null}
+
+          {tags.length > 0 ? (
+            <ul className="preparation-tags" aria-label={`Your tags on ${record.title}`}>
+              {tags.map((tag) => (
+                <li key={tag}>{tag}</li>
+              ))}
+            </ul>
+          ) : null}
+
+          <p className="preparation-studio">
+            <button className="text-button" type="button" onClick={onAdjustInStudio}>
+              Adjust in Badge Studio
+            </button>
+            <small>
+              {record.lifecycle === "earned"
+                ? "Tags and collections stay editable; the badge face is sealed with the memory."
+                : adjusted
+                  ? "Its picture, shape, border, material, tags, quote and collections are yours to change."
+                  : "Change its picture, shape, border, material, tags, quote and collections."}
+            </small>
+          </p>
 
           <SayingComposer
             lifecycle={record.lifecycle}

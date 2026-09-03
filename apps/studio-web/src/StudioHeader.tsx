@@ -1,60 +1,43 @@
 import { StudioMark } from "./StudioMark";
 
-export type StudioPrimarySection = "collection" | "timeline" | "discover";
-
 export function StudioHeader({
-  onSectionChange,
-  disabled = false,
+  badgeTitle,
+  dirty,
+  saving,
+  disabled,
+  onClose,
+  onSave,
 }: {
-  readonly onSectionChange: (section: StudioPrimarySection) => void;
-  readonly disabled?: boolean;
+  readonly badgeTitle: string;
+  readonly dirty: boolean;
+  readonly saving: boolean;
+  readonly disabled: boolean;
+  readonly onClose: () => void;
+  readonly onSave: () => void;
 }) {
   return (
     <header className="studio-header">
       <div className="brand">
         <StudioMark />
-        <span>Badge Archive</span>
-        <em>Developer mode</em>
+        <span>Badge Studio</span>
+        <em>Adjusting one badge</em>
       </div>
-      <nav className="studio-nav" aria-label="Primary sections">
-        <button
-          id="studio-section-collection"
-          className="studio-nav__link"
-          type="button"
-          disabled={disabled}
-          onClick={() => onSectionChange("collection")}
-        >
-          Collection
+      <p className="studio-header__badge" id="studio-section-studio" tabIndex={-1}>
+        {badgeTitle}
+      </p>
+      <div className="studio-header__actions">
+        <button className="studio-nav__link" type="button" disabled={saving} onClick={onClose}>
+          Back to Discover
         </button>
         <button
-          id="studio-section-timeline"
-          className="studio-nav__link"
+          className="studio-save"
           type="button"
-          disabled={disabled}
-          onClick={() => onSectionChange("timeline")}
+          disabled={disabled || saving || !dirty}
+          onClick={onSave}
         >
-          Timeline
+          {saving ? "Saving…" : dirty ? "Save adjustments" : "Saved"}
         </button>
-        <button
-          id="studio-section-discover"
-          className="studio-nav__link"
-          type="button"
-          disabled={disabled}
-          onClick={() => onSectionChange("discover")}
-        >
-          Discover
-        </button>
-        <button
-          id="studio-section-studio"
-          className="studio-nav__link"
-          type="button"
-          disabled={disabled}
-          aria-current="page"
-        >
-          Badge Studio
-        </button>
-      </nav>
-      <div className="brief-id">Brief 01 · Yosemite</div>
+      </div>
     </header>
   );
 }

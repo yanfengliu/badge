@@ -2,17 +2,36 @@ import { writeBadgeHistoryEntry } from "../../archive-web/src/archive-section-lo
 
 export type HostDestination = "collection" | "timeline" | "discover" | "studio";
 
+const STUDIO_RECORD_ID_PATTERN = /^[a-z0-9][a-z0-9._:-]{0,127}$/u;
+
 export function hostDestinationFromHash(hash: string): HostDestination {
   const candidate = hash.replace(/^#/u, "");
-  return candidate === "timeline" || candidate === "discover" || candidate === "studio"
-    ? candidate
-    : "collection";
+  if (candidate === "timeline" || candidate === "discover" || candidate === "studio") return candidate;
+  return studioRecordIdFromHash(hash) === null ? "collection" : "studio";
 }
 
-export function hostDestinationUrl(currentHref: string, destination: HostDestination): string {
+/**
+ * Badge Studio adjusts one badge, so its location carries that badge: `#studio/<recordId>`.
+ * A reload or a shared link therefore reopens the same badge instead of an empty workspace.
+ */
+export function studioRecordIdFromHash(hash: string): string | null {
+  const candidate = hash.replace(/^#/u, "");
+  if (!candidate.startsWith("studio/")) return null;
+  const recordId = decodeURIComponent(candidate.slice("studio/".length));
+  return STUDIO_RECORD_ID_PATTERN.test(recordId) ? recordId : null;
+}
+
+export function hostDestinationUrl(
+  currentHref: string,
+  destination: HostDestination,
+  studioRecordId: string | null = null,
+): string {
   const url = new URL(currentHref);
   url.pathname = "/";
-  url.hash = destination === "collection" ? "" : destination;
+  if (destination === "collection") url.hash = "";
+  else if (destination === "studio" && studioRecordId)
+    url.hash = `studio/${encodeURIComponent(studioRecordId)}`;
+  else url.hash = destination;
   return url.toString();
 }
 
@@ -20,15 +39,19 @@ export function writeHostDestination(
   destination: HostDestination,
   mode: "push" | "replace" = "push",
   previousIndex?: number,
+  studioRecordId: string | null = null,
 ): boolean {
-  const next = hostDestinationUrl(window.location.href, destination);
+  const next = hostDestinationUrl(window.location.href, destination, studioRecordId);
   if (next === window.location.href) return false;
   writeBadgeHistoryEntry(next, mode, previousIndex);
   return true;
 }
 
-export function pushUnindexedHostDestination(destination: HostDestination): boolean {
-  const next = hostDestinationUrl(window.location.href, destination);
+export function pushUnindexedHostDestination(
+  destination: HostDestination,
+  studioRecordId: string | null = null,
+): boolean {
+  const next = hostDestinationUrl(window.location.href, destination, studioRecordId);
   if (next === window.location.href) return false;
   window.history.pushState(null, "", next);
   return true;

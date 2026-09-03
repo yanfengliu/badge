@@ -12,6 +12,7 @@ import { ArrowLeftIcon } from "./icons";
 
 interface DiscoveryViewProps {
   readonly badges?: readonly DiscoveryBadge[];
+  readonly tagsByRecordId?: ReadonlyMap<string, readonly string[]>;
   readonly collectedRecordIds: ReadonlySet<string>;
   readonly resolvedSourceUrls: Readonly<Record<string, string>>;
   readonly selectedSetId: string | null;
@@ -30,6 +31,7 @@ interface DiscoveryViewProps {
 }
 
 export const DISCOVERY_PAGE_SIZE = 24;
+const EMPTY_TAGS: ReadonlyMap<string, readonly string[]> = new Map();
 const MICHELIN_REGIONS = [
   { regionId: "bay-area", label: "Bay Area" },
   { regionId: "new-york-city", label: "New York City" },
@@ -47,6 +49,7 @@ function discoveryPageKey(
 
 export function DiscoveryView({
   badges = discoveryBadges,
+  tagsByRecordId = EMPTY_TAGS,
   collectedRecordIds,
   resolvedSourceUrls,
   selectedSetId,
@@ -69,8 +72,8 @@ export function DiscoveryView({
   const setSelectedRegionId = regionIsControlled ? onRegionChange : setLocalRegionId;
   const activeRegionId = effectiveDiscoveryRegionId(selectedSetId, selectedRegionId);
   const visibleBadges = useMemo(
-    () => filterDiscoveryBadges(badges, query, selectedSetId, activeRegionId),
-    [activeRegionId, badges, query, selectedSetId],
+    () => filterDiscoveryBadges(badges, query, selectedSetId, activeRegionId, tagsByRecordId),
+    [activeRegionId, badges, query, selectedSetId, tagsByRecordId],
   );
   const pageKey = discoveryPageKey(selectedSetId, query, activeRegionId, badges.length);
   const [page, setPage] = useState({ key: pageKey, limit: DISCOVERY_PAGE_SIZE });
@@ -159,7 +162,7 @@ export function DiscoveryView({
             <input
               type="search"
               value={query}
-              placeholder="Badge, place, or criterion"
+              placeholder="Badge, place, criterion, or your tag"
               onChange={(event) => {
                 const nextQuery = event.target.value;
                 updateVisibleLimit(

@@ -5,10 +5,11 @@ export type ArchiveSection = "collection" | "timeline" | "discover";
 interface ArchiveSectionNavProps {
   readonly activeSection: ArchiveSection;
   readonly onSectionChange: (section: ArchiveSection) => void;
-  readonly onShowStudio: () => void;
 }
 
-export function ArchiveSectionNav({ activeSection, onSectionChange, onShowStudio }: ArchiveSectionNavProps) {
+// Badge Studio is deliberately absent: it adjusts one badge, so it opens from that badge in
+// Discover rather than standing beside the Archive's own destinations.
+export function ArchiveSectionNav({ activeSection, onSectionChange }: ArchiveSectionNavProps) {
   return (
     <nav className="archive-nav" aria-label="Archive sections">
       <button
@@ -37,9 +38,6 @@ export function ArchiveSectionNav({ activeSection, onSectionChange, onShowStudio
         onClick={() => onSectionChange("discover")}
       >
         Discover
-      </button>
-      <button id="archive-section-studio" className="nav-link" type="button" onClick={onShowStudio}>
-        Badge Studio
       </button>
     </nav>
   );

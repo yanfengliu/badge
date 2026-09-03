@@ -7,7 +7,6 @@ import { starterBadges } from "@badge/catalogue-fixtures/archive";
 import { legacyStarterRepairSources } from "@badge/catalogue-fixtures/legacy-repair";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { compileHeirloomThemePack } from "../apps/studio-web/src/heirloom-theme-pack.js";
 import {
   archiveFixtureTestRootDirectory,
   createArchiveFixtureTestTarget,
@@ -49,14 +48,15 @@ describe.sequential("starter catalogue exact pack lineage", () => {
     });
   });
 
+  // Bound: this proves the shipped bytes re-admit to the same PackRef, not that two independent
+  // compilers agree. The second compiler was Badge Studio's, and Studio stopped publishing packs
+  // when it became a per-badge adjustment surface, so nothing here would catch a change that the
+  // one remaining compiler and its output make together.
   it("derives both displayed PackRefs from independently admitted canonical bytes", async () => {
     const admittedTheme = await admitPack(generated.theme.bytes);
     const admittedCatalogue = await admitPack(generated.catalogue.bytes);
-    const studioTheme = await compileHeirloomThemePack();
 
     expect(admittedTheme.packRef).toEqual(generated.theme.packRef);
-    expect(studioTheme.packRef).toEqual(generated.theme.packRef);
-    expect(studioTheme.bytes).toEqual(generated.theme.bytes);
     expect(admittedCatalogue.packRef).toEqual(generated.catalogue.packRef);
     expect(admittedCatalogue.manifest.dependencies).toEqual([generated.theme.packRef]);
     expect(admittedCatalogue.manifest.themePack).toEqual(generated.theme.packRef);

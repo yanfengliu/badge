@@ -14,6 +14,7 @@ export function filterDiscoveryBadges(
   query: string,
   setId: string | null,
   regionId: string | null = null,
+  tagsByRecordId: ReadonlyMap<string, readonly string[]> = new Map(),
 ): readonly DiscoveryBadge[] {
   const normalizedQuery = normalizeSearch(query);
   const terms = normalizeSearch(query).split(/\s+/u).filter(Boolean);
@@ -31,10 +32,18 @@ export function filterDiscoveryBadges(
     const setTitles = badge.setIds.flatMap((candidate) =>
       discoverySets.filter((set) => set.setId === candidate).map((set) => set.title),
     );
+    const tags = tagsByRecordId.get(badge.recordId) ?? [];
     const searchable =
       badge.availability === "source-study"
-        ? [badge.title, badge.criterion, badge.locationLabel, ...(badge.searchAliases ?? []), ...setTitles]
-        : [badge.title, badge.criterion, badge.description, badge.collectionLabel, ...setTitles];
+        ? [
+            badge.title,
+            badge.criterion,
+            badge.locationLabel,
+            ...(badge.searchAliases ?? []),
+            ...setTitles,
+            ...tags,
+          ]
+        : [badge.title, badge.criterion, badge.description, badge.collectionLabel, ...setTitles, ...tags];
     const haystack = normalizeSearch(searchable.join(" "));
     return terms.every((term) => haystack.includes(term));
   });

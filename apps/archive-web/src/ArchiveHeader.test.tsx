@@ -14,7 +14,6 @@ describe("ArchiveHeader", () => {
       <ArchiveHeader
         activeSection="discover"
         onSectionChange={() => undefined}
-        onShowStudio={() => undefined}
         onBackup={() => undefined}
         onRestore={() => undefined}
       />,
@@ -23,8 +22,7 @@ describe("ArchiveHeader", () => {
     expect(html).toMatch(/<button[^>]*>Collection<\/button>/u);
     expect(html).toMatch(/<button[^>]*>Timeline<\/button>/u);
     expect(html).toMatch(/<button[^>]*aria-current="page"[^>]*>Discover<\/button>/u);
-    expect(html).toMatch(/<button[^>]*id="archive-section-studio"[^>]*>Badge Studio<\/button>/u);
-    expect(html.match(/class="nav-link/gu)).toHaveLength(4);
+    expect(html.match(/class="nav-link/gu)).toHaveLength(3);
     expect(html).toContain('id="archive-section-collection"');
     expect(html).toContain('id="archive-section-discover"');
     expect(html).toContain('aria-label="Back up archive"');
@@ -35,12 +33,27 @@ describe("ArchiveHeader", () => {
     expect(html).not.toContain("studio-link");
   });
 
+  it("keeps Badge Studio out of the Archive's own navigation", () => {
+    vi.stubGlobal("window", { location: { href: "http://127.0.0.1:4173/" } });
+    const html = renderToStaticMarkup(
+      <ArchiveHeader
+        activeSection="discover"
+        onSectionChange={() => undefined}
+        onBackup={() => undefined}
+        onRestore={() => undefined}
+      />,
+    );
+
+    expect(html).not.toContain("Badge Studio");
+    expect(html).not.toContain("archive-section-studio");
+    expect(Children.toArray(navFor("collection").props.children)).toHaveLength(3);
+  });
+
   it("wires the Timeline button to section navigation", () => {
     const requested: string[] = [];
     const nav = ArchiveSectionNav({
       activeSection: "collection",
       onSectionChange: (section) => requested.push(section),
-      onShowStudio: () => undefined,
     }) as ReactElement<{ children: ReactNode }>;
     const timelineButton = Children.toArray(nav.props.children)[1];
 
@@ -54,7 +67,6 @@ describe("ArchiveHeader", () => {
     const nav = ArchiveSectionNav({
       activeSection: "collection",
       onSectionChange: (section) => requested.push(section),
-      onShowStudio: () => undefined,
     }) as ReactElement<{ children: ReactNode }>;
     const discoverButton = Children.toArray(nav.props.children)[2];
 
@@ -62,20 +74,11 @@ describe("ArchiveHeader", () => {
     if (isValidElement<{ onClick: () => void }>(discoverButton)) discoverButton.props.onClick();
     expect(requested).toEqual(["discover"]);
   });
-
-  it("wires Badge Studio as the fourth in-document section control", () => {
-    let requested = false;
-    const nav = ArchiveSectionNav({
-      activeSection: "collection",
-      onSectionChange: () => undefined,
-      onShowStudio: () => {
-        requested = true;
-      },
-    }) as ReactElement<{ children: ReactNode }>;
-    const studioButton = Children.toArray(nav.props.children)[3];
-
-    expect(isValidElement<{ onClick: () => void }>(studioButton)).toBe(true);
-    if (isValidElement<{ onClick: () => void }>(studioButton)) studioButton.props.onClick();
-    expect(requested).toBe(true);
-  });
 });
+
+function navFor(activeSection: "collection" | "timeline" | "discover") {
+  return ArchiveSectionNav({
+    activeSection,
+    onSectionChange: () => undefined,
+  }) as ReactElement<{ children: ReactNode }>;
+}

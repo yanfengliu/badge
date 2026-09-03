@@ -1,486 +1,321 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
-import { studioFixtureCandidates } from "@badge/catalogue-fixtures/studio";
 import { BadgeViewer } from "@badge/renderer-web";
-import { DEFAULT_RENDER_RECIPE, type RenderRecipe } from "@badge/render-recipe";
-import { ArtDirectionLibrary } from "./ArtDirectionLibrary";
-import { candidateIdentityKey, uploadedCandidateIdentity } from "./candidate-identity";
-import { assertStudioFixtureIntegrity } from "./fixture-integrity";
 import {
-  createStudioTreatment,
-  normalizeStudioAssetForPublication,
-  readImageAsset,
-} from "./image-processing";
-import { offerPackClosureDownload } from "./pack-download";
-import { publishYosemitePack } from "./publish-pack";
-import {
-  attachVerifiedFixtureSnapshots,
-  candidateKey,
-  findEquivalentCandidate,
-  initialCandidates,
-  requireCandidateSnapshot,
-  restoreStudioCandidates,
-  type Candidate,
-  type PublishedRelease,
-} from "./studio-candidates";
+  firstTagProblem,
+  type StudioAdjustmentHandler,
+  type StudioAppearance,
+  type StudioBadgeTarget,
+} from "@badge/studio-adjustment-contract";
+
+import { uploadedCandidateIdentity } from "./candidate-identity";
+import { normalizeStudioAssetForPublication, readImageAsset } from "./image-processing";
+import { StudioAppearancePanel } from "./StudioAppearancePanel";
 import { StudioHeader } from "./StudioHeader";
-import { StudioImageSwapPanel } from "./StudioImageSwapPanel";
-import { StudioPublishBar } from "./StudioPublishBar";
-import { type StudioAppProps, useStudioLeaveGuard } from "./studio-leave-guard";
-import { useStudioOperation } from "./studio-operation";
+import { StudioImagePanel } from "./StudioImagePanel";
+import { StudioCollectionsPanel, StudioQuotePanel, StudioTagsPanel } from "./StudioMetadataPanels";
 import {
-  beginReplacementEdition,
-  freezeRelease,
-  initialStudioReleaseState,
-  samePublishedRelease,
-} from "./studio-release-state";
-import { candidateCapabilities, resolveCandidateSelection } from "./studio-selection";
-import { StudioStoreError, openStudioStore, type StudioStore } from "./studio-store";
-const TREATMENT_OPERATION = "warm-mineral-treatment-v1";
-export function App({ onSectionChange, onLeaveGuardChange }: StudioAppProps) {
-  const [candidates, setCandidates] = useState(initialCandidates);
-  const [selectedKey, setSelectedKey] = useState<string | null>(candidateKey(initialCandidates[0]));
-  const [recipe, setRecipe] = useState<RenderRecipe>({
-    ...DEFAULT_RENDER_RECIPE,
-    crop: { ...DEFAULT_RENDER_RECIPE.crop },
-  });
-  const [status, setStatus] = useState("Opening local Studio storage…");
-  const { busy, tryBegin, finish, isBusy } = useStudioOperation();
-  const [storeReady, setStoreReady] = useState(false);
-  const [releaseState, setReleaseState] = useState(initialStudioReleaseState);
+  catalogueDefaultDraft,
+  draftPreviewRecipe,
+  draftPreviewUrl,
+  initialStudioDraft,
+  isCatalogueDefaultDraft,
+  isStudioDraftDirty,
+  toStudioSubmission,
+  usesOwnImage,
+  withoutTag,
+  withToggledCollection,
+  withToggledTag,
+  type StudioDraft,
+} from "./studio-adjust-state";
+import { useStudioLeaveGuard, type StudioLeaveGuard } from "./studio-leave-guard";
+import { openStudioStore, StudioStoreError, type StudioStore } from "./studio-store";
+
+export interface StudioAppProps {
+  /** The badge the owner opened from Discover. Studio has nothing to show without one. */
+  readonly target: StudioBadgeTarget | null;
+  readonly onApply: StudioAdjustmentHandler;
+  readonly onClose: () => void;
+  readonly onLeaveGuardChange: (guard: StudioLeaveGuard | null) => void;
+}
+
+const OPENING_STATUS = "Adjust this badge, then save it back to your archive.";
+
+export function App({ target, onApply, onClose, onLeaveGuardChange }: StudioAppProps) {
+  const [draft, setDraft] = useState<StudioDraft | null>(() => (target ? initialStudioDraft(target) : null));
+  const [status, setStatus] = useState(OPENING_STATUS);
+  const [tagProblem, setTagProblem] = useState<string | null>(null);
+  const [readingImage, setReadingImage] = useState(false);
+  const [saving, setSaving] = useState(false);
   const uploadInput = useRef<HTMLInputElement>(null);
-  const selectedCandidateElement = useRef<HTMLButtonElement>(null);
   const ownedUrls = useRef(new Set<string>());
   const store = useRef<StudioStore | null>(null);
-  const selected = useMemo(
-    () => resolveCandidateSelection(candidates, selectedKey),
-    [candidates, selectedKey],
-  );
-  const capabilities = candidateCapabilities(selected);
-  const handleStorageFailure = useCallback((error: unknown) => {
-    if (error instanceof StudioStoreError) {
-      store.current?.close();
-      store.current = null;
-      setStoreReady(false);
-    }
-    setStatus(error instanceof Error ? error.message : String(error));
-  }, []);
-  const leaving = useStudioLeaveGuard({
-    autosave: capabilities.autosave,
-    busy,
-    onBlocked: setStatus,
-    onGuardChange: onLeaveGuardChange,
-    onSaveError: handleStorageFailure,
-    recipe,
-    selected,
-    store,
-    storeReady,
-  });
-  const operationDisabled = !storeReady || busy !== null || leaving;
-  const releaseOfferDisabled = busy !== null || leaving;
-  const editingDisabled = operationDisabled || releaseState.phase === "frozen";
+  const openedRecordId = useRef<string | null>(target?.recordId ?? null);
+
+  useEffect(() => {
+    if (!target) return;
+    if (openedRecordId.current === target.recordId && draft !== null) return;
+    openedRecordId.current = target.recordId;
+    setDraft(initialStudioDraft(target));
+    setStatus(OPENING_STATUS);
+    setTagProblem(null);
+  }, [draft, target]);
 
   useEffect(() => {
     let cancelled = false;
-    let opened: StudioStore | null = null;
     const urls = ownedUrls.current;
-    async function initialize() {
-      try {
-        opened = await openStudioStore({
-          onConnectionIssue(error) {
-            if (!cancelled) handleStorageFailure(error);
-          },
-        });
+    void openStudioStore({
+      onConnectionIssue(error) {
+        if (!cancelled) setStatus(error.message);
+      },
+    }).then(
+      (opened) => {
         if (cancelled) return opened.close();
         store.current = opened;
-        const fixtureAssets = [];
-        for (const candidate of studioFixtureCandidates) {
-          const asset = await readImageAsset(candidate.sourceUrl);
-          assertStudioFixtureIntegrity(candidate, asset);
-          fixtureAssets.push(asset);
-        }
-        for (const [index, asset] of fixtureAssets.entries()) {
-          await opened.saveOriginal(asset.blob, initialCandidates[index].identity);
-        }
-        const verifiedInitialCandidates = attachVerifiedFixtureSnapshots(initialCandidates, fixtureAssets);
-        const assets = await opened.loadAssets();
-        const draft = await opened.loadDraft();
-        if (cancelled) return;
-        const restored = restoreStudioCandidates({
-          fixtureCandidates: verifiedInitialCandidates,
-          assets,
-          selectedIdentity: draft?.selectedCandidateIdentity ?? null,
-          legacySelectedHash: draft?.selectedAssetHash ?? null,
-          createSourceUrl(blob) {
-            const sourceUrl = URL.createObjectURL(blob);
-            urls.add(sourceUrl);
-            return sourceUrl;
-          },
-        });
-        setCandidates(restored.candidates);
-        if (draft) {
-          setRecipe(draft.renderRecipe);
-          setSelectedKey(restored.selectedKey);
-        }
-        setStoreReady(true);
-        setStatus(
-          restored.selectionWarning ??
-            (draft
-              ? "Restored the last Studio draft from local storage."
-              : "Three source-art proposals are ready for review."),
-        );
-      } catch (error) {
+      },
+      (error: unknown) => {
         if (!cancelled) setStatus(error instanceof Error ? error.message : String(error));
-      }
-    }
-    void initialize();
+      },
+    );
     return () => {
       cancelled = true;
-      opened?.close();
+      store.current?.close();
       store.current = null;
       for (const url of urls) URL.revokeObjectURL(url);
       urls.clear();
     };
-  }, [handleStorageFailure]);
+  }, []);
 
-  useEffect(() => {
-    selectedCandidateElement.current?.scrollIntoView?.({ block: "nearest", inline: "nearest" });
-  }, [selectedKey]);
+  const dirty = draft !== null && target !== null && isStudioDraftDirty(draft, target);
+  const leaving = useStudioLeaveGuard({
+    dirty,
+    busy: readingImage || saving,
+    onBlocked: setStatus,
+    onGuardChange: onLeaveGuardChange,
+  });
+  const busy = readingImage || saving || leaving;
+  const faceSealed = target?.collected ?? false;
+  const faceDisabled = busy || faceSealed;
 
-  function updateRecipe(patch: Partial<RenderRecipe>) {
-    if (editingDisabled || isBusy()) return;
-    setRecipe((current) => ({ ...current, ...patch }) as RenderRecipe);
-  }
+  const updateAppearance = useCallback((patch: Partial<StudioAppearance>) => {
+    setDraft((current) =>
+      current ? { ...current, appearance: { ...current.appearance, ...patch } } : current,
+    );
+  }, []);
 
-  function selectCandidate(key: string) {
-    if (editingDisabled || isBusy()) return;
-    setSelectedKey(key);
-  }
+  const previewUrl = useMemo(
+    () => (draft && target ? draftPreviewUrl(draft, target) : null),
+    [draft, target],
+  );
+  const previewRecipe = useMemo(
+    () => (draft && target ? draftPreviewRecipe(draft, target) : null),
+    [draft, target],
+  );
 
-  async function upload(event: ChangeEvent<HTMLInputElement>) {
+  async function pickImage(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     event.target.value = "";
-    const activeStore = store.current;
-    if (!file || operationDisabled || !activeStore || !tryBegin("uploading")) return;
-    const startsReplacementEdition = releaseState.phase === "frozen";
+    if (!file || !target || busy || faceSealed) return;
+    setReadingImage(true);
     try {
-      const asset = await readImageAsset(file);
-      const identity = uploadedCandidateIdentity(asset.hash);
-      const stored = await activeStore.saveOriginal(asset.blob, identity);
-      if (startsReplacementEdition) {
-        setReleaseState((current) => beginReplacementEdition(current));
-      }
-      const existing = findEquivalentCandidate(candidates, identity);
-      if (existing) {
-        setSelectedKey(candidateKey(existing));
+      const original = await readImageAsset(file);
+      try {
+        await store.current?.saveOriginal(original.blob, uploadedCandidateIdentity(original.hash));
+      } catch (error) {
+        // Keeping the untouched original is a promise Badge makes, so a storage failure is
+        // reported rather than swallowed — but it must not lose the picture the owner just chose.
         setStatus(
-          startsReplacementEdition
-            ? `${file.name} already exists in Studio; it is selected for a new replacement edition while the frozen edition stays available.`
-            : `${file.name} already exists in Studio; its existing candidate is selected.`,
+          `${file.name} could not be filed as an unchanged original (${error instanceof StudioStoreError ? error.message : String(error)}). It is still ready to save onto this badge.`,
         );
-        return;
       }
-      const sourceUrl = URL.createObjectURL(stored.blob);
-      ownedUrls.current.add(sourceUrl);
-      const candidate: Candidate = {
-        id: `upload:${candidateIdentityKey(identity)}`,
-        label: file.name,
-        direction: "Immutable upload",
-        sourceUrl,
-        hash: stored.hash,
-        origin: "uploaded",
-        provenance: "uploaded",
-        identity,
-        blob: stored.blob,
-      };
-      setCandidates((current) => [...current, candidate]);
-      setSelectedKey(candidateKey(candidate));
-      setStatus(
-        startsReplacementEdition
-          ? `${file.name} was stored for a new replacement edition; the frozen edition and generated proposals stay available.`
-          : `${file.name} was stored as a new source candidate; generated proposals were left untouched.`,
+      const publication = await normalizeStudioAssetForPublication(original.blob);
+      const previewObjectUrl = URL.createObjectURL(publication.blob);
+      ownedUrls.current.add(previewObjectUrl);
+      setDraft((current) =>
+        current
+          ? {
+              ...current,
+              useCatalogueImage: false,
+              pendingImage: {
+                hash: publication.hash,
+                mimeType: publication.mimeType === "image/jpeg" ? "image/jpeg" : "image/png",
+                bytes: publication.bytes,
+                accessibleDescription: `A picture you chose for ${target.title}.`,
+                previewUrl: previewObjectUrl,
+                fileName: file.name,
+              },
+            }
+          : current,
       );
+      setStatus(`${file.name} is ready. Save adjustments to put it on this badge.`);
     } catch (error) {
-      handleStorageFailure(error);
+      setStatus(error instanceof Error ? error.message : String(error));
     } finally {
-      finish("uploading");
+      setReadingImage(false);
     }
   }
 
-  async function reprocess() {
-    const activeStore = store.current;
-    if (!capabilities.process || !selected || editingDisabled || !activeStore || !tryBegin("processing"))
+  async function save() {
+    if (!draft || !target || busy || !dirty) return;
+    const problem = firstTagProblem(draft.tags);
+    if (problem) {
+      setTagProblem(problem);
+      setStatus("Fix the tags before saving.");
       return;
+    }
+    setTagProblem(null);
+    setSaving(true);
     try {
-      const asset = await createStudioTreatment(requireCandidateSnapshot(selected));
-      const stored = await activeStore.saveDerivative(selected.identity, asset.blob, TREATMENT_OPERATION);
-      const identity = stored.candidateIdentity;
-      const existing = findEquivalentCandidate(candidates, identity);
-      if (existing) {
-        setSelectedKey(candidateKey(existing));
-        setStatus("That exact treatment already exists; its existing candidate is selected.");
-        return;
-      }
-      const sourceUrl = URL.createObjectURL(stored.asset.blob);
-      ownedUrls.current.add(sourceUrl);
-      const candidate: Candidate = {
-        id: `processed:${candidateIdentityKey(identity)}`,
-        label: `${selected.label} · treatment`,
-        direction: "Warm mineral treatment",
-        sourceUrl,
-        hash: stored.asset.hash,
-        origin: "processed",
-        provenance: selected.provenance,
-        identity,
-        blob: stored.asset.blob,
-      };
-      setCandidates((current) => [...current, candidate]);
-      setSelectedKey(candidateKey(candidate));
-      setStatus("A non-destructive treatment was added. The selected source remains available.");
+      const result = await onApply(toStudioSubmission(draft, target));
+      setStatus(result.message);
     } catch (error) {
-      handleStorageFailure(error);
+      setStatus(error instanceof Error ? error.message : String(error));
     } finally {
-      finish("processing");
+      setSaving(false);
     }
   }
 
-  async function publish() {
-    const activeStore = store.current;
-    if (
-      !capabilities.publish ||
-      !selected ||
-      !storeReady ||
-      !activeStore ||
-      leaving ||
-      releaseState.phase === "frozen" ||
-      !tryBegin("publishing")
-    )
-      return;
-    try {
-      const asset = await normalizeStudioAssetForPublication(requireCandidateSnapshot(selected));
-      if (asset.hash !== selected.hash) {
-        await activeStore.saveDerivative(selected.identity, asset.blob, "publication-png-v1");
-      }
-      const result = await publishYosemitePack({
-        asset,
-        recipe,
-        provenance: selected.provenance,
-        accessibleDescription:
-          selected.provenance === "uploaded"
-            ? "A user-supplied image used as the face of a crafted Yosemite badge."
-            : "A crafted Yosemite badge showing granite walls, river, and a path through the valley.",
-      });
-      offerPackClosureDownload(result.bytes, result.themeDependency.bytes);
-      const publishedRelease: PublishedRelease = {
-        packId: result.packRef.packId,
-        version: result.packRef.version,
-        digest: result.packRef.packDigest,
-        bytes: result.bytes,
-        themeBytes: result.themeDependency.bytes,
-      };
-      const reofferedUnchangedRelease =
-        releaseState.phase === "revising" &&
-        samePublishedRelease(releaseState.currentRelease, publishedRelease);
-      setReleaseState((current) => freezeRelease(current, publishedRelease));
-      setStatus(
-        reofferedUnchangedRelease
-          ? "Nothing in the badge edition changed, so Studio re-offered the same immutable release without adding duplicate history."
-          : releaseState.phase === "revising"
-            ? "The replacement edition and its exact theme dependency were offered for download. It does not silently change an activated Archive memory."
-            : "The pack and its exact admitted theme dependency were offered for download. Archive installation arrives in a later slice.",
-      );
-    } catch (error) {
-      handleStorageFailure(error);
-    } finally {
-      finish("publishing");
-    }
+  if (!target || !draft || !previewUrl || !previewRecipe) {
+    return (
+      <div className="studio-shell studio-shell--empty">
+        <main className="studio-empty">
+          <p className="eyebrow">Badge Studio</p>
+          <h1>Open a badge to adjust it.</h1>
+          <p>
+            Badge Studio adjusts one badge at a time. Find it in Discover, open it, and choose
+            <strong> Adjust in Badge Studio</strong>.
+          </p>
+          <button className="studio-save" type="button" onClick={onClose}>
+            Go to Discover
+          </button>
+        </main>
+      </div>
+    );
   }
 
   return (
-    <div className="studio-shell" aria-busy={leaving || undefined}>
-      <StudioHeader onSectionChange={onSectionChange} disabled={leaving} />
+    <div className="studio-shell" aria-busy={busy || undefined}>
+      <StudioHeader
+        badgeTitle={target.title}
+        dirty={dirty}
+        saving={saving}
+        disabled={leaving}
+        onClose={onClose}
+        onSave={() => void save()}
+      />
 
-      <main className="studio-main" inert={leaving ? true : undefined}>
-        <section className="source-workbench">
-          <div className="workbench-heading">
-            <p className="eyebrow">Source art · candidate selection</p>
-            <h1>A shape for the memory.</h1>
-            <p>
-              Choose the visual idea first. The renderer—not the artwork—owns the object, edge, and material.
-            </p>
-          </div>
-
-          <StudioImageSwapPanel
-            busy={busy}
-            canProcess={capabilities.process}
-            editingDisabled={editingDisabled}
-            onReprocess={() => void reprocess()}
-            onUpload={upload}
-            releasePhase={releaseState.phase}
-            uploadDisabled={operationDisabled}
-            uploadInput={uploadInput}
-          />
-          <p className="status-line" role="status">
-            {status}
-          </p>
-
-          <div className="candidate-grid" aria-label="Source art candidates">
-            {candidates.map((candidate, index) => (
-              <button
-                key={candidateKey(candidate)}
-                ref={candidateKey(candidate) === selectedKey ? selectedCandidateElement : undefined}
-                type="button"
-                className="candidate"
-                aria-pressed={candidateKey(candidate) === selectedKey}
-                disabled={editingDisabled}
-                onClick={() => selectCandidate(candidateKey(candidate))}
-              >
-                <span className="candidate-index">{String(index + 1).padStart(2, "0")}</span>
-                <img src={candidate.sourceUrl} alt="" />
-                <span className="candidate-copy">
-                  <strong>{candidate.label}</strong>
-                  <small>
-                    {candidate.direction} · {candidate.origin}
-                  </small>
-                </span>
-                <span className="selection-mark">
-                  {candidateKey(candidate) === selectedKey ? "Selected" : "Select"}
-                </span>
-              </button>
-            ))}
-          </div>
-        </section>
-
+      <main className="studio-main">
         <section className="construction-bench">
           <div className="artifact-heading">
             <div>
               <p className="eyebrow">Live construction</p>
-              <h2>Yosemite</h2>
+              <h2>{target.title}</h2>
             </div>
-            <span>
-              {releaseState.phase === "frozen"
-                ? "Frozen pack ready"
-                : releaseState.phase === "revising"
-                  ? "Replacement draft"
-                  : "Recipe v1 · unpublished"}
-            </span>
+            <span>{isCatalogueDefaultDraft(draft, target) ? "Catalogue default" : "Adjusted"}</span>
           </div>
           <BadgeViewer
-            sourceUrl={selected?.sourceUrl ?? candidates[0].sourceUrl}
-            recipe={recipe}
-            accessibleDescription={
-              selected?.provenance === "uploaded"
-                ? "A user-supplied image under construction as a Yosemite badge"
-                : "Yosemite badge under construction"
-            }
+            sourceUrl={previewUrl}
+            recipe={previewRecipe}
+            accessibleDescription={`${target.title} badge under adjustment`}
             readOnly={false}
             forceFallback={new URLSearchParams(window.location.search).has("fallback")}
           />
+          <p className="status-line" role="status">
+            {status}
+          </p>
+          {faceSealed ? (
+            <p className="studio-panel__problem">
+              {target.title} is already collected, so its picture, shape, material, border and quote are
+              sealed with that memory. Tags and collections can still change.
+            </p>
+          ) : null}
+          <div className="studio-bench-actions">
+            <button
+              type="button"
+              disabled={busy || isCatalogueDefaultDraft(draft, target) || faceSealed}
+              onClick={() => setDraft(catalogueDefaultDraft(target))}
+            >
+              Reset to catalogue default
+            </button>
+            <button
+              type="button"
+              disabled={busy || !dirty}
+              onClick={() => {
+                setDraft(initialStudioDraft(target));
+                setTagProblem(null);
+                setStatus("Discarded the unsaved adjustments.");
+              }}
+            >
+              Discard changes
+            </button>
+          </div>
+        </section>
 
-          <div className="appearance-controls">
-            <fieldset disabled={editingDisabled}>
-              <legend>Shape</legend>
-              <div className="segment">
-                {(["circle", "square", "rectangle", "shield"] as const).map((shape) => (
-                  <button
-                    key={shape}
-                    type="button"
-                    aria-pressed={recipe.shape === shape}
-                    onClick={() => updateRecipe({ shape })}
-                  >
-                    {shape}
-                  </button>
-                ))}
-              </div>
-            </fieldset>
-            <fieldset disabled={editingDisabled}>
-              <legend>Material</legend>
-              <div className="segment">
-                {(["metal", "wool", "enamel"] as const).map((material) => (
-                  <button
-                    key={material}
-                    type="button"
-                    aria-pressed={recipe.material === material}
-                    onClick={() => updateRecipe({ material })}
-                  >
-                    {material === "wool" ? "Wool armband" : material}
-                  </button>
-                ))}
-              </div>
-            </fieldset>
-            <div className="control-row">
-              <label>
-                <span>Border color</span>
-                <span className="color-control">
-                  <input
-                    type="color"
-                    disabled={editingDisabled}
-                    value={recipe.borderColor}
-                    onChange={(event) => updateRecipe({ borderColor: event.target.value })}
-                  />
-                  <output>{recipe.borderColor}</output>
-                </span>
-              </label>
-              <label>
-                <span>
-                  Border width <output>{Math.round(recipe.borderWidth * 100)}%</output>
-                </span>
-                <input
-                  type="range"
-                  disabled={editingDisabled}
-                  min="0"
-                  max="0.2"
-                  step="0.005"
-                  value={recipe.borderWidth}
-                  onChange={(event) => updateRecipe({ borderWidth: Number(event.target.value) })}
-                />
-              </label>
-            </div>
-            <details>
-              <summary>Object depth</summary>
-              <div className="control-row">
-                <label>
-                  <span>
-                    Thickness <output>{recipe.thickness.toFixed(2)}</output>
-                  </span>
-                  <input
-                    type="range"
-                    disabled={editingDisabled}
-                    min="0.02"
-                    max="0.18"
-                    step="0.005"
-                    value={recipe.thickness}
-                    onChange={(event) => updateRecipe({ thickness: Number(event.target.value) })}
-                  />
-                </label>
-                <label>
-                  <span>
-                    Relief <output>{recipe.relief.toFixed(3)}</output>
-                  </span>
-                  <input
-                    type="range"
-                    disabled={editingDisabled}
-                    min="0"
-                    max="0.05"
-                    step="0.001"
-                    value={recipe.relief}
-                    onChange={(event) => updateRecipe({ relief: Number(event.target.value) })}
-                  />
-                </label>
-              </div>
-            </details>
+        <section className="adjustment-bench">
+          <div className="workbench-heading">
+            <p className="eyebrow">Adjustments</p>
+            <h1>{target.title}</h1>
+            <p>{target.criterion}</p>
           </div>
 
-          <StudioPublishBar
-            busy={busy}
-            canPublish={capabilities.publish}
-            offerDisabled={releaseOfferDisabled}
-            onOfferCurrent={(release) => offerPackClosureDownload(release.bytes, release.themeBytes)}
-            onPublish={() => void publish()}
-            publishDisabled={operationDisabled}
-            releaseState={releaseState}
+          <StudioImagePanel
+            target={target}
+            pendingImage={draft.pendingImage}
+            usingOwnImage={usesOwnImage(draft, target)}
+            disabled={faceDisabled}
+            busy={readingImage}
+            uploadInput={uploadInput}
+            onPick={(event) => void pickImage(event)}
+            onUseCatalogueImage={() =>
+              setDraft((current) =>
+                current ? { ...current, pendingImage: null, useCatalogueImage: true } : current,
+              )
+            }
+          />
+
+          <section className="studio-panel" aria-labelledby="studio-appearance-heading">
+            <h3 id="studio-appearance-heading">Shape, material and border</h3>
+            <StudioAppearancePanel
+              appearance={draft.appearance}
+              target={target}
+              disabled={faceDisabled}
+              onChange={updateAppearance}
+            />
+          </section>
+
+          <StudioTagsPanel
+            tags={draft.tags}
+            disabled={busy}
+            problem={tagProblem}
+            onAdd={(tag) => {
+              const problem = firstTagProblem([...draft.tags, tag]);
+              setTagProblem(problem);
+              if (!problem) setDraft((current) => (current ? withToggledTag(current, tag) : current));
+            }}
+            onRemove={(tag) => {
+              setTagProblem(null);
+              setDraft((current) => (current ? withoutTag(current, tag) : current));
+            }}
+          />
+
+          <StudioQuotePanel
+            quotations={target.quotations}
+            selectedQuotationId={draft.quotationId}
+            sealed={faceSealed}
+            disabled={busy}
+            onSelect={(quotationId) =>
+              setDraft((current) => (current ? { ...current, quotationId } : current))
+            }
+          />
+
+          <StudioCollectionsPanel
+            target={target}
+            selectedKeys={draft.collectionKeys}
+            disabled={busy}
+            onToggle={(key) =>
+              setDraft((current) => (current ? withToggledCollection(current, key) : current))
+            }
           />
         </section>
-        <ArtDirectionLibrary />
       </main>
     </div>
   );

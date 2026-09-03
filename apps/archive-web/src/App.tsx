@@ -1,12 +1,15 @@
 import { useCallback, useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
-import {
-  ArchiveApplication,
-  IndexedDbArchiveRepository,
-  type ArchiveRecoveryMode,
-  type ArchiveRecoveryReasonCode,
-  type ArchiveSourceAssetInput,
+import type {
+  ArchiveRecoveryMode,
+  ArchiveRecoveryReasonCode,
+  ArchiveSourceAssetInput,
 } from "@badge/archive-application";
-import { toExactVisualPin, type ArchiveState } from "@badge/archive-domain";
+import {
+  effectiveVisual,
+  ownerSuppliedSourceHash,
+  toExactVisualPin,
+  type ArchiveState,
+} from "@badge/archive-domain";
 
 import { ActivationCeremony } from "./ActivationCeremony";
 import { BadgePreparationView } from "./BadgePreparationView";
@@ -33,6 +36,9 @@ import { fetchCatalogueSourceAsset, isCatalogueSourceHash } from "./catalogue-so
 import { CollectionView } from "./CollectionView";
 import { replaySetLinks, type CollectedArchiveRecord, type ReplaySetLink } from "./collection-view-model";
 import { preparationDiscoveryPager, replayDiscoveryPager, type DiscoveryPagerStep } from "./discovery-pager";
+import { discoveryBadges } from "@badge/catalogue-fixtures/discovery";
+
+import { applyDiscoveryAdjustments, discoveryAdjustmentsFor } from "./discovery-adjustments";
 import { DISCOVERY_PAGE_SIZE, DiscoveryView } from "./DiscoveryView";
 import { acceptedFixtureQuotation } from "./fixture-quotations";
 import { MemoryReplayDialog } from "./MemoryReplayDialog";
@@ -40,12 +46,7 @@ import { publishedFixtureForRecordId } from "./published-fixtures";
 import { RestoreDialog } from "./RestoreDialog";
 import { SayingDisclosureBoundary } from "./SayingDisclosureBoundary";
 import { TimelineView } from "./TimelineView";
-import {
-  createStarterArchiveState,
-  createStarterQuotationRequests,
-  STARTER_OWNER_ID,
-  STARTER_RECORD_IDS,
-} from "./archive-state";
+import { createStarterArchiveState, STARTER_OWNER_ID, STARTER_RECORD_IDS } from "./archive-state";
 import { downloadBytes } from "./browser-utilities";
 import { requiresArchiveRecovery } from "./restore-compatibility";
 import {
@@ -60,19 +61,16 @@ import {
   type ArchiveSafetyHandoff,
   type PendingArchiveRestore,
 } from "./restore-flow";
+import { archive, observeArchiveStateChanges } from "./archive-instance";
 import { sourceUrlsForResolvedVisuals, useResolvedVisuals } from "./use-resolved-visuals";
 import { useArchiveSectionLocation } from "./use-archive-section-location";
 import { useDiscoveryPagerKeys } from "./use-discovery-pager-keys";
 import { stateAfterStaleArchiveMutation, useSayingWorkflow } from "./use-saying-workflow";
 import { useDiscoveryViewState, type DiscoveryReturnSection } from "./use-discovery-view-state";
-const repository = new IndexedDbArchiveRepository({
-  trustedQuotationRequests: createStarterQuotationRequests(),
-});
-const archive = new ArchiveApplication(repository);
 const forceFallback = new URLSearchParams(window.location.search).has("fallback");
 const starterState = createStarterArchiveState();
 
-export function App({ onShowStudio }: { readonly onShowStudio: () => void }) {
+export function App({ onShowStudio }: { readonly onShowStudio: (recordId: string) => void }) {
   const [state, setState] = useState<ArchiveState | null>(null);
   const [activeSection, setActiveSection] = useState<ArchiveSection>(() =>
     archiveSectionFromHash(window.location.hash),
@@ -98,6 +96,9 @@ export function App({ onShowStudio }: { readonly onShowStudio: () => void }) {
   const safetyHandoff = useRef<ArchiveSafetyHandoff>("full-backup");
   const stateRescueReason = useRef<ArchiveRecoveryReasonCode | null>(null);
   const { visuals: resolvedVisuals, error: resolvedVisualError } = useResolvedVisuals(archive, state);
+  // Badge Studio saves through the module-level bridge while this surface is hidden, so the
+  // Archive catches up from the announcement rather than from its own write path.
+  useEffect(() => observeArchiveStateChanges(setState), []);
   const visibleNotice =
     notice ?? (resolvedVisualError ? { kind: "error" as const, text: resolvedVisualError } : null);
   useEffect(() => {
@@ -150,6 +151,8 @@ export function App({ onShowStudio }: { readonly onShowStudio: () => void }) {
     selectedFixture?.sourceUrl ?? null,
     resolvedVisuals,
   );
+  const discoveryAdjustments = discoveryAdjustmentsFor(state);
+  const adjustedDiscoveryBadges = applyDiscoveryAdjustments(discoveryBadges, discoveryAdjustments);
   const collectedRecordIds = new Set(
     (state?.records ?? []).filter((record) => record.lifecycle === "earned").map((record) => record.recordId),
   );
@@ -160,17 +163,23 @@ export function App({ onShowStudio }: { readonly onShowStudio: () => void }) {
       : null;
   const preparationPager =
     preparingRecordId && activeSection === "discover"
-      ? preparationDiscoveryPager(preparingRecordId, {
-          selectedSetId: discovery.viewProps.selectedSetId,
-          query: discovery.viewProps.query,
-          regionId: discovery.viewProps.selectedRegionId,
-        })
+      ? preparationDiscoveryPager(
+          preparingRecordId,
+          {
+            selectedSetId: discovery.viewProps.selectedSetId,
+            query: discovery.viewProps.query,
+            regionId: discovery.viewProps.selectedRegionId,
+          },
+          adjustedDiscoveryBadges,
+          discoveryAdjustments.tagsByRecordId,
+        )
       : null;
   const replayPager = replayRecord
     ? replayDiscoveryPager(
         replayRecord.recordId,
         collectedRecordIds,
         activeSection === "discover" ? discovery.viewProps.selectedSetId : null,
+        adjustedDiscoveryBadges,
       )
     : null;
   const modalOverPreparation =
@@ -305,12 +314,15 @@ export function App({ onShowStudio }: { readonly onShowStudio: () => void }) {
           `The selected quote for ${selectedRecord.title} has no verified historical source; regenerate it before activation. No Archive data was changed.`,
         );
       }
-      const visualPin = toExactVisualPin(selectedRecord.publishedVisual);
+      // The pin is the badge as the owner adjusted it, so an activation seals what they see.
+      const visualPin = toExactVisualPin(effectiveVisual(selectedRecord));
       const sourceAsset =
-        starterAssets.current.get(visualPin.sourceAssetHash) ??
-        (isCatalogueSourceHash(visualPin.sourceAssetHash)
-          ? await fetchCatalogueSourceAsset(visualPin.sourceAssetHash)
-          : undefined);
+        ownerSuppliedSourceHash(selectedRecord) === visualPin.sourceAssetHash
+          ? (await archive.visual(selectedRecord.recordId)).sourceAsset
+          : (starterAssets.current.get(visualPin.sourceAssetHash) ??
+            (isCatalogueSourceHash(visualPin.sourceAssetHash)
+              ? await fetchCatalogueSourceAsset(visualPin.sourceAssetHash)
+              : undefined));
       if (!sourceAsset) {
         throw new Error(
           `The published source art for ${selectedRecord.title} (${visualPin.sourceAssetHash}) is not in this build; reload Badge so the newest catalogue finishes installing, then reopen the badge from Discover.`,
@@ -466,7 +478,7 @@ export function App({ onShowStudio }: { readonly onShowStudio: () => void }) {
     }
   }
 
-  const headerProps = { activeSection, onSectionChange, onShowStudio, onBackup, onRestore };
+  const headerProps = { activeSection, onSectionChange, onBackup, onRestore };
   const header = <ArchiveHeader {...headerProps} />;
 
   if (!state || !selectedRecord) {
@@ -526,10 +538,13 @@ export function App({ onShowStudio }: { readonly onShowStudio: () => void }) {
           onPagerStep={openPagerStep}
           onDraftChange={updateDraft}
           onActivate={activate}
+          onAdjustInStudio={() => onShowStudio(selectedRecord.recordId)}
           onReplay={() => replayMemory(selectedRecord.recordId, ceremonyReturnFocus.current ?? undefined)}
         />
       ) : activeSection === "discover" ? (
         <DiscoveryView
+          badges={adjustedDiscoveryBadges}
+          tagsByRecordId={discoveryAdjustments.tagsByRecordId}
           collectedRecordIds={collectedRecordIds}
           resolvedSourceUrls={resolvedSourceUrls}
           {...discovery.viewProps}

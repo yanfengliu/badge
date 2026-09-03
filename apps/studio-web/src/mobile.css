@@ -32,9 +32,8 @@ body[data-badge-mode="studio"],
     min-height: calc(100dvh - 118px - var(--safe-top));
   }
 
-  .source-workbench,
-  .construction-bench,
-  .art-direction-library {
+  .adjustment-bench,
+  .construction-bench {
     padding-bottom: calc(30px + var(--safe-bottom));
   }
 }
@@ -60,16 +59,24 @@ body[data-badge-mode="studio"],
     height: 21px;
   }
 
-  .studio-nav {
+  .studio-header__actions {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     width: 100%;
     min-height: 48px;
-    gap: 0;
+    gap: 10px;
     justify-self: stretch;
   }
 
-  .studio-nav__link {
+  .studio-header__badge {
+    grid-row: 1;
+    justify-self: start;
+    padding-top: 0;
+    font-size: 14px;
+  }
+
+  .studio-nav__link,
+  .studio-save {
     min-width: 0;
     min-height: 48px;
     padding: 0 3px;
@@ -83,7 +90,7 @@ body[data-badge-mode="studio"],
     min-height: calc(100dvh - 102px - var(--safe-top));
   }
 
-  .source-workbench,
+  .adjustment-bench,
   .construction-bench {
     padding: 26px max(14px, var(--safe-right)) calc(30px + var(--safe-bottom)) max(14px, var(--safe-left));
   }
@@ -92,7 +99,18 @@ body[data-badge-mode="studio"],
     font-size: clamp(38px, 14vw, 48px);
   }
 
-  .candidate-grid {
+  .studio-image-actions,
+  .studio-bench-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .studio-image-actions button,
+  .studio-bench-actions button {
+    width: 100%;
+  }
+
+  .studio-quote-choices {
     grid-auto-flow: column;
     grid-auto-columns: minmax(232px, 82vw);
     grid-template-columns: none;
@@ -102,17 +120,8 @@ body[data-badge-mode="studio"],
     overscroll-behavior-inline: contain;
   }
 
-  .candidate {
+  .studio-quote {
     scroll-snap-align: start;
-  }
-
-  .source-actions {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .source-actions .button {
-    width: 100%;
   }
 
   .artifact-heading {
@@ -178,29 +187,19 @@ body[data-badge-mode="studio"],
     font-size: 16px;
   }
 
-  .publish-bar .button {
+  .studio-tag-entry {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .studio-tag-entry button {
     width: 100%;
     max-width: 100%;
     overflow-wrap: anywhere;
   }
 
-  .art-direction-library__tabs small {
-    font-size: 10px;
-  }
-
-  .art-direction-library__search input {
+  .studio-collections label {
     min-height: 48px;
-    font-size: 16px;
-  }
-
-  .art-direction-library__items {
-    max-height: min(52dvh, 420px);
-    overscroll-behavior: contain;
-  }
-
-  .art-direction-library__prompt-actions button,
-  .art-direction-library__restore-recommendation {
-    min-height: 44px;
   }
 }
 
@@ -216,38 +215,21 @@ body[data-badge-mode="studio"],
     min-height: calc(100dvh - 96px - var(--safe-top));
   }
 
-  .source-workbench,
+  .adjustment-bench,
   .construction-bench {
     padding-right: max(clamp(34px, 4vw, 58px), var(--safe-right));
     padding-bottom: calc(clamp(34px, 4vw, 58px) + var(--safe-bottom));
     padding-left: max(clamp(34px, 4vw, 58px), var(--safe-left));
   }
 
-  .art-direction-library__header {
-    padding-right: max(clamp(30px, 4vw, 54px), var(--safe-right));
-    padding-left: max(clamp(30px, 4vw, 54px), var(--safe-left));
-  }
-
-  .art-direction-library__tabs {
-    padding-right: var(--safe-right);
-    padding-left: var(--safe-left);
-  }
-
-  .art-direction-library__index {
-    padding-right: max(20px, var(--safe-right));
-    padding-bottom: calc(28px + var(--safe-bottom));
-    padding-left: max(20px, var(--safe-left));
-  }
-
-  .art-direction-library__detail {
-    padding-right: max(clamp(28px, 4vw, 54px), var(--safe-right));
-    padding-bottom: calc(clamp(28px, 4vw, 54px) + var(--safe-bottom));
-    padding-left: max(clamp(28px, 4vw, 54px), var(--safe-left));
-  }
-
   .segment button,
-  .art-direction-library__prompt-actions button,
-  .art-direction-library__restore-recommendation {
+  .studio-image-actions button,
+  .studio-bench-actions button,
+  .studio-tag-entry button {
+    min-height: 44px;
+  }
+
+  .studio-collections label {
     min-height: 44px;
   }
 

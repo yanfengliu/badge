@@ -8,7 +8,7 @@ const studioControl = vi.hoisted(() => ({ allowLeave: true, guardCalls: 0 }));
 const archiveControl = vi.hoisted(() => ({ effectsActive: false }));
 
 vi.mock("../../archive-web/src/ArchiveSurface", () => ({
-  ArchiveSurface: ({ onShowStudio }: { onShowStudio: () => void }) => {
+  ArchiveSurface: ({ onShowStudio }: { onShowStudio: (recordId: string) => void }) => {
     const [preparation, setPreparation] = useState("empty");
     const [activeSection, setActiveSection] = useState("collection");
     useEffect(() => {
@@ -19,7 +19,7 @@ vi.mock("../../archive-web/src/ArchiveSurface", () => ({
     }, []);
     useLayoutEffect(() => {
       const synchronize = () => {
-        if (window.location.hash === "#studio") return;
+        if (/^#studio(?:\/|$)/u.test(window.location.hash)) return;
         const nextSection = window.location.hash.replace(/^#/u, "") || "collection";
         if (nextSection === activeSection) return;
         setPreparation("empty");
@@ -45,8 +45,8 @@ vi.mock("../../archive-web/src/ArchiveSurface", () => ({
         </button>
         <output id="archive-preparation-value">{preparation}</output>
         <output id="archive-active-section">{activeSection}</output>
-        <button id="archive-section-studio" type="button" onClick={onShowStudio}>
-          Badge Studio
+        <button id="archive-section-studio" type="button" onClick={() => onShowStudio("record-yosemite")}>
+          Adjust in Badge Studio
         </button>
       </div>
     );
@@ -55,10 +55,12 @@ vi.mock("../../archive-web/src/ArchiveSurface", () => ({
 
 vi.mock("../../studio-web/src/StudioSurface", () => ({
   StudioSurface: ({
-    onSectionChange,
+    target,
+    onClose,
     onLeaveGuardChange,
   }: {
-    onSectionChange: (section: "collection" | "timeline" | "discover") => void;
+    target: { readonly recordId: string } | null;
+    onClose: () => void;
     onLeaveGuardChange: (guard: (() => Promise<boolean>) | null) => void;
   }) => {
     useEffect(() => {
@@ -70,17 +72,21 @@ vi.mock("../../studio-web/src/StudioSurface", () => ({
     }, [onLeaveGuardChange]);
     return (
       <div data-testid="studio-surface">
-        <button id="studio-section-collection" type="button" onClick={() => onSectionChange("collection")}>
-          Collection
+        <button id="studio-section-discover" type="button" onClick={onClose}>
+          Back to Discover
         </button>
-        <button id="studio-section-discover" type="button" onClick={() => onSectionChange("discover")}>
-          Discover
-        </button>
-        <button id="studio-section-studio" type="button" aria-current="page">
-          Badge Studio
-        </button>
+        <p id="studio-section-studio" tabIndex={-1}>
+          {target?.recordId ?? "no badge"}
+        </p>
       </div>
     );
+  },
+}));
+
+vi.mock("../../archive-web/src/studio-bridge-host", () => ({
+  archiveStudioBridge: {
+    resolveTarget: async (recordId: string) => ({ recordId }),
+    apply: async () => ({ ok: true, message: "saved" }),
   },
 }));
 
@@ -119,7 +125,7 @@ describe("single-root Badge host interactions", () => {
     });
   }
 
-  it("switches Studio as the fourth root-page section and restores focus on return", async () => {
+  it("opens Studio on one badge and restores focus on return", async () => {
     await act(async () => root.render(<App />));
     expect(container.querySelector('[data-testid="archive-surface"]')).not.toBeNull();
     expect(container.querySelector('[data-testid="studio-surface"]')).toBeNull();
@@ -128,7 +134,10 @@ describe("single-root Badge host interactions", () => {
 
     await act(async () => container.querySelector<HTMLButtonElement>("#archive-section-studio")?.click());
     expect(window.location.pathname).toBe("/");
-    expect(window.location.hash).toBe("#studio");
+    expect(window.location.hash).toBe("#studio/record-yosemite");
+    await vi.waitFor(() =>
+      expect(container.querySelector("#studio-section-studio")?.textContent).toBe("record-yosemite"),
+    );
     expect(container.querySelector('[data-testid="studio-surface"]')).not.toBeNull();
     expect(container.querySelectorAll("[data-host-surface]:not([hidden])")).toHaveLength(1);
     expect(document.body.dataset.badgeMode).toBe("studio");
@@ -153,6 +162,7 @@ describe("single-root Badge host interactions", () => {
 
   it("retains each visited surface while hiding and inerting the inactive one", async () => {
     await act(async () => root.render(<App />));
+    expect(writeArchiveSectionHash("discover")).toBe(true);
     await act(async () => container.querySelector<HTMLButtonElement>("#archive-preparation")?.click());
     expect(container.querySelector("#archive-preparation-value")?.textContent).toBe("prepared");
     expect(archiveControl.effectsActive).toBe(true);
@@ -167,7 +177,7 @@ describe("single-root Badge host interactions", () => {
     expect(archiveControl.effectsActive).toBe(false);
     expect(container.querySelectorAll("[data-host-surface]:not([hidden])")).toHaveLength(1);
 
-    await act(async () => container.querySelector<HTMLButtonElement>("#studio-section-collection")?.click());
+    await act(async () => container.querySelector<HTMLButtonElement>("#studio-section-discover")?.click());
     expect(container.querySelector("#archive-preparation-value")?.textContent).toBe("prepared");
     expect(archiveWrapper?.hidden).toBe(false);
     expect(archiveWrapper?.hasAttribute("inert")).toBe(false);
@@ -218,7 +228,7 @@ describe("single-root Badge host interactions", () => {
     expect(container.querySelector("#archive-active-section")?.textContent).toBe("discover");
 
     await traverseHistory(() => window.history.back());
-    expect(window.location.hash).toBe("#studio");
+    expect(window.location.hash).toBe("#studio/record-yosemite");
     expect(archiveControl.effectsActive).toBe(false);
 
     await traverseHistory(() => window.history.back());
@@ -231,12 +241,12 @@ describe("single-root Badge host interactions", () => {
     await act(async () => root.render(<App />));
     expect(writeArchiveSectionHash("discover")).toBe(true);
     await act(async () => container.querySelector<HTMLButtonElement>("#archive-section-studio")?.click());
-    expect(window.location.hash).toBe("#studio");
+    expect(window.location.hash).toBe("#studio/record-yosemite");
 
     studioControl.allowLeave = false;
     const replaceState = vi.spyOn(window.history, "replaceState");
     await traverseHistory(() => window.history.back());
-    await vi.waitFor(() => expect(window.location.hash).toBe("#studio"));
+    await vi.waitFor(() => expect(window.location.hash).toBe("#studio/record-yosemite"));
     expect(studioControl.guardCalls).toBe(1);
     expect(replaceState).not.toHaveBeenCalled();
     expect(container.querySelector('[data-testid="studio-surface"]')).not.toBeNull();
@@ -255,14 +265,14 @@ describe("single-root Badge host interactions", () => {
     expect(window.location.hash).toBe("#discover");
 
     await traverseHistory(() => window.history.back());
-    await vi.waitFor(() => expect(window.location.hash).toBe("#studio"));
+    await vi.waitFor(() => expect(window.location.hash).toBe("#studio/record-yosemite"));
     await vi.waitFor(() => expect(container.querySelector('[data-testid="studio-surface"]')).not.toBeNull());
 
     studioControl.allowLeave = false;
     const replaceState = vi.spyOn(window.history, "replaceState");
     await traverseHistory(() => window.history.forward());
     await vi.waitFor(() => expect(studioControl.guardCalls).toBe(2));
-    await vi.waitFor(() => expect(window.location.hash).toBe("#studio"));
+    await vi.waitFor(() => expect(window.location.hash).toBe("#studio/record-yosemite"));
     expect(replaceState).not.toHaveBeenCalled();
 
     studioControl.allowLeave = true;
@@ -307,7 +317,7 @@ describe("single-root Badge host interactions", () => {
     expect(writeArchiveSectionHash("discover")).toBe(true);
     expect(window.history.state).toBeNull();
     await act(async () => container.querySelector<HTMLButtonElement>("#archive-section-studio")?.click());
-    expect(window.location.hash).toBe("#studio");
+    expect(window.location.hash).toBe("#studio/record-yosemite");
     expect(window.history.state).toBeNull();
 
     await traverseHistory(() => window.history.back());

@@ -1,0 +1,13 @@
+{
+  "name": "@badge/studio-adjustment-contract",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@badge/render-recipe": "*",
+    "zod": "4.4.3"
+  }
+}
