@@ -2,6 +2,20 @@
 
 Append decisions newest first. Never rewrite history; add a superseding entry that links to the decision it replaces.
 
+## 2026-09-02 — D-061: Make Badge Studio a per-badge adjustment surface opened from Discover
+
+**Status:** Owner-directed and implemented for every seeded badge; installed-pack adjustment and Archive install flows remain later work.
+
+The owner directed that Badge Studio be openable only from the Discover tab, that it adjust only a badge's image, shape, border width, border color, material, tags, quote, and collection membership, and that new badges be created by chatting with Claude rather than in Studio. Studio had been a fourth peer destination in the Archive's own navigation and a creation workbench: three generated candidates for one hardcoded Yosemite draft, a prompt library of parks, common-achievement ideas and art styles, and a pack publish-and-download flow.
+
+Adjustments are Archive-local. The owner chose this over a Studio draft that reaches Archive through an explicit install, and over exporting a patch for the repository, because an adjustment is personal state about one owner's badge rather than a change to what the catalogue ships. It is stored as a nullable `BadgeAdjustment` overlay on the record, never as an edit of `publishedVisual`: a later catalogue reseed or visual upgrade can then refresh the shipped badge underneath it, and clearing the overlay restores the exact catalogue default rather than reconstructing values nobody recorded. Activation folds the effective visual into `publishedVisual` so the sealed pin and the record still agree, after which the badge face and quote are refused any further change while tags and collections stay editable. An owner-supplied image is bytes no shipped catalogue can hand back, so backup, restore and recovery closure widened from "earned pinned art" to that larger set, while unearned catalogue art stays excluded and reloads from the bundled tier.
+
+The quote control chooses between the badge's own two reviewed quotations and is admitted through the same construction-time trusted-bank path as any other quotation change, so D-060's globally disjoint wording and D-045's exact-source rules are untouched; Studio never composes quotation text. `adjustment` joins the saying request's excluded-field list because tags are personal text, moving the disclosure fingerprint to `sha256:6a4d1f50…` and requiring a fresh disclosure review before the next live regeneration.
+
+The handoff is `@badge/studio-adjustment-contract` and a module the host imports on demand rather than a React registration. The host suspends the Archive surface's effects while Studio is open, so an effect-registered handoff is missing exactly when Studio needs it, and absent entirely on a reload straight into `#studio/<recordId>`; opening the archive moved beside the archive singleton for the same reason.
+
+This supersedes D-059's activation-agnostic replacement-edition model — Studio now receives the collected flag and refuses a sealed face — and retires Studio's half of D-015's two-compiler lineage check, which `scripts/catalogue-lineage.test.mjs` now states as its own bound. It does not change D-013's rule that the everyday Archive exposes no visual authoring: the Archive's own screens stay read-only and route into Studio instead.
+
 ## 2026-08-31 — D-060: Make quotation wording globally unique for new badge state
 
 **Status:** Owner-directed and implemented for the built-in `350`-badge fixture catalogue and every Archive quotation write; arbitrary installed-pack quotation admission remains Phase 1 work.

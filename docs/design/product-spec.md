@@ -10,7 +10,7 @@ The open decisions at the end are hard boundaries future agents must not silentl
 
 The initial user is the repository owner, using the app locally with no account or server.
 
-Badge remains desktop-first in information density and visual character, but Archive and Badge Studio are complete phone-capable applications rather than desktop pages that merely shrink. Their supported layout floor is a `320px` CSS viewport in portrait and short landscape: all four primary destinations remain reachable, the document has no horizontal overflow, safe areas and dynamic viewport height are respected, ordinary controls provide at least a `44 × 44px` target, and text-entry controls retain a `16px` font size so mobile browsers do not zoom the page unexpectedly.
+Badge remains desktop-first in information density and visual character, but Archive and Badge Studio are complete phone-capable applications rather than desktop pages that merely shrink. Their supported layout floor is a `320px` CSS viewport in portrait and short landscape: all three primary destinations and the per-badge route into Badge Studio remain reachable, the document has no horizontal overflow, safe areas and dynamic viewport height are respected, ordinary controls provide at least a `44 × 44px` target, and text-entry controls retain a `16px` font size so mobile browsers do not zoom the page unexpectedly.
 
 ## Domain language
 
@@ -72,7 +72,7 @@ Composite eligibility is deterministic; the user does not manually edit its prog
 
 An art asset is an uploaded original, generated image, processed derivative, selected Studio final, or installed published source stored locally by content hash.
 
-A candidate set records one Studio generation or processing request, its distinct proposals, their provenance, and the developer's selected candidate if any. Candidate sets never enter archive persistence or archive backup.
+A candidate set records one Studio generation or processing request, its distinct proposals, their provenance, and the developer's selected candidate if any. Candidate sets never enter archive persistence or archive backup. The implemented Studio no longer generates candidates; this remains the target shape for a later curation surface.
 
 ### Appearance
 
@@ -84,7 +84,7 @@ At minimum, materials include substantial metal and wool or armband fabric; addi
 
 Source art remains an immutable input. Generated albedo, normal, roughness, height, mask, or other render maps are replaceable derivatives with recorded provenance.
 
-Badge Studio edits and publishes appearance. The archive treats the published picture and appearance as read-only presentation data; object rotation, zoom, and light movement examine it without changing it.
+Badge Studio is where a badge's picture and appearance change. Every Archive screen treats them as read-only presentation data; object rotation, zoom, and light movement examine a badge without changing it, and the one `Adjust in Badge Studio` action on a badge's page routes into Studio rather than editing in place.
 
 ## Interactive 3D artifact
 
@@ -128,9 +128,9 @@ The opening experience uses a warm field-cabinet treatment with one collapsed sh
 
 The selected gallery direction uses a warm editorial field archive with a large crafted badge, concise metadata, restrained topographic detail, and generous space.
 
-The one root document presents exactly four peer primary destinations: Collection, Timeline, Discover, and Badge Studio. Collection is the default `/` state, while the other destinations use `#timeline`, `#discover`, and `#studio`; these hashes are ephemeral view state and do not merge the Archive and Studio persistence or publication boundaries.
+The one root document presents exactly three peer primary destinations: Collection, Timeline, and Discover. Collection is the default `/` state and the others use `#timeline` and `#discover`. Badge Studio is not a fourth: it adjusts one badge, so it opens from that badge's page in Discover and its location names the badge as `#studio/<recordId>`. These hashes are ephemeral view state and do not merge the Archive and Studio persistence boundaries.
 
-At phone widths those four destinations form an always-visible four-column navigation row beneath the product identity and utilities. Dense ordered rows become explicit scroll rails only where their continuation remains understandable—Collection artifacts, Discover sets, and Studio candidates—while Timeline headings, forms, dialogs, inspectors, and publication controls reflow vertically. The Discover set selector is one bounded single-row horizontal rail at every viewport rather than a wrapping taxonomy grid; selection, hover, keyboard focus, and pressed state remain explicit, and the document itself may not scroll horizontally.
+At phone widths those three destinations form an always-visible three-column navigation row beneath the product identity and utilities. Dense ordered rows become explicit scroll rails only where their continuation remains understandable—Collection artifacts, Discover sets, and Studio's two quotations—while Timeline headings, forms, dialogs, and inspectors reflow vertically. The Discover set selector is one bounded single-row horizontal rail at every viewport rather than a wrapping taxonomy grid; selection, hover, keyboard focus, and pressed state remain explicit, and the document itself may not scroll horizontally.
 
 Discover searches and browses all `350` unique visualized badge concepts in tracked product inputs through six canonical sets: four published starter badges, sixty-two additional national-park badges after Yosemite deduplication, fifty U.S.-state badges, fifty book badges, two education-milestone badges, `132` named Michelin-restaurant badges, and fifty video-game badges. The resulting set populations are U.S. National Parks `64`, U.S. States `50`, Books Read `51` including the published _Sapiens_ starter, Life Milestones `3` including the published bachelor's-degree starter, Michelin Dining `132`, and Video Games `50`. All `350` are seeded, preparable, activatable records: the `346` former source studies publish through the generated `badge.catalogue.discovery` fixture pack. Every card is one full-surface native action with exactly two visual states and no status wording: a collected badge is full color and opens its exact memory replay; a not-yet-collected badge is grey and enters preparation and activation without leaving Discover. Grid cards render the eager `128 × 128` thumbnail tier (starters keep their published previews); preparation and activation load the selected badge's canonical `896 × 896` source from the integrity-bound bundled tier. Search and set filtering apply to the complete projection, while the card grid renders an initial `24` matches and reveals subsequent batches only on explicit request. Selecting a set from memory replay opens that exact Discover set, and entering Discover from primary navigation clears that transient set context for independent browsing.
 
@@ -146,7 +146,11 @@ The archive has no art-generation, upload, reprocessing, candidate, prompt, crop
 
 ## Badge Studio developer mode
 
-Badge Studio is a dedicated developer and curator surface selected by `#studio` in the one root Badge document; it is a peer primary destination rather than a drawer, advanced panel, or hidden control inside the everyday Archive surface. Legacy Studio document URLs under `/studio` redirect to `/#studio`.
+Badge Studio adjusts one badge at a time. It is reached only by opening that badge in Discover and choosing `Adjust in Badge Studio`, its location names the badge as `#studio/<recordId>` so a reload or a shared link reopens it, and it appears in no navigation row. Legacy Studio document URLs under `/studio` redirect into the same document.
+
+It offers exactly eight things: the badge's picture, its shape, material, border color and border width, its tags, its quote, and which collections it belongs to. It creates no badges — new badges are authored into the catalogue by chatting with Claude — and it holds no prompt library, candidate generation, art provider, or pack publishing. The Archive owns what Studio saves, so an adjustment appears immediately in Collection, Timeline and Discover, survives a reload, and rides along in the `.badgearchive` backup without an install step.
+
+An adjustment is an overlay on the badge rather than a rewrite of it, so a later catalogue update refreshes the shipped badge underneath it and `Reset to catalogue default` restores exactly what the catalogue shipped. Once a badge is collected its picture, shape, material, border and quote are sealed with that memory; its tags and collections stay editable for the life of the badge.
 
 The host composer alone imports both presentation surfaces and changes between them through root-document view state. Archive and Studio retain separate versioned IndexedDB database names, repositories, standalone isolation builds, and backup formats; Archive does not import Studio or catalogue-authoring code or open the Studio database, and Studio does not import Archive or open the Archive database. The one document owns one content-security policy and claims no route-specific service-worker scope. Archive Discover instead consumes one closed Git-tracked projection of deliberately promoted catalogue metadata, bounded eager list thumbnails, and the integrity-bound on-demand canonical source tier that supplies activation textures; private Studio projects never appear automatically.
 
@@ -160,13 +164,15 @@ New or deliberately refreshed generation uses prompt recipe `badge-source-art@2`
 
 Candidates appear at a useful comparison size with clear keyboard-reachable selection state. The developer can select one, regenerate the set, refine one candidate, upload an image, process an upload, or leave without losing the Studio draft.
 
-The own-image action remains visible and enabled before or after an Archive activation because Studio intentionally receives no Archive lifecycle state. Before first publication, a successfully validated and saved upload becomes the working source; after the current Studio release is frozen, it opens a new mutable replacement-edition draft while the exact frozen release remains available to offer again. Canceling the picker or rejecting an upload leaves the frozen edition untouched.
+The own-image action is available for any badge the owner has not collected yet, and refused once a badge is collected, because its picture is sealed with the memory. Canceling the picker or rejecting an upload leaves the badge untouched.
 
 An uploaded original is preserved unchanged in Studio. Optional processing creates new candidates or derivatives and must disclose before an image leaves the device for model processing.
 
 Before publication, Studio applies orientation, decodes the chosen pixels, normalizes them to an approved color space and format, and creates a publish-safe derivative with filenames, EXIF, GPS, XMP, IPTC, embedded thumbnails, and opaque ancillary metadata removed. The developer previews the outgoing dimensions, format, byte size, and sanitized manifest metadata; the private original never enters the pack.
 
-Studio applies shape, material, border color, border width, crop, position, and supported depth or edge settings to selected source art without regenerating it, while the live 3D preview updates immediately.
+Studio applies shape, material, border color, and border width to the badge's source art without regenerating it, while the live 3D preview beside the panels updates immediately and stays in view as the panels scroll. Each control sits on the catalogue's own value, and returning a control to that value removes it from the overlay rather than recording it as a choice.
+
+Tags are the owner's own words for finding a badge later; they are searchable in Discover and never leave the device. The quote is chosen between the badge's two reviewed source-checked quotations and admitted through the same trusted-bank path as any other quotation change; Studio never composes quotation text. Collection membership decides which shelves and Discover sets a badge appears in, and a badge always belongs to at least one collection.
 
 Publishing requires exactly one selected source image and complete 3D presentation per runtime-visible badge. The publisher validates schemas, stable IDs, asset hashes, compatibility, text-free source art, fallback inputs, binary policy, missing references, and forbidden Studio-only fields before exporting an immutable pack.
 
@@ -176,7 +182,7 @@ Publishing changed replacement content creates another immutable content-address
 
 ## Runtime historical-quotation selection
 
-The archive's badge saying is a source-checked historical quotation independent from Studio and the published picture. Every newly created badge starts with a designated quotation selected from its curated local bank, so the first detail view and activation form never have an empty saying state and creation makes no provider-model call. The implemented `350`-badge fixture catalogue gives every definition a private two-choice bank whose `700` IDs and caseless canonical text keys are globally disjoint; a symmetric close-match scan and an independently adjudicated ledger additionally retire spelling, word-order, excerpt, and translation variants from all but one badge. Carrying the same authenticated global-uniqueness contract in arbitrary installed definitions remains Phase 1 work.
+The archive's badge saying is a source-checked historical quotation independent from the badge's picture. Every newly created badge starts with a designated quotation selected from its curated local bank, so the first detail view and activation form never have an empty saying state and creation makes no provider-model call. The implemented `350`-badge fixture catalogue gives every definition a private two-choice bank whose `700` IDs and caseless canonical text keys are globally disjoint; a symmetric close-match scan and an independently adjudicated ledger additionally retire spelling, word-order, excerpt, and translation variants from all but one badge. Carrying the same authenticated global-uniqueness contract in arbitrary installed definitions remains Phase 1 work.
 
 On initialization, restore, and readable-state recovery, the allocator first reserves the canonical wording of every earned or activated historical quotation and preserves those records exactly, including any sealed duplicate inherited from an older release. It then processes unearned records in stable archive order: a trusted current quotation remains only when its wording is free, otherwise the record receives its free designated default or first free trusted-bank alternate plus a fresh quotation revision. If no distinct trusted choice remains, the complete operation refuses before any state or quarantine object write. An earned record with a `null` saying is never backfilled because no new quotation can truthfully be claimed as part of that sealed memory, remains incompatible with normal restore and replacement recovery, and is preserved only through an explicitly non-restorable state-rescue handoff. Installing or updating a published pack never silently alters an earned saying.
 
