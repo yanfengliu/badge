@@ -20,6 +20,7 @@ import {
   initialStudioDraft,
   isCatalogueDefaultDraft,
   isStudioDraftDirty,
+  studioTargetSignature,
   toStudioSubmission,
   usesOwnImage,
   withoutTag,
@@ -49,15 +50,21 @@ export function App({ target, onApply, onClose, onLeaveGuardChange }: StudioAppP
   const uploadInput = useRef<HTMLInputElement>(null);
   const ownedUrls = useRef(new Set<string>());
   const store = useRef<StudioStore | null>(null);
-  const openedRecordId = useRef<string | null>(target?.recordId ?? null);
+  const openedSignature = useRef<string | null>(target ? studioTargetSignature(target) : null);
 
+  // Re-sync on the badge's values, not merely its id. A save refreshes the target, and a draft
+  // that survived it would keep a saved image "pending" — leaving the surface permanently unsaved
+  // and refusing to let the owner leave — and would carry stale values back over an Archive-side
+  // change on the next save.
   useEffect(() => {
     if (!target) return;
-    if (openedRecordId.current === target.recordId && draft !== null) return;
-    openedRecordId.current = target.recordId;
+    const signature = studioTargetSignature(target);
+    if (openedSignature.current === signature && draft !== null) return;
+    const resumed = openedSignature.current === null;
+    openedSignature.current = signature;
     setDraft(initialStudioDraft(target));
-    setStatus(OPENING_STATUS);
     setTagProblem(null);
+    setStatus((current) => (resumed || current === OPENING_STATUS ? OPENING_STATUS : current));
   }, [draft, target]);
 
   useEffect(() => {

@@ -63,7 +63,6 @@ const instance = vi.hoisted(() => ({
   opened: null as { ok: boolean; state?: ArchiveState; error?: unknown } | null,
   openCalls: 0,
   stored: null as ArchiveState | null,
-  replaced: [] as ArchiveState[],
   announced: [] as ArchiveState[],
   adjusted: [] as unknown[],
 }));
@@ -79,13 +78,13 @@ vi.mock("./archive-instance", () => ({
     },
     updateQuotation: () => Promise.reject(new Error("not expected")),
   },
-  openArchive: () => {
+  readOpenedArchiveState: async () => {
     instance.openCalls += 1;
     // The archive only becomes readable once it has been opened; before that it holds nothing.
-    if (instance.opened?.ok) instance.stored ??= stateWith("circle");
-    return Promise.resolve(instance.opened);
+    if (!instance.opened?.ok) throw instance.opened?.error ?? new Error("unreadable");
+    instance.stored ??= stateWith("circle");
+    return instance.stored;
   },
-  replaceOpenedArchiveState: (state: ArchiveState) => instance.replaced.push(state),
   notifyArchiveStateChanged: (state: ArchiveState) => instance.announced.push(state),
 }));
 
@@ -105,7 +104,6 @@ beforeEach(() => {
   instance.opened = { ok: true };
   instance.openCalls = 0;
   instance.stored = null;
-  instance.replaced = [];
   instance.announced = [];
   instance.adjusted = [];
 });
@@ -128,25 +126,22 @@ describe("the Archive's side of the Studio handoff", () => {
     expect(instance.adjusted).toHaveLength(0);
   });
 
-  it("refreshes what the hidden Archive surface will read when the host shows it again", async () => {
+  it("announces the saved state so a visible Archive surface catches up", async () => {
     const result = await archiveStudioBridge.apply(submission);
 
     expect(result.ok).toBe(true);
-    // Announcing is not enough: the Archive surface runs no effects while it is hidden, so it
-    // hears nothing and re-reads the opened state instead.
-    expect(instance.replaced).toHaveLength(1);
-    expect(instance.replaced[0].records[0].adjustment?.appearance.shape).toBe("shield");
     expect(instance.announced).toHaveLength(1);
-    expect(instance.announced[0]).toBe(instance.replaced[0]);
+    expect(instance.announced[0].records[0].adjustment?.appearance.shape).toBe("shield");
+    // Bound: this covers only the visible surface. A hidden one hears nothing and instead
+    // re-reads current state on being shown, which `App.remount.test.tsx` gates.
   });
 
-  it("leaves the opened state alone when the badge is gone", async () => {
+  it("announces nothing when the badge is gone", async () => {
     instance.stored = createSeededArchiveState({ ownerId: "local-owner", records: [] });
     const result = await archiveStudioBridge.apply({ ...submission, recordId: "starter:missing" });
 
     expect(result.ok).toBe(false);
     expect(result.message).toMatch(/no longer in your archive; reopen it from Discover/u);
-    expect(instance.replaced).toHaveLength(0);
     expect(instance.announced).toHaveLength(0);
   });
 });

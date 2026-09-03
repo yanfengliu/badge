@@ -51,16 +51,20 @@ export function studioCollectionOptions(
   // badge and the discovery catalogue both carry `us-national-parks`, and offering both would
   // put the same shelf on screen twice under one label.
   const offeredSetIds = new Set<string>();
-  const offer = (ref: CollectionRef, label: string, fromCatalogue: boolean) => {
+  const catalogueKeys = new Set(record.collectionRefs.map(collectionRefKey));
+  const offer = (ref: CollectionRef, label: string) => {
     const key = collectionRefKey(ref);
     if (options.has(key) || offeredSetIds.has(ref.collectionId)) return;
-    options.set(key, { key, label, fromCatalogue, ref });
+    options.set(key, { key, label, fromCatalogue: catalogueKeys.has(key), ref });
     offeredSetIds.add(ref.collectionId);
   };
-  for (const ref of record.collectionRefs) offer(ref, labelForRef(ref), true);
-  for (const ref of effectiveCollectionRefs(record)) offer(ref, labelForRef(ref), false);
+  // The owner's current choices come first, so a catalogue reseed that moves a badge to another
+  // pack's copy of the same set cannot suppress the ref they are already in — which would leave
+  // a selected key with no option behind it and refuse every save from then on.
+  for (const ref of effectiveCollectionRefs(record)) offer(ref, labelForRef(ref));
+  for (const ref of record.collectionRefs) offer(ref, labelForRef(ref));
   for (const set of discoverySets) {
-    offer({ namespace: "pack", packId: CATALOGUE_PACK_ID, collectionId: set.setId }, set.title, false);
+    offer({ namespace: "pack", packId: CATALOGUE_PACK_ID, collectionId: set.setId }, set.title);
   }
   return [...options.values()];
 }

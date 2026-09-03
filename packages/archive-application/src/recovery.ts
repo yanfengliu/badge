@@ -69,19 +69,35 @@ function quarantineKey(prefix: string, quarantinedAt: string, subject = ""): str
   return `${prefix}${subject}${encodeURIComponent(quarantinedAt)}:${crypto.randomUUID()}`;
 }
 
+type SourceRequirement = {
+  readonly subject: string;
+  /** What the owner can actually do; a catalogue can never re-supply an image they chose. */
+  readonly remedy: string;
+};
+
 function sourceRequirement(
   hash: string,
   incomingState: ArchiveState,
   currentState: ArchiveState | undefined,
-): "an earned record" | "an unearned catalogue record" {
-  const records = [...incomingState.records, ...(currentState?.records ?? [])].filter(
-    (record) =>
-      record.publishedVisual.sourceAssetHash === hash ||
-      record.activation?.visualPin.sourceAssetHash === hash,
-  );
-  return records.some((record) => record.activation?.visualPin.sourceAssetHash === hash)
-    ? "an earned record"
-    : "an unearned catalogue record";
+): SourceRequirement {
+  const records = [...incomingState.records, ...(currentState?.records ?? [])];
+  if (records.some((record) => record.activation?.visualPin.sourceAssetHash === hash)) {
+    return {
+      subject: "an earned record",
+      remedy: "choose an intact self-contained backup and retry after trusted current sources finish loading",
+    };
+  }
+  if (records.some((record) => record.adjustment?.source?.sourceAssetHash === hash)) {
+    return {
+      subject: "an image you added in Badge Studio",
+      remedy:
+        "choose a backup exported after you added it, or open that badge in Badge Studio and choose the image again",
+    };
+  }
+  return {
+    subject: "an unearned catalogue record",
+    remedy: "choose an intact self-contained backup and retry after trusted current sources finish loading",
+  };
 }
 
 export async function recoverArchive(
@@ -302,7 +318,7 @@ export async function recoverArchive(
         const requirement = sourceRequirement(hash, incomingState, parsedCurrent);
         throw new ArchivePersistenceError(
           "BACKUP_INCOMPLETE",
-          `Recovery inputs do not contain source ${hash} required by ${requirement}; choose an intact self-contained backup and retry after trusted current sources finish loading. No Archive data was changed.`,
+          `Recovery inputs do not contain source ${hash} required by ${requirement.subject}; ${requirement.remedy}. No Archive data was changed.`,
         );
       }
       const key = sourceQuarantineKeys.get(hash);

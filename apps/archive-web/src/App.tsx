@@ -58,9 +58,8 @@ import {
 } from "./restore-flow";
 import {
   archive,
-  openArchive,
   observeArchiveStateChanges,
-  replaceOpenedArchiveState,
+  readOpenedArchiveState,
   starterSourceAssets,
   starterState,
 } from "./archive-instance";
@@ -108,20 +107,23 @@ export function App({ onShowStudio }: { readonly onShowStudio: (recordId: string
       recoveryMode.current = "repair-corruption";
       safetyHandoff.current = "full-backup";
       stateRescueReason.current = null;
-      const outcome = await openArchive();
-      if (!active) return;
-      if (outcome.ok) {
-        setState(outcome.state);
-        return;
+      // Reads current state on every mount rather than a snapshot taken when the archive
+      // opened: the host remounts this surface on every return from Badge Studio, and Studio
+      // may have written since.
+      try {
+        const current = await readOpenedArchiveState();
+        if (!active) return;
+        setState(current);
+      } catch (error) {
+        if (!active) return;
+        if (error instanceof StarterArchiveCompatibilityError) {
+          recoveryMode.current = "replace-incompatible-readable-state";
+          safetyHandoff.current = error.requiresStateRescue ? "state-rescue" : "full-backup";
+          stateRescueReason.current = error.stateRescueReason;
+        }
+        setInitializationFailed(true);
+        setNotice({ kind: "error", text: error instanceof Error ? error.message : String(error) });
       }
-      const error = outcome.error;
-      if (error instanceof StarterArchiveCompatibilityError) {
-        recoveryMode.current = "replace-incompatible-readable-state";
-        safetyHandoff.current = error.requiresStateRescue ? "state-rescue" : "full-backup";
-        stateRescueReason.current = error.stateRescueReason;
-      }
-      setInitializationFailed(true);
-      setNotice({ kind: "error", text: error instanceof Error ? error.message : String(error) });
     }
     void initialize();
     return () => {
@@ -416,7 +418,6 @@ export function App({ onShowStudio }: { readonly onShowStudio: (recordId: string
         await validateStarterArchiveForOpen(archive, starterState, reconciled, true);
         const initialized = await initializeReviewedSayingDefaults(archive, starterState, reconciled);
         setState(initialized);
-        replaceOpenedArchiveState(initialized);
         setInitializationFailed(false);
         recoveryMode.current = "repair-corruption";
         safetyHandoff.current = "full-backup";
@@ -435,7 +436,6 @@ export function App({ onShowStudio }: { readonly onShowStudio: (recordId: string
         await saying.observe({ type: "archive-restored" });
         const restored = await restorePendingArchive(archive, pendingRestore, starterState);
         setState(restored);
-        replaceOpenedArchiveState(restored);
         setNotice({
           kind: "info",
           text: `Restored ${restored.records.length} records from ${pendingRestore.fileName} after you confirmed the safety backup was saved.`,

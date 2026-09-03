@@ -195,7 +195,9 @@ describe("badge adjustment storage", () => {
     expect(backup.sourceAssets).toEqual([]);
   });
 
-  it("restores an adjusted badge, its tags and its own image into a clean archive", async () => {
+  // Bound: this restores into the same application that exported, so it exercises the export and
+  // read-back path, not a second archive's monotonic policy or its missing-asset closure.
+  it("restores an adjusted badge, its tags and its own image back over itself", async () => {
     const source = application();
     await source.initialize(seed(), [catalogueAsset]);
     await source.adjustBadge(

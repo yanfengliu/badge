@@ -5,10 +5,10 @@ import { z } from "zod";
  * The only thing that crosses between the Archive and Badge Studio.
  *
  * Studio adjusts one badge the owner opened from Discover. It never reads Archive persistence,
- * never learns a pack id, and never sees a note, date, activation, or any other personal record
- * field: the Archive projects exactly the values below, and Studio hands back exactly a
- * submission. Collections are opaque keys for the same reason — Studio shows labels and returns
- * the keys it was given, and the Archive alone knows what they refer to.
+ * and never sees a note, date, occurrence, activation, visibility, pack digest, or any other
+ * personal record field: the Archive projects exactly the values below, and Studio hands back
+ * exactly a submission. A collection crosses as an opaque key with a label — Studio returns the
+ * key unread, and the Archive alone knows which reference it names.
  */
 
 export const STUDIO_MAX_TAGS = 24;

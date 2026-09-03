@@ -255,6 +255,20 @@ function parseJson(bytes: Uint8Array, subject: string): unknown {
   }
 }
 
+/**
+ * Record fields that carry a schema default, newest last.
+ *
+ * A `.badgearchive` v2 container is byte-compared against the canonical encoding of the state it
+ * parses to, so every field added here changes that encoding for backups written before it
+ * existed. Comparing against the older shape is what keeps those backups restorable — and a
+ * backup is exactly what someone reaches for when they have nothing else, so refusing one with
+ * "export it again from Badge Archive" would be advice they cannot take.
+ *
+ * `ARCHIVE_RECORD_DEFAULTED_FIELDS_ARE_COMPLETE` in `archive-backup-schema-growth.test.ts` fails
+ * if a defaulted field is added to `archiveRecordSchema` without being listed here.
+ */
+export const DEFAULTED_ARCHIVE_RECORD_FIELDS = ["quotationRevision", "adjustment"] as const;
+
 function canonicalArchiveStateBytes(rawState: unknown, state: ArchiveState): Uint8Array {
   const rawRecords =
     typeof rawState === "object" &&
@@ -263,19 +277,21 @@ function canonicalArchiveStateBytes(rawState: unknown, state: ArchiveState): Uin
     Array.isArray(rawState.records)
       ? rawState.records
       : [];
-  const isTokenlessLegacyState =
-    rawRecords.length === state.records.length &&
+  if (rawRecords.length !== state.records.length) return canonicalJsonBytes(state);
+  // All or nothing per field: a payload where only some records omit one is not an older
+  // export, it is an altered one, and it must still fail.
+  const absentFromEveryRecord = DEFAULTED_ARCHIVE_RECORD_FIELDS.filter((field) =>
     rawRecords.every(
       (record) =>
-        typeof record === "object" &&
-        record !== null &&
-        !Object.prototype.hasOwnProperty.call(record, "quotationRevision"),
-    );
-  if (!isTokenlessLegacyState) return canonicalJsonBytes(state);
+        typeof record === "object" && record !== null && !Object.prototype.hasOwnProperty.call(record, field),
+    ),
+  );
+  if (absentFromEveryRecord.length === 0) return canonicalJsonBytes(state);
+  const dropped = new Set<string>(absentFromEveryRecord);
   return canonicalJsonBytes({
     ...state,
     records: state.records.map((record) =>
-      Object.fromEntries(Object.entries(record).filter(([key]) => key !== "quotationRevision")),
+      Object.fromEntries(Object.entries(record).filter(([key]) => !dropped.has(key))),
     ),
   });
 }

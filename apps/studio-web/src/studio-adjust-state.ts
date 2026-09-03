@@ -38,6 +38,26 @@ export function initialStudioDraft(target: StudioBadgeTarget): StudioDraft {
   };
 }
 
+/**
+ * The badge's own adjustable values, ignoring anything that changes for other reasons — object
+ * URLs are minted fresh on every resolve, so including them would discard the owner's work.
+ *
+ * Studio re-syncs its draft when this changes. Without it a draft outlives its badge: a saved
+ * image stays pending and the surface never leaves "unsaved", and a quote regenerated in the
+ * Archive is overwritten by the stale choice the next save carries back.
+ */
+export function studioTargetSignature(target: StudioBadgeTarget): string {
+  return JSON.stringify([
+    target.recordId,
+    target.collected,
+    target.appearance,
+    target.ownImageDescription,
+    target.tags,
+    [...target.selectedCollectionKeys].sort(),
+    target.selectedQuotationId,
+  ]);
+}
+
 export function draftPreviewUrl(draft: StudioDraft, target: StudioBadgeTarget): string {
   if (draft.pendingImage) return draft.pendingImage.previewUrl;
   return draft.useCatalogueImage ? target.catalogueSourceUrl : target.sourceUrl;

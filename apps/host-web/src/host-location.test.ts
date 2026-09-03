@@ -22,7 +22,11 @@ describe("single-root host location", () => {
     ["", "collection"],
     ["#timeline", "timeline"],
     ["#discover", "discover"],
-    ["#studio", "studio"],
+    // Badge Studio adjusts a badge, so a location naming none of them is not Studio.
+    ["#studio", "discover"],
+    ["#studio/", "discover"],
+    ["#studio/starter:visited-yosemite", "studio"],
+    ["#studio/Not%20An%20Id", "discover"],
     ["#unknown", "collection"],
   ] as const)("maps %s to %s", (hash, destination) => {
     expect(hostDestinationFromHash(hash)).toBe(destination);

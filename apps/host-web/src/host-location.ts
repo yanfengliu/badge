@@ -6,8 +6,12 @@ const STUDIO_RECORD_ID_PATTERN = /^[a-z0-9][a-z0-9._:-]{0,127}$/u;
 
 export function hostDestinationFromHash(hash: string): HostDestination {
   const candidate = hash.replace(/^#/u, "");
-  if (candidate === "timeline" || candidate === "discover" || candidate === "studio") return candidate;
-  return studioRecordIdFromHash(hash) === null ? "collection" : "studio";
+  if (candidate === "timeline" || candidate === "discover") return candidate;
+  // Badge Studio adjusts a badge, so a location without one is not Studio at all: it resolves to
+  // Discover, where badges are, rather than to a workspace with nothing in it.
+  if (studioRecordIdFromHash(hash) !== null) return "studio";
+  if (candidate === "studio" || candidate.startsWith("studio/")) return "discover";
+  return "collection";
 }
 
 /**

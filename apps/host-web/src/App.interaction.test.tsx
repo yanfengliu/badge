@@ -209,7 +209,7 @@ describe("single-root Badge host interactions", () => {
     await act(async () => container.querySelector<HTMLButtonElement>("#archive-preparation")?.click());
 
     await act(async () => {
-      window.history.pushState({ __badgeHistoryIndex: 2 }, "", "/#studio");
+      window.history.pushState({ __badgeHistoryIndex: 2 }, "", "/#studio/record-yosemite");
       window.dispatchEvent(new PopStateEvent("popstate"));
     });
     expect(archiveControl.effectsActive).toBe(false);
@@ -283,7 +283,7 @@ describe("single-root Badge host interactions", () => {
 
   it("keeps an allowed null-state Archive entry unknown and preserves it after a later rejected Back", async () => {
     window.history.replaceState(null, "", "/#discover");
-    window.history.pushState({ __badgeHistoryIndex: 0 }, "", "/#studio");
+    window.history.pushState({ __badgeHistoryIndex: 0 }, "", "/#studio/record-yosemite");
     await act(async () => root.render(<App />));
 
     await traverseHistory(() => window.history.back());
@@ -291,11 +291,11 @@ describe("single-root Badge host interactions", () => {
     expect(window.history.state).toBeNull();
 
     await traverseHistory(() => window.history.forward());
-    expect(window.location.hash).toBe("#studio");
+    expect(window.location.hash).toBe("#studio/record-yosemite");
     studioControl.allowLeave = false;
     const replaceState = vi.spyOn(window.history, "replaceState");
     await traverseHistory(() => window.history.back());
-    expect(window.location.hash).toBe("#studio");
+    expect(window.location.hash).toBe("#studio/record-yosemite");
     expect(window.history.state).toBeNull();
     expect(replaceState).not.toHaveBeenCalled();
 
@@ -306,9 +306,9 @@ describe("single-root Badge host interactions", () => {
   });
 
   it("does not invent traversal deltas when Archive pushes between indexed and unknown entries", async () => {
-    window.history.replaceState({ __badgeHistoryIndex: 5 }, "", "/#studio");
+    window.history.replaceState({ __badgeHistoryIndex: 5 }, "", "/#studio/record-yosemite");
     window.history.pushState(null, "", "/");
-    window.history.pushState({ __badgeHistoryIndex: 6 }, "", "/#studio");
+    window.history.pushState({ __badgeHistoryIndex: 6 }, "", "/#studio/record-yosemite");
     await act(async () => root.render(<App />));
 
     await traverseHistory(() => window.history.back());
@@ -325,14 +325,14 @@ describe("single-root Badge host interactions", () => {
     await traverseHistory(() => window.history.back());
     expect(window.location.hash).toBe("");
     await traverseHistory(() => window.history.back());
-    expect(window.location.hash).toBe("#studio");
+    expect(window.location.hash).toBe("#studio/record-yosemite");
     expect(window.history.state).toEqual({ __badgeHistoryIndex: 5 });
 
     studioControl.allowLeave = false;
     const go = vi.spyOn(window.history, "go");
     const replaceState = vi.spyOn(window.history, "replaceState");
     await traverseHistory(() => window.history.forward());
-    expect(window.location.hash).toBe("#studio");
+    expect(window.location.hash).toBe("#studio/record-yosemite");
     expect(window.history.state).toBeNull();
     expect(go).not.toHaveBeenCalled();
     expect(replaceState).not.toHaveBeenCalled();

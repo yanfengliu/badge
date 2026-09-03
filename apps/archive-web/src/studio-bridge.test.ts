@@ -99,14 +99,58 @@ describe("Studio badge projection", () => {
     });
 
     expect(target).not.toBeNull();
+    // The strict schema bounds the key set; these check the values behind it. A collection key
+    // does carry its pack id — it is an opaque handle Studio returns unread, and the pack a
+    // catalogue set belongs to is release metadata, not something about the owner.
     expect(studioBadgeTargetSchema.parse(target)).toEqual(target);
     const serialized = JSON.stringify(target);
-    expect(serialized).not.toContain("A private note");
-    expect(serialized).not.toContain("private");
-    expect(serialized).not.toContain(publishedVisual.packRef.packDigest);
-    expect(serialized).not.toContain("activation");
-    expect(serialized).not.toContain("lifecycle");
-    expect(serialized).not.toContain("visibility");
+    for (const personal of [
+      "A private note nobody outside the archive should see.",
+      "private",
+      publishedVisual.packRef.packDigest,
+      publishedVisual.packRef.version,
+      "2026-05-01",
+      "2026-05-02T00:00:00.000Z",
+    ]) {
+      expect(serialized).not.toContain(personal);
+    }
+  });
+
+  it("keeps a collected badge's dates, note and visibility out of the projection", () => {
+    // The uncollected fixture has no dates to leak, so the check that matters runs here.
+    const target = buildStudioTarget({
+      record: recordOf(
+        seed({
+          lifecycle: "earned",
+          note: "A private note nobody outside the archive should see.",
+          visibility: "private",
+          acceptedSaying: null,
+          activation: {
+            occurredStart: "2026-05-01",
+            occurredEnd: "2026-05-03",
+            recordedAt: "2026-05-04T00:00:00.000Z",
+            activatedAt: "2026-05-04T00:00:00.000Z",
+            visualPin: publishedVisual,
+          },
+        }),
+      ),
+      fixture,
+      sourceUrl: "/yosemite.png",
+    });
+
+    expect(target?.collected).toBe(true);
+    const serialized = JSON.stringify(target);
+    for (const personal of [
+      "A private note nobody outside the archive should see.",
+      "private",
+      "2026-05-01",
+      "2026-05-03",
+      "2026-05-04T00:00:00.000Z",
+      publishedVisual.packRef.packDigest,
+      publishedVisual.packRef.version,
+    ]) {
+      expect(serialized).not.toContain(personal);
+    }
   });
 
   it("offers each collection once even when two packs ship the same set", () => {
