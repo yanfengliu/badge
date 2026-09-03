@@ -146,7 +146,6 @@ export function App({ target, onApply, onClose, onLeaveGuardChange }: StudioAppP
                 hash: publication.hash,
                 mimeType: publication.mimeType === "image/jpeg" ? "image/jpeg" : "image/png",
                 bytes: publication.bytes,
-                accessibleDescription: `A picture you chose for ${target.title}.`,
                 previewUrl: previewObjectUrl,
                 fileName: file.name,
               },
@@ -272,9 +271,15 @@ export function App({ target, onApply, onClose, onLeaveGuardChange }: StudioAppP
             busy={readingImage}
             uploadInput={uploadInput}
             onPick={(event) => void pickImage(event)}
+            description={draft.ownImageDescription}
+            onDescriptionChange={(description) =>
+              setDraft((current) => (current ? { ...current, ownImageDescription: description } : current))
+            }
             onUseCatalogueImage={() =>
               setDraft((current) =>
-                current ? { ...current, pendingImage: null, useCatalogueImage: true } : current,
+                current
+                  ? { ...current, pendingImage: null, ownImageDescription: "", useCatalogueImage: true }
+                  : current,
               )
             }
           />

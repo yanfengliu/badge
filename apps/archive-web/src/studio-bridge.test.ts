@@ -85,6 +85,7 @@ const emptySubmission: StudioAdjustmentSubmission = {
   appearance: { shape: null, material: null, borderColor: null, borderWidth: null },
   ownImage: null,
   useCatalogueImage: false,
+  ownImageDescription: null,
   tags: [],
   collectionKeys: ["pack:badge.catalogue.starter:us-national-parks"],
   quotationId: null,
@@ -237,6 +238,28 @@ describe("Studio submission mapping", () => {
     expect(
       adjustmentInputFor(recordOf(state), { ...emptySubmission, useCatalogueImage: true }).source,
     ).toBeNull();
+  });
+
+  it("saves a rewritten description of an image the owner already added", () => {
+    const state = seed({
+      adjustment: {
+        adjustedAt: "2026-09-02T10:00:00.000Z",
+        appearance: { shape: null, material: null, borderColor: null, borderWidth: null },
+        source: { sourceAssetHash: "c".repeat(64), accessibleDescription: "Mine." },
+        tags: [],
+        collectionRefs: null,
+      },
+    });
+
+    expect(
+      adjustmentInputFor(recordOf(state), {
+        ...emptySubmission,
+        ownImageDescription: "Granite walls above a turquoise river.",
+      }).source,
+    ).toEqual({
+      sourceAssetHash: "c".repeat(64),
+      accessibleDescription: "Granite walls above a turquoise river.",
+    });
   });
 });
 

@@ -95,6 +95,7 @@ const submission: StudioAdjustmentSubmission = {
   appearance: { shape: "shield", material: null, borderColor: null, borderWidth: null },
   ownImage: null,
   useCatalogueImage: false,
+  ownImageDescription: null,
   tags: [],
   collectionKeys: ["pack:badge.catalogue.starter:us-national-parks"],
   quotationId: null,

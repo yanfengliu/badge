@@ -135,6 +135,7 @@ export function adjustmentInputFor(
     }
     return ref;
   });
+  const existingSource = record.adjustment?.source ?? null;
   const source = submission.ownImage
     ? {
         sourceAssetHash: submission.ownImage.hash,
@@ -142,7 +143,10 @@ export function adjustmentInputFor(
       }
     : submission.useCatalogueImage
       ? null
-      : (record.adjustment?.source ?? null);
+      : existingSource && submission.ownImageDescription
+        ? // The owner rewrote how their picture is described without replacing it.
+          { ...existingSource, accessibleDescription: submission.ownImageDescription }
+        : existingSource;
   return {
     appearance: submission.appearance,
     source,

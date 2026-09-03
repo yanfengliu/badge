@@ -164,7 +164,7 @@ New or deliberately refreshed generation uses prompt recipe `badge-source-art@2`
 
 Candidates appear at a useful comparison size with clear keyboard-reachable selection state. The developer can select one, regenerate the set, refine one candidate, upload an image, process an upload, or leave without losing the Studio draft.
 
-The own-image action is available for any badge the owner has not collected yet, and refused once a badge is collected, because its picture is sealed with the memory. Canceling the picker or rejecting an upload leaves the badge untouched.
+The own-image action is available for any badge the owner has not collected yet, and refused once a badge is collected, because its picture is sealed with the memory. Canceling the picker or rejecting an upload leaves the badge untouched. A badge showing the owner's own picture also offers a field for describing it, which is what a screen reader reads in place of the picture; the catalogue's description belongs to art that badge no longer shows.
 
 An uploaded original is preserved unchanged in Studio. Optional processing creates new candidates or derivatives and must disclose before an image leaves the device for model processing.
 

@@ -9,8 +9,10 @@ export function StudioImagePanel({
   usingOwnImage,
   disabled,
   busy,
+  description,
   uploadInput,
   onPick,
+  onDescriptionChange,
   onUseCatalogueImage,
 }: {
   readonly target: StudioBadgeTarget;
@@ -18,8 +20,10 @@ export function StudioImagePanel({
   readonly usingOwnImage: boolean;
   readonly disabled: boolean;
   readonly busy: boolean;
+  readonly description: string;
   readonly uploadInput: RefObject<HTMLInputElement | null>;
   readonly onPick: (event: ChangeEvent<HTMLInputElement>) => void;
+  readonly onDescriptionChange: (description: string) => void;
   readonly onUseCatalogueImage: () => void;
 }) {
   const currentLabel = pendingImage
@@ -55,6 +59,22 @@ export function StudioImagePanel({
         />
       </div>
       <p className="studio-panel__hint">PNG, JPEG, or WebP · up to 16 MB</p>
+      {usingOwnImage ? (
+        <label className="studio-image-description">
+          <span>Describe this picture</span>
+          <textarea
+            rows={2}
+            maxLength={500}
+            disabled={disabled}
+            value={description}
+            placeholder="Granite walls above a turquoise river at sunrise."
+            onChange={(event) => onDescriptionChange(event.target.value)}
+          />
+          <small>
+            Read aloud in place of the picture. The catalogue wrote one for its own art; this one is yours.
+          </small>
+        </label>
+      ) : null}
     </section>
   );
 }

@@ -12,7 +12,6 @@ export interface StudioPendingImage {
   readonly hash: string;
   readonly mimeType: "image/png" | "image/jpeg";
   readonly bytes: Uint8Array;
-  readonly accessibleDescription: string;
   readonly previewUrl: string;
   readonly fileName: string;
 }
@@ -23,6 +22,8 @@ export interface StudioDraft {
   readonly collectionKeys: readonly string[];
   readonly quotationId: string | null;
   readonly pendingImage: StudioPendingImage | null;
+  /** What the badge's picture is described as when the owner supplied it. */
+  readonly ownImageDescription: string;
   /** Set when the owner asked to go back to the catalogue picture. */
   readonly useCatalogueImage: boolean;
 }
@@ -34,6 +35,7 @@ export function initialStudioDraft(target: StudioBadgeTarget): StudioDraft {
     collectionKeys: [...target.selectedCollectionKeys],
     quotationId: target.selectedQuotationId,
     pendingImage: null,
+    ownImageDescription: target.ownImageDescription ?? "",
     useCatalogueImage: false,
   };
 }
@@ -100,6 +102,7 @@ export function isStudioDraftDirty(draft: StudioDraft, target: StudioBadgeTarget
     draft.appearance.borderWidth !== initial.appearance.borderWidth ||
     draft.quotationId !== initial.quotationId ||
     draft.pendingImage !== null ||
+    (usesOwnImage(draft, target) && draft.ownImageDescription.trim() !== initial.ownImageDescription) ||
     (draft.useCatalogueImage && target.ownImageDescription !== null) ||
     !sameStrings(draft.tags, initial.tags) ||
     !sameKeySet(draft.collectionKeys, initial.collectionKeys)
@@ -130,6 +133,7 @@ export function catalogueDefaultDraft(target: StudioBadgeTarget): StudioDraft {
     collectionKeys: target.collections.filter((option) => option.fromCatalogue).map((option) => option.key),
     quotationId: target.selectedQuotationId,
     pendingImage: null,
+    ownImageDescription: "",
     useCatalogueImage: true,
   };
 }
@@ -153,6 +157,16 @@ export function withToggledCollection(draft: StudioDraft, key: string): StudioDr
   return { ...draft, collectionKeys: draft.collectionKeys.filter((existing) => existing !== key) };
 }
 
+/**
+ * What the owner's picture is described as. Their own words when they wrote any; otherwise a
+ * neutral sentence that at least says whose picture it is, rather than the catalogue's
+ * description of art this badge no longer shows.
+ */
+export function ownImageDescriptionFor(draft: StudioDraft, target: StudioBadgeTarget): string {
+  const written = draft.ownImageDescription.trim();
+  return written.length > 0 ? written.slice(0, 500) : `A picture you chose for ${target.title}.`;
+}
+
 export function toStudioSubmission(
   draft: StudioDraft,
   target: StudioBadgeTarget,
@@ -165,10 +179,11 @@ export function toStudioSubmission(
           hash: draft.pendingImage.hash,
           mimeType: draft.pendingImage.mimeType,
           bytes: draft.pendingImage.bytes,
-          accessibleDescription: draft.pendingImage.accessibleDescription,
+          accessibleDescription: ownImageDescriptionFor(draft, target),
         }
       : null,
     useCatalogueImage: draft.pendingImage === null && draft.useCatalogueImage,
+    ownImageDescription: usesOwnImage(draft, target) ? ownImageDescriptionFor(draft, target) : null,
     tags: [...draft.tags],
     collectionKeys: [...draft.collectionKeys],
     quotationId: draft.quotationId,

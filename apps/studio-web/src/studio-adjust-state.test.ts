@@ -52,7 +52,6 @@ const pendingImage: StudioPendingImage = {
   hash: "c".repeat(64),
   mimeType: "image/png",
   bytes: new Uint8Array([1, 2, 3]),
-  accessibleDescription: "A picture you chose for Yosemite.",
   previewUrl: "blob:pending",
   fileName: "valley.png",
 };
@@ -106,6 +105,33 @@ describe("Studio draft", () => {
     expect(submission.ownImage?.hash).toBe(pendingImage.hash);
     expect(submission.ownImage?.bytes).toBe(pendingImage.bytes);
     expect(submission.useCatalogueImage).toBe(false);
+  });
+
+  it("submits the owner's description of their own picture, or says whose it is", () => {
+    const draft = { ...initialStudioDraft(target), pendingImage };
+    // Nothing written: a neutral sentence, never the catalogue's description of other art.
+    expect(toStudioSubmission(draft, target).ownImage?.accessibleDescription).toBe(
+      "A picture you chose for Yosemite.",
+    );
+
+    const described = { ...draft, ownImageDescription: "  Granite walls above a turquoise river.  " };
+    expect(toStudioSubmission(described, target).ownImage?.accessibleDescription).toBe(
+      "Granite walls above a turquoise river.",
+    );
+    expect(isStudioDraftDirty(described, target)).toBe(true);
+
+    // Rewriting the description of an image already on the badge is itself a change to save.
+    const withOwnImage: StudioBadgeTarget = {
+      ...target,
+      ownImageDescription: "Granite walls.",
+      sourceUrl: "blob:own",
+    };
+    const opened = initialStudioDraft(withOwnImage);
+    expect(opened.ownImageDescription).toBe("Granite walls.");
+    expect(isStudioDraftDirty(opened, withOwnImage)).toBe(false);
+    expect(
+      isStudioDraftDirty({ ...opened, ownImageDescription: "Granite walls at dawn." }, withOwnImage),
+    ).toBe(true);
   });
 
   it("asks for the catalogue image only when there is an owner image to drop", () => {

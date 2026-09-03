@@ -117,7 +117,7 @@ Badge Studio adjusts one badge, and its layout says so: the badge under adjustme
 
 The live preview is the dominant 3D examination surface and stays in view while the panels scroll past it. It provides direct drag rotation, wheel or trackpad zoom, a clearly selected object-versus-light mode, and quiet reset controls without surrounding the artifact with game-editor chrome. Every control change appears in it immediately, so the owner is never adjusting a shape they can no longer see.
 
-Five panels, in the order the owner thinks about them: the picture, then shape, material and border, then tags, then the quote, then collections. Each is a quiet card on the warm ground rather than a section of one long form, and each carries one line saying what the control is for rather than what it is called.
+Five panels, in the order the owner thinks about them: the picture, then shape, material and border, then tags, then the quote, then collections. The picture panel grows a description field only once the badge shows the owner's own picture, because that is the only time there is nothing already written to read aloud. Each is a quiet card on the warm ground rather than a section of one long form, and each carries one line saying what the control is for rather than what it is called.
 
 Every control sits on the catalogue's own value, and returning a control to that value removes it from the adjustment rather than recording it as a choice. `Reset to catalogue default` and `Discard changes` sit under the preview, disabled when there is nothing to reset or discard, so the way back is always visible and never lies about being available.
 

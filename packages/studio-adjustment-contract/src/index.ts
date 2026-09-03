@@ -101,6 +101,11 @@ export const studioAdjustmentSubmissionSchema = z
     ownImage: studioOwnImageSchema.nullable(),
     /** Drops any owner image and returns the badge to its catalogue picture. */
     useCatalogueImage: z.boolean(),
+    /**
+     * How the owner describes the picture on this badge, when it is theirs. Present without
+     * `ownImage` when they rewrote the description of an image already saved.
+     */
+    ownImageDescription: z.string().trim().min(1).max(500).nullable(),
     tags: z.array(z.string().trim().min(1).max(STUDIO_MAX_TAG_LENGTH)).max(STUDIO_MAX_TAGS),
     collectionKeys: z.array(z.string().min(1)).min(1),
     quotationId: z.string().min(1).nullable(),

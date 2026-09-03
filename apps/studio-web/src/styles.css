@@ -160,6 +160,34 @@ body[data-badge-mode="studio"] [tabindex]:focus-visible {
   font-weight: 500;
   overflow-wrap: anywhere;
 }
+.studio-image-description {
+  display: grid;
+  gap: 5px;
+  margin-top: 14px;
+}
+.studio-image-description > span {
+  color: var(--faint);
+  font-size: 9px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+.studio-image-description textarea {
+  padding: 9px 11px;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background: var(--paper);
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.45;
+  resize: vertical;
+}
+.studio-image-description small {
+  color: var(--faint);
+  font-size: 10px;
+  line-height: 1.45;
+}
+
 .studio-image-actions,
 .studio-bench-actions,
 .studio-tag-entry {
