@@ -1,9 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
-import type {
-  ArchiveRecoveryMode,
-  ArchiveRecoveryReasonCode,
-  ArchiveSourceAssetInput,
-} from "@badge/archive-application";
+import type { ArchiveRecoveryMode, ArchiveRecoveryReasonCode } from "@badge/archive-application";
 import {
   effectiveVisual,
   ownerSuppliedSourceHash,
@@ -26,7 +22,6 @@ import { ArchiveNotice, type ArchiveNoticeState } from "./ArchiveNotice";
 import {
   initializeCatalogueExpansion,
   initializeReviewedSayingDefaults,
-  initializeStarterArchive,
   StarterArchiveCompatibilityError,
   validateStarterArchiveForOpen,
 } from "./archive-startup";
@@ -46,7 +41,7 @@ import { publishedFixtureForRecordId } from "./published-fixtures";
 import { RestoreDialog } from "./RestoreDialog";
 import { SayingDisclosureBoundary } from "./SayingDisclosureBoundary";
 import { TimelineView } from "./TimelineView";
-import { createStarterArchiveState, STARTER_OWNER_ID, STARTER_RECORD_IDS } from "./archive-state";
+import { STARTER_OWNER_ID, STARTER_RECORD_IDS } from "./archive-state";
 import { downloadBytes } from "./browser-utilities";
 import { requiresArchiveRecovery } from "./restore-compatibility";
 import {
@@ -61,14 +56,20 @@ import {
   type ArchiveSafetyHandoff,
   type PendingArchiveRestore,
 } from "./restore-flow";
-import { archive, observeArchiveStateChanges } from "./archive-instance";
+import {
+  archive,
+  openArchive,
+  observeArchiveStateChanges,
+  replaceOpenedArchiveState,
+  starterSourceAssets,
+  starterState,
+} from "./archive-instance";
 import { sourceUrlsForResolvedVisuals, useResolvedVisuals } from "./use-resolved-visuals";
 import { useArchiveSectionLocation } from "./use-archive-section-location";
 import { useDiscoveryPagerKeys } from "./use-discovery-pager-keys";
 import { stateAfterStaleArchiveMutation, useSayingWorkflow } from "./use-saying-workflow";
 import { useDiscoveryViewState, type DiscoveryReturnSection } from "./use-discovery-view-state";
 const forceFallback = new URLSearchParams(window.location.search).has("fallback");
-const starterState = createStarterArchiveState();
 
 export function App({ onShowStudio }: { readonly onShowStudio: (recordId: string) => void }) {
   const [state, setState] = useState<ArchiveState | null>(null);
@@ -91,7 +92,7 @@ export function App({ onShowStudio }: { readonly onShowStudio: (recordId: string
   const preparationReturnRecordId = useRef<string | null>(null);
   const replayReturnFocus = useRef<HTMLButtonElement>(null);
   const sayingDisclosureReturnFocus = useRef<HTMLDivElement>(null);
-  const starterAssets = useRef(new Map<string, ArchiveSourceAssetInput>());
+  const starterAssets = useRef(starterSourceAssets);
   const recoveryMode = useRef<ArchiveRecoveryMode>("repair-corruption");
   const safetyHandoff = useRef<ArchiveSafetyHandoff>("full-backup");
   const stateRescueReason = useRef<ArchiveRecoveryReasonCode | null>(null);
@@ -104,24 +105,23 @@ export function App({ onShowStudio }: { readonly onShowStudio: (recordId: string
   useEffect(() => {
     let active = true;
     async function initialize() {
-      try {
-        recoveryMode.current = "repair-corruption";
-        safetyHandoff.current = "full-backup";
-        stateRescueReason.current = null;
-        const loaded = await initializeStarterArchive(archive, starterState, (assets) => {
-          for (const asset of assets) starterAssets.current.set(asset.hash, asset);
-        });
-        if (active) setState(loaded);
-      } catch (error) {
-        if (!active) return;
-        if (error instanceof StarterArchiveCompatibilityError) {
-          recoveryMode.current = "replace-incompatible-readable-state";
-          safetyHandoff.current = error.requiresStateRescue ? "state-rescue" : "full-backup";
-          stateRescueReason.current = error.stateRescueReason;
-        }
-        setInitializationFailed(true);
-        setNotice({ kind: "error", text: error instanceof Error ? error.message : String(error) });
+      recoveryMode.current = "repair-corruption";
+      safetyHandoff.current = "full-backup";
+      stateRescueReason.current = null;
+      const outcome = await openArchive();
+      if (!active) return;
+      if (outcome.ok) {
+        setState(outcome.state);
+        return;
       }
+      const error = outcome.error;
+      if (error instanceof StarterArchiveCompatibilityError) {
+        recoveryMode.current = "replace-incompatible-readable-state";
+        safetyHandoff.current = error.requiresStateRescue ? "state-rescue" : "full-backup";
+        stateRescueReason.current = error.stateRescueReason;
+      }
+      setInitializationFailed(true);
+      setNotice({ kind: "error", text: error instanceof Error ? error.message : String(error) });
     }
     void initialize();
     return () => {
@@ -410,11 +410,13 @@ export function App({ onShowStudio }: { readonly onShowStudio: (recordId: string
           starterAssets.current,
         );
         const recovered = recovery.recovered;
-        starterAssets.current = recovery.assets;
+        starterAssets.current.clear();
+        for (const [hash, asset] of recovery.assets) starterAssets.current.set(hash, asset);
         const reconciled = await initializeCatalogueExpansion(archive, starterState, recovered.state);
         await validateStarterArchiveForOpen(archive, starterState, reconciled, true);
         const initialized = await initializeReviewedSayingDefaults(archive, starterState, reconciled);
         setState(initialized);
+        replaceOpenedArchiveState(initialized);
         setInitializationFailed(false);
         recoveryMode.current = "repair-corruption";
         safetyHandoff.current = "full-backup";
@@ -433,6 +435,7 @@ export function App({ onShowStudio }: { readonly onShowStudio: (recordId: string
         await saying.observe({ type: "archive-restored" });
         const restored = await restorePendingArchive(archive, pendingRestore, starterState);
         setState(restored);
+        replaceOpenedArchiveState(restored);
         setNotice({
           kind: "info",
           text: `Restored ${restored.records.length} records from ${pendingRestore.fileName} after you confirmed the safety backup was saved.`,

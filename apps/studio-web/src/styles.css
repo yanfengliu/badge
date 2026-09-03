@@ -59,17 +59,28 @@ body[data-badge-mode="studio"] [tabindex]:focus-visible {
   display: grid;
   grid-template-columns: minmax(440px, 0.96fr) minmax(460px, 1.04fr);
   min-height: calc(100vh - 72px);
+  background: var(--paper-deep);
 }
 .adjustment-bench,
 .construction-bench {
   min-width: 0;
   padding: clamp(34px, 4vw, 58px);
 }
+/*
+ * The badge being adjusted stays on screen while its panels scroll: the adjustment column is
+ * much taller than the bench, and a bench that scrolled away would leave the owner changing a
+ * shape they can no longer see, next to an empty half-page.
+ */
 .construction-bench {
-  border-right: 1px solid #bfb4a6;
-  background: var(--paper-deep);
+  position: sticky;
+  top: 0;
+  align-self: start;
+  max-height: 100vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .adjustment-bench {
+  border-left: 1px solid #bfb4a6;
   background: var(--paper);
 }
 .studio-shell .eyebrow {
@@ -524,21 +535,24 @@ body[data-badge-mode="studio"] [tabindex]:focus-visible {
     display: block;
     min-height: calc(100vh - 118px);
   }
-  .source-workbench {
-    border-right: 0;
+  /* One column: the bench is a section of the page again, not a companion beside it. */
+  .construction-bench {
+    position: static;
+    max-height: none;
+    overflow-y: visible;
     border-bottom: 1px solid var(--rule);
   }
-  .candidate-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  .adjustment-bench {
+    border-left: 0;
   }
 }
 @media (max-width: 720px) {
-  .source-workbench,
+  .adjustment-bench,
   .construction-bench {
     padding: 30px 19px;
   }
-  .candidate-grid {
-    grid-template-columns: 1fr;
+  .studio-panel {
+    padding: 15px;
   }
   .appearance-controls fieldset {
     grid-template-columns: 1fr;
@@ -546,13 +560,6 @@ body[data-badge-mode="studio"] [tabindex]:focus-visible {
   }
   .control-row {
     grid-template-columns: 1fr;
-  }
-  .publish-actions {
-    justify-content: flex-start;
-  }
-  .publish-bar {
-    align-items: stretch;
-    flex-direction: column;
   }
 }
 @media (prefers-reduced-motion: reduce) {

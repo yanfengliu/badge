@@ -1,6 +1,11 @@
 import type { StudioAdjustmentSubmission, StudioBadgeTarget } from "@badge/studio-adjustment-contract";
 
-import { archive, notifyArchiveStateChanged } from "./archive-instance";
+import {
+  archive,
+  notifyArchiveStateChanged,
+  openArchive,
+  replaceOpenedArchiveState,
+} from "./archive-instance";
 import { publishedFixtureForRecordId } from "./published-fixtures";
 import { applyStudioSubmission, buildStudioTarget } from "./studio-bridge";
 import type { ArchiveStudioBridge } from "./studio-bridge-port";
@@ -13,6 +18,9 @@ function releaseOwnedUrls(): void {
 }
 
 async function resolveTarget(recordId: string): Promise<StudioBadgeTarget | null> {
+  // Opens the archive if nothing has yet: Studio can be the first thing this document shows.
+  const opened = await openArchive();
+  if (!opened.ok) return null;
   const state = await archive.state();
   const record = state.records.find((candidate) => candidate.recordId === recordId);
   if (!record) return null;
@@ -37,6 +45,13 @@ async function resolveTarget(recordId: string): Promise<StudioBadgeTarget | null
 }
 
 async function apply(submission: StudioAdjustmentSubmission) {
+  const opened = await openArchive();
+  if (!opened.ok) {
+    return {
+      ok: false,
+      message: "Your archive could not be opened, so nothing was saved. Reload Badge and try again.",
+    };
+  }
   const state = await archive.state();
   const record = state.records.find((candidate) => candidate.recordId === submission.recordId);
   if (!record) {
@@ -51,7 +66,14 @@ async function apply(submission: StudioAdjustmentSubmission) {
     publishedFixtureForRecordId(submission.recordId),
     submission,
   );
-  if (outcome.state) notifyArchiveStateChanged(outcome.state);
+  if (outcome.state) {
+    // The Archive surface is hidden while Studio is open, so it is running no effects and hears
+    // no announcement. Refreshing the memoized open result is what it actually reads when the
+    // host shows it again; without this it comes back holding the badge as it was before the
+    // save, shows the old picture, and refuses activation as a changed visual.
+    replaceOpenedArchiveState(outcome.state);
+    notifyArchiveStateChanged(outcome.state);
+  }
   return outcome.result;
 }
 

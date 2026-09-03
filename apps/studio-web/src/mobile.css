@@ -39,11 +39,21 @@ body[data-badge-mode="studio"],
 }
 
 @media (max-width: 480px) {
+  /*
+   * Three things share the phone header: the mark, the badge being adjusted, and the two
+   * actions. The mark and the badge share the first row; the actions take the whole second one,
+   * so nothing overlaps at the 320px floor.
+   */
   .studio-header {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: auto minmax(0, 1fr);
     grid-template-rows: 54px 48px;
     min-height: calc(102px + var(--safe-top));
     padding: var(--safe-top) max(10px, var(--safe-right)) 0 max(10px, var(--safe-left));
+  }
+
+  .studio-header .brand {
+    grid-row: 1;
+    grid-column: 1;
   }
 
   .studio-header .brand {
@@ -61,6 +71,8 @@ body[data-badge-mode="studio"],
 
   .studio-header__actions {
     display: grid;
+    grid-row: 2;
+    grid-column: 1 / -1;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     width: 100%;
     min-height: 48px;
@@ -70,7 +82,8 @@ body[data-badge-mode="studio"],
 
   .studio-header__badge {
     grid-row: 1;
-    justify-self: start;
+    grid-column: 2;
+    justify-self: end;
     padding-top: 0;
     font-size: 14px;
   }
@@ -190,6 +203,12 @@ body[data-badge-mode="studio"],
   .studio-tag-entry {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  /* A row flex-basis becomes a height once the entry stacks; without this the field is 220px tall. */
+  .studio-tag-entry label {
+    flex: 0 0 auto;
+    width: 100%;
   }
 
   .studio-tag-entry button {
