@@ -123,7 +123,7 @@ Every control sits on the catalogue's own value, and returning a control to that
 
 The save action is the only primary control on the surface. It reads `Save adjustments` while there is something to save and `Saved` when there is not, so the header states the badge's condition rather than inviting a no-op.
 
-A collected badge shows its seal rather than hiding its controls: the picture, shape, material, border and quote read as disabled, one plain sentence says they are sealed with that memory, and tags and collections stay fully live. Studio learns nothing else about the memory — no date, note, or visibility ever crosses.
+A collected badge is reached from its memory rather than a preparation page, and the action there says plainly what is sealed and what is not before the owner follows it. Inside, the badge shows its seal rather than hiding its controls: the picture, shape, material, border and quote read as disabled, one plain sentence says they are sealed with that memory, and tags and collections stay fully live. Studio learns nothing else about the memory — no date, note, or visibility ever crosses.
 
 ### Archive badge detail
 

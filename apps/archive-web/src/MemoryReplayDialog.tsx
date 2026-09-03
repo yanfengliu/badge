@@ -1,4 +1,5 @@
 import { useCallback, useLayoutEffect, useRef, type RefObject } from "react";
+import { effectiveTags } from "@badge/archive-domain";
 import type { HistoricalQuotation } from "@badge/saying-contract";
 import { LazyBadgeViewer as BadgeViewer } from "./LazyBadgeViewer";
 
@@ -21,6 +22,7 @@ interface MemoryReplayDialogProps {
   readonly keyboardPagingEnabled?: boolean;
   readonly returnFocus: RefObject<HTMLButtonElement | null>;
   readonly onBrowseSet: (set: ReplaySetLink) => void;
+  readonly onAdjustInStudio: () => void;
   readonly onPagerStep?: (step: DiscoveryPagerStep) => void;
   readonly onClose: () => void;
 }
@@ -35,6 +37,7 @@ export function MemoryReplayDialog({
   keyboardPagingEnabled = true,
   returnFocus,
   onBrowseSet,
+  onAdjustInStudio,
   onPagerStep,
   onClose,
 }: MemoryReplayDialogProps) {
@@ -45,6 +48,7 @@ export function MemoryReplayDialog({
   useModalEnvironment(dialog);
   useModalFocus(dialog, closeButton, onClose, { returnFocus });
   const { activation } = record;
+  const tags = effectiveTags(record);
   const paged = pager !== null && pager.total > 1 && onPagerStep !== undefined;
   const stepReplay = useCallback(
     (step: DiscoveryPagerStep) => {
@@ -170,6 +174,22 @@ export function MemoryReplayDialog({
                 )}
               </div>
             </div>
+            {tags.length > 0 ? (
+              <ul className="memory-replay__tags" aria-label={`Your tags on ${record.title}`}>
+                {tags.map((tag) => (
+                  <li key={tag}>{tag}</li>
+                ))}
+              </ul>
+            ) : null}
+            <p className="memory-replay__studio">
+              <button className="text-button" type="button" onClick={onAdjustInStudio}>
+                Adjust in Badge Studio
+              </button>
+              <small>
+                This memory is sealed, so its picture, shape, border, material and quote cannot change. Its
+                tags and collections still can.
+              </small>
+            </p>
           </div>
         </div>
       </article>

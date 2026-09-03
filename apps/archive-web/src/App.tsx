@@ -592,6 +592,7 @@ export function App({ onShowStudio }: { readonly onShowStudio: (recordId: string
           }
           returnFocus={replayReturnFocus}
           onBrowseSet={browseReplaySet}
+          onAdjustInStudio={() => onShowStudio(replayRecord.recordId)}
           onPagerStep={openReplayStep}
           onClose={closeReplay}
         />

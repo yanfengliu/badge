@@ -5,11 +5,23 @@ import { publishedFixtureForRecordId } from "./published-fixtures";
 import { applyStudioSubmission, buildStudioTarget } from "./studio-bridge";
 import type { ArchiveStudioBridge } from "./studio-bridge-port";
 
-const ownedUrls = new Set<string>();
+/**
+ * The one object URL this module hands out, kept by the bytes it points at.
+ *
+ * Resolving is not a one-shot: a save re-resolves the same badge, and revoking before minting
+ * the replacement pulled the image out from under the viewer that was still showing it — the
+ * renderer reported "Could not load blob:…" for a URL that had just been valid. Re-resolving the
+ * same bytes now reuses the same URL and revokes nothing; switching badges revokes the old one
+ * only after the new one exists.
+ */
+let ownedUrl: { readonly hash: string; readonly url: string } | null = null;
 
-function releaseOwnedUrls(): void {
-  for (const url of ownedUrls) URL.revokeObjectURL(url);
-  ownedUrls.clear();
+function objectUrlFor(hash: string, bytes: Uint8Array, mimeType: string): string {
+  if (ownedUrl?.hash === hash) return ownedUrl.url;
+  const previous = ownedUrl;
+  ownedUrl = { hash, url: URL.createObjectURL(new Blob([bytes.slice().buffer], { type: mimeType })) };
+  if (previous) URL.revokeObjectURL(previous.url);
+  return ownedUrl.url;
 }
 
 async function resolveTarget(recordId: string): Promise<StudioBadgeTarget | null> {
@@ -29,12 +41,11 @@ async function resolveTarget(recordId: string): Promise<StudioBadgeTarget | null
   if (record.adjustment?.source || record.activation) {
     try {
       const resolved = await archive.visual(recordId);
-      releaseOwnedUrls();
-      const objectUrl = URL.createObjectURL(
-        new Blob([resolved.sourceAsset.bytes.slice().buffer], { type: resolved.sourceAsset.mimeType }),
+      sourceUrl = objectUrlFor(
+        resolved.pin.sourceAssetHash,
+        resolved.sourceAsset.bytes,
+        resolved.sourceAsset.mimeType,
       );
-      ownedUrls.add(objectUrl);
-      sourceUrl = objectUrl;
     } catch {
       // Fall back to the catalogue study so Studio still opens with its controls usable.
     }

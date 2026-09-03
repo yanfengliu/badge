@@ -146,7 +146,7 @@ The archive has no art-generation, upload, reprocessing, candidate, prompt, crop
 
 ## Badge Studio developer mode
 
-Badge Studio adjusts one badge at a time. It is reached only by opening that badge in Discover and choosing `Adjust in Badge Studio`, its location names the badge as `#studio/<recordId>` so a reload or a shared link reopens it, and it appears in no navigation row. Legacy Studio document URLs under `/studio` redirect into the same document.
+Badge Studio adjusts one badge at a time. It is reached only by opening that badge in Discover and choosing `Adjust in Badge Studio` — on its preparation page when it is not collected yet, and on its memory when it is — its location names the badge as `#studio/<recordId>` so a reload or a shared link reopens it, and it appears in no navigation row. Legacy Studio document URLs under `/studio` redirect into the same document.
 
 It offers exactly eight things: the badge's picture, its shape, material, border color and border width, its tags, its quote, and which collections it belongs to. It creates no badges — new badges are authored into the catalogue by chatting with Claude — and it holds no prompt library, candidate generation, art provider, or pack publishing. The Archive owns what Studio saves, so an adjustment appears immediately in Collection, Timeline and Discover, survives a reload, and rides along in the `.badgearchive` backup without an install step.
 

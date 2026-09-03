@@ -70,6 +70,7 @@ function ReplayHarness({ onBrowseSet }: { readonly onBrowseSet?: (set: ReplaySet
           sets={[parksSet]}
           forceFallback={false}
           returnFocus={trigger}
+          onAdjustInStudio={() => undefined}
           onBrowseSet={(set) => {
             onBrowseSet?.(set);
             setOpen(false);
@@ -117,6 +118,7 @@ function PagedReplayHarness() {
           forceFallback={false}
           pager={pager}
           returnFocus={trigger}
+          onAdjustInStudio={() => undefined}
           onBrowseSet={() => undefined}
           onPagerStep={onPagerStep}
           onClose={() => setOpen(false)}
@@ -155,7 +157,13 @@ describe("MemoryReplayDialog interactions", () => {
     expect(dialog?.hasAttribute("inert")).toBe(false);
     expect(document.activeElement).toBe(close);
 
-    setLink?.focus();
+    expect(setLink).not.toBeNull();
+    // Tab from whatever is last in the dialog must wrap to its first control, not escape into
+    // the inert Archive behind it. Naming the last element instead would silently stop testing
+    // containment the moment the dialog grows another control at the end.
+    const focusable = [...(dialog?.querySelectorAll<HTMLElement>("button, [href], input, [tabindex]") ?? [])];
+    focusable.at(-1)?.focus();
+    expect(document.activeElement).toBe(focusable.at(-1));
     await act(async () => document.dispatchEvent(new KeyboardEvent("keydown", { key: "Tab" })));
     expect(document.activeElement).toBe(close);
 

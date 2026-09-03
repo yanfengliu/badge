@@ -52,6 +52,7 @@ describe("MemoryReplayDialog", () => {
         ]}
         forceFallback={false}
         returnFocus={createRef<HTMLButtonElement>()}
+        onAdjustInStudio={() => undefined}
         onBrowseSet={() => undefined}
         onClose={() => undefined}
       />,
@@ -108,6 +109,7 @@ describe("MemoryReplayDialog", () => {
           next: { recordId: "catalogue:visited-arches", title: "Arches" },
         }}
         returnFocus={createRef<HTMLButtonElement>()}
+        onAdjustInStudio={() => undefined}
         onBrowseSet={() => undefined}
         onPagerStep={() => undefined}
         onClose={() => undefined}
@@ -144,6 +146,7 @@ describe("MemoryReplayDialog", () => {
         sets={[]}
         forceFallback={false}
         returnFocus={createRef<HTMLButtonElement>()}
+        onAdjustInStudio={() => undefined}
         onBrowseSet={() => undefined}
         onClose={() => undefined}
       />,
@@ -182,6 +185,7 @@ describe("MemoryReplayDialog", () => {
         sets={[]}
         forceFallback={false}
         returnFocus={createRef<HTMLButtonElement>()}
+        onAdjustInStudio={() => undefined}
         onBrowseSet={() => undefined}
         onClose={() => undefined}
       />,
