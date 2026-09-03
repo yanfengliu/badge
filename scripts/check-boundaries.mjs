@@ -291,15 +291,34 @@ for (const scope of ["apps", "packages", "scripts"]) {
 const archiveSources = filesUnder("apps/archive-web/src")
   .map((file) => fs.readFileSync(file, "utf8"))
   .join("\n");
+// Strings only Badge Studio may render. They are the current Studio's own controls, not the
+// removed workbench's: guarding wording that no longer exists anywhere would be a check that
+// cannot fail. "Adjust in Badge Studio" is deliberately absent — that is the Archive's route
+// into Studio, not an editing control.
 for (const forbiddenSurface of [
-  "Generate candidates",
-  "source-art proposals",
-  "Process selected again",
-  "Exact compiled prompt",
+  "Save adjustments",
+  "Reset to catalogue default",
+  "Use my own image",
+  "Use the original image",
   "ACHIEVEMENT REFERENCE DATA",
 ]) {
   if (archiveSources.includes(forbiddenSurface)) {
-    failures.push(`Archive exposes Studio-only surface ${JSON.stringify(forbiddenSurface)}.`);
+    failures.push(
+      `Archive exposes Studio-only control ${JSON.stringify(forbiddenSurface)}; the Archive routes into Badge Studio and never edits a badge in place.`,
+    );
+  }
+}
+const studioSources = filesUnder("apps/studio-web/src")
+  .map((file) => fs.readFileSync(file, "utf8"))
+  .join("\n");
+// Bound: this proves the wording still exists somewhere in Studio, not that it is still a
+// control the owner can press. It exists so the Archive-side list above cannot quietly decay
+// into a check on wording that no longer exists anywhere, which is how it decayed before.
+for (const expectedSurface of ["Save adjustments", "Reset to catalogue default", "Use my own image"]) {
+  if (!studioSources.includes(expectedSurface)) {
+    failures.push(
+      `Badge Studio no longer uses the wording ${JSON.stringify(expectedSurface)}, so the Archive-side check for it can no longer fail; rename it in both places together.`,
+    );
   }
 }
 
