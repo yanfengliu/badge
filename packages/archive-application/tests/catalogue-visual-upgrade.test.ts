@@ -83,6 +83,7 @@ function record(recordId: string, lifecycle: "planned" | "earned"): ArchiveRecor
     quotationRevision: "11111111-1111-4111-8111-111111111111",
     note: `Personal note ${recordId}`,
     visibility: "private" as const,
+    adjustment: null,
     activation:
       lifecycle === "earned"
         ? {

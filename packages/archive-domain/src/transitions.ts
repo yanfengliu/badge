@@ -1,6 +1,20 @@
 import { z } from "zod";
 
 import {
+  adjustedSourceSchema,
+  adjustsAppearanceOrSource,
+  appearanceAdjustmentSchema,
+  badgeTagKey,
+  badgeTagSchema,
+  isEmptyBadgeAdjustment,
+  MAX_BADGE_TAGS,
+  sameAdjustedSource,
+  sameAppearanceAdjustment,
+  type BadgeAdjustment,
+} from "./adjustment.js";
+import { effectiveVisual } from "./effective.js";
+import { collectionRefKey, collectionRefSchema, type CollectionRef } from "./refs.js";
+import {
   archiveStateSchema,
   calendarDateSchema,
   exactVisualPinSchema,
@@ -15,6 +29,7 @@ import { sayingSizeMetricLabel, validateSaying, type SayingValidationResult } fr
 
 export type ArchiveDomainErrorCode =
   | "ALREADY_EARNED"
+  | "INVALID_ADJUSTMENT"
   | "INVALID_ACTIVATION"
   | "INVALID_LIFECYCLE"
   | "INVALID_SAYING"
@@ -116,7 +131,7 @@ export function activateAchievement(
     );
   }
 
-  if (!visualPinsEqual(record.publishedVisual, input.visualPin)) {
+  if (!visualPinsEqual(effectiveVisual(record), input.visualPin)) {
     throw new ArchiveDomainError(
       "VISUAL_PIN_MISMATCH",
       `${record.title} changed since activation was opened; reopen it to use the admitted visual.`,
@@ -137,6 +152,10 @@ export function activateAchievement(
   };
   const replacement: ArchiveRecord = {
     ...record,
+    // Activation folds the owner's adjustment into the record's own published visual so the
+    // sealed pin and the record agree byte for byte. The overlay stays as the honest note of
+    // which fields the owner chose; re-applying it to the folded visual is idempotent.
+    publishedVisual: input.visualPin,
     lifecycle: "earned",
     acceptedSaying: saying.value,
     note: input.note,
@@ -193,4 +212,110 @@ export function setRecordLifecycle(
   }
 
   return replaceRecord(state, { ...record, lifecycle });
+}
+
+const EMPTY_ADJUSTED_APPEARANCE = {
+  shape: null,
+  material: null,
+  borderColor: null,
+  borderWidth: null,
+} as const;
+
+export const badgeAdjustmentInputSchema = z
+  .object({
+    appearance: appearanceAdjustmentSchema,
+    source: adjustedSourceSchema.nullable(),
+    tags: z.array(badgeTagSchema).max(MAX_BADGE_TAGS),
+    collectionRefs: z.array(collectionRefSchema).min(1).nullable(),
+  })
+  .strict();
+export type BadgeAdjustmentInput = z.infer<typeof badgeAdjustmentInputSchema>;
+
+function duplicateTag(tags: readonly string[]): string | null {
+  const seen = new Set<string>();
+  for (const tag of tags) {
+    const key = badgeTagKey(tag);
+    if (seen.has(key)) return tag;
+    seen.add(key);
+  }
+  return null;
+}
+
+function sameCollectionSelection(
+  left: readonly CollectionRef[] | null,
+  right: readonly CollectionRef[] | null,
+): boolean {
+  if (left === null || right === null) return left === right;
+  if (left.length !== right.length) return false;
+  return left.every((ref, index) => collectionRefKey(ref) === collectionRefKey(right[index]));
+}
+
+function sameAdjustment(left: BadgeAdjustment | null, right: BadgeAdjustment | null): boolean {
+  if (left === null || right === null) return left === right;
+  return (
+    sameAppearanceAdjustment(left.appearance, right.appearance) &&
+    sameAdjustedSource(left.source, right.source) &&
+    left.tags.length === right.tags.length &&
+    left.tags.every((tag, index) => tag === right.tags[index]) &&
+    sameCollectionSelection(left.collectionRefs, right.collectionRefs)
+  );
+}
+
+/**
+ * Replaces one badge's personal adjustment overlay. Tags and collection membership are ordinary
+ * organization and stay editable for the life of the badge; the badge face — shape, material,
+ * border, and the owner's own image — is sealed by activation and may not be re-adjusted once a
+ * memory is collected.
+ */
+export function adjustBadge(
+  untrustedState: ArchiveState,
+  recordId: string,
+  untrustedInput: BadgeAdjustmentInput,
+  now: string,
+): ArchiveState {
+  const state = archiveStateSchema.parse(untrustedState);
+  const record = requireRecord(state, recordId);
+  const parsed = badgeAdjustmentInputSchema.safeParse(untrustedInput);
+  if (!parsed.success) {
+    const issue = parsed.error.issues[0];
+    throw new ArchiveDomainError(
+      "INVALID_ADJUSTMENT",
+      `Adjustment for ${record.title} is invalid at ${issue?.path.join(".") || "the submitted values"}: ${issue?.message ?? "check the submitted values"}.`,
+    );
+  }
+  const input = parsed.data;
+  const repeated = duplicateTag(input.tags);
+  if (repeated !== null) {
+    throw new ArchiveDomainError(
+      "INVALID_ADJUSTMENT",
+      `Tag ${repeated} is already on ${record.title}; remove the repeat and keep one of each tag.`,
+    );
+  }
+  if (record.activation !== null || record.lifecycle === "earned") {
+    const current = record.adjustment;
+    const faceChanged =
+      !sameAppearanceAdjustment(input.appearance, current?.appearance ?? EMPTY_ADJUSTED_APPEARANCE) ||
+      !sameAdjustedSource(input.source, current?.source ?? null);
+    if (faceChanged) {
+      throw new ArchiveDomainError(
+        "INVALID_ADJUSTMENT",
+        `${record.title} is already collected, so its badge face is sealed with that memory. Change its tags or collections instead, or adjust a badge you have not collected yet.`,
+      );
+    }
+  }
+  const proposed: BadgeAdjustment = {
+    adjustedAt: now,
+    appearance: input.appearance,
+    source: input.source,
+    tags: input.tags,
+    collectionRefs: input.collectionRefs,
+  };
+  const next = isEmptyBadgeAdjustment(proposed) ? null : proposed;
+  if (sameAdjustment(next, record.adjustment)) return state;
+  return replaceRecord(state, { ...record, adjustment: next });
+}
+
+/** True when the record still shows exactly the badge face its catalogue pack shipped. */
+export function isCatalogueDefaultBadge(record: ArchiveRecord): boolean {
+  return !adjustsAppearanceOrSource(record.adjustment);
 }

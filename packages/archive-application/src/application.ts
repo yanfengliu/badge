@@ -3,6 +3,7 @@ import type {
   ActivationResult,
   ArchiveLifecycle,
   ArchiveState,
+  BadgeAdjustmentInput,
 } from "@badge/archive-domain";
 import type { SayingResponse } from "@badge/saying-contract";
 
@@ -99,6 +100,19 @@ export class ArchiveApplication {
     expectedQuotationRevision: string,
   ): Promise<ArchiveState> {
     return this.repository.updateQuotation(recordId, quotation, expectedQuotationRevision);
+  }
+
+  /**
+   * Applies the owner's Badge Studio adjustment to one badge. `ownImage` carries the bytes when
+   * they swapped in a picture of their own, so the image and the record that names it are
+   * written together.
+   */
+  adjustBadge(
+    recordId: string,
+    input: BadgeAdjustmentInput,
+    ownImage: ArchiveSourceAssetInput | null = null,
+  ): Promise<ArchiveState> {
+    return this.repository.adjustBadge(recordId, input, this.now(), ownImage);
   }
 
   updateLifecycle(recordId: string, lifecycle: ArchiveLifecycle): Promise<ArchiveState> {

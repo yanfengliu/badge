@@ -1,7 +1,7 @@
 import type { ArchiveState } from "@badge/archive-domain";
 
 import { ArchivePersistenceError } from "./errors.js";
-import { earnedSourceHashes } from "./source-references.js";
+import { irreplaceableSourceHashes } from "./source-references.js";
 import {
   parseSourceAssetShape,
   preflightSourceAssetInputs,
@@ -33,7 +33,7 @@ export async function validateRepositorySourceAssets(
   }
   if (state) {
     const supplied = new Set(assets.map((asset) => asset.hash));
-    const missing = earnedSourceHashes(state).find((hash) => !supplied.has(hash));
+    const missing = irreplaceableSourceHashes(state).find((hash) => !supplied.has(hash));
     if (missing) {
       throw new ArchivePersistenceError(
         "BACKUP_INCOMPLETE",

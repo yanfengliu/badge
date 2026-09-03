@@ -2,7 +2,6 @@
 
 Every lesson this repo retired into a gate, with the mutation that was actually run to make that gate go red.
 
-
 ## If a gate here is wrong
 
 A gate and the claim in its header can be wrong together, and when they are they look exactly like a gate that is right: retiring 356 lessons across this fleet found 43 that named a defect their own named test did not catch. Auditing one means reaching what was actually believed, measured, and abandoned — never the sentence the gate carries about itself, which is the same self-agreement these gates exist to catch.
@@ -12,7 +11,6 @@ That evidence was deleted in the retirement commits, not lost. This repo's evide
     git show 799d9b6:docs/learning/lessons-evidence.md
 
 `git log -- docs/learning/lessons-evidence.md` lists every earlier revision, and `git log -S'<phrase from the gate header>' -- docs/learning/` finds the entry a particular gate came from.
-
 
 A gate is only real once it has been made to fail by reintroducing the defect. This file records the product-code edit that reintroduced it, the failure line it produced, and that the gate went green again after the edit was reverted. It stays after the lesson prose is deleted.
 

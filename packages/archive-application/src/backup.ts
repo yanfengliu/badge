@@ -2,7 +2,7 @@ import { archiveStateSchema, sha256Schema, type ArchiveState } from "@badge/arch
 import { canonicalJsonBytes, sha256Hex } from "@badge/pack-contract";
 import { z } from "zod";
 
-import { MAX_ARCHIVE_BACKUP_STATE_BYTES, requiredEarnedSourceHashes } from "./backup-state.js";
+import { MAX_ARCHIVE_BACKUP_STATE_BYTES, requiredBackupSourceHashes } from "./backup-state.js";
 import { ArchivePersistenceError } from "./errors.js";
 import {
   MAX_ARCHIVE_SOURCE_ASSET_BYTES,
@@ -116,7 +116,7 @@ function invalidBackup(message: string, cause?: unknown): ArchivePersistenceErro
 }
 
 function assertBackupClosure(state: ArchiveState, sourceAssets: readonly { readonly hash: string }[]): void {
-  const required = requiredEarnedSourceHashes(state);
+  const required = requiredBackupSourceHashes(state);
   const supplied = sourceAssets.map((asset) => asset.hash).sort();
   const missing = required.find((hash) => !supplied.includes(hash));
   if (missing) {
@@ -289,7 +289,7 @@ function parseLegacyBackup(bytes: Uint8Array): ArchiveBackup {
       parsed.error,
     );
   }
-  if (requiredEarnedSourceHashes(parsed.data.state).length > 0) {
+  if (requiredBackupSourceHashes(parsed.data.state).length > 0) {
     throw new ArchivePersistenceError(
       "BACKUP_INCOMPLETE",
       "Archive backup version 1 contains earned records but no immutable source bytes; use the original Archive to export a version 2 backup before restoring. No Archive data was changed.",

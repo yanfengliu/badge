@@ -43,7 +43,7 @@ export const SAYING_JSON_MEDIA_TYPE = "application/json" as const;
 export const SAYING_REQUIRED_FETCH_SITE = "same-origin" as const;
 export const SAYING_HTTP_SUCCESS_STATUS = 200 as const;
 export const SAYING_DISCLOSURE_FINGERPRINT =
-  "sha256:564b356eaacd61ad5adefd9f636b89e8398cd3f86d9ca5df63ef28258b1269cb" as const;
+  "sha256:6a4d1f50e69684a13680aab66761d2835aeaae5fb3d118bd99bdb9f743f216a8" as const;
 export const SAYING_ROUTE_BODY_LIMIT_BYTES = 16 * 1_024;
 export const SAYING_ROUTE_RESPONSE_LIMIT_BYTES = 16 * 1_024;
 export const SAYING_PROVIDER_STDOUT_LIMIT_BYTES = 64 * 1_024;
@@ -97,6 +97,7 @@ export const SAYING_EXCLUDED_FIELDS = freezeRecursively([
   "quotationRevision",
   "note",
   "visibility",
+  "adjustment",
   "activation",
   "requestId",
   "signal",
@@ -179,6 +180,7 @@ const sayingDisclosureScopeSchema = z
       z.literal("quotationRevision"),
       z.literal("note"),
       z.literal("visibility"),
+      z.literal("adjustment"),
       z.literal("activation"),
       z.literal("requestId"),
       z.literal("signal"),

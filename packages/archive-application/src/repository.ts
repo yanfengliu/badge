@@ -1,12 +1,12 @@
 import {
   ArchiveDomainError,
   archiveStateSchema,
-  exactVisualPinSchema,
   setRecordLifecycle,
   type ActivationInput,
   type ActivationResult,
   type ArchiveLifecycle,
   type ArchiveState,
+  type BadgeAdjustmentInput,
 } from "@badge/archive-domain";
 import type { IDBPDatabase } from "idb";
 import { canonicalJson } from "@badge/pack-contract";
@@ -27,6 +27,8 @@ import { recoverArchive } from "./recovery.js";
 import { inspectRecoveryEvidenceSnapshot } from "./recovery-evidence-snapshot.js";
 import type { ArchiveRecoveryReasonCode } from "./recovery-evidence.js";
 import type { IndexedDbArchiveRepositoryOptions } from "./repository-contract.js";
+import { assertHeldAdjustmentSource, storeBadgeAdjustment } from "./repository-adjustment.js";
+import { readBackupSnapshot, readResolvedVisual } from "./repository-reads.js";
 import {
   assertCompatibleRepositorySource,
   mergeRepositorySourceAssets,
@@ -34,14 +36,7 @@ import {
 } from "./repository-source-assets.js";
 import { assertRestorableEarnedSayings, prepareQuotationRevisionsForRestore } from "./saying-defaults.js";
 import { assertMonotonicArchiveRestore } from "./restore-policy.js";
-import { earnedSourceHashes } from "./source-references.js";
-import {
-  copySourceAsset,
-  validateSourceAsset,
-  validateStoredSourceAsset,
-  type ArchiveSourceAsset,
-  type ArchiveSourceAssetInput,
-} from "./source-assets.js";
+import { copySourceAsset, validateSourceAsset, type ArchiveSourceAssetInput } from "./source-assets.js";
 import {
   ARCHIVE_OBJECT_STORE,
   ARCHIVE_STATE_KEY,
@@ -224,61 +219,40 @@ export class IndexedDbArchiveRepository {
 
   async resolveVisual(recordId: string): Promise<ResolvedArchiveVisual> {
     await this.writeQueue;
-    const database = await this.database();
-    const transaction = database.transaction([ARCHIVE_STATE_STORE, ARCHIVE_OBJECT_STORE], "readonly");
-    const state = parseStoredState(await transaction.objectStore(ARCHIVE_STATE_STORE).get(ARCHIVE_STATE_KEY));
-    const record = state.records.find((candidate) => candidate.recordId === recordId);
-    if (!record) {
-      await transaction.done;
-      throw new ArchivePersistenceError(
-        "VISUAL_SOURCE_MISSING",
-        `Archive record ${recordId} was not found; reload the collection before resolving its visual.`,
-      );
-    }
-    const pin = exactVisualPinSchema.parse(record.activation?.visualPin ?? record.publishedVisual);
-    const stored = await transaction.objectStore(ARCHIVE_OBJECT_STORE).get(pin.sourceAssetHash);
-    await transaction.done;
-    if (stored === undefined) {
-      throw new ArchivePersistenceError(
-        "VISUAL_SOURCE_MISSING",
-        `Archive source ${pin.sourceAssetHash} for record ${recordId} is missing; restore an intact .badgearchive backup or reinstall the exact admitted pack.`,
-      );
-    }
-    return {
-      recordId,
-      pin,
-      sourceAsset: await validateStoredSourceAsset(stored, pin.sourceAssetHash),
-    };
+    return readResolvedVisual(await this.database(), recordId);
   }
 
   async backupSnapshot(): Promise<ArchiveBackupSnapshot> {
     await this.writeQueue;
-    const database = await this.database();
-    const transaction = database.transaction([ARCHIVE_STATE_STORE, ARCHIVE_OBJECT_STORE], "readonly");
-    const state = parseStoredState(await transaction.objectStore(ARCHIVE_STATE_STORE).get(ARCHIVE_STATE_KEY));
-    const hashes = earnedSourceHashes(state);
-    const rows = await Promise.all(
-      hashes.map((hash) => transaction.objectStore(ARCHIVE_OBJECT_STORE).get(hash)),
-    );
-    await transaction.done;
-    const sourceAssets: ArchiveSourceAsset[] = [];
-    for (let index = 0; index < hashes.length; index += 1) {
-      const hash = hashes[index];
-      const row = rows[index];
-      if (row === undefined) {
-        throw new ArchivePersistenceError(
-          "VISUAL_SOURCE_MISSING",
-          `Archive source ${hash} required by an earned record is missing; the backup was not created. Reinstall the exact pack or restore an intact backup first.`,
-        );
-      }
-      sourceAssets.push(await validateStoredSourceAsset(row, hash));
-    }
-    return { state, sourceAssets };
+    return readBackupSnapshot(await this.database());
   }
 
   async recoveryEvidenceSnapshot(reason: ArchiveRecoveryReasonCode) {
     await this.writeQueue;
     return inspectRecoveryEvidenceSnapshot(await this.database(), reason);
+  }
+
+  /**
+   * Stores one badge's personal adjustment, and the owner's own image alongside it when they
+   * swapped one in. Passing `null` for `ownImage` keeps whatever source the adjustment names,
+   * which must already be held.
+   */
+  adjustBadge(
+    recordId: string,
+    input: BadgeAdjustmentInput,
+    adjustedAt: string,
+    ownImage: ArchiveSourceAssetInput | null = null,
+  ): Promise<ArchiveState> {
+    return this.enqueueWrite(async () => {
+      const sourceAsset = ownImage
+        ? await validateSourceAsset(ownImage, input.source?.sourceAssetHash)
+        : null;
+      const database = await this.database();
+      if (input.source !== null && sourceAsset === null) {
+        await assertHeldAdjustmentSource(database, recordId, input.source.sourceAssetHash);
+      }
+      return storeBadgeAdjustment(database, recordId, input, adjustedAt, sourceAsset);
+    });
   }
 
   private enqueueMutation<T>(

@@ -8,7 +8,7 @@ import {
   hasDurableQuotationRevisions,
   refreshUnearnedQuotationRevisions,
 } from "./saying-defaults.js";
-import { earnedSourceHashes, referencedSourceHashes } from "./source-references.js";
+import { irreplaceableSourceHashes, referencedSourceHashes } from "./source-references.js";
 import {
   copySourceAsset,
   sourceAssetsEqual,
@@ -166,7 +166,7 @@ export async function recoverArchive(
   // Catalogue sources for unearned records load lazily from the shipped bundle, so a hash that
   // was simply never stored is normal state, not damage; only an earned record's absent source
   // is a defect recovery must repair from incoming bytes.
-  const earnedRequiredHashes = new Set(earnedSourceHashes(governingState));
+  const earnedRequiredHashes = new Set(irreplaceableSourceHashes(governingState));
   const outgoingRescueRecords =
     replaceReadableState && options.expectedStateRescueReason === "source-art-unavailable" && parsedCurrent
       ? parsedCurrent.records.filter((record) => record.activation !== null)
