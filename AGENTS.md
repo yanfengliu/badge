@@ -10,8 +10,6 @@ The repository contains a first runnable Node 24 + TypeScript + React + Vite ver
 
 Read the repo-specific rules in [docs/policies/local-rules.md](docs/policies/local-rules.md). They bind alongside the fleet constitution and win where they are stricter.
 
-`badge` is not yet in `../fleet/scripts/lib/fleet-repos.mjs`; the constitution below is an unmanaged seed copied from the current fleet source. Compare it with `../fleet/FLEET.md` during documentation checks until a separately scoped fleet change onboards this repo.
-
 <!-- FLEET-CANON:BEGIN sha=75508464fa63 generated from ../fleet/FLEET.md by `npm run sync-canon` — do not edit inside this block; this repo's own rules go in docs/policies/local-rules.md -->
 ## Fleet constitution
 
