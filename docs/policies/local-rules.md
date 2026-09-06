@@ -2,12 +2,6 @@
 
 These repo-specific rules bind alongside the fleet constitution and make its boundaries concrete for Badge.
 
-## Git delivery authorization
-
-The owner explicitly authorizes agents to push verified, in-scope commits to `https://github.com/yanfengliu/badge.git` without requesting approval for each ordinary push.
-
-This standing authorization is limited to non-force delivery for this repository after its required gates pass. It does not authorize force-pushes, history rewrites, bypassing review or secret checks, changing remotes, or pushing to another repository.
-
 ## Personal data and Git
 
 Git tracks product code, schemas, migrations, curated catalogue source, computed-goal rules, Studio prompt templates, published renderer manifests, optional small pack registry records, tests, and deliberately promoted small source assets.
