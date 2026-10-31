@@ -65,7 +65,9 @@ Before commit, stage the exact unit, then run `node scripts/check-staged-secrets
 
 ## Session start
 
-Read `docs/learning/lessons.md`, `docs/design/vision.md`, `docs/design/product-spec.md`, `docs/design/visual-direction.md`, `docs/design/art-style-catalogue.md`, `docs/architecture/ARCHITECTURE.md`, `docs/design/roadmap.md`, `docs/policies/local-rules.md`, and `docs/devlog/summary.md` before changing product behavior.
+Read `docs/policies/local-rules.md` and the section maps at the top of `docs/design/product-spec.md` and `docs/architecture/ARCHITECTURE.md` before changing product behavior, then only the sections the work needs.
+
+Read the rest when the work reaches it, each long one from the section map at its top: `docs/design/vision.md` before changing what the product is for or its scope, `docs/design/visual-direction.md` for any visual change, `docs/design/art-style-catalogue.md` for catalogue art, `docs/design/roadmap.md` for phase order and exit criteria, and the newest entries at the top of `docs/devlog/summary.md` for recent history. `docs/README.md` names the doc that owns each kind of decision.
 
 ## Invariants & boundaries
 

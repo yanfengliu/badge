@@ -1,5 +1,26 @@
 # Architecture
 
+## Section map
+
+Read this map first, then only the sections the work needs; each entry links its heading.
+
+- [Status](#status): what is implemented and what is still target.
+- [Architectural shape](#architectural-shape): the Node 24 workspace, the root-document host with its Collection, Timeline and Discover, the separate Archive and Studio, what the 2026-08-25 foundation implements, and the dependency directions.
+- [Target source layout](#target-source-layout): the package tree, and why Archive and Studio never share an application package.
+- [Domain model](#domain-model): each persisted type, from `ProfileSettings` and pack lineage through definitions, packs, published visuals, authoring requests, records, adjustments, occurrences, activations, goal rules and appearance to render-recipe semantics, viewer state, art assets, Studio-local assets and saying state.
+- [Authority boundary](#authority-boundary): what never goes into catalogue files, JSON, `localStorage` or Git, and what a published pack is.
+- [Persistence](#persistence): the Archive and Studio IndexedDB stores, schema versions and migrations, an unreadable store kept for recovery, and the stable origin contract.
+- [Media pipeline](#media-pipeline): Studio's content-hashed uploads, outputs and derivatives, candidate identity, and legacy originals.
+- [3D rendering boundary](#3d-rendering-boundary): what the renderer consumes, the Archive's read-only rendering, and parametric geometry.
+- [Generation boundaries](#generation-boundaries): the Studio art-generation port and its untrusted candidates, the Archive quotation-regeneration port and its requests, test adapters, and where a called model is pinned.
+- [Pack publication and admission](#pack-publication-and-admission): pack objects, the canonical container, the Studio-only compiler, and what admission requires.
+- [Catalogue authoring boundary](#catalogue-authoring-boundary): the national-parks, U.S.-states, books, education, Michelin and other campaigns, the prompt compiler, the style entries, and the selected source studies.
+- [Catalogue behavior](#catalogue-behavior): versioned catalogues, the Discover safe projection, and personal overlays that survive catalogue updates.
+- [Visibility](#visibility): nullable overrides and how effective visibility resolves.
+- [Backup and restore](#backup-and-restore): the `.badgearchive` and `.badgestudio` formats, and what each holds.
+- [Future multi-user migration](#future-multi-user-migration): what is ready for a server later, and what is not prebuilt.
+- [Test and observability contracts](#test-and-observability-contracts): the domain, golden-recipe, pack-contract, persistence, component, renderer-stress, startup and browser tests, visual evidence, and debug output.
+
 ## Status
 
 The repository contains a runnable foundation implementation plus the product and target-architecture documentation that bounds later slices.

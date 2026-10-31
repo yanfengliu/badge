@@ -1,5 +1,18 @@
 # Visual Direction
 
+## Section map
+
+Read this map first, then only the sections the work needs; each entry links its heading.
+
+- [Selected family](#selected-family): the field-archive direction the owner chose, and the Badge Atelier seed for Studio.
+- [Promoted visual inputs](#promoted-visual-inputs): the promoted direction images.
+- [Experience character](#experience-character) and [Reference translation](#reference-translation): how the interface should feel, and the owner's mood references turned into original qualities.
+- [Badge art grammar](#badge-art-grammar): text-free art that reads as a hero and as a thumbnail, designed for a `32 mm` artifact.
+- [Diverse art-direction library](#diverse-art-direction-library), [Material vocabulary](#material-vocabulary) and [Three-dimensional physicality and lighting](#three-dimensional-physicality-and-lighting): the style revisions, the materials, and real geometry under physically based light.
+- [Interface surfaces](#interface-surfaces): the collection gallery, discovery catalogue, memory timeline, Badge Studio, archive badge detail, and activation.
+- [Implemented Archive and phone-capable surface record — 2026-08-25](#implemented-archive-and-phone-capable-surface-record--2026-08-25): the dated record of what was built, the largest section: its status and capture contract, shared tokens, the Collection and Discover state contracts, interaction precedence, the responsive and reduced-motion record, and the catalogue scaling trigger.
+- [Motion and sound](#motion-and-sound), [Anti-patterns](#anti-patterns) and [Visual verification contract](#visual-verification-contract): short controlled motion, what to avoid, and what visual work must inspect and compare.
+
 ## Selected family
 
 The owner selected the third explored direction: a warm, modern field archive with substantial engraved artifacts, fine topographic linework, mineral accents, exact typography, and a restrained editorial interface.

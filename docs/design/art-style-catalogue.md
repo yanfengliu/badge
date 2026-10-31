@@ -1,5 +1,17 @@
 # Art Style Catalogue
 
+## Section map
+
+Read this map first, then only the sections the work needs; each entry links its heading.
+
+- [Purpose and authority](#purpose-and-authority): what the curated authoring inputs in `packages/catalogue-authoring` are, and that only Badge Studio and release curation use them.
+- The editions, each with its source, candidate roles and selected studies: [U.S. National Parks](#us-national-parks-authoring-edition), [U.S. States](#us-states-authoring-edition), [Books Read](#books-read-authoring-edition), [education milestones](#education-milestone-authoring-studies), [Michelin restaurants](#named-michelin-restaurant-studies), [Video Games](#video-games-authoring-edition), and the [code-native miniature edition](#code-native-miniature-edition).
+- [Style library](#style-library): movements and processes turned into general visual qualities, never a named creator's imitation.
+- [Owner cadence preference](#owner-cadence-preference): the creator-neutral Moebius direction and its share of each campaign.
+- [Deterministic prompt recipe](#deterministic-prompt-recipe): the compiler's sections, in order, and the fields it writes.
+- [Common-achievement idea bank](#common-achievement-idea-bank) and [Planning-only expansion briefs](#planning-only-expansion-briefs): the release-authoring queue and the source briefs for later catalogue work.
+- [Expansion and revision protocol](#expansion-and-revision-protocol): the coverage review before an expansion, and when a new style ID is added.
+
 ## Purpose and authority
 
 This document explains the curated authoring inputs in `packages/catalogue-authoring`; the executable style records, achievement briefs, candidate plans, selected-source manifests, and prompt compiler remain the source of truth.

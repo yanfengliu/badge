@@ -1,5 +1,26 @@
 # Product Specification
 
+## Section map
+
+Read this map first, then only the sections the work needs; each entry links its heading.
+
+- [Status and authority](#status-and-authority): which statements are the owner's and which are recommended, provisional or open.
+- [Domain language](#domain-language): collection, badge definition, published pack and theme, personal record, occurrence, local collection settings, activation, composite achievement, art asset and candidate set, and appearance.
+- [Interactive 3D artifact](#interactive-3d-artifact): the badge as a real-time 3D object, its rotation, zoom and light, and what the viewer never saves.
+- [Recommended lifecycle](#recommended-lifecycle): suggested, draft, planned, earned and archived.
+- [Gallery experience](#gallery-experience): the earned-only Collection, Discover and its preparation page, the Timeline, and what the archive never offers.
+- [Badge Studio developer mode](#badge-studio-developer-mode): how a badge reaches Studio and the eight things Studio adjusts.
+- [Runtime historical-quotation selection](#runtime-historical-quotation-selection): each badge's source-checked quotation, its allocation and regeneration, and the prompt itself, [Saying prompt v3](#saying-prompt-v3), which a test holds byte for byte.
+- [Art generation behavior](#art-generation-behavior): generation as an explicit Studio action that returns candidates, and art without typography.
+- [Activation flow](#activation-flow): what the archive shows and records when a badge is activated.
+- [Repeat occurrences](#repeat-occurrences): revisits and rereads as occurrences of one badge.
+- [Collections and computed progress](#collections-and-computed-progress): handmade and prepopulated collections, the catalogue editions and campaigns, progress shown as encouragement, and computed goals.
+- [Visibility](#visibility): the three-state overrides and how they resolve.
+- [Backup and restore](#backup-and-restore): Archive and Studio backups, and what each holds.
+- [Canonical acceptance journeys](#canonical-acceptance-journeys): the Yosemite, Studio publishing, custom handoff, Sapiens, bachelor's degree and all-parks slices.
+- [Accessibility requirements](#accessibility-requirements): keyboard access in the Archive and Studio, focus, text equivalents, errors, reduced motion and phone layouts.
+- [Explicit open decisions](#explicit-open-decisions): the numbered decisions still open, and those resolved.
+
 ## Status and authority
 
 This document combines owner-confirmed intent with repository design decisions and explicit recommendations.
